@@ -1,7 +1,9 @@
 import passport from "passport";
-import { readEmployeeFromEmail } from "../database/employeeDB";
 import { BearerStrategy } from "passport-azure-ad";
+
 import config from "../../config/config";
+import { readEmployeeFromEmail } from "../database/employeeDB";
+
 import { UserInfo } from "./types";
 
 // const OIDCBearerStrategy = OIDC.BearerStrategy;

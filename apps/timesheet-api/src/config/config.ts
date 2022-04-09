@@ -1,9 +1,9 @@
 import { IBearerStrategyOptionWithRequest } from "passport-azure-ad";
 
-const database_creds = {
+const databaseCreds = {
     user: String(process.env.DB_USER),
     password: String(process.env.DB_PASSWORD),
-    port: parseInt(process.env.DB_PORT),
+    port: parseInt(process.env.DB_PORT ?? "1433"),
     options: {
         trustServerCertificate: true,
     },
@@ -11,7 +11,7 @@ const database_creds = {
     database: String(process.env.DB_DATABASE),
 };
 
-const aad_creds: IBearerStrategyOptionWithRequest = {
+const aadCreds: IBearerStrategyOptionWithRequest = {
     // Requried
     identityMetadata:
         "https://login.microsoftonline.com/e6daa991-402f-46f2-b53b-09367f7d9ea8/v2.0/.well-known/openid-configuration",
@@ -45,14 +45,15 @@ const aad_creds: IBearerStrategyOptionWithRequest = {
     loggingNoPII: true,
 };
 
-const mail_creds = {
+const mailCreds = {
     from_address: '"City of Langford" <donotreply@langford.ca>',
     host: "mailrelay.cityoflangford.ca",
     port: 25,
 };
 
-export default {
-    database_creds,
-    aad_creds,
-    mail_creds,
+const config = {
+    database_creds: databaseCreds,
+    aad_creds: aadCreds,
+    mail_creds: mailCreds,
 };
+export default config;

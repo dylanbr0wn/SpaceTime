@@ -12,7 +12,7 @@
       "prettier-standard"
     ],
     "parserOptions": {
-      "project": "./tsconfig.json"
+      "project": ["./tsconfig.json","./apps/*/tsconfig.json","./libs/*/tsconfig.json"]
     },
     "plugins": [
       "react",

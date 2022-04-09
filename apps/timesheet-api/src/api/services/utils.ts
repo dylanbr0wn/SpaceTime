@@ -1,24 +1,25 @@
-import { HttpException } from "./error";
+import { Response } from "express";
 import moment from "moment";
-import { checkTimesheetLock } from "../database/timesheetDB";
 import {
     ConnectionError,
     PreparedStatementError,
     RequestError,
     TransactionError,
 } from "mssql";
+
+import { DatabaseResponse } from "../../config/database";
+import { checkTimesheetLock } from "../database/timesheetDB";
+
+import { HttpException } from "./error";
 import {
     DayComment,
     PinnedRow,
     Preference,
-    Template,
     TemplateRow,
     TimeEntry,
     TimeEntryRow,
     WorkCode,
 } from "./types";
-import { DatabaseResponse } from "../../config/database";
-import { Response } from "express";
 
 /**
  * @function parseCSV
@@ -78,7 +79,7 @@ export const handleDatabaseError = (
         message = "An unknown error occured";
     }
 
-    //console.log(error);
+    // console.log(error);
     return {
         success: false,
         data: null,
@@ -176,9 +177,9 @@ export const parseTemplate = (
     timesheet: TimeEntryRow[]
 ) => {
     const defaultTemplateEntry: TemplateRow = {
-        TemplateID,
-        ProjectID: null,
-        WorkCodeID: null,
+        TemplateID: -1,
+        ProjectID: -1,
+        WorkCodeID: -1,
         HoursWorked: 0,
     };
 
@@ -214,7 +215,7 @@ export const templateSorter = (
     StartDate: Date,
     EmployeeID: number
 ) => {
-    //filter rows with depreciated
+    // filter rows with depreciated
     const newRows = rows.filter((row) => {
         if (row.ProjectID && !row.ProjActive) return false;
         if (row.DepartmentID && !row.DepActive) return false;
@@ -293,7 +294,7 @@ export const parseDayComments = (
         });
 };
 
-//Checks routes to see if a lock exists
+// Checks routes to see if a lock exists
 export const checkEmployeeRoutes = async (EmployeeID: number) => {
     const isLocked = await checkTimesheetLock(EmployeeID);
     if (isLocked.data.locked) {
@@ -302,17 +303,16 @@ export const checkEmployeeRoutes = async (EmployeeID: number) => {
             "Timesheet is locked. Contact your supervisor for assistance."
         );
     }
-    return;
 };
 
-//takes rows and entries and combines them into a timesheet
+// takes rows and entries and combines them into a timesheet
 export const EntryRowSorter = (
     rows: TimeEntryRow[],
     entries: TimeEntry[],
     StartDate: Date,
     EmployeeID: number
 ) => {
-    //create default empty workdays
+    // create default empty workdays
     const workDays = new Array(14).fill(undefined).map((entry, i) => {
         const workDate = moment.utc(StartDate);
         return {
@@ -327,7 +327,7 @@ export const EntryRowSorter = (
 
     const cleansedRows = Array.from(new Set(rows));
 
-    //create base timesheet using rows, should cleanse rows first
+    // create base timesheet using rows, should cleanse rows first
     const timesheet = [...cleansedRows].map((row) => {
         return {
             ...row,
@@ -349,15 +349,12 @@ export const EntryRowSorter = (
     // parse entries
     entries.forEach((element) => {
         const newElement = element;
-        //if work exists, add it to the workType
+        // if work exists, add it to the workType
         if (workTypes[`${element.ProjectID},${element.WorkCodeID}`]) {
             workTypes[`${element.ProjectID},${element.WorkCodeID}`].dates =
                 workTypes[
                     `${element.ProjectID},${element.WorkCodeID}`
                 ].dates.map((day) => {
-                    const SubmissionDate = moment.utc(
-                        newElement.SubmissionDate
-                    );
                     const DateofWork = moment.utc(element.DateofWork);
 
                     if (
@@ -372,14 +369,11 @@ export const EntryRowSorter = (
                     };
                 });
         } else {
-            //If work does not exist, create a new workType
+            // If work does not exist, create a new workType
             workTypes[`${element.ProjectID},${element.WorkCodeID}`] = {
                 dates: workDays.map((day) => {
                     const DateofWork = moment.utc(element.DateofWork);
 
-                    const SubmissionDate = moment.utc(
-                        newElement.SubmissionDate
-                    );
                     if (
                         moment.utc(day.DateofWork).date() === DateofWork.date()
                     ) {
@@ -432,7 +426,7 @@ export const EntryRowSorter = (
     });
 };
 
-//gets total hours worked in a timesheet period
+// gets total hours worked in a timesheet period
 export const getTotalHours = (timesheet: TimeEntry[]) => {
     let total = 0;
 
@@ -448,7 +442,7 @@ export const getTotalHours = (timesheet: TimeEntry[]) => {
     return total;
 };
 
-//compare function for rows
+// compare function for rows
 const rowCompare = (row1: TimeEntryRow, row2: TimeEntryRow) => {
     if ((row1.DeptName ?? "") > (row2.DeptName ?? "")) return 1;
     if ((row1.DeptName ?? "") < (row2.DeptName ?? "")) return -1;
@@ -459,7 +453,7 @@ const rowCompare = (row1: TimeEntryRow, row2: TimeEntryRow) => {
     return 0;
 };
 
-//get template rows not already present in current timesheet
+// get template rows not already present in current timesheet
 export const getTrimmedTemplateRows = (
     timesheet: TimeEntryRow[],
     rows: TemplateRow[]
@@ -499,13 +493,13 @@ export const getParsedPrefs = (
     pinnedRows: PinnedRow[]
 ) => {
     const parsedPrefs: { [index: string]: Preference } = {};
-    prefs.map((pref) => {
+    prefs.forEach((pref) => {
         let Value: string | PinnedRow[] | number | boolean = "";
 
         if (pref.PreferenceType === "bool") {
             Value = pref.Value === "true";
         } else if (pref.PreferenceType === "number") {
-            if (typeof pref.Value == "string") {
+            if (typeof pref.Value === "string") {
                 Value = parseFloat(pref.Value ?? "");
             }
         } else if (pref.PreferenceType === "array") {
@@ -524,7 +518,7 @@ export const getParsedPref = (pref: Preference) => {
     if (pref.PreferenceType === "bool") {
         Value = pref.Value === "true";
     } else if (pref.PreferenceType === "number") {
-        if (typeof pref.Value == "string") {
+        if (typeof pref.Value === "string") {
             Value = parseFloat(pref.Value ?? "");
         }
     }

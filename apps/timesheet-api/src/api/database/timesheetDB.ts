@@ -1,24 +1,25 @@
-import { getPool } from "../../config/database";
 import {
+    BigInt,
     DateTime,
     Int,
-    VarChar,
     Numeric,
     NVarChar,
-    BigInt,
     RequestError,
+    VarChar,
 } from "mssql";
+
+import { getPool } from "../../config/database";
+import { HttpException } from "../services/error";
+import { TemplateRow, TimeEntry, TimeEntryRow } from "../services/types";
 import {
+    EntryRowSorter,
+    getEndDateFromStartDate,
     handleDatabaseError,
     handleDatabaseResult,
     parseEntryRow,
     parseTemplate,
     templateSorter,
-    EntryRowSorter,
-    getEndDateFromStartDate,
 } from "../services/utils";
-import { TemplateRow, TimeEntry, TimeEntryRow } from "../services/types";
-import { HttpException } from "../services/error";
 
 /**
  * @async
@@ -72,9 +73,13 @@ export const createBulkRowEntries = async (
     try {
         const pool = await getPool();
 
-        const newRows = await Promise.all(
-            rows.map(async ({ WorkCodeID, ProjectID, DepartmentID = -1 }) => {
-                const row = await pool
+        const newRows: TimeEntryRow[] = await Promise.all(
+            rows.map(async (row: TimeEntryRow | TemplateRow) => {
+                const DepartmentID = row.DepartmentID ?? -1;
+                const ProjectID = row.ProjectID;
+                const WorkCodeID = row.WorkCodeID;
+
+                const newRow = await pool
                     .request()
                     .input("EmployeeID", Int, EmployeeID)
                     .input("StartDate", DateTime, StartDate)
@@ -86,7 +91,7 @@ export const createBulkRowEntries = async (
             OUTPUT inserted.*
             VALUES (@EmployeeID, @WorkCodeID, @ProjectID, @DepartmentID, @StartDate, @SortOrder)`);
 
-                return row.recordset[0];
+                return newRow.recordset[0];
             })
         );
 
@@ -225,7 +230,7 @@ export const clearTimesheet = async (EmployeeID: number, startDate: Date) => {
             DELETE FROM TimeEntryRow
             WHERE EmployeeID = @EmployeeID AND StartDate = @StartDate;`);
 
-        //Timesheet should now be clear
+        // Timesheet should now be clear
 
         return handleDatabaseResult(true, 204);
     } catch (err) {
@@ -541,7 +546,7 @@ export const createTimesheetSubmission = async (
             OUTPUT inserted.*
             VALUES (@EmployeeID, @SubmissionEndDate, @Comment, CURRENT_TIMESTAMP)`);
 
-        const entries = timeSheet //parse entries
+        const entries = timeSheet // parse entries
             .map((entry) => entry.TimeEntryID)
             .map((entry) => `TimeEntryID = ${entry}`)
             .join(" OR ");
@@ -607,7 +612,7 @@ export const checkTimesheetLock = async (EmployeeID: number) => {
             SELECT * FROM TimesheetLock WHERE EmployeetoLock = @EmployeeID;`);
 
         return handleDatabaseResult({
-            locked: employee.recordset.length > 0 ? true : false,
+            locked: employee.recordset.length > 0,
         });
     } catch (err) {
         return handleDatabaseError(err);

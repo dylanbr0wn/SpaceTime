@@ -16,7 +16,11 @@ export const aadConfig = {
     },
     system: {
         loggerOptions: {
-            loggerCallback: (level:LogLevel, message:string, containsPii:boolean) => {
+            loggerCallback: (
+                level: LogLevel,
+                message: string,
+                containsPii: boolean
+            ) => {
                 if (containsPii) {
                     return;
                 }
@@ -32,7 +36,6 @@ export const aadConfig = {
                         return;
                     case LogLevel.Warning:
                         console.warn(message);
-                        return;
                 }
             },
             piiLoggingEnabled: false,
@@ -48,7 +51,7 @@ export const axiosConfig = {
     baseURL:
         process.env.NODE_ENV === "production"
             ? process.env.API_URL + "api/"
-            : "http://localhost:3000/api/",
+            : "http://localhost:3030/api/",
     // baseURL: "http://localhost:81/api/",
     // withCredentials: true,
 };

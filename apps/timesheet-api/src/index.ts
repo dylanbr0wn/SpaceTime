@@ -1,18 +1,20 @@
-import "dotenv/config";
-import express, { NextFunction, Request, Response } from "express";
-import "./api/services/passport";
-import passport from "passport";
-import logger from "morgan";
-import helmet from "helmet";
 import compression from "compression";
-import { handleError } from "./api/services/error";
 import cors from "cors";
+import express, { NextFunction, Request, Response } from "express";
+import helmet from "helmet";
+import logger from "morgan";
+import passport from "passport";
+
+import "dotenv/config";
+import "./api/services/passport";
+
+import approvals from "./api/routes/approvals";
 import auth from "./api/routes/auth";
-import objects from "./api/routes/objects/objects";
 import employees from "./api/routes/employees";
+import objects from "./api/routes/objects/objects";
 import reports from "./api/routes/reports";
 import timesheets from "./api/routes/timesheets/timesheets";
-import approvals from "./api/routes/approvals";
+import { handleError } from "./api/services/error";
 
 const port = process.env.PORT || 3000;
 

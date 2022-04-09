@@ -1,18 +1,17 @@
-import React, { useEffect, useState } from "react";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import { Container } from "react-bootstrap";
 import PropTypes from "prop-types";
+import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
+import { ToastContainer } from "react-toastify";
 
-import Loading from "./login/Loading";
 import { ADLoginCurrentUser } from "../redux/actions/currentUserActions";
+import { useIdToken } from "../services/authProvider";
+
+import ErrorPage from "./login/Error";
+import Loading from "./login/Loading";
 import AuthRouter from "./AuthRouter";
 
+import "react-toastify/dist/ReactToastify.css";
 import "./style/reactDatesStyles.css";
-
-import { useIdToken } from "../services/authProvider";
-import ErrorPage from "./login/Error";
 
 /**
  * @name App
@@ -20,15 +19,21 @@ import ErrorPage from "./login/Error";
  * @description Contains the react-router switch for routing to the application pages.
  * Will attempt JWT authentication on mount.
  */
-const App = ({ isAuthenticated, ADLoginCurrentUser }: {isAuthenticated: boolean; ADLoginCurrentUser: any}) => {
-    const [failMessage, setFailMessage] = useState(null);
+const App = ({
+    isAuthenticated,
+    ADLoginCurrentUser,
+}: {
+    isAuthenticated: boolean;
+    ADLoginCurrentUser: any;
+}) => {
+    const [failMessage, setFailMessage] = useState("");
     const [doneLogin, setDoneLogin] = useState(false);
     const idToken = useIdToken();
 
     useEffect(() => {
         if (!doneLogin && idToken) {
-            //If AAD is done and this is the first attempt at loading then proceed to get details from API
-            ADLoginCurrentUser(idToken).then((res:any) => {
+            // If AAD is done and this is the first attempt at loading then proceed to get details from API
+            ADLoginCurrentUser(idToken).then((res: any) => {
                 if (!res.success) {
                     setFailMessage(
                         res.data ||
@@ -41,7 +46,10 @@ const App = ({ isAuthenticated, ADLoginCurrentUser }: {isAuthenticated: boolean;
     }, [ADLoginCurrentUser, idToken, doneLogin]);
 
     return (
-        <Container id="appContainer" fluid style={{ margin: 0, padding: 0 }}>
+        <div
+            className="w-full h-full bg-black appearance-none "
+            style={{ margin: 0, padding: 0 }}
+        >
             {doneLogin ? (
                 <>
                     {isAuthenticated ? (
@@ -59,7 +67,7 @@ const App = ({ isAuthenticated, ADLoginCurrentUser }: {isAuthenticated: boolean;
                 position="top-center"
                 closeOnClick
             />
-        </Container>
+        </div>
     );
 };
 
@@ -70,7 +78,7 @@ App.propTypes = {
     ADLoginCurrentUser: PropTypes.func.isRequired,
 };
 
-const mapStateToProps = (state:any) => {
+const mapStateToProps = (state: any) => {
     return {
         isAuthenticated: state.isAuthenticated,
     };

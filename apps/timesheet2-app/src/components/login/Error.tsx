@@ -1,5 +1,5 @@
-import React from "react";
-import PropTypes from "prop-types";
+import { AuthError } from "msal";
+import * as React from "react";
 
 /**
  * @name ErrorPage
@@ -8,7 +8,7 @@ import PropTypes from "prop-types";
  * @param {Object} props Props. See propTypes for details.
  * @description Loading screen displayed while login is commencing.
  */
-const ErrorPage = ({ error }:any) => {
+const ErrorPage = ({ error }: { error: AuthError | string | null }) => {
     return (
         <div
             className="container g-light text-center"
@@ -32,10 +32,6 @@ const ErrorPage = ({ error }:any) => {
             </div>
         </div>
     );
-};
-ErrorPage.propTypes = {
-    // An error string to display on the apge
-    error: PropTypes.string,
 };
 
 export default ErrorPage;

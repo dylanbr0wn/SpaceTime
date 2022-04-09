@@ -1,0 +1,5 @@
+// .eslintignore
+*/**.js
+*/**.d.ts
+apps/*/dist
+apps/*/build

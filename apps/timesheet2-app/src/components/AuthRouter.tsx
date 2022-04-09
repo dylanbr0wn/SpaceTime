@@ -1,14 +1,12 @@
-import React, { useEffect, Suspense, lazy } from "react";
-import { connect } from "react-redux";
-import { Route, useLocation, Routes, Navigate } from "react-router-dom";
-//import { Row, Col } from "react-bootstrap";
+// import { Row, Col } from "react-bootstrap";
 import PropTypes from "prop-types";
-import { useTransition, animated } from "react-spring";
+import React, { Suspense, useEffect } from "react";
+import { connect } from "react-redux";
 import { useMediaQuery } from "react-responsive";
+import { Routes, useLocation } from "react-router-dom";
 
-import Sidebar from "./common/Sidebar";
-import ErrorBoundary from "./common/ErrorBoundary";
-import PageNotFound from "./PageNotFound";
+import { animated, useTransition } from "@react-spring/web";
+
 // const Settings = lazy(() => import("./settings/Settings"));
 // const DepartmentAdmin = lazy(() => import("./admin/DepartmentAdmin"));
 // const ProjectAdmin = lazy(() => import("./admin/ProjectAdmin"));
@@ -16,15 +14,19 @@ import PageNotFound from "./PageNotFound";
 // const WorkCodeAdmin = lazy(() => import("./admin/WorkCodeAdmin"));
 // const ToolsDashboard = lazy(() => import("./clerkTools/ToolsDashboard"));
 // import EmployeeTimesheet from "./EmployeeTimesheet/EmployeeTimesheet";
-// import { readObjectsDispatch } from "../redux/actions/objectsActions";
+import { readObjectsDispatch } from "../redux/actions/objectsActions";
+
+import ErrorBoundary from "./common/ErrorBoundary";
+import Loading from "./common/Loading";
 // const ManagerDashboard = lazy(() => import("./managerTools/ManagerDashboard"));
 // import ManagerTimesheet from "./managerTools/ManagerTimesheet";
 // const PayrollTimesheetDashboard = lazy(() =>
 //     import("./clerkTools/PayrollTimesheetDashboard")
 // );
-//import PayrollTimesheet from "./clerkTools/PayrollTimesheet";
-import ProtectedRoute from "./common/ProtectedRoute";
-import Loading from "./common/Loading";
+// import PayrollTimesheet from "./clerkTools/PayrollTimesheet";
+// import ProtectedRoute from './common/ProtectedRoute'
+import Sidebar from "./common/Sidebar";
+// import PageNotFound from './PageNotFound'
 
 /**
  * @name AuthRoute
@@ -38,7 +40,7 @@ const AuthRouter = ({
     loading,
     user,
     sidebarPinToggle,
-}:any) => {
+}: any) => {
     const location = useLocation();
     const isMobile = useMediaQuery({ maxWidth: 767 });
     const isTablet = useMediaQuery({
@@ -60,36 +62,57 @@ const AuthRouter = ({
     }, [objectsLoaded, readObjectsDispatch]);
 
     return (
-        <div style={{ margin: 0, padding: 0 }}>
+        <div className="w-full h-full p-3 m-0">
+            <div className="w-full h-16 rounded-lg bg-slate-900 border-slate-800 border p-1 flex">
+                <div className="p-0.5 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-md group h-9 my-auto ml-2 cursor-pointer">
+                    <div className="bg-slate-900 rounded-md group-hover:bg-transparent transition-colors">
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="h-8 w-8 fill-current text-sky-500 group-hover:text-slate-900 transition-colors"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            strokeWidth={2}
+                        >
+                            <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                d="M4 6h16M4 12h16M4 18h16"
+                            />
+                        </svg>
+                    </div>
+                </div>
+                <div className="w-full"></div>
+            </div>
             <ErrorBoundary>
                 <Sidebar isTablet={isTablet} />
             </ErrorBoundary>
 
             <div
                 id="page-content-wrapper"
-                style={
-                    sidebarPinToggle
-                        ? { width: isTablet ? "78vw" : "84vw" }
-                        : {}
-                }
+                // style={
+                //     sidebarPinToggle
+                //         ? { width: isTablet ? "78vw" : "84vw" }
+                //         : {}
+                // }
             >
-                {/*This is to adjust to the width of the content depending on if the sidebar is pinned or not */}
+                {/* This is to adjust to the width of the content depending on if the sidebar is pinned or not */}
                 {objectsLoaded && (
                     <ErrorBoundary>
                         <>
                             {!isMobile &&
-                                transitions(({ item, props, key }:any) => (
+                                transitions(({ item, props, key }: any) => (
                                     <animated.div
                                         key={key}
-                                        style={
-                                            sidebarPinToggle && !isTablet
-                                                ? { ...props, width: "84vw" }
-                                                : props
-                                        }
+                                        // style={
+                                        //     sidebarPinToggle && !isTablet
+                                        //         ? { ...props, width: "84vw" }
+                                        //         : props
+                                        // }
                                         className="trans-group"
                                     >
                                         <Suspense fallback={<Loading />}>
-                                            {/*This is to adjust to the width of the content depending on if the sidebar is pinned or not */}
+                                            {/* This is to adjust to the width of the content depending on if the sidebar is pinned or not */}
                                             {/* <Routes location={item}>
                                                 <ProtectedRoute
                                                     path="/managerDashboard"
@@ -194,14 +217,14 @@ const AuthRouter = ({
                                     </animated.div>
                                 ))}
                             {isMobile &&
-                                transitions(({ item, props, key }:any) => (
+                                transitions(({ item, props, key }: any) => (
                                     <animated.div
                                         key={key}
                                         style={{ ...props, width: "100vw" }}
                                         className="trans-group"
                                     >
                                         {" "}
-                                        {/*This is to adjust to the width of the content depending on if the sidebar is pinned or not */}
+                                        {/* This is to adjust to the width of the content depending on if the sidebar is pinned or not */}
                                         <Suspense fallback={<Loading />}>
                                             <Routes location={item}>
                                                 {/* <Route exact path="/home" component={Home} /> */}
@@ -248,7 +271,7 @@ AuthRouter.propTypes = {
     sidebarPinToggle: PropTypes.bool.isRequired,
 };
 
-const mapStateToProps = (state:any) => ({
+const mapStateToProps = (state: any) => ({
     loading: state.apiCallsInProgress > 0,
     objectsLoaded:
         state.projects.length > 0 &&

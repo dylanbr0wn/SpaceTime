@@ -1,19 +1,11 @@
 {
+    "extends": "../../tsconfig.json",
     "compilerOptions": {
+        "composite": true,
         "module": "commonjs", // Node uses commonjs i.e. require
-        "esModuleInterop": true,
-        "allowSyntheticDefaultImports": true,
-        "target": "esnext", // Target JS version
-        "noImplicitAny": true,
-        "moduleResolution": "node",
-        "sourceMap": true, // include a source map
         "outDir": "build", // directory of where compiler should put compiled files
-        "baseUrl": ".",
-        "paths": {
-            "*": ["node_modules/*", "src/types/*"] // In imports, tells compiler where to look
-        }
     },
-    "include": ["src/**/*"], //What files to include in compile
+    "include": ["./src/**/*.ts"], //What files to include in compile
     "exclude": ["node_modules/*"], // What files to exclude from compile
     "ts-node": {
         "compilerOptions": {

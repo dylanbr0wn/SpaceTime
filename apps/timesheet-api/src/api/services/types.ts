@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-empty-interface */
-/* eslint-disable @typescript-eslint/no-namespace */
 import { NextFunction, Request, Response } from "express";
 import { Moment } from "moment";
 

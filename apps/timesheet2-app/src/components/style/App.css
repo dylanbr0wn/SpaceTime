@@ -1,133 +1,123 @@
-@font-face {
-  font-family: Nexa;
-  src: url("../fonts/NexaBold.otf") format("opentype");
+/* @font-face {
+    font-family: Nexa;
+    src: url("../fonts/NexaBold.otf") format("opentype");
 }
 @font-face {
-  font-family: ProximaNova;
-  src: url("../fonts/ProximaNovaRegular.otf") format("opentype");
+    font-family: ProximaNova;
+    src: url("../fonts/ProximaNovaRegular.otf") format("opentype");
 }
 
 #sidebar-wrapper {
-  margin: 0;
-  padding: 0;
-  width: calc(100vw / 6);
-  overflow: hidden;
-  min-height: 100vh !important;
-  -webkit-transition: margin 0.25s ease-out;
-  -moz-transition: margin 0.25s ease-out;
-  -o-transition: margin 0.25s ease-out;
-  transition: margin 0.25s ease-out;
+    margin: 0;
+    padding: 0;
+    width: calc(100vw / 6);
+    overflow: hidden;
+    min-height: 100vh !important;
+    -webkit-transition: margin 0.25s ease-out;
+    -moz-transition: margin 0.25s ease-out;
+    -o-transition: margin 0.25s ease-out;
+    transition: margin 0.25s ease-out;
 }
 
 .sidebar-heading {
-  font-family: Nexa;
-  font-weight: bold;
-  letter-spacing: 2px;
-  padding: 0.875rem 1.25rem 0.1rem;
-  margin-top: 20px;
+    font-family: Nexa;
+    font-weight: bold;
+    letter-spacing: 2px;
+    padding: 0.875rem 1.25rem 0.1rem;
+    margin-top: 20px;
 
-  font-size: 3rem;
-  text-align: center;
-  color: white;
+    font-size: 3rem;
+    text-align: center;
+    color: white;
 }
 @media only screen and (max-width: 1760px) {
-  .sidebar-heading {
-    font-size: 2rem;
-  }
+    .sidebar-heading {
+        font-size: 2rem;
+    }
 }
 
 .sidebar-subheading {
-  font-family: "Barlow", sans-serif;
-  font-weight: 400;
-  font-size: 1rem;
-  letter-spacing: 1px;
-  text-align: center;
-  padding: 0 0 0.8rem;
-  color: #ca602c;
-  margin-bottom: 30px;
+    font-family: "Barlow", sans-serif;
+    font-weight: 400;
+    font-size: 1rem;
+    letter-spacing: 1px;
+    text-align: center;
+    padding: 0 0 0.8rem;
+    color: #ca602c;
+    margin-bottom: 30px;
 }
 
 .btn-primary,
 .btn-primary:disabled {
-  background-color: #253746;
-  border-color: #253746;
+    background-color: #253746;
+    border-color: #253746;
 }
 
 .btn-primary:hover,
 .btn-primary:not(:disabled):not(.disabled):active,
 .show > .btn-primary.dropdown-toggle {
-  background-color: #677a69;
-  border-color: #677a69;
+    background-color: #677a69;
+    border-color: #677a69;
 }
 
 .btn-primary:focus,
 .show > .btn-primary.dropdown-toggle:focus {
-  box-shadow: 0 0 0 0.2rem rgba(103, 122, 105, 0.5);
+    box-shadow: 0 0 0 0.2rem rgba(103, 122, 105, 0.5);
 }
 
 #page-content-wrapper {
-  overflow: auto;
-  margin: 0;
-  padding: 0;
-  min-width: 0;
-  width: 98.4%;
-  height: 100vh;
-}
+    overflow: auto;
+    margin: 0;
+    padding: 0;
+    min-width: 0;
+    width: 98.4%;
+    height: 100vh;
+} */
 
 /* #page-content-wrapper::-webkit-scrollbar {
     display: none;
 } */
 
-html {
-  width: 100vw;
-}
-
-body {
-  overflow-x: hidden;
-  font-family: ProximaNova, sans-serif !important;
-  font-style: normal;
-  font-weight: normal;
-}
-
+/* 
 .trans-group {
-  width: 98.4%;
-  height: 100%;
-  position: absolute;
-  display: flex;
-  top: 0;
-  right: 0;
-  will-change: opacity;
-}
+    width: 98.4%;
+    height: 100%;
+    position: absolute;
+    display: flex;
+    top: 0;
+    right: 0;
+    will-change: opacity;
+} */
 
 /* ::-webkit-scrollbar {
     
     display: none;
 } */
 
-.card {
-  transition: all 0.3s;
+/* .card {
+    transition: all 0.3s;
 }
 
 .card:hover {
-  box-shadow: 0 0 11px rgba(33, 33, 33, 0.2);
+    box-shadow: 0 0 11px rgba(33, 33, 33, 0.2);
 }
 
 .changelogIcon {
-  display: inline-block;
-  color: #253746;
-  margin-left: 10px;
-  padding: 0.25rem;
+    display: inline-block;
+    color: #253746;
+    margin-left: 10px;
+    padding: 0.25rem;
 }
 .changelogIcon:hover {
-  background-color: rgba(33, 33, 33, 0.2);
-  color: #253746;
+    background-color: rgba(33, 33, 33, 0.2);
+    color: #253746;
 }
 
 .printCommentsLink {
-  cursor: pointer;
-  color: #ca602c !important;
+    cursor: pointer;
+    color: #ca602c !important;
 }
 
 .printCommentsLink:hover {
-  text-decoration: underline !important;
-}
+    text-decoration: underline !important;
+} */
