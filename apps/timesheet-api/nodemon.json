@@ -1,0 +1,10 @@
+{
+    "watch": ["src"],
+    "ext": "ts",
+    "exec": "ts-node src/index.ts",
+    "restartable": "rs",
+    "ignore": ["node_modules/**node_modules"],
+    "execMap": {
+        "ts": "ts-node"
+    }
+}

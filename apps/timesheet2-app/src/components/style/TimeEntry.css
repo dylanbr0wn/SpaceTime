@@ -1,0 +1,91 @@
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Firefox */
+input[type="number"] {
+    -moz-appearance: textfield;
+}
+
+.disable-card {
+    background-color: rgb(223, 223, 223);
+    opacity: 0.6;
+}
+
+.template-card {
+    transition: all 0.5s;
+}
+
+.template-delete-icon {
+    color: #dc3545;
+}
+
+.template-delete-icon:hover {
+    color: #a32734;
+}
+
+.hoverArea {
+    content: "";
+    width: calc(50px + 30px);
+    height: calc(25px + 30px);
+    position: absolute;
+    top: -15px;
+    left: -15px;
+}
+
+.hoverCommentArea {
+    content: "";
+    width: calc(100% + 30px);
+    height: calc(100% + 30px);
+    position: absolute;
+    top: -15px;
+    left: -15px;
+}
+
+.commentIcon {
+    color: #00b118;
+    cursor: pointer;
+}
+
+.commentIcon:hover {
+    color: #00b118;
+}
+
+.commentIconGrey {
+    color: #909ba5;
+    cursor: pointer;
+}
+
+.commentIconGrey:hover {
+    color: #6c757d;
+}
+
+.border-green {
+    border-color: #00b118 !important;
+}
+
+/* .subordinate-list::-webkit-scrollbar {
+    
+  display: block;
+} */
+@media only screen and (min-width: 1280px) and (max-width: 1800px) {
+    input {
+        padding: 0.15rem !important;
+        font-size: 0.875rem !important;
+    }
+}
+
+.pinButton {
+    color: #233746;
+}
+
+.pinButton:hover {
+    color: #233746;
+}
+
+.tableScroll {
+    overflow: hidden;
+}

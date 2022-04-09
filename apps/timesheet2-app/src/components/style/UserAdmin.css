@@ -1,0 +1,11 @@
+.userContainer {
+    padding: 40px;
+    background-color: lightgrey;
+    height: fit-content;
+    min-height: 100vh;
+}
+@media only screen and (max-width: 1800px) {
+    .userContainer {
+        padding: 10px;
+    }
+}

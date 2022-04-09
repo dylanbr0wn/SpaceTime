@@ -1,0 +1,50 @@
+version: "3.9"
+services:
+    timesheet-api:
+        depends_on: ["reverseproxy"]
+        image: "index.docker.io/lchdbrown/timesheet:apilatest"
+        expose:
+            - 3000
+        deploy:
+            mode: replicated
+            replicas: 3
+            update_config:
+                parallelism: 3
+                delay: 10s
+            restart_policy:
+                condition: on-failure
+                max_attempts: 3
+                window: 120s
+    timesheet-app:
+        image: "index.docker.io/lchdbrown/timesheet:applatest"
+        expose:
+            - 3030
+        deploy:
+            mode: replicated
+            replicas: 3
+            update_config:
+                parallelism: 3
+                delay: 10s
+            restart_policy:
+                condition: on-failure
+                max_attempts: 3
+                window: 120s
+    reverseproxy:
+        build:
+            context: .
+            dockerfile: nginx.Dockerfile
+        ports:
+            - "443:443"
+            - "80:80"
+    watchtower:
+        image: containrrr/watchtower
+        volumes:
+            - "//var/run/docker.sock:/var/run/docker.sock"
+            - "./packages/watchtower/:/config/"
+        environment:
+            WATCHTOWER_LABEL_ENABLE: 1
+            WATCHTOWER_CLEANUP: 1
+            WATCHTOWER_INCLUDE_RESTARTING: 1
+            WATCHTOWER_ROLLING_RESTART: 1
+            WATCHTOWER_POLL_INTERVAL: 3600
+            DOCKER_CONFIG: /config

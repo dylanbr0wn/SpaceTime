@@ -1,0 +1,99 @@
+.sidebar {
+    overflow-y: scroll;
+    scrollbar-width: none;
+    overflow-x: hidden;
+    background-color: #233746;
+    position: absolute;
+    /* width: calc(100vw/6); */
+    min-height: 100vh !important;
+    z-index: 100;
+    /* padding: 10px 10px 0 10px; */
+    box-shadow: inset -1px 0 0 rgba(0, 0, 0, 0.1);
+}
+.sidebar::-webkit-scrollbar {
+    display: none;
+}
+
+.settingsButtonContainer {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+}
+
+.sidebar .settingsButton {
+    color: white;
+    font-size: 1.8rem;
+    transition: all 0.3s;
+    transform: rotate(0deg);
+    cursor: pointer;
+}
+
+.sidebar .settingsButton:hover {
+    transform: rotate(45deg);
+}
+
+.sidebar-closed {
+    background-color: #233746;
+    position: absolute;
+    width: calc(100vw * 0.04);
+    min-height: 100vh !important;
+    z-index: 100;
+    padding: 10px 10px 0 10px;
+    box-shadow: inset -1px 0 0 rgba(0, 0, 0, 0.1);
+}
+
+.navlink {
+    text-align: center;
+    color: white;
+    background-color: rgba(138, 148, 157, 0);
+    transition: all 0.2s;
+}
+
+.nav-pills .nav-link.active {
+    background-color: white;
+    color: #233746;
+}
+
+.nav-link:hover {
+    background-color: rgba(138, 148, 157, 1);
+}
+
+a:hover {
+    color: white;
+}
+
+.navitem {
+    margin: 10px 0;
+    width: 100%;
+}
+
+.navicon {
+    margin: 10px 0;
+    right: 0.5vw;
+    width: 2vw;
+    height: 40px;
+    color: grey;
+}
+
+.navicon .active {
+    color: white;
+}
+
+.navitemBottom {
+    margin-bottom: 10px;
+    margin-left: auto;
+}
+
+.navitemBottom button {
+    color: black;
+    border-color: black;
+}
+
+.navSubList {
+    width: 100%;
+    font-size: 0.8rem;
+    font-weight: 300;
+    color: white;
+    padding-left: 10px;
+    border-bottom: 1px solid rgb(221, 221, 221);
+}
