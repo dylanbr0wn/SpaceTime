@@ -1,11 +1,10 @@
-import React, { useMemo, useState } from "react";
-import { Button } from "react-bootstrap";
-import { SingleDatePicker } from "react-dates";
 import moment from "moment";
 import PropTypes from "prop-types";
+import React, { useMemo, useState } from "react";
+
+import Tippy from "@tippyjs/react";
 
 import ErrorBoundary from "../../ErrorBoundary";
-import Tippy from "@tippyjs/react";
 
 /**
  * @name TimesheetDateInput
@@ -40,7 +39,7 @@ const TimesheetDateInput = ({
                     <select
                         className="custom-select custom-select-sm"
                         value={month.month()}
-                        onChange={e => onMonthSelect(month, e.target.value)}
+                        onChange={(e) => onMonthSelect(month, e.target.value)}
                     >
                         {moment.months().map((label, value) => (
                             <option key={value} value={value}>
@@ -53,7 +52,7 @@ const TimesheetDateInput = ({
                     <select
                         className="custom-select custom-select-sm"
                         value={month.year()}
-                        onChange={e => onYearSelect(month, e.target.value)}
+                        onChange={(e) => onYearSelect(month, e.target.value)}
                     >
                         {years.map((year, i) => (
                             <option key={i} value={year.year()}>
@@ -77,9 +76,8 @@ const TimesheetDateInput = ({
                 <span>
                     <span>
                         <Tippy content="Go to last period">
-                            <Button
+                            <button
                                 onClick={() => updateEntryStartDate("subtract")}
-                                variant="light"
                                 style={{ marginRight: isTablet ? 3 : 10 }}
                                 title="Go to last period"
                             >
@@ -92,26 +90,26 @@ const TimesheetDateInput = ({
                                     }}
                                     className="fas fa-chevron-left"
                                 />
-                            </Button>
+                            </button>
                         </Tippy>
                     </span>
                     <Tippy content="select a date">
                         <span>
-                            <SingleDatePicker
+                            {/* <SingleDatePicker
                                 date={startDate}
                                 onDateChange={onDateChange}
                                 focused={focusedDatePicker} // PropTypes.bool
                                 onFocusChange={({ focused }) =>
                                     setFocusedDatePicker(focused)
                                 }
-                                small={isTablet ? true : false}
+                                small={!!isTablet}
                                 showDefaultInputIcon
                                 daySize={45}
                                 hideKeyboardShortcutsPanel
                                 numberOfMonths={1}
                                 renderMonthElement={renderMonthElement}
                                 isOutsideRange={() => false}
-                                isDayBlocked={day => {
+                                isDayBlocked={(day) => {
                                     return (
                                         moment(startDate)
                                             .add(12, "hours")
@@ -121,15 +119,14 @@ const TimesheetDateInput = ({
                                     );
                                 }}
                                 id="timeEntryDate" // PropTypes.string.isRequired,
-                            />
+                            /> */}
                         </span>
                     </Tippy>
 
                     <span>
                         <Tippy content="Go to next period">
-                            <Button
+                            <button
                                 onClick={() => updateEntryStartDate("add")}
-                                variant="light"
                                 style={{ marginLeft: isTablet ? 3 : 10 }}
                                 title="Go to next period"
                             >
@@ -142,7 +139,7 @@ const TimesheetDateInput = ({
                                     }}
                                     className="fas fa-chevron-right"
                                 />
-                            </Button>
+                            </button>
                         </Tippy>
                     </span>
                 </span>

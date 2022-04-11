@@ -1,8 +1,8 @@
-import { Button } from "react-bootstrap";
+import PropTypes from "prop-types";
 import React from "react";
 import { connect } from "react-redux";
+
 import Tippy from "@tippyjs/react";
-import PropTypes from "prop-types";
 
 import { sortTimesheetDispatch } from "../../../../redux/actions/timesheetsActions";
 import { getSortedRows } from "../../../../services/utils";
@@ -25,7 +25,7 @@ const TimesheetSortRows = ({
     disableModification,
 }) => {
     const sortRows = () => {
-        let sortedRows = getSortedRows({
+        const sortedRows = getSortedRows({
             rows,
             projects,
             departments,
@@ -38,14 +38,14 @@ const TimesheetSortRows = ({
     return (
         <ErrorBoundary>
             <Tippy content={"Sort timesheet rows"}>
-                <Button
+                <button
                     type="button"
                     disabled={disableModification}
                     onClick={sortRows}
                     aria-label="Sort timesheet rows"
                 >
                     <i className="fas fa-list-ol" />
-                </Button>
+                </button>
             </Tippy>
         </ErrorBoundary>
     );

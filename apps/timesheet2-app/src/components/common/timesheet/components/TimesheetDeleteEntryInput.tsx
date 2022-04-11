@@ -1,19 +1,19 @@
+import PropTypes from "prop-types";
 import React, {
-    useState,
+    Suspense,
+    useCallback,
     useEffect,
     useMemo,
-    useCallback,
-    Suspense,
+    useState,
 } from "react";
-import { Button } from "react-bootstrap";
-import { toast } from "react-toastify";
 import { connect } from "react-redux";
-import PropTypes from "prop-types";
+import { toast } from "react-toastify";
 
-import ConfirmCloseModal from "../../ConfirmCloseModal";
-import { deleteTimeEntryRowDispatch } from "../../../../redux/actions/timesheetsActions";
-import ErrorBoundary from "../../ErrorBoundary";
 import Tippy from "@tippyjs/react";
+
+import { deleteTimeEntryRowDispatch } from "../../../../redux/actions/timesheetsActions";
+import ConfirmCloseModal from "../../ConfirmCloseModal";
+import ErrorBoundary from "../../ErrorBoundary";
 
 /**
  * @name DeleteEntryInput
@@ -42,7 +42,7 @@ const TimesheetDeleteEntryInput = ({
 
     // Will delete a row. Dispatches deleteTimeEntryRow api call and redux action.
     const deleteRow = useCallback(async () => {
-        let result = await deleteTimeEntryRowDispatch(
+        const result = await deleteTimeEntryRowDispatch(
             row.index,
             row.original,
             EmployeeID,
@@ -71,7 +71,7 @@ const TimesheetDeleteEntryInput = ({
             if (
                 !Object.values(row.values)
                     .filter((value, i) => i <= 13)
-                    .find(value => value.TimeEntryID)
+                    .find((value) => value.TimeEntryID)
             ) {
                 deleteRow();
             } else {
@@ -80,12 +80,11 @@ const TimesheetDeleteEntryInput = ({
         };
         return (
             <Tippy content="Delete row">
-                <Button
+                <button
                     aria-label="Delete row"
                     style={{ padding: isTablet ? "0.2rem" : "0.2rem 0.375rem" }}
                     // title="Clear timesheet row"
                     disabled={disableModification}
-                    variant="link"
                     onClick={handleDeleteRow}
                 >
                     <i
@@ -95,7 +94,7 @@ const TimesheetDeleteEntryInput = ({
                         }}
                         className="far fa-trash-alt"
                     />
-                </Button>
+                </button>
             </Tippy>
         );
     }, [disableModification, row.values, deleteRow, isTablet]);

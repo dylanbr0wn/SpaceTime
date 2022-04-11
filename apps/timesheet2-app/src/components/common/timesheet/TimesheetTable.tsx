@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from "react";
-import { useTable } from "react-table";
-import { Table, Button } from "react-bootstrap";
 import PropTypes from "prop-types";
+import React, { useEffect, useState } from "react";
+import { useTable } from "react-table";
+
 import Tippy from "@tippyjs/react";
 
 import { getDayFeatures, getPinnedRows } from "../../../services/utils";
+
 import TimesheetAlternativeEntryInput from "./components/TimesheetAlternateEntryInput";
 import TimesheetDayCommentInput from "./components/TimesheetDayCommentInput";
 
@@ -41,47 +42,42 @@ const TimesheetTable = ({
         hoverText: new Array(14).fill(undefined).map(() => ""),
     });
 
-    //When the week updates, sets the state of the days for current day, weekends, and holidays
+    // When the week updates, sets the state of the days for current day, weekends, and holidays
     useEffect(() => {
         setDayFeatures(getDayFeatures(workDays));
     }, [workDays]);
 
     // Computes column style
-    const getStyle = index => {
+    const getStyle = (index) => {
         if (index < 0 || index > 13) return {};
         return dayFeatures.style[index];
     };
 
     // // Computes the text when hovering over the date
-    const getHoverText = index => {
+    const getHoverText = (index) => {
         if (index < 0 || index > 13) return "";
         return dayFeatures.hoverText[index];
     };
     // For this example, we're using pagination to illustrate how to stop
     // the current page from resetting when our data changes
     // Otherwise, nothing is different here.
-    const {
-        getTableProps,
-        getTableBodyProps,
-        headerGroups,
-        prepareRow,
-        rows,
-    } = useTable(
-        {
-            columns,
-            data,
-            // use the skipPageReset option to disable page resetting temporarily
-            // autoResetPage: !skipPageReset,
-            // updateMyData isn't part of the API, but
-            // anything we put into these options will
-            // automatically be available on the instance.
-            // That way we can call this function from our
-            // cell renderer!
-            // setSkipPageReset,
-            setIsLocked,
-        }
-        // useSortBy
-    );
+    const { getTableProps, getTableBodyProps, headerGroups, prepareRow, rows } =
+        useTable(
+            {
+                columns,
+                data,
+                // use the skipPageReset option to disable page resetting temporarily
+                // autoResetPage: !skipPageReset,
+                // updateMyData isn't part of the API, but
+                // anything we put into these options will
+                // automatically be available on the instance.
+                // That way we can call this function from our
+                // cell renderer!
+                // setSkipPageReset,
+                setIsLocked,
+            }
+            // useSortBy
+        );
 
     useEffect(() => {
         if (type === "user") {
@@ -97,13 +93,8 @@ const TimesheetTable = ({
     return (
         <>
             {/* {!loading && */}
-            <Table
-                striped
-                bordered
-                hover
-                responsive
-                size="sm"
-                className="tableScroll"
+            <table
+                className="bg-slate-900 my-2 border-cyan-500 border rounded-md table-auto"
                 {...getTableProps()}
             >
                 <thead>
@@ -113,11 +104,6 @@ const TimesheetTable = ({
                                 if (!Number.isInteger(column.id)) {
                                     return (
                                         <th
-                                            style={{
-                                                fontSize: isTablet
-                                                    ? "0.875rem"
-                                                    : "1rem",
-                                            }}
                                             {...column.getHeaderProps()}
                                             key={column.id}
                                         >
@@ -132,13 +118,8 @@ const TimesheetTable = ({
                                             // ...and many more!
                                         >
                                             <th
+                                                className="w-16 box-border  p-0"
                                                 {...column.getHeaderProps()}
-                                                style={{
-                                                    ...getStyle(j - 4),
-                                                    fontSize: isTablet
-                                                        ? "0.875rem"
-                                                        : "1rem",
-                                                }}
                                             >
                                                 {column.render("Header")}
                                             </th>
@@ -156,21 +137,14 @@ const TimesheetTable = ({
                             <tr
                                 {...row.getRowProps()}
                                 key={i}
-                                style={{
-                                    borderBottom: "3px solid ",
-                                    borderTop: "3px solid ",
-                                    borderLeft: "5px solid ",
-                                    borderRight: "4px solid ",
-                                    // borderColor: "rgba(202, 96, 44, 0.4)"
-                                    borderColor: " #233746",
-                                }}
+                                className="border-2 border-teal-500 box-border"
                             >
                                 {row.cells.map((cell, j) => {
                                     return (
                                         <td
                                             {...cell.getCellProps()}
                                             key={j}
-                                            style={getStyle(j - 4)}
+                                            //style={getStyle(j - 4)}
                                         >
                                             {cell.render("Cell", {
                                                 columnIndex: j,
@@ -187,7 +161,7 @@ const TimesheetTable = ({
                     })}
                     {pinRows.length > 0 && (
                         <tr>
-                            <td colSpan="19" />
+                            <td colSpan={19} />
                         </tr>
                     )}
 
@@ -198,16 +172,17 @@ const TimesheetTable = ({
                                 {row.cells.map((cell, j) => {
                                     return (
                                         <td
+                                            className="border border-sky-500 p-0 m-0 box-border"
                                             {...cell.getCellProps()}
                                             key={j}
-                                            style={getStyle(j - 4)}
+                                            //style={getStyle(j - 4)}
                                         >
                                             {cell.render("Cell", {
                                                 columnIndex: j,
                                                 workCodes,
                                                 disableModification,
                                                 loading,
-                                            })}{" "}
+                                            })}
                                         </td>
                                     );
                                 })}
@@ -218,26 +193,42 @@ const TimesheetTable = ({
                     {/* new entry button row */}
                     {!disableModification && (
                         <tr>
-                            <td className="text-center" colSpan="18">
-                                <Button
+                            <td className="text-center" colSpan={18}>
+                                <button
+                                    className="bg-gradient-to-r my-1 rounded-md from-blue-500 to-cyan-500 p-0.5 transform active:translate-y-0.5 group"
                                     onClick={addNewEntryRow}
-                                    size="sm"
-                                    variant="success"
                                 >
-                                    <i
-                                        style={{ marginRight: 5 }}
-                                        className="fas fa-plus "
-                                    ></i>{" "}
-                                    New Row
-                                </Button>
+                                    <div className="flex rounded-md p-2 bg-slate-900 group-hover:bg-slate-800">
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            className="h-6 w-6 mr-2 text-cyan-300"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            stroke="currentColor"
+                                            strokeWidth={2}
+                                        >
+                                            <path
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                d="M12 4v16m8-8H4"
+                                            />
+                                        </svg>
+                                        <div className="text-cyan-300 text-sm">
+                                            New Row
+                                        </div>
+                                    </div>
+                                </button>
                             </td>
                         </tr>
                     )}
 
                     {/* alternative transport entry row */}
-                    {alternateData && (
+                    {/* {alternateData && (
                         <tr>
-                            <td colSpan="4" className="text-right">
+                            <td
+                                colSpan={4}
+                                className="text-right px-1 text-cyan-500"
+                            >
                                 <Tippy content="Check the days where you used an alternative form of transport to get to work (Bike, Bus)">
                                     <span>Alternative Transport </span>
                                 </Tippy>
@@ -265,10 +256,10 @@ const TimesheetTable = ({
                                 );
                             })}
                         </tr>
-                    )}
+                    )} */}
                     {/* Day comments entry row */}
-                    <tr>
-                        <td colSpan="4" className="text-right">
+                    {/* <tr>
+                        <td colSpan={4} className="text-right">
                             Day Comments
                         </td>
                         {dayComments.map((dayComment, i) => (
@@ -288,12 +279,12 @@ const TimesheetTable = ({
                                 />
                             </td>
                         ))}
-                    </tr>
-                    <tr>
+                    </tr> */}
+                    {/* <tr>
                         <td colSpan="18" />
-                    </tr>
+                    </tr> */}
                     {/* Daily hour totals row */}
-                    <tr>
+                    {/* <tr>
                         <td colSpan="4" className="text-right">
                             Daily Totals (hours)
                         </td>
@@ -311,9 +302,9 @@ const TimesheetTable = ({
                                 </td>
                             );
                         })}
-                    </tr>
+                    </tr> */}
                 </tbody>
-            </Table>
+            </table>
         </>
     );
 };

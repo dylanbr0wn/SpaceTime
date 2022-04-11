@@ -47,7 +47,7 @@ const App = ({
 
     return (
         <div
-            className="w-full h-full bg-black appearance-none "
+            className="w-full h-full dark:bg-black appearance-none "
             style={{ margin: 0, padding: 0 }}
         >
             {doneLogin ? (

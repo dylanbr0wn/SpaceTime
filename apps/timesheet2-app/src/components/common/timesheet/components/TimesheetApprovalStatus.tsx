@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
-import { Col, Row } from "react-bootstrap";
-import MediaQuery from "react-responsive";
 import PropTypes from "prop-types";
+import React, { useEffect, useState } from "react";
+import MediaQuery from "react-responsive";
+
 import Tippy from "@tippyjs/react";
 
 import { getTimesheetApprovalStatus } from "../../../../services/utils";
@@ -22,14 +22,14 @@ const TimesheetApprovalStatus = ({ approval, timesheet, type }) => {
     const [hasSubmitted, setHasSubmitted] = useState(false);
 
     useEffect(() => {
-        let entries = [];
+        const entries = [];
 
-        timesheet.map(row => entries.push(...row.dates));
-        let submitted =
-            entries.find(entry => entry.SubmissionID) || approval.SubmitCount;
+        timesheet.map((row) => entries.push(...row.dates));
+        const submitted =
+            entries.find((entry) => entry.SubmissionID) || approval.SubmitCount;
 
         setHasSubmitted(submitted);
-    }, [timesheet, approval.SubmitCount]); //Updates status when timesheet has been submitted
+    }, [timesheet, approval.SubmitCount]); // Updates status when timesheet has been submitted
 
     useEffect(() => {
         const { status, color, info } = getTimesheetApprovalStatus(
@@ -40,7 +40,7 @@ const TimesheetApprovalStatus = ({ approval, timesheet, type }) => {
         setStatus(status);
         setColor(color);
         setInfo(info);
-    }, [approval.ApprovalStatus, hasSubmitted, approval.ApprovalID]); //Updates status when timesheet has been approved
+    }, [approval.ApprovalStatus, hasSubmitted, approval.ApprovalID]); // Updates status when timesheet has been approved
 
     return (
         <>
@@ -54,8 +54,8 @@ const TimesheetApprovalStatus = ({ approval, timesheet, type }) => {
                             </Tippy>
                         </h6>
                         {approval.SubmissionComment && (
-                            <Row>
-                                <Col>
+                            <div>
+                                <div>
                                     <>
                                         <div
                                         // style={{
@@ -69,8 +69,8 @@ const TimesheetApprovalStatus = ({ approval, timesheet, type }) => {
                                             {approval.SubmissionComment}
                                         </div>
                                     </>
-                                </Col>
-                            </Row>
+                                </div>
+                            </div>
                         )}
                         {status === "Submitted(Old)" && (
                             <p>
@@ -90,8 +90,8 @@ const TimesheetApprovalStatus = ({ approval, timesheet, type }) => {
                             </Tippy>
                         </h5>
                         {approval.SubmissionComment && (
-                            <Row>
-                                <Col>
+                            <div>
+                                <div>
                                     <>
                                         <div
                                         // style={{
@@ -105,8 +105,8 @@ const TimesheetApprovalStatus = ({ approval, timesheet, type }) => {
                                             {approval.SubmissionComment}
                                         </div>
                                     </>
-                                </Col>
-                            </Row>
+                                </div>
+                            </div>
                         )}
                         {status === "Submitted(Old)" && (
                             <p>
@@ -122,8 +122,8 @@ const TimesheetApprovalStatus = ({ approval, timesheet, type }) => {
                     {type === "user" && (
                         <>
                             {approval.SupervisorComment && (
-                                <Row>
-                                    <Col>
+                                <div>
+                                    <div>
                                         <>
                                             <div
                                                 style={{
@@ -140,12 +140,12 @@ const TimesheetApprovalStatus = ({ approval, timesheet, type }) => {
                                                 {approval.SupervisorComment}
                                             </div>
                                         </>
-                                    </Col>
-                                </Row>
+                                    </div>
+                                </div>
                             )}
                             {approval.PayrollComment && (
-                                <Row>
-                                    <Col>
+                                <div>
+                                    <div>
                                         <>
                                             <div
                                                 style={{
@@ -162,8 +162,8 @@ const TimesheetApprovalStatus = ({ approval, timesheet, type }) => {
                                                 {approval.PayrollComment}
                                             </div>
                                         </>
-                                    </Col>
-                                </Row>
+                                    </div>
+                                </div>
                             )}
                         </>
                     )}

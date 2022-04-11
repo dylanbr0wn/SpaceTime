@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from "react";
-import { FormCheck } from "react-bootstrap";
-import { connect } from "react-redux";
 import PropTypes from "prop-types";
+import React, { useEffect, useState } from "react";
+import { connect } from "react-redux";
 import { toast } from "react-toastify";
 
 import {
-    saveTimeEntryAlternateDispatch,
     deleteTimeEntryAlternateDispatch,
+    saveTimeEntryAlternateDispatch,
 } from "../../../../redux/actions/timesheetsActions";
 import ErrorBoundary from "../../ErrorBoundary";
+
 import "../../../style/TimeEntry.css";
 
 /**
@@ -27,10 +27,10 @@ const TimesheetAlternativeEntryInput = ({
     EmployeeID,
     timeEntryPeriodStartDate,
 }) => {
-    const [value, setValue] = useState(work.TimeEntryID ? true : false);
+    const [value, setValue] = useState(!!work.TimeEntryID);
 
     useEffect(() => {
-        setValue(work.TimeEntryID ? true : false);
+        setValue(!!work.TimeEntryID);
     }, [work]);
 
     // Checks to see if the checkbox is marked as checked. If yes, add time entry for alternative transport. If no, remove it.
@@ -70,12 +70,10 @@ const TimesheetAlternativeEntryInput = ({
             <ErrorBoundary>
                 <div className="mx-auto">
                     {/* {!loading && */}
-                    <FormCheck
+                    <input
                         aria-label="Alternate Transport Input"
                         style={{ transform: "translateX(3px)" }}
-                        custom
                         title="Alternative transport used?"
-                        label=""
                         name={`Alt${work.DateofWork}`}
                         id={`Alt${work.DateofWork}`}
                         checked={value}

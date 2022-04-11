@@ -1,8 +1,10 @@
-import React from "react";
-import { Modal, Button, Row, Col, Spinner } from "react-bootstrap";
 import PropTypes from "prop-types";
+import React from "react";
+
+import { Dialog } from "@headlessui/react";
 
 import ErrorBoundary from "./ErrorBoundary";
+import Loading from "./Loading";
 
 /**
  * @name CustModal
@@ -24,7 +26,7 @@ const CustModal = ({
     return (
         <>
             {show && (
-                <Modal
+                <Dialog
                     onHide={onHide}
                     show={show}
                     size="lg"
@@ -32,37 +34,27 @@ const CustModal = ({
                     aria-labelledby="contained-modal-title-vcenter"
                     centered
                 >
-                    <Modal.Header closeButton>
-                        <Modal.Title id="contained-modal-title-vcenter">
-                            {title}
-                        </Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
+                    <Dialog.Overlay />
+                    <Dialog.Title id="contained-modal-title-vcenter">
+                        {title}
+                    </Dialog.Title>
+                    <>
                         {contentLoading ? (
-                            <Row>
-                                <Col className="text-center">
-                                    <Spinner
-                                        className="justify-content-center"
-                                        animation="border"
-                                        role="status"
-                                    />
-                                    <span className="sr-only">Loading...</span>
-                                </Col>
-                            </Row>
+                            <div>
+                                <div className="text-center">
+                                    <Loading />
+                                </div>
+                            </div>
                         ) : (
                             <ErrorBoundary>{children}</ErrorBoundary>
                         )}
-                    </Modal.Body>
-                    <Modal.Footer>
-                        {closeable && (
-                            <Button variant="secondary" onClick={onHide}>
-                                Close
-                            </Button>
-                        )}
+                    </>
+                    <>
+                        {closeable && <button onClick={onHide}>Close</button>}
 
                         {SubmitButton ? <SubmitButton /> : null}
-                    </Modal.Footer>
-                </Modal>
+                    </>
+                </Dialog>
             )}
         </>
     );

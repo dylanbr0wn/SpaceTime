@@ -1,27 +1,28 @@
 /* eslint react/prop-types: 0 */
-import React, { useEffect, useState, useMemo, useCallback } from "react";
 import moment from "moment";
-import { connect } from "react-redux";
 import PropTypes from "prop-types";
-import LoadingOverlay from "react-loading-overlay";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { connect } from "react-redux";
 import { useMediaQuery } from "react-responsive";
 
-import TimesheetEntryInput from "./components/TimesheetEntryInput";
-import TimesheetDeleteEntryInput from "./components/TimesheetDeleteEntryInput";
-import {
-    readTimesheetDispatch,
-    createTimeEntryRowDispatch,
-} from "../../../redux/actions/timesheetsActions";
-import { readTemplatesDispatch } from "../../../redux/actions/templatesActions";
-import { readSubordinateWorkCodesDispatch } from "../../../redux/actions/subordinatesActions";
 import { readUserWorkCodesDispatch } from "../../../redux/actions/employeesActions";
-import TimesheetMobileView from "./views/TimesheetMobileView";
-import TimesheetDesktopView from "./views/TimesheetDesktopView";
-import TimesheetTabletView from "./views/TimesheetTabletView";
+import { readSubordinateWorkCodesDispatch } from "../../../redux/actions/subordinatesActions";
+import { readTemplatesDispatch } from "../../../redux/actions/templatesActions";
+import {
+    createTimeEntryRowDispatch,
+    readTimesheetDispatch,
+} from "../../../redux/actions/timesheetsActions";
+
+import TimesheetDeleteEntryInput from "./components/TimesheetDeleteEntryInput";
 import TimesheetDepartmentInput from "./components/TimesheetDepartmentInput";
+import TimesheetEntryInput from "./components/TimesheetEntryInput";
+import TimesheetPinInput from "./components/TimesheetPinInput";
 import TimesheetProjectInput from "./components/TimesheetProjectInput";
 import TimesheetWorkCodeInput from "./components/TimesheetWorkCodeInput";
-import TimesheetPinInput from "./components/TimesheetPinInput";
+import TimesheetDesktopView from "./views/TimesheetDesktopView";
+import TimesheetMobileView from "./views/TimesheetMobileView";
+import TimesheetTabletView from "./views/TimesheetTabletView";
+
 import "../../style/UserAdmin.css";
 
 /**
@@ -51,7 +52,7 @@ const useTimesheet = ({
     const [timeEntryPeriodStartDate, setTimeEntryPeriodStartDate] = useState(
         moment.utc(settings.CutOffDate)
     );
-    const [skipPageReset, setSkipPageReset] = useState(false); //For inidcating to table plugin that it need to update or not.
+    const [skipPageReset, setSkipPageReset] = useState(false); // For inidcating to table plugin that it need to update or not.
     const [timeSheetLoading, setTimeSheetLoading] = useState(true);
     const [disableModification, setDisableModification] = useState(false);
     const [dailyTotals, setDailyTotals] = useState([]);
@@ -60,7 +61,7 @@ const useTimesheet = ({
 
     // Computes daily total hours
     const getDailyTotals = useCallback(() => {
-        let totals = new Array(timesheet.workDays.length).fill(0);
+        const totals = new Array(timesheet.workDays.length).fill(0);
         timesheet.hourEntries.map((row) => {
             row.dates.map((col, i) => {
                 totals[i] += parseFloat(col.HoursWorked)
@@ -78,7 +79,7 @@ const useTimesheet = ({
             .toFixed(2);
     }, [dailyTotals]);
 
-    //Loads the timesheet and sets modification status when parametrs change
+    // Loads the timesheet and sets modification status when parametrs change
     useEffect(() => {
         setDisableModification(
             timeEntryPeriodStartDate.isBefore(moment.utc(settings.CutOffDate))
@@ -102,7 +103,7 @@ const useTimesheet = ({
         readTimesheetDispatch,
     ]);
 
-    //Runs at begining to load entry templates and workc codes
+    // Runs at begining to load entry templates and workc codes
     useEffect(() => {
         readTemplatesDispatch(userInfo.user.EmployeeID);
         if (type === "manager" || type === "payroll") {
@@ -118,7 +119,7 @@ const useTimesheet = ({
         readUserWorkCodesDispatch,
     ]);
 
-    //Runs whenever the timesheet is updated and updates the daily totals and the laoding bool
+    // Runs whenever the timesheet is updated and updates the daily totals and the laoding bool
     useEffect(() => {
         if (timesheet.initialLoad) {
             setDailyTotals(getDailyTotals());
@@ -126,7 +127,7 @@ const useTimesheet = ({
         }
     }, [timesheet.initialLoad, getDailyTotals, timesheet.hourEntries]);
 
-    //Handles modification status based on date and payroll status.
+    // Handles modification status based on date and payroll status.
     useEffect(() => {
         if (type === "payroll" && timesheet.approval.ApprovalStatus > 1) {
             setDisableModification(true);
@@ -146,9 +147,10 @@ const useTimesheet = ({
         timeEntryPeriodStartDate,
     ]);
 
-    const isTablet = useMediaQuery({ minWidth: 768, maxWidth: 1279 });
+    //const isTablet = useMediaQuery({ minWidth: 768, maxWidth: 1279 });
+    const [isTablet, setIsTablet] = React.useState(false);
 
-    //Sets local state when computations of hours are complete.
+    // Sets local state when computations of hours are complete.
     useEffect(() => {
         setPeriodTotalHours(sumDailyTotals());
     }, [dailyTotals, sumDailyTotals]);
@@ -215,13 +217,13 @@ const Timesheet = ({
         userInfo,
         type,
         readSubordinateWorkCodesDispatch,
-    }); //Calling the cutom hook
+    }); // Calling the cutom hook
 
     // Updates the timesheet start date by subtracting or adding 14 days
     const updateEntryStartDate = useCallback(
         (type) => {
             setTimeSheetLoading(true);
-            let newDate = timeEntryPeriodStartDate;
+            const newDate = timeEntryPeriodStartDate;
             if (type === "add") newDate.add(14, "days");
             if (type === "subtract") newDate.subtract(14, "days");
 
@@ -252,7 +254,7 @@ const Timesheet = ({
                 ),
             },
             {
-                Header: "Work", //Specifies type of work columns. Project, department and work code.
+                Header: "Work", // Specifies type of work columns. Project, department and work code.
                 columns: [
                     {
                         Header: "Department",
@@ -347,15 +349,15 @@ const Timesheet = ({
                 id: "work",
             },
             {
-                Header: "Hours per Day", //specifies hours of work columns.
+                Header: "Hours per Day", // specifies hours of work columns.
                 columns: new Array(14).fill(undefined).map((v, i) => {
                     if (!timesheet.workDays || !timesheet.workDays[i]) return;
-                    let day = moment(timesheet.workDays[i].DateofWork);
+                    const day = moment(timesheet.workDays[i].DateofWork);
                     return {
                         // eslint-disable-next-line react/display-name
                         Header: () => {
                             return (
-                                <>
+                                <div className="w-16 box-border">
                                     <div className="text-center">
                                         {day.format("dd")}
                                     </div>
@@ -365,7 +367,7 @@ const Timesheet = ({
                                     >
                                         {day.format("M/D")}
                                     </div>
-                                </>
+                                </div>
                             );
                         },
                         accessor: `dates[${i}]`,
@@ -423,7 +425,7 @@ const Timesheet = ({
         ]
     );
 
-    //Callback to create a new row when the add new row button is pressed.
+    // Callback to create a new row when the add new row button is pressed.
     const addNewEntryRow = useCallback(
         () =>
             createTimeEntryRowDispatch(
@@ -441,80 +443,26 @@ const Timesheet = ({
 
     return (
         <>
-            <LoadingOverlay
-                active={isLocked}
-                text={
-                    "Timesheet is locked. \n\n Your manager is reviewing your timesheet."
-                }
-                fadeSpeed={100}
-                spinner={
-                    <div>
-                        <i className="fas fa-lock fa-7x" />
-                    </div>
-                }
-                styles={{
-                    overlay: (base) => ({
-                        ...base,
-                        background: "rgba(255, 255, 255, 0.7)",
-                    }),
-                    spinner: (base) => ({
-                        ...base,
-                        width: "100px",
-                        "& svg circle": {
-                            stroke: "rgba(50, 50, 50, 0.7)",
-                        },
-                    }),
-                    content: (base) => ({
-                        ...base,
-                        color: "rgba(50, 50, 50, 0.7)",
-                    }),
-                }}
-            >
-                <LoadingOverlay
-                    active={timeSheetLoading}
-                    text="Loading timesheet..."
-                    fadeSpeed={100}
-                    spinner
-                    styles={{
-                        overlay: (base) => ({
-                            ...base,
-                            background: "rgba(255, 255, 255, 0.7)",
-                        }),
-                        spinner: (base) => ({
-                            ...base,
-                            width: "100px",
-                            "& svg circle": {
-                                stroke: "rgba(50, 50, 50, 0.7)",
-                            },
-                        }),
-                        content: (base) => ({
-                            ...base,
-                            color: "rgba(50, 50, 50, 0.7)",
-                        }),
-                    }}
-                >
-                    <TimesheetDesktopView
-                        isTablet={isTablet}
-                        userInfo={userInfo}
-                        disableModification={disableModification}
-                        timesheet={timesheet}
-                        setTimeEntryPeriodStartDate={
-                            setTimeEntryPeriodStartDate
-                        }
-                        timeEntryPeriodStartDate={timeEntryPeriodStartDate}
-                        updateEntryStartDate={updateEntryStartDate}
-                        type={type}
-                        dailyTotals={dailyTotals}
-                        timeSheetLoading={timeSheetLoading}
-                        addNewEntryRow={addNewEntryRow}
-                        columns={columns}
-                        skipPageReset={skipPageReset}
-                        setSkipPageReset={setSkipPageReset}
-                        setIsLocked={setIsLocked}
-                        periodTotalHours={periodTotalHours}
-                        pinnedRows={pinnedRows}
-                    />
-                    <TimesheetTabletView
+            <TimesheetDesktopView
+                isTablet={isTablet}
+                userInfo={userInfo}
+                disableModification={disableModification}
+                timesheet={timesheet}
+                setTimeEntryPeriodStartDate={setTimeEntryPeriodStartDate}
+                timeEntryPeriodStartDate={timeEntryPeriodStartDate}
+                updateEntryStartDate={updateEntryStartDate}
+                type={type}
+                dailyTotals={dailyTotals}
+                timeSheetLoading={timeSheetLoading}
+                addNewEntryRow={addNewEntryRow}
+                columns={columns}
+                skipPageReset={skipPageReset}
+                setSkipPageReset={setSkipPageReset}
+                setIsLocked={setIsLocked}
+                periodTotalHours={periodTotalHours}
+                pinnedRows={pinnedRows}
+            />
+            {/* <TimesheetTabletView
                         isTablet={isTablet}
                         userInfo={userInfo}
                         disableModification={disableModification}
@@ -549,9 +497,7 @@ const Timesheet = ({
                         setSkipPageReset={setSkipPageReset}
                         addNewEntryRow={addNewEntryRow}
                         periodTotalHours={periodTotalHours}
-                    />
-                </LoadingOverlay>
-            </LoadingOverlay>
+                    /> */}
         </>
     );
 };

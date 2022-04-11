@@ -1,7 +1,8 @@
-import React, { useState, useEffect, useMemo } from "react";
-import { connect } from "react-redux";
-import { Button, ButtonGroup, Col, Dropdown, Form, Row } from "react-bootstrap";
 import PropTypes from "prop-types";
+import React, { useEffect, useMemo, useState } from "react";
+import { connect } from "react-redux";
+
+import { Menu } from "@headlessui/react";
 
 import {
     updatePayrollApprovalDispatch,
@@ -164,19 +165,13 @@ const TimesheetApprovalInput = ({
                     <>
                         <div className="float-right">
                             <div style={{ width: 400 }}>
-                                <Row>
-                                    <Col>
+                                <div>
+                                    <div>
                                         Supervisor Comment:
-                                        <Form.Control
-                                            as="textarea"
-                                            rows="2"
+                                        <input
                                             type="text"
                                             onChange={handleCommentChange}
-                                            value={
-                                                supervisorComment
-                                                    ? supervisorComment
-                                                    : ""
-                                            }
+                                            value={supervisorComment || ""}
                                             readOnly={
                                                 !(
                                                     type === "manager" &&
@@ -185,19 +180,13 @@ const TimesheetApprovalInput = ({
                                                 ) || !approval.ApprovalID
                                             }
                                         />
-                                    </Col>
-                                    <Col>
+                                    </div>
+                                    <div>
                                         Payroll Comment:
-                                        <Form.Control
-                                            as="textarea"
-                                            rows="2"
+                                        <input
                                             type="text"
                                             onChange={handleCommentChange}
-                                            value={
-                                                payrollComment
-                                                    ? payrollComment
-                                                    : ""
-                                            }
+                                            value={payrollComment || ""}
                                             readOnly={
                                                 !(
                                                     type === "payroll" &&
@@ -208,53 +197,40 @@ const TimesheetApprovalInput = ({
                                                 ) || !approval.ApprovalID
                                             }
                                         />
-                                    </Col>
-                                </Row>
+                                    </div>
+                                </div>
                             </div>
                             <div
                                 style={{ marginTop: 10 }}
                                 className="float-right"
                             >
-                                <Dropdown as={ButtonGroup}>
-                                    <Button
+                                <Menu>
+                                    <Menu.Button
                                         style={{ marginLeft: 10 }}
                                         onClick={handleSubmit}
-                                        variant={
-                                            buttonVariants[nextState.action]
-                                        }
                                         disabled={
                                             currentState.nextStates.length ===
                                                 0 || !approval.ApprovalID
                                         }
                                     >
                                         {nextState.action}
-                                    </Button>
+                                    </Menu.Button>
 
-                                    <Dropdown.Toggle
-                                        disabled={
-                                            currentState.nextStates.length ===
-                                                0 || !approval.ApprovalID
-                                        }
-                                        split
-                                        variant={
-                                            buttonVariants[nextState.action]
-                                        }
-                                        id="dropdown-split-basic"
-                                    />
-
-                                    <Dropdown.Menu>
-                                        {currentState.nextStates.map(state => (
-                                            <Dropdown.Item
-                                                key={state.state}
-                                                onClick={() =>
-                                                    setNextState(state)
-                                                }
-                                            >
-                                                {state.action}
-                                            </Dropdown.Item>
-                                        ))}
-                                    </Dropdown.Menu>
-                                </Dropdown>
+                                    <Menu.Items>
+                                        {currentState.nextStates.map(
+                                            (state) => (
+                                                <Menu.Item
+                                                    key={state.state}
+                                                    onClick={() =>
+                                                        setNextState(state)
+                                                    }
+                                                >
+                                                    {state.action}
+                                                </Menu.Item>
+                                            )
+                                        )}
+                                    </Menu.Items>
+                                </Menu>
                             </div>
                         </div>
                     </>
@@ -266,13 +242,13 @@ const TimesheetApprovalInput = ({
 TimesheetApprovalInput.propTypes = {
     approval: PropTypes.object.isRequired,
     CurrentUserID: PropTypes.number.isRequired,
-    type: PropTypes.string.isRequired, //Will either be user, payroll, or manager.
+    type: PropTypes.string.isRequired, // Will either be user, payroll, or manager.
     EmployeeID: PropTypes.number.isRequired,
     updatePayrollApprovalDispatch: PropTypes.func.isRequired,
     updateSupervisorApprovalDispatch: PropTypes.func.isRequired,
 };
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
     return {
         CurrentUserID: state.currentUser.user.EmployeeID,
     };

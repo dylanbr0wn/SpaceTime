@@ -1,9 +1,10 @@
-import Tippy from "@tippyjs/react";
-import React from "react";
-import { Button } from "react-bootstrap";
-import { connect } from "react-redux";
-import { deleteUnusedRowsDispatch } from "../../../../redux/actions/timesheetsActions";
 import PropTypes from "prop-types";
+import React from "react";
+import { connect } from "react-redux";
+
+import Tippy from "@tippyjs/react";
+
+import { deleteUnusedRowsDispatch } from "../../../../redux/actions/timesheetsActions";
 import ErrorBoundary from "../../ErrorBoundary";
 
 /**
@@ -26,16 +27,15 @@ const TimesheetDeleteUnused = ({
     return (
         <ErrorBoundary>
             <Tippy content={"Delete empty rows"}>
-                <Button
+                <button
                     type="button"
                     aria-label="Delete empty rows"
                     disabled={disableModification}
                     onClick={onClick}
-                    variant="secondary"
                     style={{ marginLeft: 10 }}
                 >
                     <i className="far fa-trash-alt"></i>
-                </Button>
+                </button>
             </Tippy>
         </ErrorBoundary>
     );

@@ -1,11 +1,11 @@
-import React from "react";
-import { Container } from "react-bootstrap";
-import "react-dates/lib/css/_datepicker.css";
-import { connect } from "react-redux";
 import PropTypes from "prop-types";
+import React from "react";
+import { connect } from "react-redux";
 
-import Timesheet from "../common/timesheet/Timesheet";
 import { timesheetInital } from "../../redux/reducers/initialState";
+import Timesheet from "../common/timesheet/Timesheet";
+
+//import "react-dates/lib/css/_datepicker.css";
 import "../style/UserAdmin.css";
 
 /**
@@ -17,7 +17,7 @@ import "../style/UserAdmin.css";
  */
 const EmployeeTimesheet = ({ userInfo, timesheet }) => {
     return (
-        <Container fluid className="userContainer bg-light">
+        <div className="w-full">
             <Timesheet
                 userInfo={userInfo}
                 timesheet={{
@@ -25,7 +25,7 @@ const EmployeeTimesheet = ({ userInfo, timesheet }) => {
                     ...timesheet[userInfo.user.EmployeeID],
                 }}
             />
-        </Container>
+        </div>
     );
 };
 EmployeeTimesheet.propTypes = {
@@ -33,7 +33,7 @@ EmployeeTimesheet.propTypes = {
     timesheet: PropTypes.object.isRequired,
 };
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
     return {
         userInfo: state.currentUser,
         timesheet: state.timesheet,

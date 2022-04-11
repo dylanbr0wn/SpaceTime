@@ -1,11 +1,10 @@
-/* Chrome, Safari, Edge, Opera */
+/* 
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
     -webkit-appearance: none;
     margin: 0;
 }
 
-/* Firefox */
 input[type="number"] {
     -moz-appearance: textfield;
 }
@@ -67,10 +66,6 @@ input[type="number"] {
     border-color: #00b118 !important;
 }
 
-/* .subordinate-list::-webkit-scrollbar {
-    
-  display: block;
-} */
 @media only screen and (min-width: 1280px) and (max-width: 1800px) {
     input {
         padding: 0.15rem !important;
@@ -88,4 +83,4 @@ input[type="number"] {
 
 .tableScroll {
     overflow: hidden;
-}
+} */

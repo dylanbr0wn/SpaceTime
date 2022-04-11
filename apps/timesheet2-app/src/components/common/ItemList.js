@@ -6,7 +6,6 @@ import {
     usePagination,
     useGlobalFilter,
 } from "react-table";
-import { Table, Pagination, Form } from "react-bootstrap";
 import PropTypes from "prop-types";
 
 import "../style/ItemList.css";
@@ -39,7 +38,7 @@ const ItemList = ({
             // Add a new fuzzyTextFilterFn filter type.
             fuzzyText: fuzzyTextFilterFn,
             toggle: (rows, id, filterValue) => {
-                return rows.filter(row => {
+                return rows.filter((row) => {
                     const rowValue = row.values[id];
                     return rowValue !== undefined
                         ? filterValue === "Active"
@@ -49,7 +48,7 @@ const ItemList = ({
                 });
             },
             is: (rows, id, filterValue) => {
-                return rows.filter(row => {
+                return rows.filter((row) => {
                     const rowValue = row.values[id];
                     return rowValue !== undefined
                         ? rowValue.includes(filterValue)
@@ -59,7 +58,7 @@ const ItemList = ({
             // Or, override the default text filter to use
             // "startWith"
             text: (rows, id, filterValue) => {
-                return rows.filter(row => {
+                return rows.filter((row) => {
                     const rowValue = row.values[id];
                     return rowValue !== undefined
                         ? String(rowValue)
@@ -124,7 +123,7 @@ const ItemList = ({
             autoResetFilters: false,
             autoResetSortBy: false,
             autoResetGlobalFilter: false,
-            autoResetPage: false
+            autoResetPage: false,
         },
 
         useFilters, // useFilters!
@@ -157,12 +156,12 @@ const ItemList = ({
                         </tr>
                     )}
 
-                    {headerGroups.map(headerGroup => (
+                    {headerGroups.map((headerGroup) => (
                         <tr
                             key={headerGroup.id}
                             {...headerGroup.getHeaderGroupProps()}
                         >
-                            {headerGroup.headers.map(column => (
+                            {headerGroup.headers.map((column) => (
                                 <th
                                     key={column.id}
                                     {...column.getHeaderProps()}
@@ -283,7 +282,7 @@ const ItemList = ({
                                 className="form-control inlineInput"
                                 type="number"
                                 defaultValue={pageIndex + 1}
-                                onChange={e => {
+                                onChange={(e) => {
                                     const page = e.target.value
                                         ? Number(e.target.value) - 1
                                         : 0;
@@ -306,11 +305,11 @@ const ItemList = ({
                         custom
                         className="inlineInput"
                         value={pageSize}
-                        onChange={e => {
+                        onChange={(e) => {
                             setPageSize(Number(e.target.value));
                         }}
                     >
-                        {[5, 10, 20, 30, 40, 50].map(pageSize => (
+                        {[5, 10, 20, 30, 40, 50].map((pageSize) => (
                             <option key={pageSize} value={pageSize}>
                                 Show {pageSize}
                             </option>

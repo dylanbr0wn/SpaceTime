@@ -1,17 +1,18 @@
-import React, { useState, useEffect, useMemo } from "react";
-import Tippy from "@tippyjs/react/headless";
-import { Form, Card } from "react-bootstrap";
-import { toast } from "react-toastify";
-import { connect } from "react-redux";
 import PropTypes from "prop-types";
+import React, { useEffect, useMemo, useState } from "react";
+import { connect } from "react-redux";
+import { toast } from "react-toastify";
 
-import "../../../style/TimeEntry.css";
+import Tippy from "@tippyjs/react/headless";
+
 import {
     deleteDayCommentDispatch,
     saveDayCommentDispatch,
 } from "../../../../redux/actions/dayCommentsActions";
 import ErrorBoundary from "../../ErrorBoundary";
 import SavingIcon from "../../SavingIcon";
+
+import "../../../style/TimeEntry.css";
 
 /**
  * @name DayCommentInput
@@ -55,7 +56,7 @@ const TimesheetDayCommentInput = ({
             setTimeout(async () => {
                 setLastTimeout(timeoutID);
                 if (target.value) {
-                    let res = await saveDayCommentDispatch(
+                    const res = await saveDayCommentDispatch(
                         { ...dayComment, Comment: target.value },
                         EmployeeID,
                         timeEntryPeriodStartDate
@@ -69,7 +70,7 @@ const TimesheetDayCommentInput = ({
                         }
                     }
                 } else if (!target.value && dayComment.DayCommentID) {
-                    let res = await deleteDayCommentDispatch(
+                    const res = await deleteDayCommentDispatch(
                         dayComment.DayCommentID,
                         EmployeeID,
                         timeEntryPeriodStartDate
@@ -85,7 +86,7 @@ const TimesheetDayCommentInput = ({
 
                 setSavingComment(false);
             }, 750)
-        ); //750 is the delay in milliseconds.
+        ); // 750 is the delay in milliseconds.
     };
 
     const CommentIcon = useMemo(
@@ -121,9 +122,9 @@ const TimesheetDayCommentInput = ({
                     interactiveBorder={5}
                     trigger="click"
                     placement="bottom"
-                    render={attr => (
-                        <Card border="dark" className="shadow" {...attr}>
-                            <Card.Header>
+                    render={(attr) => (
+                        <div className="shadow" {...attr}>
+                            <div>
                                 {disableModification ? (
                                     "Comment"
                                 ) : (
@@ -132,18 +133,16 @@ const TimesheetDayCommentInput = ({
                                         <SavingIcon saving={savingComment} />
                                     </>
                                 )}
-                            </Card.Header>
-                            <Card.Body>
-                                <Form.Control
+                            </div>
+                            <div>
+                                <input
                                     disabled={disableModification}
-                                    as="textarea"
-                                    rows="2"
                                     type="text"
                                     onChange={onCommentChange}
-                                    value={comment ? comment : ""}
+                                    value={comment || ""}
                                 />
-                            </Card.Body>
-                            <Card.Footer>
+                            </div>
+                            <div>
                                 <div
                                     style={{
                                         fontSize: "0.8rem",
@@ -153,8 +152,8 @@ const TimesheetDayCommentInput = ({
                                     Comment Length:{" "}
                                     {comment ? comment.length : 0}/255
                                 </div>
-                            </Card.Footer>
-                        </Card>
+                            </div>
+                        </div>
                     )}
                 >
                     {CommentIcon}

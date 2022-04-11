@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import Modal from "../common/Modal";
-import { Button, Form } from "react-bootstrap";
 import PropTypes from "prop-types";
 
 /**
@@ -28,7 +27,7 @@ const PasswordForm = ({ loading, handleSubmit, modalShow, onHide }) => {
             {loading ? "Loading..." : "Save Password"}
         </Button>
     );
-    const handleKeyDown = event => {
+    const handleKeyDown = (event) => {
         if (event.key === "Enter") {
             onSubmit();
         }

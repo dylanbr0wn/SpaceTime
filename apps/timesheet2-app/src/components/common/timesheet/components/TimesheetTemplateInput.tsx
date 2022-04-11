@@ -1,26 +1,28 @@
+import PropTypes from "prop-types";
 import React, {
-    useState,
+    Suspense,
+    useCallback,
     useEffect,
     useMemo,
-    useCallback,
-    Suspense,
+    useState,
 } from "react";
-import { Button, Dropdown, Card, Row, Col, Form } from "react-bootstrap";
 import { connect } from "react-redux";
-import Tippy from "@tippyjs/react";
 import { toast } from "react-toastify";
-import PropTypes from "prop-types";
 
-import Modal from "../../Modal";
-import "../../../style/TimeEntry.css";
+import Tippy from "@tippyjs/react";
+
 import {
-    readTemplateDispatch,
     createTemplateDispatch,
-    updateTemplateDispatch,
     deleteTemplateDispatch,
+    readTemplateDispatch,
+    updateTemplateDispatch,
 } from "../../../../redux/actions/templatesActions";
 import ConfirmCloseModal from "../../ConfirmCloseModal";
 import ErrorBoundary from "../../ErrorBoundary";
+import Modal from "../../Modal";
+
+import "../../../style/TimeEntry.css";
+import { Menu } from "@headlessui/react";
 
 /**
  * @name TemplateInput
@@ -65,7 +67,7 @@ const TimesheetTemplateInput = ({
         setNewTemplateName("");
     }, [timesheet, templates]);
 
-    //Handle selecting a template from exisitng templates.
+    // Handle selecting a template from exisitng templates.
     const handleTemplateSelect = (template) => {
         if (whichHover === template)
             setSelectedTemplateSave(
@@ -84,7 +86,7 @@ const TimesheetTemplateInput = ({
         }
     };
 
-    //Handle conformation of template change/save and dispatch api call and redux action.
+    // Handle conformation of template change/save and dispatch api call and redux action.
     const handleConfirm = async () => {
         if (newTemplateName) {
             const result = await createTemplateDispatch(
@@ -119,7 +121,7 @@ const TimesheetTemplateInput = ({
         }
     };
 
-    //Handle confirtmation of tempalte delete.
+    // Handle confirtmation of tempalte delete.
     const handleConfirmDeleteTemplate = async () => {
         const result = await deleteTemplateDispatch(
             selectedTemplateDelete.TemplateID,
@@ -146,7 +148,7 @@ const TimesheetTemplateInput = ({
         setShowConfirmLoadModal(false);
     };
 
-    //Handle load template submit. Will produce confirmation modal if data will be destroyed, otherwise will proceed with loading.
+    // Handle load template submit. Will produce confirmation modal if data will be destroyed, otherwise will proceed with loading.
     const handleLoadTemplateSubmit = useCallback(
         async (template) => {
             const result = await readTemplateDispatch(
@@ -168,7 +170,7 @@ const TimesheetTemplateInput = ({
         ]
     );
 
-    //Handle delete template submit. Will produce confirmation modal.
+    // Handle delete template submit. Will produce confirmation modal.
     const handleDeleteTemplateSubmit = (template) => {
         setSelectedTemplateDelete(template);
         setShowTemplateModal(false);
@@ -178,7 +180,7 @@ const TimesheetTemplateInput = ({
     // Submit button sub component
     const SubmitButton = () => {
         return (
-            <Button
+            <button
                 onClick={handleSubmit}
                 disabled={
                     !newTemplateName &&
@@ -186,16 +188,15 @@ const TimesheetTemplateInput = ({
                 }
             >
                 {newTemplateName ? "Save new template" : "Save to template"}
-            </Button>
+            </button>
         );
     };
 
     // Manage template button sub component
     const ManageButton = useMemo(
         () => (
-            <Button
+            <button
                 onClick={() => setShowTemplateModal(true)}
-                variant="outline-secondary"
                 style={{
                     marginRight: 10,
                     cursor: "pointer",
@@ -203,7 +204,7 @@ const TimesheetTemplateInput = ({
                 }}
             >
                 Manage Templates
-            </Button>
+            </button>
         ),
         [setShowTemplateModal]
     );
@@ -213,32 +214,28 @@ const TimesheetTemplateInput = ({
     return (
         <>
             <ErrorBoundary>
-                <Dropdown
-                    id="dropdown-basic-button"
-                    style={{ marginRight: 10, display: "inline-block" }}
-                    disabled={templates.length === 0 || disableModification}
-                >
-                    <Dropdown.Toggle
+                <Menu>
+                    <Menu.Button
                         id="dropdown-basic"
                         disabled={templates.length === 0 || disableModification}
                     >
                         Load Template
-                    </Dropdown.Toggle>
-                    <Dropdown.Menu className="shadow" renderOnMount={false}>
+                    </Menu.Button>
+                    <Menu.Items className="shadow">
                         {templates.map((temp) => {
                             return (
-                                <Dropdown.Item
+                                <Menu.Item
                                     key={temp.TemplateID}
                                     onClick={() =>
                                         handleLoadTemplateSubmit(temp)
                                     }
                                 >
                                     {temp.TemplateName}
-                                </Dropdown.Item>
+                                </Menu.Item>
                             );
                         })}
-                    </Dropdown.Menu>
-                </Dropdown>
+                    </Menu.Items>
+                </Menu>
                 {ManageButton}
             </ErrorBoundary>
 
@@ -255,134 +252,122 @@ const TimesheetTemplateInput = ({
                         }}
                         SubmitButton={SubmitButton}
                     >
-                        <>
-                            <Row>
-                                <Col>
-                                    <h5 className="text-center">
-                                        Save to existing template
-                                    </h5>
+                        <div>
+                            <div>
+                                <h5 className="text-center">
+                                    Save to existing template
+                                </h5>
 
-                                    <hr />
+                                <hr />
 
-                                    {templates.map((temp) => {
-                                        return (
-                                            <Row key={temp.TemplateID}>
-                                                <Col
-                                                    xs={11}
-                                                    style={{ paddingRight: 0 }}
+                                {templates.map((temp) => {
+                                    return (
+                                        <div key={temp.TemplateID}>
+                                            <div
+                                                xs={11}
+                                                style={{ paddingRight: 0 }}
+                                            >
+                                                <div
+                                                    style={{
+                                                        marginTop: 5,
+                                                        marginBottom: 5,
+                                                        cursor: "pointer",
+                                                    }}
+                                                    onMouseEnter={() =>
+                                                        setWhichHover(temp)
+                                                    }
+                                                    onMouseLeave={() =>
+                                                        setWhichHover({})
+                                                    }
+                                                    onClick={() =>
+                                                        handleTemplateSelect(
+                                                            temp
+                                                        )
+                                                    }
+                                                    className={
+                                                        (Object.values(
+                                                            selectedTemplateSave
+                                                        ).length === 0
+                                                            ? whichHover.TemplateID ===
+                                                              temp.TemplateID
+                                                                ? "shadow-sm border-primary"
+                                                                : ""
+                                                            : selectedTemplateSave.TemplateID ===
+                                                              temp.TemplateID
+                                                            ? "border-primary shadow"
+                                                            : "disable-card") +
+                                                        " template-card mx-auto"
+                                                    }
                                                 >
-                                                    <Card
+                                                    <div
                                                         style={{
-                                                            marginTop: 5,
-                                                            marginBottom: 5,
-                                                            cursor: "pointer",
+                                                            padding: "0.5rem",
                                                         }}
-                                                        onMouseEnter={() =>
-                                                            setWhichHover(temp)
-                                                        }
-                                                        onMouseLeave={() =>
-                                                            setWhichHover({})
+                                                        className="text-center"
+                                                    >
+                                                        <h5
+                                                            style={{
+                                                                marginLeft: 20,
+                                                            }}
+                                                        >
+                                                            {temp.TemplateName}
+                                                        </h5>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div
+                                                xs={1}
+                                                style={{ paddingLeft: 5 }}
+                                            >
+                                                <Tippy
+                                                    content={`Delete ${temp.TemplateName}`}
+                                                >
+                                                    <button
+                                                        disabled={
+                                                            Object.values(
+                                                                selectedTemplateSave
+                                                            ).length !== 0
+                                                                ? selectedTemplateSave.TemplateID !==
+                                                                  temp.TemplateID
+                                                                : false
                                                         }
                                                         onClick={() =>
-                                                            handleTemplateSelect(
+                                                            handleDeleteTemplateSubmit(
                                                                 temp
                                                             )
                                                         }
-                                                        className={
-                                                            (Object.values(
-                                                                selectedTemplateSave
-                                                            ).length === 0
-                                                                ? whichHover.TemplateID ===
-                                                                  temp.TemplateID
-                                                                    ? "shadow-sm border-primary"
-                                                                    : ""
-                                                                : selectedTemplateSave.TemplateID ===
-                                                                  temp.TemplateID
-                                                                ? "border-primary shadow"
-                                                                : "disable-card") +
-                                                            " template-card mx-auto"
+                                                        onMouseEnter={() =>
+                                                            setWhichHover({})
                                                         }
+                                                        style={{
+                                                            marginTop: 10,
+                                                            padding: "0.5rem",
+                                                        }}
                                                     >
-                                                        <Card.Body
-                                                            style={{
-                                                                padding:
-                                                                    "0.5rem",
-                                                            }}
-                                                            className="text-center"
-                                                        >
-                                                            <h5
-                                                                style={{
-                                                                    marginLeft: 20,
-                                                                }}
-                                                            >
-                                                                {
-                                                                    temp.TemplateName
-                                                                }
-                                                            </h5>
-                                                        </Card.Body>
-                                                    </Card>
-                                                </Col>
-                                                <Col
-                                                    xs={1}
-                                                    style={{ paddingLeft: 5 }}
-                                                >
-                                                    <Tippy
-                                                        content={`Delete ${temp.TemplateName}`}
-                                                    >
-                                                        <Button
-                                                            disabled={
-                                                                Object.values(
-                                                                    selectedTemplateSave
-                                                                ).length !== 0
-                                                                    ? selectedTemplateSave.TemplateID ===
-                                                                      temp.TemplateID
-                                                                        ? false
-                                                                        : true
-                                                                    : false
-                                                            }
-                                                            onClick={() =>
-                                                                handleDeleteTemplateSubmit(
-                                                                    temp
-                                                                )
-                                                            }
-                                                            onMouseEnter={() =>
-                                                                setWhichHover(
-                                                                    {}
-                                                                )
-                                                            }
-                                                            variant="link"
-                                                            size="sm"
-                                                            style={{
-                                                                marginTop: 10,
-                                                                padding:
-                                                                    "0.5rem",
-                                                            }}
-                                                        >
-                                                            <i className="fas fa-times fa-lg template-delete-icon" />
-                                                        </Button>
-                                                    </Tippy>
-                                                </Col>
-                                            </Row>
-                                        );
-                                    })}
-                                </Col>
-                                <Col>
-                                    <h5 className="text-center">
-                                        Save to new template
-                                    </h5>
-                                    <hr />
-                                    <div style={{ padding: 15 }}>
-                                        <Form.Control
-                                            type="text"
-                                            placeholder="New Template Name"
-                                            name="NewTemplateName"
-                                            value={newTemplateName}
-                                            onChange={handleNewNameChange}
-                                        />
-                                    </div>
-                                </Col>
-                            </Row>
-                        </>
+                                                        <i className="fas fa-times fa-lg template-delete-icon" />
+                                                    </button>
+                                                </Tippy>
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                            <div>
+                                <h5 className="text-center">
+                                    Save to new template
+                                </h5>
+                                <hr />
+                                <div style={{ padding: 15 }}>
+                                    <input
+                                        type="text"
+                                        placeholder="New Template Name"
+                                        name="NewTemplateName"
+                                        value={newTemplateName}
+                                        onChange={handleNewNameChange}
+                                    />
+                                </div>
+                            </div>
+                        </div>
                     </Modal>
                     <ConfirmCloseModal
                         style={{ zIndex: 1010 }}
