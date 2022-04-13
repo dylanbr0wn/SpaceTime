@@ -54,13 +54,8 @@ const TimesheetEntryInput = ({
         initialValue ? initialValue.Comment : ""
     );
 
-    const debouncedComment = useDebounce(comment, 750);
-
-    const [timeoutID, setTimeoutID] = React.useState(null);
     const [savingComment, setSavingComment] = React.useState(false);
     const [validTypes, setValidTypes] = React.useState(false);
-    const [lastTimeOut, setLastTimeOut] = React.useState(null);
-
     React.useEffect(() => {
         let rowIsValid = true;
 
@@ -192,7 +187,6 @@ const TimesheetEntryInput = ({
 
     // when comment change detected, will wait 0.75s to update. If updated before end of 0.75s, timer will restart.
     const onCommentChange = ({ target }) => {
-        //setSavingComment(true);
         if (target.value.length > 255) {
             setSavingComment(false);
             return;

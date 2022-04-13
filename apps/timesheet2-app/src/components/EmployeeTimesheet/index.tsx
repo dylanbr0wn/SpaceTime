@@ -3,7 +3,7 @@ import React from "react";
 import { connect } from "react-redux";
 
 import { timesheetInital } from "../../redux/reducers/initialState";
-import Timesheet from "../common/timesheet/Timesheet";
+import Timesheet from "../common/Timesheet";
 
 //import "react-dates/lib/css/_datepicker.css";
 import "../style/UserAdmin.css";

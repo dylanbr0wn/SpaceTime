@@ -9,6 +9,9 @@ import {
     deleteEmployeePinnedRowAction,
 } from "../../../../redux/reducers/currentUserReducer";
 import ErrorBoundary from "../../ErrorBoundary";
+import { StarIcon as StarSolid } from "@heroicons/react/solid";
+import { StarIcon as StarOutline } from "@heroicons/react/outline";
+import Tooltip from "../../Tooltip";
 
 /**
  * TimesheetPinInput handles the pinning and unpinning of timesheet rows. It displays a filled or outlined star button to inidicate a pinned or unpinned row. Clicking the button will invert the current preference.
@@ -75,53 +78,46 @@ const TimesheetPinInput = ({
         <>
             <ErrorBoundary>
                 {pinned && type === "user" ? (
-                    <Tippy content={"Remove from favourites"}>
+                    <Tooltip content={"Remove from favourites"}>
                         <button
+                            type="button"
                             onMouseEnter={() => setIconHover(true)}
-                            onMouseLeave={() => setIconHover(false)}
-                            style={{
-                                padding: isTablet
-                                    ? "0.2rem"
-                                    : "0.2rem 0.375rem",
-                            }}
                             disabled={disableModification || type !== "user"}
                             onClick={removeRow}
-                            className="pinButton"
+                            className={`m-0 p-1 h-10 w-10  ${
+                                disableModification || type !== "user"
+                                    ? "bg-slate-800"
+                                    : "bg-slate-900"
+                            }`}
                             aria-label="Remove from favourites"
                         >
-                            <i
-                                className={`${
-                                    iconHover ? "far" : "fas"
-                                } fa-star`}
-                            />
+                            <StarSolid className="text-sky-300 h-6 w-6 m-auto" />
                         </button>
-                    </Tippy>
+                    </Tooltip>
                 ) : (
-                    <Tippy content={"Add row to favourites"}>
+                    <Tooltip content={"Add row to favourites"}>
                         <button
+                            type="button"
                             onMouseEnter={() => setIconHover(true)}
                             onMouseLeave={() => setIconHover(false)}
-                            style={{
-                                padding: isTablet
-                                    ? "0.2rem"
-                                    : "0.2rem 0.375rem",
-                            }}
                             disabled={
                                 disableModification ||
                                 type !== "user" ||
                                 !rowIsValidPin
                             }
                             onClick={addRow}
-                            className="pinButton"
+                            className={`m-0 p-1 h-10 w-10  ${
+                                disableModification ||
+                                type !== "user" ||
+                                !rowIsValidPin
+                                    ? "bg-slate-800"
+                                    : "bg-slate-900"
+                            }`}
                             aria-label="Add row to favourites"
                         >
-                            <i
-                                className={`${
-                                    iconHover ? "fas" : "far"
-                                } fa-star`}
-                            />
+                            <StarOutline className="text-sky-300 h-5 w-5 m-auto" />
                         </button>
-                    </Tippy>
+                    </Tooltip>
                 )}
             </ErrorBoundary>
         </>

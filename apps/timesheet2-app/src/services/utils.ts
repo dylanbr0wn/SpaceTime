@@ -1,5 +1,5 @@
 import Holidays from "date-holidays";
-import moment from "moment";
+import moment, { Moment } from "moment";
 
 export const getTimesheetApprovalStatus = (
     ApprovalStatus,
@@ -93,49 +93,41 @@ hd.setHoliday("easter 1", { name: "Easter Monday", type: "public" }); //Add east
 
 //Add any other holidays here
 
-export const getDayFeatures = workDays => {
-    let parsedWork = workDays.map(day => {
-        return {
-            isWeekEnd: day.DateofWork.day() === 0 || day.DateofWork.day() === 6,
-            isHoliday: hd.isHoliday(day.DateofWork),
-            isToday: day.DateofWork.format("L") === moment().format("L"),
-        };
-    });
+export const getDayFeatures = (day: Moment) => {
+    console.log(day);
+    const dateType = {
+        isWeekEnd: day.day() === 0 || day.day() === 6,
+        isHoliday: hd.isHoliday(day.toISOString()),
+        isToday: day.format("L") === moment().format("L"),
+    };
 
-    let hoverText = parsedWork.map((work, i) => {
-        let date = workDays[i].DateofWork.format("YYYY/MM/DD");
-        let feature = work.isHoliday
-            ? `(${work.isHoliday.name})`
-            : work.isWeekEnd
+    const hoverText = `${day.format("YYYY/MM/DD")} ${
+        dateType.isHoliday
+            ? `(${dateType.isHoliday[0].name})`
+            : dateType.isWeekEnd
             ? "(Weekend)"
-            : "";
+            : ""
+    }${dateType.isToday ? `- Today` : ""}`;
 
-        return `${date} ${feature}${work.isToday ? `- Today` : ""}`;
-    });
+    const style = dateType.isToday
+        ? "text-yellow-500"
+        : dateType.isHoliday || dateType.isWeekEnd
+        ? "text-slate-500"
+        : "text-sky-300";
 
-    let style = parsedWork.map(work => {
-        return {
-            backgroundColor: work.isToday
-                ? "#FDFCDC"
-                : work.isHoliday || work.isWeekEnd
-                ? "#ededed"
-                : "",
-        };
-    });
-
-    return { style, hoverText, parsedWork };
+    return { style, hoverText, dateType };
 };
 
 const invalidRowCheck = (timesheet, errors, departments, projects) => {
     let invalidRow = false;
-    timesheet.forEach(row => {
+    timesheet.forEach((row) => {
         if (row.WorkCodeID !== 62) {
             if (
                 row.DepartmentID === -1 ||
                 row.WorkCodeID === -1 ||
                 row.ProjectID === -1
             ) {
-                row.dates.forEach(day => {
+                row.dates.forEach((day) => {
                     if (day.TimeEntryID) {
                         invalidRow = true;
                     }
@@ -143,15 +135,15 @@ const invalidRowCheck = (timesheet, errors, departments, projects) => {
             }
 
             const Department = departments
-                .filter(wc => wc.IsActive)
-                .find(dep => dep.DepartmentID === row.DepartmentID);
+                .filter((wc) => wc.IsActive)
+                .find((dep) => dep.DepartmentID === row.DepartmentID);
             if (!Department) {
                 invalidRow = true;
             }
 
             const Project = projects
-                .filter(wc => wc.IsActive)
-                .find(proj => proj.ProjectID === row.ProjectID);
+                .filter((wc) => wc.IsActive)
+                .find((proj) => proj.ProjectID === row.ProjectID);
 
             if (!Project) invalidRow = true;
         }
@@ -208,12 +200,12 @@ export const checkValidProject = (
     WorkCodeID,
     type
 ) => {
-    if (!data.map(row => row.ProjectID).includes(ProjectID)) return false; //If first time using project then there wont be an issue so skip rest
+    if (!data.map((row) => row.ProjectID).includes(ProjectID)) return false; //If first time using project then there wont be an issue so skip rest
 
     const usedWorkCodes = data
-        .filter(row => row.ProjectID === ProjectID)
-        .map(row => row.WorkCodeID)
-        .filter(row => row.WorkCodeID !== -1);
+        .filter((row) => row.ProjectID === ProjectID)
+        .map((row) => row.WorkCodeID)
+        .filter((row) => row.WorkCodeID !== -1);
     if (type === "user") {
         //admins should be able to add as many as they like
         if (usedWorkCodes.length === workCodes.length) return true; //If we have use all workcodes for the project
@@ -228,13 +220,13 @@ export const getPinnedRows = (rowsToPin, rows) => {
     let pinnedRows = [];
     let otherRows = [];
 
-    let parsedRowsToPin = rowsToPin.map(row => ({
+    let parsedRowsToPin = rowsToPin.map((row) => ({
         ProjectID: row.ProjectID,
         DepartmentID: row.DepartmentID,
         WorkCodeID: row.WorkCodeID,
     }));
 
-    rows.forEach(row => {
+    rows.forEach((row) => {
         const rowDetails = {
             ProjectID: row.original.ProjectID,
             DepartmentID: row.original.DepartmentID,
@@ -243,7 +235,7 @@ export const getPinnedRows = (rowsToPin, rows) => {
 
         let isPinnedMember = false;
 
-        parsedRowsToPin.forEach(pin => {
+        parsedRowsToPin.forEach((pin) => {
             if (isEquivalentObjects(pin, rowDetails)) isPinnedMember = true;
         });
 
@@ -293,30 +285,30 @@ const rowCompare = (row1, row2) => {
 
 export const getSortedRows = ({ rows, departments, projects, workCodes }) => {
     return rows
-        .map(row => {
+        .map((row) => {
             let newRow = { ...row, DeptName: "", ProjName: "", WCName: "" };
             if (row.WorkCodeID !== -1) {
                 const code = workCodes.find(
-                    code => code.WorkCodeID === row.WorkCodeID
+                    (code) => code.WorkCodeID === row.WorkCodeID
                 );
                 newRow.WCName = code ? code.Description : "";
             }
             if (row.ProjectID !== -1) {
                 const proj = projects.find(
-                    proj => proj.ProjectID === row.ProjectID
+                    (proj) => proj.ProjectID === row.ProjectID
                 );
                 newRow.ProjName = proj ? proj.Name : "";
             }
             if (row.DepartmentID !== -1) {
                 const dept = departments.find(
-                    dep => dep.DepartmentID === row.DepartmentID
+                    (dep) => dep.DepartmentID === row.DepartmentID
                 );
                 newRow.DeptName = dept ? dept.DeptName : "";
             }
             return newRow;
         })
         .sort(rowCompare)
-        .map(row => {
+        .map((row) => {
             delete row.DeptName;
             delete row.ProjName;
             delete row.WCName;

@@ -2,8 +2,6 @@ import PropTypes from "prop-types";
 import React, { useEffect, useState } from "react";
 import { useTable } from "react-table";
 
-import Tippy from "@tippyjs/react";
-
 import { getDayFeatures, getPinnedRows } from "../../../services/utils";
 
 import TimesheetAlternativeEntryInput from "./components/TimesheetAlternateEntryInput";
@@ -37,27 +35,6 @@ const TimesheetTable = ({
     const [pinRows, setPinRows] = useState([]);
     const [otherRows, setOtherRows] = useState([]);
 
-    const [dayFeatures, setDayFeatures] = useState({
-        style: new Array(14).fill(undefined).map(() => ({})),
-        hoverText: new Array(14).fill(undefined).map(() => ""),
-    });
-
-    // When the week updates, sets the state of the days for current day, weekends, and holidays
-    useEffect(() => {
-        setDayFeatures(getDayFeatures(workDays));
-    }, [workDays]);
-
-    // Computes column style
-    const getStyle = (index) => {
-        if (index < 0 || index > 13) return {};
-        return dayFeatures.style[index];
-    };
-
-    // // Computes the text when hovering over the date
-    const getHoverText = (index) => {
-        if (index < 0 || index > 13) return "";
-        return dayFeatures.hoverText[index];
-    };
     // For this example, we're using pagination to illustrate how to stop
     // the current page from resetting when our data changes
     // Otherwise, nothing is different here.
@@ -104,6 +81,7 @@ const TimesheetTable = ({
                                 if (!Number.isInteger(column.id)) {
                                     return (
                                         <th
+                                            className="text-slate-400"
                                             {...column.getHeaderProps()}
                                             key={column.id}
                                         >
@@ -112,39 +90,39 @@ const TimesheetTable = ({
                                     );
                                 } else {
                                     return (
-                                        <Tippy
-                                            key={column.id}
-                                            content={getHoverText(j - 4)}
-                                            // ...and many more!
+                                        // <Tippy
+                                        //     key={column.id}
+                                        //     content={getHoverText(j - 4)}
+                                        //     // ...and many more!
+                                        // >
+                                        <th
+                                            className="w-16 box-border  p-0"
+                                            {...column.getHeaderProps()}
                                         >
-                                            <th
-                                                className="w-16 box-border  p-0"
-                                                {...column.getHeaderProps()}
-                                            >
-                                                {column.render("Header")}
-                                            </th>
-                                        </Tippy>
+                                            {column.render("Header")}
+                                        </th>
+                                        //</Tippy>
                                     );
                                 }
                             })}
                         </tr>
                     ))}
                 </thead>
-                <tbody {...getTableBodyProps()}>
+                <tbody className="" {...getTableBodyProps()}>
                     {pinRows.map((row, i) => {
                         prepareRow(row);
                         return (
                             <tr
+                                className=" p-0 m-0 "
                                 {...row.getRowProps()}
                                 key={i}
-                                className="border-2 border-teal-500 box-border"
                             >
                                 {row.cells.map((cell, j) => {
                                     return (
                                         <td
+                                            className="border border-purple-500 p-0 m-0"
                                             {...cell.getCellProps()}
                                             key={j}
-                                            //style={getStyle(j - 4)}
                                         >
                                             {cell.render("Cell", {
                                                 columnIndex: j,
@@ -152,7 +130,7 @@ const TimesheetTable = ({
                                                 disableModification,
                                                 loading,
                                                 pinned: true,
-                                            })}{" "}
+                                            })}
                                         </td>
                                     );
                                 })}
@@ -160,7 +138,12 @@ const TimesheetTable = ({
                         );
                     })}
                     {pinRows.length > 0 && (
-                        <tr>
+                        <tr className="h-1 bg-slate-800">
+                            <td colSpan={19} />
+                        </tr>
+                    )}
+                    {pinRows.length > 0 && (
+                        <tr className="h-1 bg-slate-800">
                             <td colSpan={19} />
                         </tr>
                     )}
@@ -168,7 +151,7 @@ const TimesheetTable = ({
                     {otherRows.map((row, i) => {
                         prepareRow(row);
                         return (
-                            <tr {...row.getRowProps()} key={i}>
+                            <tr className="" {...row.getRowProps()} key={i}>
                                 {row.cells.map((cell, j) => {
                                     return (
                                         <td

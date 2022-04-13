@@ -41,6 +41,16 @@ export const getActiveDepartments = createSelector(
     }
 );
 
+export const createRowHasHoursSelector = () =>
+    createSelector(
+        (row) => row.values,
+        (rows) => {
+            return !!Object.values(rows)
+                .filter((value, i) => i <= 13)
+                .find((value) => value.TimeEntryID);
+        }
+    );
+
 export const getValidProjects = createSelector(
     [getProjects, getRowDepartmentID],
     (projects, DepartmentID) => {

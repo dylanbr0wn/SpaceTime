@@ -1,17 +1,11 @@
-import PropTypes from "prop-types";
-import React, {
-    Suspense,
-    useCallback,
-    useEffect,
-    useMemo,
-    useState,
-} from "react";
-import { connect } from "react-redux";
+import * as React from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 
-import Tippy from "@tippyjs/react";
+import { TrashIcon } from "@heroicons/react/solid";
 
 import { deleteTimeEntryRowDispatch } from "../../../../redux/actions/timesheetsActions";
+import { createRowHasHoursSelector } from "../../../../services/selectors";
 import ConfirmCloseModal from "../../ConfirmCloseModal";
 import ErrorBoundary from "../../ErrorBoundary";
 
@@ -24,16 +18,22 @@ import ErrorBoundary from "../../ErrorBoundary";
  */
 const TimesheetDeleteEntryInput = ({
     row,
-    deleteTimeEntryRowDispatch,
     disableModification,
     EmployeeID,
     setIsLocked,
     timeEntryPeriodStartDate,
     isTablet,
 }) => {
-    const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false);
+    const [showDeleteConfirmModal, setShowDeleteConfirmModal] =
+        React.useState(false);
 
-    useEffect(() => {
+    const rowHasHoursSelector = React.useMemo(createRowHasHoursSelector, []);
+
+    const rowHasHours = useSelector((_) => rowHasHoursSelector(row));
+
+    const dispatch = useDispatch();
+
+    React.useEffect(() => {
         setShowDeleteConfirmModal(false);
         return () => {
             setShowDeleteConfirmModal(false);
@@ -41,12 +41,16 @@ const TimesheetDeleteEntryInput = ({
     }, [row]);
 
     // Will delete a row. Dispatches deleteTimeEntryRow api call and redux action.
-    const deleteRow = useCallback(async () => {
-        const result = await deleteTimeEntryRowDispatch(
-            row.index,
-            row.original,
-            EmployeeID,
-            timeEntryPeriodStartDate
+    // Delete button sub component
+
+    const deleteRow = async () => {
+        const result = await dispatch(
+            deleteTimeEntryRowDispatch(
+                row.index,
+                row.original,
+                EmployeeID,
+                timeEntryPeriodStartDate
+            )
         );
         if (!result.success) {
             if (result.status === 423) {
@@ -56,48 +60,16 @@ const TimesheetDeleteEntryInput = ({
                 toast.warn(result.data);
             }
         }
-    }, [
-        deleteTimeEntryRowDispatch,
-        row.index,
-        row.original,
-        EmployeeID,
-        timeEntryPeriodStartDate,
-        setIsLocked,
-    ]);
+    };
 
-    // Delete button sub component
-    const DeleteButton = useMemo(() => {
-        const handleDeleteRow = () => {
-            if (
-                !Object.values(row.values)
-                    .filter((value, i) => i <= 13)
-                    .find((value) => value.TimeEntryID)
-            ) {
-                deleteRow();
-            } else {
-                setShowDeleteConfirmModal(true);
-            }
-        };
-        return (
-            <Tippy content="Delete row">
-                <button
-                    aria-label="Delete row"
-                    style={{ padding: isTablet ? "0.2rem" : "0.2rem 0.375rem" }}
-                    // title="Clear timesheet row"
-                    disabled={disableModification}
-                    onClick={handleDeleteRow}
-                >
-                    <i
-                        style={{
-                            color: !disableModification ? "red" : "gray",
-                            fontSize: isTablet ? "0.875rem" : "1rem",
-                        }}
-                        className="far fa-trash-alt"
-                    />
-                </button>
-            </Tippy>
-        );
-    }, [disableModification, row.values, deleteRow, isTablet]);
+    const handleDeleteRow = () => {
+        console.log(rowHasHours);
+        if (!rowHasHours) {
+            deleteRow();
+        } else {
+            setShowDeleteConfirmModal(true);
+        }
+    };
 
     const renderLoader = () => <p></p>;
 
@@ -105,10 +77,22 @@ const TimesheetDeleteEntryInput = ({
         <>
             <ErrorBoundary>
                 <span>
-                    {DeleteButton}
-                    <Suspense fallback={renderLoader()}>
+                    <button
+                        aria-label="Delete row"
+                        className={`m-0 p-1 h-10 w-10 group ${
+                            disableModification
+                                ? "bg-slate-800"
+                                : "bg-slate-900"
+                        }`}
+                        type="button"
+                        // title="Clear timesheet row"
+                        disabled={disableModification}
+                        onClick={handleDeleteRow}
+                    >
+                        <TrashIcon className="text-slate-500 h-6 w-6 m-auto group-hover:text-red-700  transition-colors duration-200" />
+                    </button>
+                    <React.Suspense fallback={renderLoader()}>
                         <ConfirmCloseModal
-                            style={{ zIndex: 1010 }}
                             onHide={() => {
                                 setShowDeleteConfirmModal(false);
                             }}
@@ -118,26 +102,11 @@ const TimesheetDeleteEntryInput = ({
                             title={`Delete Timesheet Row (${row.index + 1})`}
                             confirmButtonText="Delete"
                         />
-                    </Suspense>
+                    </React.Suspense>
                 </span>
             </ErrorBoundary>
         </>
     );
 };
 
-TimesheetDeleteEntryInput.propTypes = {
-    row: PropTypes.object.isRequired,
-    deleteTimeEntryRowDispatch: PropTypes.func.isRequired,
-    disableModification: PropTypes.bool.isRequired,
-    data: PropTypes.array,
-    setIsLocked: PropTypes.func.isRequired,
-    EmployeeID: PropTypes.number.isRequired,
-    timeEntryPeriodStartDate: PropTypes.object.isRequired,
-    isTablet: PropTypes.bool,
-};
-
-const mapDispatchToProps = {
-    deleteTimeEntryRowDispatch,
-};
-
-export default connect(null, mapDispatchToProps)(TimesheetDeleteEntryInput);
+export default TimesheetDeleteEntryInput;

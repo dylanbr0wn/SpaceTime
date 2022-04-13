@@ -12,6 +12,7 @@ import {
     createTimeEntryRowDispatch,
     readTimesheetDispatch,
 } from "../../../redux/actions/timesheetsActions";
+import { getDayFeatures } from "../../../services/utils";
 
 import TimesheetDeleteEntryInput from "./components/TimesheetDeleteEntryInput";
 import TimesheetDepartmentInput from "./components/TimesheetDepartmentInput";
@@ -147,7 +148,7 @@ const useTimesheet = ({
         timeEntryPeriodStartDate,
     ]);
 
-    //const isTablet = useMediaQuery({ minWidth: 768, maxWidth: 1279 });
+    // const isTablet = useMediaQuery({ minWidth: 768, maxWidth: 1279 });
     const [isTablet, setIsTablet] = React.useState(false);
 
     // Sets local state when computations of hours are complete.
@@ -351,13 +352,18 @@ const Timesheet = ({
             {
                 Header: "Hours per Day", // specifies hours of work columns.
                 columns: new Array(14).fill(undefined).map((v, i) => {
-                    if (!timesheet.workDays || !timesheet.workDays[i]) return;
+                    if (!timesheet.workDays || !timesheet.workDays[i])
+                        return null;
                     const day = moment(timesheet.workDays[i].DateofWork);
+                    const dayFeatures = getDayFeatures(day);
+
                     return {
                         // eslint-disable-next-line react/display-name
                         Header: () => {
                             return (
-                                <div className="w-16 box-border">
+                                <div
+                                    className={`w-16 box-border ${dayFeatures.style}`}
+                                >
                                     <div className="text-center">
                                         {day.format("dd")}
                                     </div>
