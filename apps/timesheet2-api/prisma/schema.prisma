@@ -7,7 +7,7 @@ generator client {
 }
 
 generator nexusPrisma {
-   provider = "nexus-prisma"
+  provider = "nexus-prisma"
 }
 
 datasource db {
@@ -16,177 +16,163 @@ datasource db {
   referentialIntegrity = "prisma"
 }
 
-
 model Profile {
-  id     Int     @id @default(autoincrement())
+  id        Int     @id @default(autoincrement())
   firstName String
-  lastName String
-  avatar String
-  bio    String? @db.Text
-  user   User    @relation(fields: [userId], references: [id])
-  userId Int     @unique
+  lastName  String
+  avatar    String
+  bio       String? @db.Text
+  user      User    @relation(fields: [userId], references: [id])
+  userId    Int     @unique
 
   @@index([userId])
 }
 
-
 model User {
-  id      Int      @id @default(autoincrement())
-  email   String   @unique
-  code    String   @unique
-  isAdmin Boolean  @default(false)
-  isActive Boolean  @default(true)
-  isManager Boolean  @default(false)
-  isPaymentManager Boolean  @default(false)
-  managerId Int?
-  manager User?  @relation("management",fields: [managerId], references: [id],onDelete: NoAction, onUpdate: NoAction)
-  managees User[] @relation("management")
-  department Department @relation(fields: [departmentId], references: [id])
-  departmentId Int
-  profile Profile?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  pinnedRows PinnedRow[]
-  timeEntries TimeEntry[]
-  timeEntryRows TimeEntryRow[]
-  entryComment EntryComment[]
-  timesheets Timesheet[]
-  @@index([departmentId, managerId])
+  id               Int            @id @default(autoincrement())
+  email            String         @unique
+  code             String         @unique
+  isAdmin          Boolean        @default(false)
+  isActive         Boolean        @default(true)
+  isManager        Boolean        @default(false)
+  isPaymentManager Boolean        @default(false)
+  managerId        Int?
+  manager          User?          @relation("management", fields: [managerId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  managees         User[]         @relation("management")
+  department       Department     @relation(fields: [departmentId], references: [id])
+  departmentId     Int
+  profile          Profile?
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  pinnedRows       PinnedRow[]
+  entryComments    EntryComment[]
+  timesheets       Timesheet[]
 
+  @@index([departmentId, managerId])
 }
 
 model TimeEntry {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  workType WorkType @relation(fields: [workTypeId], references: [id])
-  workTypeId Int
-  user User @relation(fields: [userId], references: [id])
-  userId Int
-  project Project @relation(fields: [projectId], references: [id])
-  projectId Int
-  date DateTime
-  department Department @relation(fields: [departmentId], references: [id])
-  departmentId Int
-  hours Float
-  timeEntryRow TimeEntryRow @relation(fields: [timeEntryRowId], references: [id])
+  id             Int            @id @default(autoincrement())
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  date           DateTime
+  hours          Float
+  timeEntryRow   TimeEntryRow   @relation(fields: [timeEntryRowId], references: [id])
   timeEntryRowId Int
-  entryComments EntryComment[]
-  @@index([departmentId,projectId,userId,workTypeId,timeEntryRowId])
+  entryComments  EntryComment[]
 
+  @@index([timeEntryRowId])
 }
 
 model Department {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  name      String   @db.VarChar(255)
-  isActive  Boolean  @default(false)
-  description String? @db.Text
-  pinnedRows PinnedRow[]
-  projects  Project[]
-  users     User[]
-  timeEntries TimeEntry[]
+  id            Int            @id @default(autoincrement())
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  name          String         @db.VarChar(255)
+  isActive      Boolean        @default(false)
+  description   String?        @db.Text
+  pinnedRows    PinnedRow[]
+  projects      Project[]
+  users         User[]
   timeEntryRows TimeEntryRow[]
 }
 
 model WorkType {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  name      String   @db.VarChar(255)
-  isActive  Boolean  @default(false)
-  code      String   @db.VarChar(255)
-  isBillable Boolean  @default(false)
-  isDefault Boolean  @default(false)
-  multiplier Float    @default(1.0)
-  description String?   @db.Text
-  isSystem  Boolean  @default(false)
-  pinnedRows PinnedRow[]
-  timeEntries TimeEntry[]
+  id            Int            @id @default(autoincrement())
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  name          String         @db.VarChar(255)
+  isActive      Boolean        @default(false)
+  code          String         @db.VarChar(255)
+  isBillable    Boolean        @default(false)
+  isDefault     Boolean        @default(false)
+  multiplier    Float          @default(1.0)
+  description   String?        @db.Text
+  isSystem      Boolean        @default(false)
+  pinnedRows    PinnedRow[]
   timeEntryRows TimeEntryRow[]
 }
 
 model Project {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  name      String   @db.VarChar(255)
-  isActive  Boolean  @default(false)
-  description String? @db.Text
-  department Department @relation(fields: [departmentId], references: [id])
-  departmentId Int
-  code       String   @db.VarChar(255)
-  timeEntries TimeEntry[]
+  id            Int            @id @default(autoincrement())
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  name          String         @db.VarChar(255)
+  isActive      Boolean        @default(false)
+  description   String?        @db.Text
+  department    Department     @relation(fields: [departmentId], references: [id])
+  departmentId  Int
+  code          String         @db.VarChar(255)
   timeEntryRows TimeEntryRow[]
-  pinnedRows PinnedRow[]
+  pinnedRows    PinnedRow[]
+
   @@index([departmentId])
 }
 
 model TimeEntryRow {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  workType WorkType @relation(fields: [workTypeId], references: [id])
-  workTypeId Int
-  user User @relation(fields: [userId], references: [id])
-  userId Int
-  project Project @relation(fields: [projectId], references: [id])
-  projectId Int
-  date DateTime
-  department Department @relation(fields: [departmentId], references: [id])
+  id           Int         @id @default(autoincrement())
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  workType     WorkType    @relation(fields: [workTypeId], references: [id])
+  workTypeId   Int
+  project      Project     @relation(fields: [projectId], references: [id])
+  projectId    Int
+  date         DateTime
+  department   Department  @relation(fields: [departmentId], references: [id])
   departmentId Int
-  timesheet Timesheet @relation(fields: [timesheetId], references: [id])
-  timesheetId Int
-  timeEntries TimeEntry[]
-  @@index([departmentId,projectId,userId,workTypeId,timesheetId])
+  timesheet    Timesheet   @relation(fields: [timesheetId], references: [id])
+  timesheetId  Int
+  timeEntries  TimeEntry[]
 
+  @@index([departmentId, projectId, workTypeId, timesheetId])
 }
 
 model Period {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  startDate DateTime
-  endDate DateTime
+  id         Int         @id @default(autoincrement())
+  createdAt  DateTime    @default(now())
+  startDate  DateTime
+  endDate    DateTime
   timesheets Timesheet[]
 }
 
 model EntryComment {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  text      String   @db.Text
-  user User @relation(fields: [userId], references: [id])
-  userId Int
-  timeEntry TimeEntry @relation(fields: [timeEntryId], references: [id])
+  id          Int       @id @default(autoincrement())
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  text        String    @db.Text
+  user        User      @relation(fields: [userId], references: [id])
+  userId      Int
+  timeEntry   TimeEntry @relation(fields: [timeEntryId], references: [id])
   timeEntryId Int
 
-  @@index([userId,timeEntryId])
+  @@index([userId, timeEntryId])
 }
 
 model PinnedRow {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  user User @relation(fields: [userId], references: [id])
-  userId Int
-  project Project @relation(fields: [projectId], references: [id])
-  projectId Int
-  worktype WorkType @relation(fields: [worktypeId], references: [id])
-  worktypeId Int
-  department Department @relation(fields: [departmentId], references: [id])
+  id           Int        @id @default(autoincrement())
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  user         User       @relation(fields: [userId], references: [id])
+  userId       Int
+  project      Project    @relation(fields: [projectId], references: [id])
+  projectId    Int
+  worktype     WorkType   @relation(fields: [worktypeId], references: [id])
+  worktypeId   Int
+  department   Department @relation(fields: [departmentId], references: [id])
   departmentId Int
-  @@index([userId,projectId,worktypeId,departmentId])
+
+  @@index([userId, projectId, worktypeId, departmentId])
 }
 
 model Timesheet {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  user User @relation(fields: [userId], references: [id])
-  userId Int
-  period Period @relation(fields: [periodId], references: [id])
-  periodId Int
+  id            Int            @id @default(autoincrement())
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  user          User           @relation(fields: [userId], references: [id])
+  userId        Int
+  period        Period         @relation(fields: [periodId], references: [id])
+  periodId      Int
   timeEntryRows TimeEntryRow[]
-  @@index([userId,periodId])
+
+  @@index([userId, periodId])
 }
