@@ -1,4 +1,4 @@
-import { objectType } from "nexus";
+import { extendType, objectType } from "nexus";
 import * as NexusPrisma from "nexus-prisma";
 
 export const WorkType = objectType({
@@ -16,5 +16,17 @@ export const WorkType = objectType({
         t.field(NexusPrisma.WorkType.isDefault);
         t.field(NexusPrisma.WorkType.multiplier);
         t.field(NexusPrisma.WorkType.isBillable);
+    },
+});
+
+export const QueryWorkType = extendType({
+    type: "Query",
+    definition(t) {
+        t.nonNull.list.nonNull.field("workTypes", {
+            type: WorkType,
+            resolve: (_parent, _args, ctx) => {
+                return ctx.prisma.workType.findMany();
+            },
+        });
     },
 });

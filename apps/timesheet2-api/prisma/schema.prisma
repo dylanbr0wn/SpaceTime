@@ -20,7 +20,7 @@ model Profile {
   id        Int     @id @default(autoincrement())
   firstName String
   lastName  String
-  avatar    String
+  avatar    String?
   bio       String? @db.Text
   user      User    @relation(fields: [userId], references: [id])
   userId    Int     @unique
@@ -173,5 +173,16 @@ model Timesheet {
   periodId      Int
   timeEntryRows TimeEntryRow[]
 
+  @@unique([userId, periodId])
   @@index([userId, periodId])
+}
+
+model ApplicationPreferences {
+  id           Int      @id @default(autoincrement())
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  startDate    DateTime
+  periodLength Int
+  isActive     Boolean  @default(false)
+
 }

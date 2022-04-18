@@ -1,11 +1,10 @@
 import {
-    booleanArg,
+    arg,
     extendType,
     inputObjectType,
     intArg,
     nonNull,
     objectType,
-    stringArg,
 } from "nexus";
 import * as NexusPrisma from "nexus-prisma";
 
@@ -40,7 +39,7 @@ export const QueryUsers = extendType({
                 return context.prisma.user.findMany();
             },
         });
-        t.field("getUser", {
+        t.field("getUserFromId", {
             type: "User",
             args: {
                 id: nonNull(intArg()),
@@ -49,6 +48,19 @@ export const QueryUsers = extendType({
                 return context.prisma.user.findFirst({
                     where: {
                         id: args.id,
+                    },
+                });
+            },
+        });
+        t.field("getUserFromEmail", {
+            type: "User",
+            args: {
+                email: nonNull(arg(NexusPrisma.User.email)),
+            },
+            resolve: (_parent, args, context: Context) => {
+                return context.prisma.user.findUnique({
+                    where: {
+                        email: args.email,
                     },
                 });
             },
@@ -62,69 +74,79 @@ export const MutateUsers = extendType({
         t.field("createUser", {
             type: "User",
             args: {
-                email: nonNull(stringArg()),
-                code: nonNull(stringArg()),
-                isActive: nonNull(booleanArg()),
-                isAdmin: nonNull(booleanArg()),
-                profile: nonNull(stringArg()),
-                department: nonNull(intArg()),
-                manager: nonNull(intArg()),
-                isPaymentManager: nonNull(booleanArg()),
-                isManager: nonNull(booleanArg()),
+                user: nonNull(arg({ type: UserCreateInput })),
             },
-            resolve: (_parent, args, context: Context) => {
+            resolve: (_parent, { user }, context: Context) => {
                 return context.prisma.user.create({
                     data: {
-                        email: args.email,
-                        code: args.code,
-                        isActive: args.isActive,
-                        isAdmin: args.isAdmin,
+                        email: user.email,
+                        code: user.code,
+                        isActive: user.isActive,
+                        isAdmin: user.isAdmin,
                         department: {
                             connect: {
-                                id: args.department,
+                                id: user.departmentId,
                             },
                         },
                         manager: {
                             connect: {
-                                id: args.manager,
+                                id: user.managerId,
                             },
                         },
-                        isPaymentManager: args.isPaymentManager,
-                        isManager: args.isManager,
+                        isPaymentManager: user.isPaymentManager,
+                        isManager: user.isManager,
+                        profile: {
+                            create: {
+                                firstName: user.firstName,
+                                lastName: user.lastName,
+                                avatar: user.avatar,
+                                bio: user.bio,
+                            },
+                        },
                     },
                 });
             },
         });
 
-        // t.field("updateUser", {
-        //     type: "User",
-        //     args: {
-        //         id: nonNull(intArg()),
-        //         email: stringArg(),
-        //         code: stringArg(),
-        //         isActive: booleanArg(),
-        //         isAdmin: booleanArg(),
-        //         profile: stringArg(),
-        //         department: intArg(),
-        //         manager: intArg(),
-        //         isPaymentManager: booleanArg(),
-        //         isManager: booleanArg(),
-        //     },
-        //     resolve: (_parent, args, context: Context) => {
-        //         return context.prisma.user.update({
-        //             where: {
-        //                 id: args.id,
-        //             },
-        //             data: {
-        //                 email: args.email,
-        //                 code: args.code,
-        //                 isActive: args.isActive,
-        //                 isAdmin: args.isAdmin,
-        //                 profile: args.profile,
-        //             },
-        //         });
-        //     },
-        // });
+        t.field("updateUser", {
+            type: "User",
+            args: {
+                user: nonNull(arg({ type: UserUpdateInput })),
+            },
+            resolve: (_parent, { user }, context: Context) => {
+                return context.prisma.user.update({
+                    where: {
+                        id: user.id,
+                    },
+                    data: {
+                        email: user.email,
+                        code: user.code,
+                        isActive: user.isActive,
+                        isAdmin: user.isAdmin,
+                        department: {
+                            connect: {
+                                id: user.departmentId,
+                            },
+                        },
+                        manager: {
+                            connect: {
+                                id: user.managerId,
+                            },
+                        },
+                        isPaymentManager: user.isPaymentManager,
+                        isManager: user.isManager,
+                        profile: {
+                            create: {
+                                firstName: user.firstName,
+                                lastName: user.lastName,
+                                avatar: user.avatar,
+                                bio: user.bio,
+                            },
+                        },
+                    },
+                });
+            },
+        });
     },
 });
 
@@ -132,14 +154,37 @@ export const UserCreateInput = inputObjectType({
     name: "UserCreateInput",
     description: "User Create Input",
     definition(t) {
-        t.field(NexusPrisma.User.code);
-        t.field(NexusPrisma.User.email);
-        t.field(NexusPrisma.User.isActive);
-        t.field(NexusPrisma.User.isAdmin);
-        t.field(NexusPrisma.User.profile);
-        t.field(NexusPrisma.User.departmentId);
-        t.field(NexusPrisma.User.managerId);
-        t.field(NexusPrisma.User.isPaymentManager);
-        t.field(NexusPrisma.User.isManager);
+        t.nonNull.field(NexusPrisma.User.code);
+        t.nonNull.field(NexusPrisma.User.email);
+        t.nonNull.field(NexusPrisma.User.isActive);
+        t.nonNull.field(NexusPrisma.User.isAdmin);
+        t.nonNull.field(NexusPrisma.User.departmentId);
+        t.nonNull.field(NexusPrisma.User.managerId);
+        t.nonNull.field(NexusPrisma.User.isPaymentManager);
+        t.nonNull.field(NexusPrisma.User.isManager);
+        t.nonNull.field(NexusPrisma.Profile.lastName);
+        t.nonNull.field(NexusPrisma.Profile.firstName);
+        t.field(NexusPrisma.Profile.avatar);
+        t.field(NexusPrisma.Profile.bio);
+    },
+});
+
+export const UserUpdateInput = inputObjectType({
+    name: "UserUpdateInput",
+    description: "User Update Input",
+    definition(t) {
+        t.nonNull.field(NexusPrisma.User.id);
+        t.nonNull.field(NexusPrisma.User.code);
+        t.nonNull.field(NexusPrisma.User.email);
+        t.nonNull.field(NexusPrisma.User.isActive);
+        t.nonNull.field(NexusPrisma.User.isAdmin);
+        t.nonNull.field(NexusPrisma.User.departmentId);
+        t.nonNull.field(NexusPrisma.User.managerId);
+        t.nonNull.field(NexusPrisma.User.isPaymentManager);
+        t.nonNull.field(NexusPrisma.User.isManager);
+        t.nonNull.field(NexusPrisma.Profile.lastName);
+        t.nonNull.field(NexusPrisma.Profile.firstName);
+        t.field(NexusPrisma.Profile.avatar);
+        t.field(NexusPrisma.Profile.bio);
     },
 });

@@ -1,4 +1,4 @@
-import { objectType } from "nexus";
+import { extendType, objectType } from "nexus";
 import * as NexusPrisma from "nexus-prisma";
 
 export const Project = objectType({
@@ -13,5 +13,17 @@ export const Project = objectType({
         t.field(NexusPrisma.Project.description);
         t.field(NexusPrisma.Project.code);
         t.field(NexusPrisma.Project.department);
+    },
+});
+
+export const QueryProject = extendType({
+    type: "Query",
+    definition(t) {
+        t.nonNull.list.nonNull.field("projects", {
+            type: Project,
+            resolve: (_parent, _args, ctx) => {
+                return ctx.prisma.project.findMany();
+            },
+        });
     },
 });

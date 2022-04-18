@@ -2,6 +2,15 @@
 ### Do not make changes to this file directly
 
 
+type ApplicationPreferences {
+  createdAt: DateTime!
+  id: Int!
+  isActive: Boolean!
+  periodLength: Int!
+  startDate: DateTime!
+  updatedAt: DateTime!
+}
+
 """
 A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
 """
@@ -26,14 +35,34 @@ type EntryComment {
   user: User!
 }
 
+input EntryCommentCreateInput {
+  text: String!
+  timeEntryId: Int!
+  userId: Int!
+}
+
+input EntryCommentDeleteInput {
+  id: Int!
+}
+
+input EntryCommentUpdateInput {
+  id: Int!
+  text: String!
+}
+
 type Mutation {
+  createEntryComment(entryComment: EntryCommentCreateInput!): EntryComment
   createTimeEntry(data: TimeEntryCreateInput!): TimeEntry
-  createTimeEntryRow(data: TimeEntryRowCreateInput!): TimeEntryRow
-  createUser(code: String!, department: Int!, email: String!, isActive: Boolean!, isAdmin: Boolean!, isManager: Boolean!, isPaymentManager: Boolean!, manager: Int!, profile: String!): User
+  createTimeEntryRow(TimeEntryRow: TimeEntryRowCreateInput!): TimeEntryRow
+  createUser(user: UserCreateInput!): User
+  deleteEntryComment(EntryComment: EntryCommentDeleteInput!): EntryComment
   deleteTimeEntry(id: Int!): TimeEntry
-  deleteTimeEntryRow(id: Int!): TimeEntryRow
-  updateTimeEntryRow(data: TimeEntryRowUpdateInput!, id: Int!): TimeEntryRow
+  deleteTimeEntryRow(TimeEntryRow: TimeEntryRowDeleteInput!): TimeEntryRow
+  getorCreateTimesheet(Timesheet: TimesheetGetInput!): Timesheet
+  updateEntryComment(entryComment: EntryCommentUpdateInput!): EntryComment
+  updateTimeEntryRow(TimeEntryRow: TimeEntryRowUpdateInput!): TimeEntryRow
   updateTimeEntryhours(data: TimeEntryUpdateInput!, id: Int!): TimeEntry
+  updateUser(user: UserUpdateInput!): User
 }
 
 type Period {
@@ -44,7 +73,7 @@ type Period {
 }
 
 type Profile {
-  avatar: String!
+  avatar: String
   bio: String
   firstName: String!
   id: Int!
@@ -64,8 +93,14 @@ type Project {
 
 type Query {
   allUsers: [User!]!
-  getUser(id: Int!): User
-  timesheet(periodId: Int, userId: Int): Timesheet
+  applicationPreferences: ApplicationPreferences
+  departments: [Department!]!
+  getEntryComments(timeEntryId: Int!): [EntryComment!]!
+  getEntryCommentsByTimesheet(timesheetId: Int!): [EntryComment!]!
+  getUserFromEmail(email: String!): User
+  getUserFromId(id: Int!): User
+  projects: [Project!]!
+  workTypes: [WorkType!]!
 }
 
 type TimeEntry {
@@ -100,8 +135,13 @@ input TimeEntryRowCreateInput {
   workTypeId: Int!
 }
 
+input TimeEntryRowDeleteInput {
+  id: Int!
+}
+
 input TimeEntryRowUpdateInput {
   departmentId: Int!
+  id: Int!
   projectId: Int!
   workTypeId: Int!
 }
@@ -119,6 +159,11 @@ type Timesheet {
   user: User!
 }
 
+input TimesheetGetInput {
+  date: DateTime!
+  userId: Int!
+}
+
 type User {
   code: String!
   createdAt: DateTime!
@@ -133,6 +178,39 @@ type User {
   manager: User
   profile: Profile
   updatedAt: DateTime!
+}
+
+"""User Create Input"""
+input UserCreateInput {
+  avatar: String
+  bio: String
+  code: String!
+  departmentId: Int!
+  email: String!
+  firstName: String!
+  isActive: Boolean!
+  isAdmin: Boolean!
+  isManager: Boolean!
+  isPaymentManager: Boolean!
+  lastName: String!
+  managerId: Int!
+}
+
+"""User Update Input"""
+input UserUpdateInput {
+  avatar: String
+  bio: String
+  code: String!
+  departmentId: Int!
+  email: String!
+  firstName: String!
+  id: Int!
+  isActive: Boolean!
+  isAdmin: Boolean!
+  isManager: Boolean!
+  isPaymentManager: Boolean!
+  lastName: String!
+  managerId: Int!
 }
 
 type WorkType {
