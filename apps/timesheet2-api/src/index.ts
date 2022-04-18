@@ -8,12 +8,12 @@ import { GraphQLSchema } from "graphql";
 import { Context, context } from "./context";
 import { schema } from "./schema";
 
-async function startApolloServer(context: Context, schema: GraphQLSchema) {
+async function startApolloServer(context: Context) {
     const app = express();
     const httpServer = http.createServer(app);
     const server = new ApolloServer({
         context,
-        schema,
+        schema: schema,
         plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
     });
     await server.start();
@@ -26,4 +26,4 @@ async function startApolloServer(context: Context, schema: GraphQLSchema) {
     );
 }
 
-startApolloServer(context, schema);
+startApolloServer(context);
