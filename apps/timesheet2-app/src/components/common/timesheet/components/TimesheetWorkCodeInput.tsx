@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import { Listbox, Transition } from "@headlessui/react";
 import { CheckIcon, SelectorIcon } from "@heroicons/react/solid";
 
+import { useWorkTypesQuery } from "../../../../api";
 import { updateTimeEntryRowDispatch } from "../../../../redux/actions/timesheetsActions";
 import {
     allowedWorkCodesSelector,
@@ -22,24 +23,13 @@ import "../../../style/TimeEntry.css";
  * Provides an dropdown menu with filtered options.
  * @param {Object} props Props. See propTypes for details.
  */
-const TimesheetWorkCodeInput = ({
-    value,
-    row,
-    column: { id },
-    disableModification,
-
-    EmployeeID,
-    setIsLocked,
-    timeEntryPeriodStartDate,
-    isTablet,
-    workCodes,
-    data,
-    type,
-}) => {
+const TimesheetWorkCodeInput = ({ value, row, column: { id }, userId }) => {
     // We need to keep and update the state of the cell normally
     const [stateValue, setStateValue] = useState(value);
 
-    const allWorkCodes = useSelector((state) => state.workCodes);
+    // const allWorkCodes = useSelector((state) => state.workCodes);
+
+    const { data, error, loading } = useWorkTypesQuery();
     // const allowedWorkCodes = useSelector((state) =>
     //     allowedWorkCodesSelector(state, { workCodes, row, data })
     // );
@@ -47,42 +37,45 @@ const TimesheetWorkCodeInput = ({
     //     unusedWorkCodesSelector(state, { workCodes, row, data })
     // );
 
-    const dispatch = useDispatch();
+    // const dispatch = useDispatch();
     // const [validWorkCodes, setValidWorkCodes] = useState([]);
 
     // When changed, dispatch api call and redux action.
     const onChange = async (workCode) => {
-        setStateValue(workCode);
-        // setSkipPageReset(true);
-        const result = await dispatch(
-            updateTimeEntryRowDispatch(
-                row.index,
-                parseInt(workCode.WorkCodeID),
-                id,
-                {
-                    ...row.original,
-                    [id]: parseInt(workCode.WorkCodeID),
-                },
-                EmployeeID,
-                timeEntryPeriodStartDate
-            )
-        );
-        if (!result.success) {
-            if (result.status === 423) {
-                setIsLocked(true);
-            }
-            toast.warn(result.data);
-        }
+        console.log(workCode);
+        // setStateValue(workCode);
+        // // setSkipPageReset(true);
+        // const result = await dispatch(
+        //     updateTimeEntryRowDispatch(
+        //         row.index,
+        //         parseInt(workCode.WorkCodeID),
+        //         id,
+        //         {
+        //             ...row.original,
+        //             [id]: parseInt(workCode.WorkCodeID),
+        //         },
+        //         EmployeeID,
+        //         timeEntryPeriodStartDate
+        //     )
+        // );
+        // if (!result.success) {
+        //     if (result.status === 423) {
+        //         setIsLocked(true);
+        //     }
+        //     toast.warn(result.data);
+        // }
     };
 
     // Set info field for workcode
     useEffect(() => {
-        let workCode = workCodes.find((code) => code.WorkCodeID === value);
-        if (!workCode) {
-            workCode = allWorkCodes.find((code) => code.WorkCodeID === value);
+        if (data?.workTypes) {
+            const workCode = data?.workTypes.find((code) => code.id === value);
+            // if (!workCode) {
+            //     workCode = data?.workTypes.find((code) => code.WorkCodeID === value);
+            // }
+            setStateValue(workCode ?? {});
         }
-        setStateValue(workCode ?? {});
-    }, [allWorkCodes, value, workCodes]);
+    }, [value, data]);
 
     return (
         <>
@@ -93,7 +86,7 @@ const TimesheetWorkCodeInput = ({
                         value={stateValue}
                         onChange={onChange}
                         // onBlur={onBlur}
-                        disabled={disableModification}
+                        disabled={false}
                     >
                         <div className="relative mt-1">
                             <Listbox.Button
@@ -103,13 +96,12 @@ const TimesheetWorkCodeInput = ({
                             >
                                 <span
                                     className={`block truncate ${
-                                        stateValue.Description
+                                        stateValue.name
                                             ? "text-sky-200"
                                             : "text-slate-400"
                                     }`}
                                 >
-                                    {stateValue.Description ??
-                                        "Choose a Work Code..."}
+                                    {stateValue.name ?? "Choose a Work Code..."}
                                 </span>
                                 <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
                                     <SelectorIcon
@@ -125,7 +117,7 @@ const TimesheetWorkCodeInput = ({
                                 leaveTo="opacity-0"
                             >
                                 <Listbox.Options className="absolute z-10 w-full py-1 mt-1 overflow-auto text-base bg-slate-800 rounded-md shadow-lg max-h-60 ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                                    {workCodes.map((workCode) => {
+                                    {data?.workTypes.map((workCode) => {
                                         return (
                                             <Listbox.Option
                                                 className={({ active }) =>
@@ -136,7 +128,7 @@ const TimesheetWorkCodeInput = ({
                                                     }`
                                                 }
                                                 value={workCode}
-                                                key={workCode.WorkCodeID}
+                                                key={workCode.id}
                                                 //  onSelect={() => setProjectFocused(false)}
                                             >
                                                 {({ selected }) => (
@@ -148,9 +140,7 @@ const TimesheetWorkCodeInput = ({
                                                                     : "font-normal"
                                                             }`}
                                                         >
-                                                            {
-                                                                workCode.Description
-                                                            }
+                                                            {workCode.name}
                                                         </span>
                                                         {selected ? (
                                                             <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-sky-400">

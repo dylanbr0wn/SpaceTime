@@ -61,6 +61,7 @@ model TimeEntry {
   timeEntryRowId Int
   entryComments  EntryComment[]
 
+  @@unique([date, timeEntryRowId])
   @@index([timeEntryRowId])
 }
 

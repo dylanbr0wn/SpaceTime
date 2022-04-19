@@ -1,10 +1,11 @@
 import * as React from "react";
-import { connect, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
+import { useAccount } from "@azure/msal-react";
 import { Popover, Transition } from "@headlessui/react";
 import Tippy from "@tippyjs/react";
 
+import { useGetUserFromEmailQuery } from "../../../api";
 import ErrorBoundary from "../ErrorBoundary";
 
 import NavButton from "./NavLinkButton";
@@ -18,12 +19,20 @@ import NavSubTitle from "./NavSubTitle";
  * @param {Object} props Props. See propTypes for details.
  * @description Sidebar navigation menu.
  */
-const Menu = ({ isTablet }) => {
-    const user = useSelector((state) => state.currentUser.user);
+const Menu = () => {
+    const account = useAccount();
 
-    const sidebarPin = useSelector(
-        (state) => state.currentUser.preferences.SidebarPin
-    );
+    const { error, loading, data, refetch } = useGetUserFromEmailQuery({
+        variables: {
+            email: account?.username || "",
+        },
+    });
+
+    React.useEffect(() => {
+        if (account?.username) {
+            refetch();
+        }
+    }, [account, refetch]);
 
     return (
         <ErrorBoundary>
@@ -51,33 +60,6 @@ const Menu = ({ isTablet }) => {
                                             // style={{ width: isTablet ? "22vw" : "16vw", transform }}
                                         >
                                             <div className="bg-slate-900 rounded-lg flex flex-col p-3 ">
-                                                {!isTablet && (
-                                                    <button
-                                                        style={{
-                                                            position:
-                                                                "absolute",
-                                                            top: 10,
-                                                            right: 10,
-                                                            color: "white",
-                                                        }}
-                                                        aria-label="Pin sidebar"
-                                                    >
-                                                        {sidebarPin.Value ? (
-                                                            <Tippy
-                                                                content={`Un-pin sidebar`}
-                                                            >
-                                                                <i className="fas fa-eye-slash fa-lg" />
-                                                            </Tippy>
-                                                        ) : (
-                                                            <Tippy
-                                                                content={`Pin sidebar`}
-                                                            >
-                                                                <i className="fas fa-thumbtack  fa-lg" />
-                                                            </Tippy>
-                                                        )}
-                                                    </button>
-                                                )}
-
                                                 <NavSubTitle
                                                     title={"Employee"}
                                                 />
@@ -100,10 +82,14 @@ const Menu = ({ isTablet }) => {
                                                         </svg>
                                                     }
                                                     title={"Timesheet"}
-                                                    url={`/timesheet/${user.EmployeeID}`}
+                                                    url={`/timesheet/${
+                                                        data?.getUserFromEmail
+                                                            ?.id ?? ""
+                                                    }`}
                                                 />
 
-                                                {user.IsSupervisor && (
+                                                {data?.getUserFromEmail
+                                                    ?.isManager && (
                                                     <>
                                                         <NavSubTitle
                                                             title={"Manager"}
@@ -134,7 +120,8 @@ const Menu = ({ isTablet }) => {
                                                         />
                                                     </>
                                                 )}
-                                                {user.IsAdministrator && (
+                                                {data?.getUserFromEmail
+                                                    ?.isAdmin && (
                                                     <>
                                                         <NavSubTitle
                                                             title={
@@ -161,8 +148,10 @@ const Menu = ({ isTablet }) => {
                                                         />
                                                     </>
                                                 )}
-                                                {(user.IsAdministrator ||
-                                                    user.IsPayrollClerk) && (
+                                                {(data?.getUserFromEmail
+                                                    ?.isAdmin ||
+                                                    data?.getUserFromEmail
+                                                        ?.isPaymentManager) && (
                                                     <>
                                                         <NavSubTitle
                                                             title={

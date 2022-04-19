@@ -14,6 +14,7 @@ import { checkValidProject } from "../../../../services/utils";
 import ErrorBoundary from "../../ErrorBoundary";
 
 import "../../../style/TimeEntry.css";
+import { useProjectsQuery } from "../../../../api";
 
 /**
  * @name TimesheetProjectInput
@@ -24,87 +25,79 @@ import "../../../style/TimeEntry.css";
  * @param {Object} props Props. See propTypes for details.
  */
 
-const TimesheetProjectInput = ({
-    value,
-    row,
-    column: { id },
-    data,
-    disableModification,
-    EmployeeID,
-    setIsLocked,
-    timeEntryPeriodStartDate,
-    isTablet,
-    workCodes,
-}) => {
+const TimesheetProjectInput = ({ value, row, column: { id }, userId }) => {
     // We need to keep and update the state of the cell normally
     const [stateValue, setStateValue] = useState({});
-    const projectsSelector = useMemo(createValidProjectsSelector, []);
-    const computedDataSelector = useMemo(getComputedData, []);
-    const projects = useSelector((state) => projectsSelector(state, row));
-    const computedData = useSelector((state) =>
-        computedDataSelector(state, data)
-    );
+    //const projectsSelector = useMemo(createValidProjectsSelector, []);
+    //const computedDataSelector = useMemo(getComputedData, []);
+    //const projects = useSelector((state) => projectsSelector(state, row));
+    // const computedData = useSelector((state) =>
+    //     computedDataSelector(state, data)
+    // );
 
-    const departmentID = useSelector(() => row.original.DepartmentID);
-    const dispatch = useDispatch();
+    const { data, error, loading } = useProjectsQuery();
+
+    const departmentID = useSelector(() => row.original.department.id);
+    //const dispatch = useDispatch();
 
     // When changed, dispatch api call and redux action.
     const onChange = (project) => {
-        const ProjectID = parseInt(project.ProjectID);
+        console.log(project);
+        // const ProjectID = parseInt(project.ProjectID);
 
-        // Checks
-        if (ProjectID === -1) return;
-        // Need to do check to make sure we arnt forcing a duplicate state
-        if (
-            checkValidProject(
-                ProjectID,
-                computedData,
-                workCodes,
-                row.original.WorkCodeID
-            )
-        ) {
-            toast.warn(
-                "Invalid project selection. You have already used all the available work codes for this project."
-            );
-            return;
-        }
+        // // Checks
+        // if (ProjectID === -1) return;
+        // // Need to do check to make sure we arnt forcing a duplicate state
+        // if (
+        //     checkValidProject(
+        //         ProjectID,
+        //         computedData,
+        //         workCodes,
+        //         row.original.WorkCodeID
+        //     )
+        // ) {
+        //     toast.warn(
+        //         "Invalid project selection. You have already used all the available work codes for this project."
+        //     );
+        //     return;
+        // }
 
-        setStateValue(project);
-        updateProject(ProjectID);
+        // setStateValue(project);
+        // updateProject(ProjectID);
     };
 
-    const updateProject = useCallback(
-        async (newValue) => {
-            const result = await dispatch(
-                updateTimeEntryRowDispatch(
-                    row.index,
-                    newValue,
-                    id,
-                    {
-                        ...row.original,
-                        ProjectID: newValue,
-                    },
-                    EmployeeID,
-                    timeEntryPeriodStartDate
-                )
-            );
-            if (!result.success) {
-                if (result.status === 423) {
-                    setIsLocked(true);
-                }
-                toast.warn(result.data);
-            }
-        },
-        [
-            EmployeeID,
-            id,
-            row.index,
-            row.original,
-            setIsLocked,
-            timeEntryPeriodStartDate,
-            dispatch,
-        ]
-    );
+    // const updateProject = useCallback(
+    //     async (newValue) => {
+    //         const result = await dispatch(
+    //             updateTimeEntryRowDispatch(
+    //                 row.index,
+    //                 newValue,
+    //                 id,
+    //                 {
+    //                     ...row.original,
+    //                     ProjectID: newValue,
+    //                 },
+    //                 EmployeeID,
+    //                 timeEntryPeriodStartDate
+    //             )
+    //         );
+    //         if (!result.success) {
+    //             if (result.status === 423) {
+    //                 setIsLocked(true);
+    //             }
+    //             toast.warn(result.data);
+    //         }
+    //     },
+    //     [
+    //         EmployeeID,
+    //         id,
+    //         row.index,
+    //         row.original,
+    //         setIsLocked,
+    //         timeEntryPeriodStartDate,
+    //         dispatch,
+    //     ]
+    // );
 
     // Updates project value based on currently valid projects.
     useEffect(() => {
@@ -113,7 +106,12 @@ const TimesheetProjectInput = ({
         // }
         // if (projects.length > 0) {
         // if there are no applicable projects, set to defualt
-        const project = projects.find((project) => project.ProjectID === value);
+        if (data?.projects) {
+            const project = data.projects.find(
+                (project) => project.id === value
+            );
+            setStateValue(project ?? {});
+        }
 
         //     if (!project) {
         //         // If project is not in list
@@ -127,11 +125,11 @@ const TimesheetProjectInput = ({
         //         // setProjectInfo(project || {});
         //     }
         // } else {
-        setStateValue(project ?? {});
+
         // }
 
         // if not equal than other effect has not yet run
-    }, [projects, value]);
+    }, [data, value]);
 
     return (
         <>
@@ -142,24 +140,24 @@ const TimesheetProjectInput = ({
                         value={stateValue}
                         onChange={onChange}
                         // onBlur={onBlur}
-                        disabled={disableModification}
+                        disabled={false}
                     >
                         <div>
                             <Listbox.Button
                                 className={` ${
-                                    disableModification || departmentID === -1
+                                    false || departmentID === -1
                                         ? "bg-slate-800"
                                         : "bg-slate-900"
                                 } relative w-full py-2 pl-3 pr-10 h-10 text-left  focus:outline-none focus-visible:ring-2 focus-visible:ring-opacity-75 focus-visible:ring-white focus-visible:ring-offset-cyan-300 focus-visible:ring-offset-2 focus-visible:border-cyan-500 sm:text-sm cursor-pointer`}
                             >
                                 <span
                                     className={`block truncate ${
-                                        stateValue.Name
+                                        stateValue.name
                                             ? "text-sky-200"
                                             : "text-slate-400"
                                     }`}
                                 >
-                                    {stateValue.Name ?? "Choose a Project..."}
+                                    {stateValue.name ?? "Choose a Project..."}
                                 </span>
                                 <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
                                     <SelectorIcon
@@ -175,7 +173,7 @@ const TimesheetProjectInput = ({
                                 leaveTo="opacity-0"
                             >
                                 <Listbox.Options className="absolute z-10 py-1 mt-1 overflow-auto text-base bg-slate-800 rounded-md shadow-lg max-h-60 ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                                    {projects.map((project) => {
+                                    {data?.projects.map((project) => {
                                         return (
                                             <Listbox.Option
                                                 className={({ active }) =>
@@ -186,10 +184,10 @@ const TimesheetProjectInput = ({
                                                     }`
                                                 }
                                                 value={project}
-                                                key={project.ProjectID}
+                                                key={project.id}
                                                 //  onSelect={() => setProjectFocused(false)}
-                                                hidden={!project.IsActive}
-                                                disabled={!project.IsActive}
+                                                hidden={!project.isActive}
+                                                disabled={!project.isActive}
                                             >
                                                 {({ selected }) => (
                                                     <>
@@ -200,7 +198,7 @@ const TimesheetProjectInput = ({
                                                                     : "font-normal"
                                                             }`}
                                                         >
-                                                            {project.Name}
+                                                            {project.name}
                                                         </span>
                                                         {selected ? (
                                                             <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-sky-400">

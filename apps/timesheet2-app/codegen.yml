@@ -1,0 +1,12 @@
+overwrite: true
+schema: "E:\\work\\Timesheet\\apps\\timesheet2-api\\src\\schema.graphql"
+documents: "src/api/*.graphql"
+generates:
+    src/api/graphql.ts:
+        plugins:
+            - "typescript"
+            - "typescript-operations"
+            - "typescript-react-apollo"
+    ./graphql.schema.json:
+        plugins:
+            - "introspection"

@@ -35,13 +35,7 @@ import EmployeeTimesheet from "./EmployeeTimesheet";
  * @description Wrapper for routes where authentication is needed.
  * Will reroute to login page if trying to access a route wrapped with AuthRoute and not authenticated
  */
-const AuthRouter = ({
-    objectsLoaded,
-    readObjectsDispatch,
-    loading,
-    user,
-    sidebarPinToggle,
-}: any) => {
+const AuthRouter = () => {
     const location = useLocation();
 
     // React Spring hook for animating page transisitons.
@@ -51,11 +45,11 @@ const AuthRouter = ({
         leave: { opacity: 0 },
     });
 
-    useEffect(() => {
-        if (!objectsLoaded) {
-            readObjectsDispatch();
-        }
-    }, [objectsLoaded, readObjectsDispatch]);
+    // useEffect(() => {
+    //     if (!objectsLoaded) {
+    //         readObjectsDispatch();
+    //     }
+    // }, [objectsLoaded, readObjectsDispatch]);
 
     return (
         <div className="w-full h-full p-3 m-0">
@@ -70,7 +64,7 @@ const AuthRouter = ({
                 // }
             >
                 {/* This is to adjust to the width of the content depending on if the sidebar is pinned or not */}
-                {objectsLoaded && (
+                {
                     <ErrorBoundary>
                         <>
                             {transitions(({ opacity }, item) => (
@@ -179,38 +173,10 @@ const AuthRouter = ({
                             ))}
                         </>
                     </ErrorBoundary>
-                )}
+                }
             </div>
         </div>
     );
 };
 
-AuthRouter.propTypes = {
-    // Boolean for identifying if objects have been loaded.
-    objectsLoaded: PropTypes.bool.isRequired,
-    // Dispatch function for loading objects.
-    readObjectsDispatch: PropTypes.func.isRequired,
-    // Boolean for indicating if an API call is in progress
-    loading: PropTypes.bool.isRequired,
-    // User info object
-    user: PropTypes.object.isRequired,
-    // Bool indicating if sidebar is pinned or not
-    sidebarPinToggle: PropTypes.bool.isRequired,
-};
-
-const mapStateToProps = (state: any) => ({
-    loading: state.apiCallsInProgress > 0,
-    objectsLoaded:
-        state.projects.length > 0 &&
-        state.departments.length > 0 &&
-        state.workCodes.length > 0,
-    user: state.currentUser.user,
-    sidebarPinToggle: state.currentUser.preferences.SidebarPin.Value ?? false,
-});
-
-const mapDispatchToProps = {
-    readObjectsDispatch,
-    // logoutCurrentUser,
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(AuthRouter);
+export default AuthRouter;

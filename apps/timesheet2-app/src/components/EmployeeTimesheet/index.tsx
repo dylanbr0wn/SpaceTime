@@ -15,29 +15,12 @@ import "../style/UserAdmin.css";
  * @description Root time entry screen componenet.
  * @param {Object} props Props. See propTypes for details.
  */
-const EmployeeTimesheet = ({ userInfo, timesheet }) => {
+const EmployeeTimesheet = () => {
     return (
         <div className="w-full">
-            <Timesheet
-                userInfo={userInfo}
-                timesheet={{
-                    ...timesheetInital,
-                    ...timesheet[userInfo.user.EmployeeID],
-                }}
-            />
+            <Timesheet />
         </div>
     );
 };
-EmployeeTimesheet.propTypes = {
-    userInfo: PropTypes.object.isRequired,
-    timesheet: PropTypes.object.isRequired,
-};
 
-const mapStateToProps = (state) => {
-    return {
-        userInfo: state.currentUser,
-        timesheet: state.timesheet,
-    };
-};
-
-export default connect(mapStateToProps)(EmployeeTimesheet);
+export default EmployeeTimesheet;

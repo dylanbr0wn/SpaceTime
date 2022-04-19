@@ -1,0 +1,216 @@
+query InitData($email: String!) {
+    getUserFromEmail(email: $email) {
+        id
+        email
+        code
+        isActive
+        isAdmin
+        profile {
+            id
+            lastName
+            firstName
+            avatar
+            bio
+        }
+        createdAt
+        updatedAt
+        department {
+            id
+        }
+        manager {
+            id
+        }
+        isPaymentManager
+        isManager
+    }
+    applicationPreferences {
+        id
+        createdAt
+        updatedAt
+        isActive
+        startDate
+        periodLength
+    }
+    projects {
+        id
+        name
+        createdAt
+        updatedAt
+        isActive
+        description
+        code
+    }
+    departments {
+        id
+        name
+        createdAt
+        updatedAt
+        isActive
+        description
+    }
+    workTypes {
+        id
+        name
+        createdAt
+        updatedAt
+        isActive
+        description
+        code
+        isSystem
+        isDefault
+        multiplier
+        isBillable
+    }
+}
+
+query GetUserFromEmail($email: String!) {
+    getUserFromEmail(email: $email) {
+        id
+        email
+        code
+        isActive
+        isAdmin
+        profile {
+            id
+            lastName
+            firstName
+            avatar
+            bio
+        }
+        createdAt
+        updatedAt
+        isPaymentManager
+        isManager
+        manager {
+            id
+        }
+        managees {
+            id
+        }
+        department {
+            id
+        }
+    }
+}
+
+mutation GetorCreateTimesheet($timesheet: TimesheetGetInput!) {
+    getorCreateTimesheet(Timesheet: $timesheet) {
+        id
+        createdAt
+        updatedAt
+        period {
+            id
+            createdAt
+            startDate
+            endDate
+        }
+        user {
+            id
+            profile {
+                lastName
+                firstName
+                avatar
+            }
+        }
+        timeEntryRows {
+            id
+            createdAt
+            updatedAt
+            workType {
+                id
+            }
+            project {
+                id
+            }
+            department {
+                id
+            }
+            timeEntries {
+                id
+                createdAt
+                updatedAt
+                date
+                hours
+                entryComments {
+                    id
+                    createdAt
+                    updatedAt
+                    text
+                    user {
+                        id
+                    }
+                }
+            }
+        }
+    }
+}
+
+query Departments {
+    departments {
+        id
+        name
+        createdAt
+        updatedAt
+        isActive
+        description
+    }
+}
+
+query Projects {
+    projects {
+        id
+        name
+        createdAt
+        updatedAt
+        isActive
+        description
+        code
+        department {
+            id
+        }
+    }
+}
+
+query WorkTypes {
+    workTypes {
+        id
+        name
+        createdAt
+        updatedAt
+        isActive
+        description
+        code
+        isSystem
+        isDefault
+        multiplier
+        isBillable
+    }
+}
+query TimeEntry($timeEntry: TimeEntryGetInput!) {
+    timeEntry(TimeEntry: $timeEntry) {
+        id
+        createdAt
+        updatedAt
+        date
+        hours
+        entryComments {
+            id
+            createdAt
+            updatedAt
+            text
+            user {
+                id
+            }
+        }
+    }
+}
+
+query GetUserFromId($getUserFromIdId: Int!) {
+    getUserFromId(id: $getUserFromIdId) {
+        profile {
+            lastName
+            firstName
+            avatar
+        }
+    }
+}

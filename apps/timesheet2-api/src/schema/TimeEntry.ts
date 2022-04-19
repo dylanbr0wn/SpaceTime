@@ -23,6 +23,36 @@ export const TimeEntry = objectType({
     },
 });
 
+export const QueryTimeEntry = extendType({
+    type: "Query",
+    definition(t) {
+        t.field("timeEntry", {
+            type: "TimeEntry",
+            args: {
+                TimeEntry: nonNull(arg({ type: TimeEntryGetInput })),
+            },
+            resolve: async (_, { TimeEntry }, ctx: Context) => {
+                return ctx.prisma.timeEntry.findUnique({
+                    where: {
+                        date_timeEntryRowId: {
+                            date: TimeEntry.date,
+                            timeEntryRowId: TimeEntry.timeEntryRowId,
+                        },
+                    },
+                });
+            },
+        });
+    },
+});
+
+export const TimeEntryGetInput = inputObjectType({
+    name: "TimeEntryGetInput",
+    definition(t) {
+        t.field(NexusPrisma.TimeEntry.date);
+        t.field(NexusPrisma.TimeEntry.timeEntryRowId);
+    },
+});
+
 export const mutateTimeEntry = extendType({
     type: "Mutation",
     definition(t) {
