@@ -29,7 +29,7 @@ export const QueryTimeEntry = extendType({
         t.field("timeEntry", {
             type: "TimeEntry",
             args: {
-                TimeEntry: nonNull(arg({ type: TimeEntryGetInput })),
+                TimeEntry: nonNull(arg({ type: TimeEntryFromRowDateInput })),
             },
             resolve: async (_, { TimeEntry }, ctx: Context) => {
                 return ctx.prisma.timeEntry.findUnique({
@@ -42,14 +42,34 @@ export const QueryTimeEntry = extendType({
                 });
             },
         });
+        t.field("timeEntryFromId", {
+            type: "TimeEntry",
+            args: {
+                TimeEntry: nonNull(arg({ type: TimeEntryFromIdInput })),
+            },
+            resolve: async (_, { TimeEntry }, ctx: Context) => {
+                return ctx.prisma.timeEntry.findUnique({
+                    where: {
+                        id: TimeEntry.id,
+                    },
+                });
+            },
+        });
     },
 });
 
-export const TimeEntryGetInput = inputObjectType({
-    name: "TimeEntryGetInput",
+export const TimeEntryFromRowDateInput = inputObjectType({
+    name: "TimeEntryFromRowDateInput",
     definition(t) {
         t.field(NexusPrisma.TimeEntry.date);
         t.field(NexusPrisma.TimeEntry.timeEntryRowId);
+    },
+});
+
+export const TimeEntryFromIdInput = inputObjectType({
+    name: "TimeEntryFromIdInput",
+    definition(t) {
+        t.field(NexusPrisma.TimeEntry.id);
     },
 });
 

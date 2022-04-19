@@ -1435,7 +1435,36 @@
                   "name": null,
                   "ofType": {
                     "kind": "INPUT_OBJECT",
-                    "name": "TimeEntryGetInput",
+                    "name": "TimeEntryFromRowDateInput",
+                    "ofType": null
+                  }
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              }
+            ],
+            "type": {
+              "kind": "OBJECT",
+              "name": "TimeEntry",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "timeEntryFromId",
+            "description": null,
+            "args": [
+              {
+                "name": "TimeEntry",
+                "description": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "TimeEntryFromIdInput",
                     "ofType": null
                   }
                 },
@@ -1668,7 +1697,34 @@
       },
       {
         "kind": "INPUT_OBJECT",
-        "name": "TimeEntryGetInput",
+        "name": "TimeEntryFromIdInput",
+        "description": null,
+        "fields": null,
+        "inputFields": [
+          {
+            "name": "id",
+            "description": null,
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              }
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "interfaces": null,
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "INPUT_OBJECT",
+        "name": "TimeEntryFromRowDateInput",
         "description": null,
         "fields": null,
         "inputFields": [

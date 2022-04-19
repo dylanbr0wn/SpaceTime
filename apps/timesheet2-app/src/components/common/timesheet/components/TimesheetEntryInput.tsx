@@ -15,7 +15,11 @@ import SavingIcon from "../../SavingIcon";
 
 import "../../../style/TimeEntry.css";
 import { isNumberObject } from "util/types";
-import { useGetUserFromIdQuery, useTimeEntryQuery } from "../../../../api";
+import {
+    useGetUserFromIdQuery,
+    useTimeEntryFromIdQuery,
+    useTimeEntryQuery,
+} from "../../../../api";
 
 /**
  * @name HourEntryInput
@@ -27,7 +31,13 @@ import { useGetUserFromIdQuery, useTimeEntryQuery } from "../../../../api";
 const TimesheetEntryInput = ({ value, row, date, userId }) => {
     // We need to keep and update the state of the cell normally
     //const [work, setWork] = React.useState(initialValue);
-
+    const { data, loading, error } = useTimeEntryFromIdQuery({
+        variables: {
+            timeEntry: {
+                id: value.id ?? -1,
+            },
+        },
+    });
     // const projects = useSelector((state) => state.projects);
     // const departments = useSelector((state) => state.departments);
     // const workCodes = useSelector((state) => state.workCodes);
@@ -211,7 +221,7 @@ const TimesheetEntryInput = ({ value, row, date, userId }) => {
 
     const clickHandler = (event: MouseEvent) => {
         event.stopPropagation();
-        if (!value.id) return;
+        if (!data?.timeEntryFromId) return;
         if (event.ctrlKey) setIsOpen(true);
     };
 
@@ -264,7 +274,7 @@ const TimesheetEntryInput = ({ value, row, date, userId }) => {
                         type="number"
                         onClick={clickHandler}
                         // value={(hoursWorked === null) ? hoursWorked : ''}
-                        value={value.hours ?? ""}
+                        value={data?.timeEntryFromId?.hours ?? ""}
                         onChange={onHourChange}
                         onBlur={onBlur}
                         className={`px-1 text-sky-200 m-0 appearance-none outline-none w-16  h-10 ${

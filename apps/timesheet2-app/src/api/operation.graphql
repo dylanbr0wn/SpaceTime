@@ -127,19 +127,7 @@ mutation GetorCreateTimesheet($timesheet: TimesheetGetInput!) {
             }
             timeEntries {
                 id
-                createdAt
-                updatedAt
                 date
-                hours
-                entryComments {
-                    id
-                    createdAt
-                    updatedAt
-                    text
-                    user {
-                        id
-                    }
-                }
             }
         }
     }
@@ -186,7 +174,7 @@ query WorkTypes {
         isBillable
     }
 }
-query TimeEntry($timeEntry: TimeEntryGetInput!) {
+query TimeEntry($timeEntry: TimeEntryFromRowDateInput!) {
     timeEntry(TimeEntry: $timeEntry) {
         id
         createdAt
@@ -211,6 +199,19 @@ query GetUserFromId($getUserFromIdId: Int!) {
             lastName
             firstName
             avatar
+        }
+    }
+}
+
+query TimeEntryFromId($timeEntry: TimeEntryFromIdInput!) {
+    timeEntryFromId(TimeEntry: $timeEntry) {
+        id
+        createdAt
+        updatedAt
+        date
+        hours
+        entryComments {
+            id
         }
     }
 }

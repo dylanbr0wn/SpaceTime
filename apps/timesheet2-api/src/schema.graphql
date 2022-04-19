@@ -100,7 +100,8 @@ type Query {
   getUserFromEmail(email: String!): User
   getUserFromId(id: Int!): User
   projects: [Project!]!
-  timeEntry(TimeEntry: TimeEntryGetInput!): TimeEntry
+  timeEntry(TimeEntry: TimeEntryFromRowDateInput!): TimeEntry
+  timeEntryFromId(TimeEntry: TimeEntryFromIdInput!): TimeEntry
   workTypes: [WorkType!]!
 }
 
@@ -119,7 +120,11 @@ input TimeEntryCreateInput {
   timeEntryRowId: Int!
 }
 
-input TimeEntryGetInput {
+input TimeEntryFromIdInput {
+  id: Int!
+}
+
+input TimeEntryFromRowDateInput {
   date: DateTime!
   timeEntryRowId: Int!
 }
