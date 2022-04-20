@@ -114,12 +114,12 @@ model TimeEntryRow {
   id           Int         @id @default(autoincrement())
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt
-  workType     WorkType    @relation(fields: [workTypeId], references: [id])
-  workTypeId   Int
-  project      Project     @relation(fields: [projectId], references: [id])
-  projectId    Int
-  department   Department  @relation(fields: [departmentId], references: [id])
-  departmentId Int
+  workType     WorkType?    @relation(fields: [workTypeId], references: [id])
+  workTypeId   Int?
+  project      Project?     @relation(fields: [projectId], references: [id])
+  projectId    Int?
+  department   Department?  @relation(fields: [departmentId], references: [id])
+  departmentId Int?
   timesheet    Timesheet   @relation(fields: [timesheetId], references: [id])
   timesheetId  Int
   timeEntries  TimeEntry[]

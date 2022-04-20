@@ -9,7 +9,11 @@ import { useMediaQuery } from "react-responsive";
 import { useParams } from "react-router-dom";
 import { useTable } from "react-table";
 
-import { useGetorCreateTimesheetMutation } from "../../../api";
+import {
+    useCreateTimeEntryRowMutation,
+    useGetorCreateTimesheetMutation,
+    useGetTimeEntryRowsQuery,
+} from "../../../api";
 import { readUserWorkCodesDispatch } from "../../../redux/actions/employeesActions";
 import { readSubordinateWorkCodesDispatch } from "../../../redux/actions/subordinatesActions";
 import { readTemplatesDispatch } from "../../../redux/actions/templatesActions";
@@ -28,8 +32,10 @@ import TimesheetWorkCodeInput from "./components/TimesheetWorkCodeInput";
 import TimesheetDesktopView from "./views/TimesheetDesktopView";
 import TimesheetMobileView from "./views/TimesheetMobileView";
 import TimesheetTabletView from "./views/TimesheetTabletView";
+import TimesheetTable from "./TimesheetTable";
 
 import "../../style/UserAdmin.css";
+import { useTimesheet, useTimesheetDates } from "./hooks";
 
 /**
  * @name useTimesheet
@@ -187,110 +193,59 @@ import "../../style/UserAdmin.css";
  * @param {Object} props Props. See propTypes for details.
  */
 const Timesheet = () => {
-    // const {
-    //     dailyTotals,
-
-    //     timeEntryPeriodStartDate,
-    //     setTimeSheetLoading,
-    //     setTimeEntryPeriodStartDate,
-    //     timeSheetLoading,
-    //     disableModification,
-    //     skipPageReset,
-    //     setSkipPageReset,
-    //     periodTotalHours,
-    //     isLocked,
-    //     setIsLocked,
-    //     isTablet,
-    // } = useTimesheet({
-    //     settings,
-    //     timesheet,
-    //     readTimesheetDispatch,
-    //     readUserWorkCodesDispatch,
-    //     readTemplatesDispatch,
-    //     userInfo,
-    //     type,
-    //     readSubordinateWorkCodesDispatch,
-    // }); // Calling the cutom hook
     const [type, setType] = React.useState("user");
     const { id: userId } = useParams();
-    const [timesheet, setTimesheet] = React.useState([]);
-    const [timesheetDates, setTimesheetDates] = React.useState<DateTime[]>([]);
 
-    const [getorCreateTimesheetMutation, { data, loading, error }] =
-        useGetorCreateTimesheetMutation({
+    const [
+        getorCreateTimesheetMutation,
+        { data: timesheetData, loading, error },
+    ] = useGetorCreateTimesheetMutation();
+
+    const { data, _loading, _error } = useGetTimeEntryRowsQuery({
+        variables: {
+            timesheetId: timesheetData?.getorCreateTimesheet?.id ?? -1,
+        },
+    });
+
+    const { timesheetDates } = useTimesheetDates(timesheetData);
+
+    const { timesheet } = useTimesheet(
+        data,
+        timesheetDates,
+        getorCreateTimesheetMutation,
+        userId
+    );
+
+    const [createTimeEntryRowMutation] = useCreateTimeEntryRowMutation();
+
+    const createTimeEntryRow = () => {
+        createTimeEntryRowMutation({
             variables: {
-                timesheet: {
-                    userId: parseInt(userId ?? ""),
-                    date: DateTime.now()
-                        .startOf("day")
-                        .toUTC()
-                        .startOf("day")
-                        .toISO(),
+                timesheetId: timesheetData?.getorCreateTimesheet?.id ?? -1,
+            },
+            optimisticResponse: {
+                createTimeEntryRow: {
+                    __typename: "TimeEntryRow",
+                    id: -1,
+                    createdAt: DateTime.now().toISO(),
+                    updatedAt: DateTime.now().toISO(),
+                    timeEntries: [],
+                    workType: {
+                        __typename: "WorkType",
+                        id: -1,
+                    },
+                    project: {
+                        __typename: "Project",
+                        id: -1,
+                    },
+                    department: {
+                        __typename: "Department",
+                        id: -1,
+                    },
                 },
             },
         });
-
-    React.useEffect(() => {
-        if (data) {
-            const dates: DateTime[] = [];
-            const endDate = DateTime.fromISO(
-                data?.getorCreateTimesheet?.period.endDate,
-                { zone: "utc" }
-            );
-            const startDate = DateTime.fromISO(
-                data?.getorCreateTimesheet?.period.startDate,
-                { zone: "utc" }
-            );
-
-            let current = startDate;
-            while (current < endDate) {
-                dates.push(current);
-                current = current.plus({ days: 1 });
-            }
-
-            setTimesheetDates(dates);
-
-            const timeEntryRows = data?.getorCreateTimesheet?.timeEntryRows.map(
-                (row) => {
-                    return {
-                        ...row,
-                        PeriodTimeEntries: dates.map((date) => {
-                            const timeEntry = row.timeEntries.find(
-                                (entry) => entry.date === date.toISO()
-                            );
-
-                            if (timeEntry) {
-                                return {
-                                    ...timeEntry,
-                                    date,
-                                };
-                            } else {
-                                return {
-                                    date,
-                                    id: null,
-                                };
-                            }
-                        }),
-                    };
-                }
-            );
-
-            setTimesheet(timeEntryRows);
-        } else {
-            getorCreateTimesheetMutation({
-                variables: {
-                    timesheet: {
-                        userId: parseInt(userId ?? ""),
-                        date: DateTime.now()
-                            .startOf("day")
-                            .toUTC()
-                            .startOf("day")
-                            .toISO(),
-                    },
-                },
-            });
-        }
-    }, [data, getorCreateTimesheetMutation, userId]);
+    };
 
     // Updates the timesheet start date by subtracting or adding 14 days
 
@@ -298,7 +253,8 @@ const Timesheet = () => {
         () => [
             {
                 Header: "Department",
-                accessor: "department.id",
+                accessor: (row) => row.department.id,
+                id: "department",
                 Cell: ({ value, row, column }) => (
                     <TimesheetDepartmentInput
                         value={value}
@@ -310,7 +266,8 @@ const Timesheet = () => {
             },
             {
                 Header: "Project",
-                accessor: "project.id",
+                accessor: (row) => row.project.id,
+                id: "project",
                 Cell: ({ value, row, column }) => (
                     <TimesheetProjectInput
                         value={value}
@@ -322,7 +279,8 @@ const Timesheet = () => {
             },
             {
                 Header: "Work Type",
-                accessor: "workType.id",
+                accessor: (row) => row.workType.id,
+                id: "workType",
                 Cell: ({ value, row, column }) => (
                     <TimesheetWorkCodeInput
                         value={value}
@@ -335,9 +293,28 @@ const Timesheet = () => {
             {
                 Header: "Hours",
                 columns: timesheetDates.map((date, i) => {
+                    const dayFeatures = getDayFeatures(date);
+
                     return {
-                        Header: date.toFormat("dd"),
-                        accessor: (row) => row.PeriodTimeEntries[i],
+                        // eslint-disable-next-line react/display-name
+                        Header: () => {
+                            return (
+                                <div
+                                    className={`w-16 box-border ${dayFeatures.style}`}
+                                >
+                                    <div className="text-center">
+                                        {date.toFormat("dd")}
+                                    </div>
+                                    <div
+                                        className="text-center"
+                                        style={{ fontWeight: 400 }}
+                                    >
+                                        {date.toFormat("L/d")}
+                                    </div>
+                                </div>
+                            );
+                        },
+                        accessor: (row) => row.timeEntries[i],
                         id: date.toFormat("dd"),
                         Cell: ({ value, row }) => (
                             <TimesheetEntryInput
@@ -354,263 +331,26 @@ const Timesheet = () => {
         [timesheetDates, userId]
     );
 
-    const tableData = React.useMemo(() => timesheet ?? [], [timesheet]);
+    // const tableData = React.useMemo(() => timesheet ?? [], [timesheet]);
 
-    // React Table column setup.
-    // const columns = useMemo(
-    //     () => [
-    //         // {
-    //         //     // specifies delete row button column.
-    //         //     Header: () => null, // No header
-    //         //     id: "pinner", // It needs an ID
-    //         //     // eslint-disable-next-line react/display-name
-    //         //     Cell: (props) => (
-    //         //         <TimesheetPinInput
-    //         //             {...props}
-    //         //             type={type}
-    //         //             disableModification={disableModification}
-    //         //             isTablet={isTablet}
-    //         //         />
-    //         //     ),
-    //         // },
-    //         // {
-    //         //     Header: "Work", // Specifies type of work columns. Project, department and work code.
-    //         //     columns: [
-    //         //         {
-    //         //             Header: "Department",
-    //         //             accessor: "department.id",
-    //         //             // eslint-disable-next-line react/display-name
-    //         //             Cell: ({
-    //         //                 value,
-    //         //                 row,
-    //         //                 column,
-    //         //                 workCodes,
-    //         //                 disableModification,
-    //         //                 setIsLocked,
-    //         //             }) => (
-    //         //                 <TimesheetDepartmentInput
-    //         //                     type={type}
-    //         //                     isTablet={isTablet}
-    //         //                     // {...props}
-    //         //                     disableModification={disableModification}
-    //         //                     value={value}
-    //         //                     row={row}
-    //         //                     column={column}
-    //         //                     workCodes={workCodes}
-    //         //                     setIsLocked={setIsLocked}
-    //         //                     EmployeeID={userInfo.user.EmployeeID}
-    //         //                     timeEntryPeriodStartDate={
-    //         //                         timeEntryPeriodStartDate
-    //         //                     }
-    //         //                 />
-    //         //             ),
-    //         //         },
-    //         //         {
-    //         //             Header: "Project",
-    //         //             accessor: "project.id",
-    //         //             // eslint-disable-next-line react/display-name, react/prop-types
-    //         //             Cell: ({
-    //         //                 value,
-    //         //                 row,
-    //         //                 column,
-    //         //                 data,
-    //         //                 workCodes,
-    //         //                 disableModification,
-    //         //                 setIsLocked,
-    //         //             }) => (
-    //         //                 <TimesheetProjectInput
-    //         //                     type={type}
-    //         //                     isTablet={isTablet}
-    //         //                     disableModification={disableModification}
-    //         //                     value={value}
-    //         //                     data={data}
-    //         //                     row={row}
-    //         //                     column={column}
-    //         //                     workCodes={workCodes}
-    //         //                     setIsLocked={setIsLocked}
-    //         //                     EmployeeID={userInfo.user.EmployeeID}
-    //         //                     timeEntryPeriodStartDate={
-    //         //                         timeEntryPeriodStartDate
-    //         //                     }
-    //         //                 />
-    //         //             ),
-    //         //         },
-    //         //         {
-    //         //             Header: "Work Code",
-    //         //             accessor: "workType.id",
-    //         //             // eslint-disable-next-line react/display-name, react/prop-types
-    //         //             Cell: ({
-    //         //                 value,
-    //         //                 row,
-    //         //                 column,
-    //         //                 workCodes,
-    //         //                 disableModification,
-    //         //                 data,
-    //         //                 setIsLocked,
-    //         //             }) => (
-    //         //                 <TimesheetWorkCodeInput
-    //         //                     type={type}
-    //         //                     isTablet={isTablet}
-    //         //                     disableModification={disableModification}
-    //         //                     value={value}
-    //         //                     row={row}
-    //         //                     data={data}
-    //         //                     column={column}
-    //         //                     setIsLocked={setIsLocked}
-    //         //                     workCodes={workCodes}
-    //         //                     EmployeeID={userInfo.user.EmployeeID}
-    //         //                     timeEntryPeriodStartDate={
-    //         //                         timeEntryPeriodStartDate
-    //         //                     }
-    //         //                 />
-    //         //             ),
-    //         //         },
-    //         //     ],
-    //         //     id: "work",
-    //         // },
-    //         {
-    //             Header: "Hours per Day", // specifies hours of work columns.
-    //             columns: new Array(14).fill(undefined).map((v, i) => {
-    //                 if (!timesheet.workDays || !timesheet.workDays[i])
-    //                     return null;
-    //                 const day = moment(timesheet.workDays[i].DateofWork);
-    //                 const dayFeatures = getDayFeatures(day);
-
-    //                 return {
-    //                     // eslint-disable-next-line react/display-name
-    //                     Header: () => {
-    //                         return (
-    //                             <div
-    //                                 className={`w-16 box-border ${dayFeatures.style}`}
-    //                             >
-    //                                 <div className="text-center">
-    //                                     {day.format("dd")}
-    //                                 </div>
-    //                                 <div
-    //                                     className="text-center"
-    //                                     style={{ fontWeight: 400 }}
-    //                                 >
-    //                                     {day.format("M/D")}
-    //                                 </div>
-    //                             </div>
-    //                         );
-    //                     },
-    //                     accessor: `dates[${i}]`,
-    //                     id: i + 1,
-    //                     // eslint-disable-next-line react/display-name, react/prop-types
-    //                     Cell: ({
-    //                         value,
-    //                         row,
-    //                         columnIndex,
-    //                         disableModification,
-    //                         setIsLocked,
-    //                     }) => (
-    //                         <TimesheetEntryInput
-    //                             disableModification={disableModification}
-    //                             value={value}
-    //                             row={row}
-    //                             columnIndex={columnIndex}
-    //                             setIsLocked={setIsLocked}
-    //                             type={type}
-    //                             EmployeeID={userInfo.user.EmployeeID}
-    //                             timeEntryPeriodStartDate={
-    //                                 timeEntryPeriodStartDate
-    //                             }
-    //                         />
-    //                     ),
-    //                 };
-    //             }),
-    //             id: "hours",
-    //         },
-    //         {
-    //             // specifies delete row button column.
-    //             Header: () => null, // No header
-    //             id: "deleter", // It needs an ID
-    //             // eslint-disable-next-line react/display-name, react/prop-types
-    //             Cell: (props) => (
-    //                 <TimesheetDeleteEntryInput
-    //                     {...props}
-    //                     disableModification={disableModification}
-    //                     EmployeeID={userInfo.user.EmployeeID}
-    //                     timeEntryPeriodStartDate={timeEntryPeriodStartDate}
-    //                     // hourEntries={timesheet.hourEntries}
-    //                 />
-    //             ),
-    //         },
-    //     ],
-    //     [
-    //         timesheet.workDays,
-    //         disableModification,
-    //         userInfo.user.EmployeeID,
-    //         timeEntryPeriodStartDate,
-    //         type,
-    //     ]
-    // );
-
-    // Callback to create a new row when the add new row button is pressed.
-    // const addNewEntryRow = useCallback(
-    //     () =>
-    //         createTimeEntryRowDispatch(
-    //             userInfo.user.EmployeeID,
-    //             timeEntryPeriodStartDate
-    //         ),
-    //     [
-    //         createTimeEntryRowDispatch,
-    //         userInfo.user.EmployeeID,
-    //         timeEntryPeriodStartDate,
-    //     ]
-    // );
-
-    const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
-        useTable({
-            columns,
-            data: tableData,
-        });
+    // const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
+    //     useTable({
+    //         columns,
+    //         data: tableData,
+    //     });
 
     // Initiates request to download the timesheet report printout.
 
     return (
         <>
             {data && (
-                <div className="text-white">
-                    <table
-                        className="bg-slate-900 my-2 border-cyan-500 border rounded-md table-auto"
-                        {...getTableProps()}
-                    >
-                        <thead>
-                            {headerGroups.map((headerGroup, headerIndex) => (
-                                <tr {...headerGroup.getHeaderGroupProps()}>
-                                    {headerGroup.headers.map(
-                                        (column, headerColumnIndex) => (
-                                            <th {...column.getHeaderProps()}>
-                                                {column.render("Header")}
-                                            </th>
-                                        )
-                                    )}
-                                </tr>
-                            ))}
-                        </thead>
-                        <tbody {...getTableBodyProps()}>
-                            {rows.map((row, rowIndex) => {
-                                prepareRow(row);
-                                return (
-                                    <tr {...row.getRowProps()}>
-                                        {row.cells.map((cell, cellIndex) => {
-                                            return (
-                                                <td
-                                                    className="border border-sky-500 p-0 m-0 box-border"
-                                                    {...cell.getCellProps()}
-                                                >
-                                                    {cell.render("Cell")}
-                                                </td>
-                                            );
-                                        })}
-                                    </tr>
-                                );
-                            })}
-                        </tbody>
-                    </table>
-                </div>
+                <>
+                    <TimesheetTable
+                        data={timesheet}
+                        columns={columns}
+                        addNewEntryRow={createTimeEntryRow}
+                    />
+                </>
             )}
 
             {/* <TimesheetDesktopView

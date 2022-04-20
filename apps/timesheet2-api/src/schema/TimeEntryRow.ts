@@ -1,4 +1,12 @@
-import { arg, extendType, inputObjectType, nonNull, objectType } from "nexus";
+import {
+    arg,
+    extendType,
+    inputObjectType,
+    intArg,
+    nonNull,
+    nullable,
+    objectType,
+} from "nexus";
 import * as NexusPrisma from "nexus-prisma";
 
 import { Context } from "../context";
@@ -17,41 +25,62 @@ export const TimeEntryRow = objectType({
     },
 });
 
+export const QueryTimeEntryRow = extendType({
+    type: "Query",
+    definition(t) {
+        t.field("getTimeEntryRow", {
+            type: "TimeEntryRow",
+            args: {
+                id: nonNull(intArg()),
+            },
+            resolve: (_parent, { id }, context: Context) => {
+                return context.prisma.timeEntryRow.findUnique({
+                    where: {
+                        id,
+                    },
+                    include: {
+                        timeEntries: true,
+                    },
+                });
+            },
+        });
+        t.nonNull.list.nonNull.field("getTimeEntryRows", {
+            type: "TimeEntryRow",
+            args: {
+                timesheetId: nonNull(intArg()),
+            },
+            resolve: (_parent, { timesheetId }, context: Context) => {
+                return context.prisma.timeEntryRow.findMany({
+                    where: {
+                        timesheetId,
+                    },
+                    include: {
+                        timeEntries: true,
+                    },
+                });
+            },
+        });
+    },
+});
+
 export const MutateTimeEntryRow = extendType({
     type: "Mutation",
     definition(t) {
         t.field("createTimeEntryRow", {
             type: "TimeEntryRow",
             args: {
-                TimeEntryRow: nonNull(
-                    arg({
-                        type: TimeEntryRowCreateInput,
-                    })
-                ),
+                timesheetId: nonNull(intArg()),
+                departmentId: intArg(),
+                projectId: intArg(),
+                workTypeId: intArg(),
             },
-            resolve: (_parent, { TimeEntryRow }, ctx: Context) => {
+            resolve: (_parent, args, ctx: Context) => {
                 return ctx.prisma.timeEntryRow.create({
                     data: {
-                        workType: {
-                            connect: {
-                                id: TimeEntryRow.workTypeId,
-                            },
-                        },
-                        project: {
-                            connect: {
-                                id: TimeEntryRow.projectId,
-                            },
-                        },
-                        department: {
-                            connect: {
-                                id: TimeEntryRow.departmentId,
-                            },
-                        },
-                        timesheet: {
-                            connect: {
-                                id: TimeEntryRow.timesheetId,
-                            },
-                        },
+                        timesheetId: args.timesheetId,
+                        departmentId: args.departmentId ?? undefined,
+                        projectId: args.projectId ?? undefined,
+                        workTypeId: args.workTypeId ?? undefined,
                     },
                 });
             },
@@ -59,31 +88,27 @@ export const MutateTimeEntryRow = extendType({
         t.field("updateTimeEntryRow", {
             type: "TimeEntryRow",
             args: {
-                TimeEntryRow: nonNull(
-                    arg({
-                        type: TimeEntryRowUpdateInput,
-                    })
-                ),
+                id: nonNull(intArg()),
+                departmentId: intArg(),
+                projectId: intArg(),
+                workTypeId: intArg(),
             },
-            resolve: (_parent, { TimeEntryRow }, ctx: Context) => {
+            resolve: (_parent, args, ctx: Context) => {
                 return ctx.prisma.timeEntryRow.update({
-                    where: { id: TimeEntryRow.id },
+                    where: { id: args.id },
                     data: {
-                        workType: {
-                            connect: {
-                                id: TimeEntryRow.workTypeId,
-                            },
-                        },
-                        project: {
-                            connect: {
-                                id: TimeEntryRow.projectId,
-                            },
-                        },
-                        department: {
-                            connect: {
-                                id: TimeEntryRow.departmentId,
-                            },
-                        },
+                        workTypeId:
+                            args.workTypeId === -1
+                                ? null
+                                : args.workTypeId ?? undefined,
+                        projectId:
+                            args.projectId === -1
+                                ? null
+                                : args.projectId ?? undefined,
+                        departmentId:
+                            args.departmentId === -1
+                                ? null
+                                : args.departmentId ?? undefined,
                     },
                 });
             },
@@ -106,15 +131,15 @@ export const MutateTimeEntryRow = extendType({
     },
 });
 
-export const TimeEntryRowCreateInput = inputObjectType({
-    name: "TimeEntryRowCreateInput",
-    definition(t) {
-        t.field(NexusPrisma.TimeEntryRow.departmentId);
-        t.field(NexusPrisma.TimeEntryRow.timesheetId);
-        t.field(NexusPrisma.TimeEntryRow.workTypeId);
-        t.field(NexusPrisma.TimeEntryRow.projectId);
-    },
-});
+// export const TimeEntryRowCreateInput = inputObjectType({
+//     name: "TimeEntryRowCreateInput",
+//     definition(t) {
+//         t.field(NexusPrisma.TimeEntryRow.departmentId);
+//         t.field(NexusPrisma.TimeEntryRow.timesheetId);
+//         t.field(NexusPrisma.TimeEntryRow.workTypeId);
+//         t.field(NexusPrisma.TimeEntryRow.projectId);
+//     },
+// });
 
 export const TimeEntryRowUpdateInput = inputObjectType({
     name: "TimeEntryRowUpdateInput",

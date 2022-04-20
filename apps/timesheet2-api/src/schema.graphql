@@ -53,14 +53,14 @@ input EntryCommentUpdateInput {
 type Mutation {
   createEntryComment(entryComment: EntryCommentCreateInput!): EntryComment
   createTimeEntry(data: TimeEntryCreateInput!): TimeEntry
-  createTimeEntryRow(TimeEntryRow: TimeEntryRowCreateInput!): TimeEntryRow
+  createTimeEntryRow(departmentId: Int, projectId: Int, timesheetId: Int!, workTypeId: Int): TimeEntryRow
   createUser(user: UserCreateInput!): User
   deleteEntryComment(EntryComment: EntryCommentDeleteInput!): EntryComment
   deleteTimeEntry(id: Int!): TimeEntry
   deleteTimeEntryRow(TimeEntryRow: TimeEntryRowDeleteInput!): TimeEntryRow
   getorCreateTimesheet(Timesheet: TimesheetGetInput!): Timesheet
   updateEntryComment(entryComment: EntryCommentUpdateInput!): EntryComment
-  updateTimeEntryRow(TimeEntryRow: TimeEntryRowUpdateInput!): TimeEntryRow
+  updateTimeEntryRow(departmentId: Int, id: Int!, projectId: Int, workTypeId: Int): TimeEntryRow
   updateTimeEntryhours(data: TimeEntryUpdateInput!, id: Int!): TimeEntry
   updateUser(user: UserUpdateInput!): User
 }
@@ -97,6 +97,8 @@ type Query {
   departments: [Department!]!
   getEntryComments(timeEntryId: Int!): [EntryComment!]!
   getEntryCommentsByTimesheet(timesheetId: Int!): [EntryComment!]!
+  getTimeEntryRow(id: Int!): TimeEntryRow
+  getTimeEntryRows(timesheetId: Int!): [TimeEntryRow!]!
   getUserFromEmail(email: String!): User
   getUserFromId(id: Int!): User
   projects: [Project!]!
@@ -131,19 +133,12 @@ input TimeEntryFromRowDateInput {
 
 type TimeEntryRow {
   createdAt: DateTime!
-  department: Department!
+  department: Department
   id: Int!
-  project: Project!
+  project: Project
   timeEntries: [TimeEntry!]!
   updatedAt: DateTime!
-  workType: WorkType!
-}
-
-input TimeEntryRowCreateInput {
-  departmentId: Int!
-  projectId: Int!
-  timesheetId: Int!
-  workTypeId: Int!
+  workType: WorkType
 }
 
 input TimeEntryRowDeleteInput {
@@ -151,10 +146,10 @@ input TimeEntryRowDeleteInput {
 }
 
 input TimeEntryRowUpdateInput {
-  departmentId: Int!
+  departmentId: Int
   id: Int!
-  projectId: Int!
-  workTypeId: Int!
+  projectId: Int
+  workTypeId: Int
 }
 
 input TimeEntryUpdateInput {

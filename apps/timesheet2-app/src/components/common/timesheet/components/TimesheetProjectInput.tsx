@@ -5,6 +5,11 @@ import { toast } from "react-toastify";
 import { Listbox, Transition } from "@headlessui/react";
 import { CheckIcon, SelectorIcon } from "@heroicons/react/solid";
 
+import {
+    useGetTimeEntryRowQuery,
+    useProjectsQuery,
+    useUpdateTimeEntryRowMutation,
+} from "../../../../api";
 import { updateTimeEntryRowDispatch } from "../../../../redux/actions/timesheetsActions";
 import {
     createValidProjectsSelector,
@@ -12,9 +17,9 @@ import {
 } from "../../../../services/selectors";
 import { checkValidProject } from "../../../../services/utils";
 import ErrorBoundary from "../../ErrorBoundary";
+import { useProjects } from "../hooks";
 
 import "../../../style/TimeEntry.css";
-import { useProjectsQuery } from "../../../../api";
 
 /**
  * @name TimesheetProjectInput
@@ -27,109 +32,82 @@ import { useProjectsQuery } from "../../../../api";
 
 const TimesheetProjectInput = ({ value, row, column: { id }, userId }) => {
     // We need to keep and update the state of the cell normally
-    const [stateValue, setStateValue] = useState({});
-    //const projectsSelector = useMemo(createValidProjectsSelector, []);
-    //const computedDataSelector = useMemo(getComputedData, []);
-    //const projects = useSelector((state) => projectsSelector(state, row));
-    // const computedData = useSelector((state) =>
-    //     computedDataSelector(state, data)
-    // );
+    const [project, setProject] = useState({});
+    const [foundProject, setFoundProject] = useState(true);
+    const [updateTimeEntryRow] = useUpdateTimeEntryRowMutation();
 
-    const { data, error, loading } = useProjectsQuery();
+    const { projects, filteredProjects, allProjectsLoaded } = useProjects(
+        row.original.department.id
+    );
 
-    const departmentID = useSelector(() => row.original.department.id);
-    //const dispatch = useDispatch();
+    React.useEffect(() => {
+        if (allProjectsLoaded) {
+            const project = filteredProjects.find((proj) => proj.id === value);
+            setProject(project ?? {});
+            setFoundProject(!!project);
+        }
+    }, [filteredProjects, value, allProjectsLoaded]);
+
+    React.useEffect(() => {
+        if (!foundProject) {
+            updateTimeEntryRow({
+                variables: {
+                    updateTimeEntryRowId: row.original.id,
+                    projectId: -1,
+                },
+                // optimisticResponse: {
+                //     updateTimeEntryRow: {
+                //         __typename: "TimeEntryRow",
+                //         id: row.original.id,
+                //         createdAt: row.original.createdAt,
+                //         updatedAt: row.original.updatedAt,
+                //         department: {
+                //             __typename: "Department",
+                //             id: row.original.department.id,
+                //         },
+                //         project: {
+                //             __typename: "Project",
+                //             id: -1,
+                //         },
+                //         workType: {
+                //             __typename: "WorkType",
+                //             id: row.original.workType.id,
+                //         },
+                //     },
+                // },
+            });
+        }
+    }, [foundProject, row.original.id, updateTimeEntryRow]);
 
     // When changed, dispatch api call and redux action.
     const onChange = (project) => {
-        console.log(project);
-        // const ProjectID = parseInt(project.ProjectID);
-
-        // // Checks
-        // if (ProjectID === -1) return;
-        // // Need to do check to make sure we arnt forcing a duplicate state
-        // if (
-        //     checkValidProject(
-        //         ProjectID,
-        //         computedData,
-        //         workCodes,
-        //         row.original.WorkCodeID
-        //     )
-        // ) {
-        //     toast.warn(
-        //         "Invalid project selection. You have already used all the available work codes for this project."
-        //     );
-        //     return;
-        // }
-
-        // setStateValue(project);
-        // updateProject(ProjectID);
+        updateTimeEntryRow({
+            variables: {
+                updateTimeEntryRowId: row.original.id,
+                projectId: project.id,
+            },
+            optimisticResponse: {
+                updateTimeEntryRow: {
+                    __typename: "TimeEntryRow",
+                    id: row.original.id,
+                    createdAt: row.original.createdAt,
+                    updatedAt: row.original.updatedAt,
+                    department: {
+                        __typename: "Department",
+                        id: row.original.department.id,
+                    },
+                    project: {
+                        __typename: "Project",
+                        id: project.id,
+                    },
+                    workType: {
+                        __typename: "WorkType",
+                        id: row.original.workType.id,
+                    },
+                },
+            },
+        });
     };
-
-    // const updateProject = useCallback(
-    //     async (newValue) => {
-    //         const result = await dispatch(
-    //             updateTimeEntryRowDispatch(
-    //                 row.index,
-    //                 newValue,
-    //                 id,
-    //                 {
-    //                     ...row.original,
-    //                     ProjectID: newValue,
-    //                 },
-    //                 EmployeeID,
-    //                 timeEntryPeriodStartDate
-    //             )
-    //         );
-    //         if (!result.success) {
-    //             if (result.status === 423) {
-    //                 setIsLocked(true);
-    //             }
-    //             toast.warn(result.data);
-    //         }
-    //     },
-    //     [
-    //         EmployeeID,
-    //         id,
-    //         row.index,
-    //         row.original,
-    //         setIsLocked,
-    //         timeEntryPeriodStartDate,
-    //         dispatch,
-    //     ]
-    // );
-
-    // Updates project value based on currently valid projects.
-    useEffect(() => {
-        // if (value === -1) {
-        //     setStateValue({});
-        // }
-        // if (projects.length > 0) {
-        // if there are no applicable projects, set to defualt
-        if (data?.projects) {
-            const project = data.projects.find(
-                (project) => project.id === value
-            );
-            setStateValue(project ?? {});
-        }
-
-        //     if (!project) {
-        //         // If project is not in list
-
-        //         setStateValue({});
-        //     } else {
-        //         if (project.IsActive && !disableModification) {
-        //             setStateValue(project);
-        //         }
-
-        //         // setProjectInfo(project || {});
-        //     }
-        // } else {
-
-        // }
-
-        // if not equal than other effect has not yet run
-    }, [data, value]);
 
     return (
         <>
@@ -137,7 +115,7 @@ const TimesheetProjectInput = ({ value, row, column: { id }, userId }) => {
                 <div className="w-56 ">
                     <Listbox
                         aria-label="Project Input"
-                        value={stateValue}
+                        value={project}
                         onChange={onChange}
                         // onBlur={onBlur}
                         disabled={false}
@@ -145,19 +123,17 @@ const TimesheetProjectInput = ({ value, row, column: { id }, userId }) => {
                         <div>
                             <Listbox.Button
                                 className={` ${
-                                    false || departmentID === -1
-                                        ? "bg-slate-800"
-                                        : "bg-slate-900"
+                                    false ? "bg-slate-800" : "bg-slate-900"
                                 } relative w-full py-2 pl-3 pr-10 h-10 text-left  focus:outline-none focus-visible:ring-2 focus-visible:ring-opacity-75 focus-visible:ring-white focus-visible:ring-offset-cyan-300 focus-visible:ring-offset-2 focus-visible:border-cyan-500 sm:text-sm cursor-pointer`}
                             >
                                 <span
                                     className={`block truncate ${
-                                        stateValue.name
+                                        project.name
                                             ? "text-sky-200"
                                             : "text-slate-400"
                                     }`}
                                 >
-                                    {stateValue.name ?? "Choose a Project..."}
+                                    {project.name ?? "Choose a Project..."}
                                 </span>
                                 <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
                                     <SelectorIcon
@@ -173,7 +149,7 @@ const TimesheetProjectInput = ({ value, row, column: { id }, userId }) => {
                                 leaveTo="opacity-0"
                             >
                                 <Listbox.Options className="absolute z-10 py-1 mt-1 overflow-auto text-base bg-slate-800 rounded-md shadow-lg max-h-60 ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                                    {data?.projects.map((project) => {
+                                    {filteredProjects.map((project) => {
                                         return (
                                             <Listbox.Option
                                                 className={({ active }) =>

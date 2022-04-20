@@ -1,5 +1,6 @@
 import Holidays from "date-holidays";
-import moment, { Moment } from "moment";
+import { DateTime } from "luxon";
+import moment from "moment";
 
 export const getTimesheetApprovalStatus = (
     ApprovalStatus,
@@ -93,15 +94,14 @@ hd.setHoliday("easter 1", { name: "Easter Monday", type: "public" }); //Add east
 
 //Add any other holidays here
 
-export const getDayFeatures = (day: Moment) => {
-    console.log(day);
+export const getDayFeatures = (day: DateTime) => {
     const dateType = {
-        isWeekEnd: day.day() === 0 || day.day() === 6,
-        isHoliday: hd.isHoliday(day.toISOString()),
-        isToday: day.format("L") === moment().format("L"),
+        isWeekEnd: day.weekday === 6 || day.weekday === 7,
+        isHoliday: hd.isHoliday(day.toISO()),
+        isToday: day.hasSame(DateTime.local(), "day"),
     };
 
-    const hoverText = `${day.format("YYYY/MM/DD")} ${
+    const hoverText = `${day.toFormat("yyyy/LL/dd")} ${
         dateType.isHoliday
             ? `(${dateType.isHoliday[0].name})`
             : dateType.isWeekEnd

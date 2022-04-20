@@ -1,25 +1,22 @@
-import PropTypes from "prop-types";
 import * as React from "react";
-import { connect, useDispatch, useSelector } from "react-redux";
-import { toast } from "react-toastify";
 
 import { Dialog, Transition } from "@headlessui/react";
 
 import {
-    deleteTimeEntryDispatch,
-    saveTimeEntryDispatch,
-} from "../../../../redux/actions/timesheetsActions";
+    GetTimeEntryRowDocument,
+    GetTimeEntryRowsDocument,
+    useCreateEntryCommentMutation,
+    useDeleteTimeEntryMutation,
+    useGetUserFromIdQuery,
+    useTimeEntryFromIdQuery,
+    useTimeEntryQuery,
+    useUpdateTimeEntryhoursMutation,
+} from "../../../../api";
 import { useDebounce } from "../../../../services/hooks";
 import ErrorBoundary from "../../ErrorBoundary";
 import SavingIcon from "../../SavingIcon";
 
 import "../../../style/TimeEntry.css";
-import { isNumberObject } from "util/types";
-import {
-    useGetUserFromIdQuery,
-    useTimeEntryFromIdQuery,
-    useTimeEntryQuery,
-} from "../../../../api";
 
 /**
  * @name HourEntryInput
@@ -30,36 +27,17 @@ import {
  */
 const TimesheetEntryInput = ({ value, row, date, userId }) => {
     // We need to keep and update the state of the cell normally
-    //const [work, setWork] = React.useState(initialValue);
-    const { data, loading, error } = useTimeEntryFromIdQuery({
-        variables: {
-            timeEntry: {
-                id: value.id ?? -1,
-            },
-        },
-    });
-    // const projects = useSelector((state) => state.projects);
-    // const departments = useSelector((state) => state.departments);
-    // const workCodes = useSelector((state) => state.workCodes);
-    // const dispatch = useDispatch();
-    // const user = useSelector((state) => state.currentUser.user);
 
+    const [updateTimeEntryhoursMutation] = useUpdateTimeEntryhoursMutation();
+    const [createEntryCommentMutation] = useCreateEntryCommentMutation();
+    const [deleteTimeEntryMutation] = useDeleteTimeEntryMutation();
+
+    const [work, setWork] = React.useState(value);
     const [savingComment, setSavingComment] = React.useState(false);
     const [validTypes, setValidTypes] = React.useState(false);
-    //const [workType, setWorkType] = React.useState(initialValue);
 
-    // const {
-    //     loading: TimeEntryLoading,
-    //     error: TimeEntryError,
-    //     data: TimeEntryData,
-    // } = useTimeEntryQuery({
-    //     variables: {
-    //         timeEntry: {
-    //             date: date.toISO(),
-    //             timeEntryRowId: row.original.id ?? -1,
-    //         },
-    //     },
-    // });
+    const [isEditing, setIsEditing] = React.useState(false); // Is the input field active?
+    const [isSaving, setIsSaving] = React.useState(false); // Keep track of saving state
 
     const {
         loading: ProfileLoading,
@@ -71,140 +49,73 @@ const TimesheetEntryInput = ({ value, row, date, userId }) => {
         },
     });
 
-    // React.useEffect(() => {
-    //     let rowIsValid = true;
-
-    //     if (
-    //         row.original.DepartmentID === -1 ||
-    //         row.original.WorkCodeID === -1 ||
-    //         row.original.ProjectID === -1
-    //     )
-    //         rowIsValid = false;
-
-    //     const Department = departments
-    //         .filter((wc) => wc.IsActive)
-    //         .find((dep) => dep.DepartmentID === row.original.DepartmentID);
-    //     if (!Department) rowIsValid = false;
-    //     const Project = projects
-    //         .filter((wc) => wc.IsActive)
-    //         .find((proj) => proj.ProjectID === row.original.ProjectID);
-    //     if (!Project) rowIsValid = false;
-
-    //     const WorkCode = workCodes.find(
-    //         (wc) => wc.WorkCodeID === row.original.WorkCodeID
-    //     );
-    //     if (!WorkCode) rowIsValid = false;
-
-    //     setValidTypes(!rowIsValid);
-    // }, [
-    //     departments,
-    //     projects,
-    //     row.original.DepartmentID,
-    //     row.original.ProjectID,
-    //     row.original.WorkCodeID,
-    //     workCodes,
-    // ]);
-
     const onHourChange = (e) => {
-        if (parseFloat(e.target.value) > 24 || parseFloat(e.target.value) < 0)
-            return;
-        //setHoursWorked(e.target.value);
+        let hours = e.target.value ?? 0;
+        if (hours.length === 0) hours = 0;
+        if (parseFloat(hours) > 24 || parseFloat(hours) < 0) return;
+        setWork({
+            ...work,
+            hours: parseFloat(hours),
+        });
     };
-
-    // Updates time entries with updated hoursworked and comment.
-    // const updateHourEntry = React.useCallback(
-    //     async (rowIndex, newWork) => {
-    //         // setSkipPageReset(true);
-    //         if (
-    //             parseFloat(newWork.HoursWorked) === 0 ||
-    //             newWork.HoursWorked === ""
-    //         ) {
-    //             const result = await dispatch(
-    //                 deleteTimeEntryDispatch(
-    //                     rowIndex,
-    //                     columnIndex,
-    //                     { ...newWork, Comment: "" },
-    //                     EmployeeID,
-    //                     timeEntryPeriodStartDate
-    //                 )
-    //             );
-    //             if (!result.success) {
-    //                 if (result.status === 423) {
-    //                     setIsLocked(true);
-    //                 } else {
-    //                     toast.warn(result.data);
-    //                 }
-    //             }
-    //         } else {
-    //             const result = await dispatch(
-    //                 saveTimeEntryDispatch(
-    //                     rowIndex,
-    //                     columnIndex,
-    //                     newWork,
-    //                     EmployeeID,
-    //                     timeEntryPeriodStartDate
-    //                 )
-    //             );
-    //             if (!result.success) {
-    //                 if (result.status === 423) {
-    //                     setIsLocked(true);
-    //                 } else {
-    //                     toast.warn(result.data);
-    //                 }
-    //             }
-    //         }
-    //     },
-    //     [
-    //         EmployeeID,
-    //         columnIndex,
-    //         dispatch,
-    //         setIsLocked,
-    //         timeEntryPeriodStartDate,
-    //     ]
-    // );
 
     // We'll only update the external data when the input is blurred
     const onBlur = () => {
-        // if (parseFloat(hoursWorked) === 0 && initialValue.HoursWorked === "") {
-        //     setHoursWorked("");
-        //     return;
-        // }
-        // if (hoursWorked === initialValue.HoursWorked) return;
-        // updateHourEntry(row.index, { ...work, HoursWorked: hoursWorked });
+        setIsSaving(true);
+        if (work.id === -1 && work.hours > 0) {
+            createEntryCommentMutation({
+                variables: {
+                    data: {
+                        date: date.toISO(),
+                        hours: work.hours,
+                        timeEntryRowId: row.original.id,
+                    },
+                },
+                refetchQueries: [GetTimeEntryRowsDocument],
+            });
+        } else if (work.id !== -1 && work.hours > 0) {
+            if (work.hours !== value.hours) {
+                updateTimeEntryhoursMutation({
+                    variables: {
+                        updateTimeEntryhoursId: work.id,
+                        data: {
+                            hours: work.hours,
+                        },
+                    },
+                    refetchQueries: [GetTimeEntryRowsDocument],
+                });
+            }
+        } else if (work.id !== -1 && work.hours === 0) {
+            deleteTimeEntryMutation({
+                variables: {
+                    deleteTimeEntryId: work.id,
+                },
+                refetchQueries: [GetTimeEntryRowsDocument],
+            });
+            work.id = -1; // set to -1 so we know it's deleted
+        }
+        setIsEditing(false);
     };
 
+    React.useEffect(() => {
+        setIsSaving(false);
+    }, [value]);
+
     // If the initialValue is changed external, sync it up with our state
-    // React.useEffect(() => {
-    //     setWorkType(initialValue);
-    //     // setComment(initialValue ? initialValue.Comment : "");
-    //     // setHoursWorked(initialValue ? initialValue.HoursWorked : "");
-    // }, [initialValue, savingComment]);
-
-    // React.useEffect(() => {
-    //     if (savingComment) {
-    //         updateHourEntry(row.index, {
-    //             ...work,
-    //             Comment: debouncedComment,
-    //         });
-
-    //         setSavingComment(false);
-    //     }
-    // }, [
-    //     debouncedComment,
-    //     dispatch,
-    //     row.index,
-    //     updateHourEntry,
-    //     work,
-    //     savingComment,
-    // ]);
+    React.useEffect(() => {
+        if (!isEditing && !isSaving) {
+            if (value.id !== -1) {
+                // If it's not a new entry dont update the state
+                setWork(value ?? {});
+            }
+        }
+    }, [value, isEditing, isSaving]);
 
     // when comment change detected, will wait 0.75s to update. If updated before end of 0.75s, timer will restart.
     const onCommentChange = ({ target }) => {
         if (target.value.length > 255) {
             setSavingComment(false);
-            return;
         }
-        console.log(target.value);
     };
 
     const [isOpen, setIsOpen] = React.useState(false);
@@ -219,64 +130,31 @@ const TimesheetEntryInput = ({ value, row, date, userId }) => {
         // }
     }
 
-    const clickHandler = (event: MouseEvent) => {
+    const clickHandler = (event: React.MouseEvent) => {
         event.stopPropagation();
-        if (!data?.timeEntryFromId) return;
+        if (!work) return;
         if (event.ctrlKey) setIsOpen(true);
     };
 
     return (
         <>
             <ErrorBoundary>
-                {/* {!loading && */}
-
-                {/* <Tippy
-                    interactive={true}
-                    interactiveBorder={5}
-                    delay={tippyDelay}
-                    disabled={!hoursWorked}
-                    trigger="mouseenter"
-                    placement="bottom"
-                    render={(attr) => (
-                        <div className="shadow" {...attr}>
-                            <div>
-                                {disableModification ? (
-                                    "Comment"
-                                ) : (
-                                    <>
-                                        Add a comment{" "}
-                                        <SavingIcon saving={savingComment} />
-                                    </>
-                                )}
-                            </div>
-
-                            <div>
-                                <input
-                                    type="text"
-                                    disabled={disableModification}
-                                    onChange={onCommentChange}
-                                    style={{}}
-                                    value={comment || ""}
-                                />
-                            </div>
-                            <div>
-                                <div style={{ fontSize: "0.8rem" }}>
-                                    Comment Length:{" "}
-                                    {comment ? comment.length : 0}/255
-                                </div>
-                            </div>
-                        </div>
-                    )}
-                > */}
                 <div className="bg-slate-900 w-16 h-10">
                     <input
                         aria-label="timesheetEntryInput"
                         type="number"
                         onClick={clickHandler}
                         // value={(hoursWorked === null) ? hoursWorked : ''}
-                        value={data?.timeEntryFromId?.hours ?? ""}
+                        value={
+                            !work?.hours
+                                ? ""
+                                : work.hours === 0
+                                ? ""
+                                : work.hours
+                        }
                         onChange={onHourChange}
                         onBlur={onBlur}
+                        onFocus={() => setIsEditing(true)}
                         className={`px-1 text-sky-200 m-0 appearance-none outline-none w-16  h-10 ${
                             false || validTypes
                                 ? "bg-slate-800"
@@ -364,8 +242,6 @@ const TimesheetEntryInput = ({ value, row, date, userId }) => {
                         </div>
                     </Dialog>
                 </Transition>
-                {/* </Tippy> */}
-                {/* } */}
             </ErrorBoundary>
         </>
     );

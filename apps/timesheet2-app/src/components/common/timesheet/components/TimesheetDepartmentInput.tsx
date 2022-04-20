@@ -5,12 +5,17 @@ import { toast } from "react-toastify";
 import { Listbox, Transition } from "@headlessui/react";
 import { CheckIcon, SelectorIcon } from "@heroicons/react/solid";
 
-import { useDepartmentsQuery } from "../../../../api";
-import { updateTimeEntryRowDispatch } from "../../../../redux/actions/timesheetsActions";
+import {
+    GetorCreateTimesheetDocument,
+    useDepartmentsQuery,
+    useGetTimeEntryRowQuery,
+    useUpdateTimeEntryRowMutation,
+} from "../../../../api";
 import ErrorBoundary from "../../ErrorBoundary";
 import Tooltip from "../../Tooltip";
 
 import "../../../style/TimeEntry.css";
+import { DateTime } from "luxon";
 
 /**
  * @name TimesheetDepartmentInput
@@ -22,53 +27,61 @@ import "../../../style/TimeEntry.css";
  */
 const TimesheetDepartmentInput = ({ value, row, column: { id }, userId }) => {
     // We need to keep and update the state of the cell normally
-    const [stateValue, setStateValue] = useState();
 
-    const { data, error, loading } = useDepartmentsQuery();
+    const [department, setDepartment] = useState({});
 
-    // const dispatch = useDispatch();
+    const { data: departmentsData, error, loading } = useDepartmentsQuery();
+
+    const [updateTimeEntryRow] = useUpdateTimeEntryRowMutation();
 
     // When changed, dispatch api call and redux action.
     const onChange = async (department) => {
-        console.log(department);
-        // if (parseInt(target.value) === -1) return;
-        // setStateValue(department);
-        // const result = await dispatch(
-        //     updateTimeEntryRowDispatch(
-        //         row.index,
-        //         parseInt(department.DepartmentID),
-        //         id,
-        //         {
-        //             ...row.original,
-        //             [id]: parseInt(department.DepartmentID),
-        //         },
-        //         EmployeeID,
-        //         timeEntryPeriodStartDate
-        //     )
-        // );
-        // if (!result.success) {
-        //     if (result.status === 423) {
-        //         setIsLocked(true);
-        //     }
-        //     toast.warn(result.data);
-        // }
+        // setDepartment(department);
+        updateTimeEntryRow({
+            variables: {
+                updateTimeEntryRowId: row.original.id,
+                departmentId: department.id,
+            },
+            optimisticResponse: {
+                updateTimeEntryRow: {
+                    __typename: "TimeEntryRow",
+                    id: row.original.id,
+                    createdAt: row.original.createdAt,
+                    updatedAt: row.original.updatedAt,
+                    department: {
+                        __typename: "Department",
+                        id: department.id,
+                    },
+                    project: {
+                        __typename: "Project",
+                        id: row.original.project.id,
+                    },
+                    workType: {
+                        __typename: "WorkType",
+                        id: row.original.workType.id,
+                    },
+                },
+            },
+        });
     };
 
     // If the initialValue is changed external, sync it up with our state
     useEffect(() => {
-        if (data?.departments) {
-            const department = data.departments.find((dep) => dep.id === value);
-            setStateValue(department ?? null);
+        if (departmentsData?.departments) {
+            const department = departmentsData.departments.find(
+                (dep) => dep.id === value
+            );
+            setDepartment(department ?? {});
         }
-    }, [value, data]);
+    }, [value, departmentsData]);
     return (
         <>
             <ErrorBoundary>
                 <div className=" w-44">
-                    {stateValue && (
+                    {department && (
                         <Listbox
                             aria-label="Department Input"
-                            value={stateValue}
+                            value={department}
                             onChange={onChange}
                             // onBlur={onBlur}
                             disabled={false}
@@ -77,12 +90,12 @@ const TimesheetDepartmentInput = ({ value, row, column: { id }, userId }) => {
                                 <Listbox.Button className="relative w-full py-2 pl-3 pr-10 text-left shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-opacity-75 focus-visible:ring-white focus-visible:ring-offset-cyan-300 focus-visible:ring-offset-2 focus-visible:border-cyan-500 sm:text-sm cursor-pointer ">
                                     <span
                                         className={`block truncate ${
-                                            stateValue.name
+                                            department.name
                                                 ? "text-sky-200"
                                                 : "text-slate-400"
                                         }`}
                                     >
-                                        {stateValue.name ??
+                                        {department.name ??
                                             "Choose a department..."}
                                     </span>
                                     <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
@@ -99,45 +112,49 @@ const TimesheetDepartmentInput = ({ value, row, column: { id }, userId }) => {
                                     leaveTo="opacity-0"
                                 >
                                     <Listbox.Options className="absolute z-10 w-full py-1 mt-1 overflow-auto text-base bg-slate-800 rounded-md shadow-lg max-h-60 ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                                        {data?.departments.map((department) => {
-                                            return (
-                                                <Listbox.Option
-                                                    className={({ active }) =>
-                                                        `cursor-pointer select-none relative py-2 pl-10 pr-4 ${
-                                                            active
-                                                                ? "text-sky-300 bg-slate-700"
-                                                                : "text-sky-400"
-                                                        }`
-                                                    }
-                                                    value={department}
-                                                    key={department.id}
-                                                >
-                                                    {({ selected }) => (
-                                                        <>
-                                                            <span
-                                                                className={`block truncate ${
-                                                                    selected
-                                                                        ? "font-medium"
-                                                                        : "font-normal"
-                                                                }`}
-                                                            >
-                                                                {
-                                                                    department.name
-                                                                }
-                                                            </span>
-                                                            {selected ? (
-                                                                <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-sky-400">
-                                                                    <CheckIcon
-                                                                        className="w-5 h-5"
-                                                                        aria-hidden="true"
-                                                                    />
+                                        {departmentsData?.departments.map(
+                                            (department) => {
+                                                return (
+                                                    <Listbox.Option
+                                                        className={({
+                                                            active,
+                                                        }) =>
+                                                            `cursor-pointer select-none relative py-2 pl-10 pr-4 ${
+                                                                active
+                                                                    ? "text-sky-300 bg-slate-700"
+                                                                    : "text-sky-400"
+                                                            }`
+                                                        }
+                                                        value={department}
+                                                        key={department.id}
+                                                    >
+                                                        {({ selected }) => (
+                                                            <>
+                                                                <span
+                                                                    className={`block truncate ${
+                                                                        selected
+                                                                            ? "font-medium"
+                                                                            : "font-normal"
+                                                                    }`}
+                                                                >
+                                                                    {
+                                                                        department.name
+                                                                    }
                                                                 </span>
-                                                            ) : null}
-                                                        </>
-                                                    )}
-                                                </Listbox.Option>
-                                            );
-                                        })}
+                                                                {selected ? (
+                                                                    <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-sky-400">
+                                                                        <CheckIcon
+                                                                            className="w-5 h-5"
+                                                                            aria-hidden="true"
+                                                                        />
+                                                                    </span>
+                                                                ) : null}
+                                                            </>
+                                                        )}
+                                                    </Listbox.Option>
+                                                );
+                                            }
+                                        )}
                                     </Listbox.Options>
                                 </Transition>
                             </div>

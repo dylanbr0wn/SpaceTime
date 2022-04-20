@@ -96,39 +96,12 @@ query GetUserFromEmail($email: String!) {
 mutation GetorCreateTimesheet($timesheet: TimesheetGetInput!) {
     getorCreateTimesheet(Timesheet: $timesheet) {
         id
-        createdAt
-        updatedAt
+
         period {
             id
-            createdAt
+
             startDate
             endDate
-        }
-        user {
-            id
-            profile {
-                lastName
-                firstName
-                avatar
-            }
-        }
-        timeEntryRows {
-            id
-            createdAt
-            updatedAt
-            workType {
-                id
-            }
-            project {
-                id
-            }
-            department {
-                id
-            }
-            timeEntries {
-                id
-                date
-            }
         }
     }
 }
@@ -212,6 +185,166 @@ query TimeEntryFromId($timeEntry: TimeEntryFromIdInput!) {
         hours
         entryComments {
             id
+        }
+    }
+}
+
+mutation CreateEntryComment($data: TimeEntryCreateInput!) {
+    createTimeEntry(data: $data) {
+        id
+        createdAt
+        updatedAt
+        date
+        hours
+        entryComments {
+            id
+        }
+    }
+}
+
+mutation UpdateTimeEntryhours(
+    $updateTimeEntryhoursId: Int!
+    $data: TimeEntryUpdateInput!
+) {
+    updateTimeEntryhours(id: $updateTimeEntryhoursId, data: $data) {
+        id
+        createdAt
+        updatedAt
+        date
+        hours
+        entryComments {
+            id
+        }
+    }
+}
+
+mutation DeleteTimeEntry($deleteTimeEntryId: Int!) {
+    deleteTimeEntry(id: $deleteTimeEntryId) {
+        id
+        hours
+        date
+        updatedAt
+        createdAt
+    }
+}
+mutation UpdateTimeEntryRow(
+    $updateTimeEntryRowId: Int!
+    $departmentId: Int
+    $projectId: Int
+    $workTypeId: Int
+) {
+    updateTimeEntryRow(
+        id: $updateTimeEntryRowId
+        departmentId: $departmentId
+        projectId: $projectId
+        workTypeId: $workTypeId
+    ) {
+        id
+        createdAt
+        updatedAt
+        workType {
+            id
+        }
+        project {
+            id
+        }
+        department {
+            id
+        }
+    }
+}
+
+query GetTimeEntryRow($getTimeEntryRowId: Int!) {
+    getTimeEntryRow(id: $getTimeEntryRowId) {
+        id
+        updatedAt
+        workType {
+            id
+            name
+            createdAt
+            updatedAt
+            isActive
+            description
+            code
+            isSystem
+            isDefault
+            multiplier
+            isBillable
+        }
+        createdAt
+        project {
+            id
+            name
+            createdAt
+            updatedAt
+            isActive
+            description
+            code
+        }
+        department {
+            id
+            name
+            createdAt
+            updatedAt
+            isActive
+            description
+            projects {
+                id
+            }
+        }
+    }
+}
+
+query GetTimeEntryRows($timesheetId: Int!) {
+    getTimeEntryRows(timesheetId: $timesheetId) {
+        id
+        createdAt
+        updatedAt
+        workType {
+            id
+        }
+        project {
+            id
+        }
+        department {
+            id
+        }
+        timeEntries {
+            id
+            createdAt
+            updatedAt
+            date
+            hours
+            entryComments {
+                id
+            }
+        }
+    }
+}
+
+mutation CreateTimeEntryRow($timesheetId: Int!) {
+    createTimeEntryRow(timesheetId: $timesheetId) {
+        id
+        createdAt
+        updatedAt
+        workType {
+            id
+        }
+        project {
+            id
+        }
+        department {
+            id
+        }
+        timeEntries {
+            id
+            createdAt
+            updatedAt
+            date
+            hours
+            entryComments {
+                id
+            }
         }
     }
 }

@@ -14,24 +14,7 @@ import TimesheetDayCommentInput from "./components/TimesheetDayCommentInput";
  * @description Provides the time entry table interface.
  * @param {Object} props Props. See propTypes for details.
  */
-const TimesheetTable = ({
-    disableModification,
-    addNewEntryRow,
-    alternateData,
-    columns,
-    data,
-    workCodes,
-    loading,
-    dailyTotals,
-    dayComments,
-    workDays,
-    EmployeeID,
-    setIsLocked,
-    timeEntryPeriodStartDate,
-    isTablet,
-    pinnedRows,
-    type,
-}) => {
+const TimesheetTable = ({ addNewEntryRow, columns, data }) => {
     const [pinRows, setPinRows] = useState([]);
     const [otherRows, setOtherRows] = useState([]);
 
@@ -51,20 +34,20 @@ const TimesheetTable = ({
                 // That way we can call this function from our
                 // cell renderer!
                 // setSkipPageReset,
-                setIsLocked,
+                //setIsLocked,
             }
             // useSortBy
         );
 
-    useEffect(() => {
-        if (type === "user") {
-            const [pin, nonPin] = getPinnedRows(pinnedRows, rows);
-            setOtherRows(nonPin);
-            setPinRows(pin);
-        } else {
-            setOtherRows(rows);
-        }
-    }, [rows, pinnedRows, type]);
+    // useEffect(() => {
+    //     if (type === "user") {
+    //         const [pin, nonPin] = getPinnedRows(pinnedRows, rows);
+    //         setOtherRows(nonPin);
+    //         setPinRows(pin);
+    //     } else {
+    //         setOtherRows(rows);
+    //     }
+    // }, [rows, pinnedRows, type]);
 
     // Render the UI for your table
     return (
@@ -109,7 +92,7 @@ const TimesheetTable = ({
                     ))}
                 </thead>
                 <tbody className="" {...getTableBodyProps()}>
-                    {pinRows.map((row, i) => {
+                    {rows.map((row, i) => {
                         prepareRow(row);
                         return (
                             <tr
@@ -124,20 +107,14 @@ const TimesheetTable = ({
                                             {...cell.getCellProps()}
                                             key={j}
                                         >
-                                            {cell.render("Cell", {
-                                                columnIndex: j,
-                                                workCodes,
-                                                disableModification,
-                                                loading,
-                                                pinned: true,
-                                            })}
+                                            {cell.render("Cell")}
                                         </td>
                                     );
                                 })}
                             </tr>
                         );
                     })}
-                    {pinRows.length > 0 && (
+                    {/* {pinRows.length > 0 && (
                         <tr className="h-1 bg-slate-800">
                             <td colSpan={19} />
                         </tr>
@@ -162,7 +139,6 @@ const TimesheetTable = ({
                                         >
                                             {cell.render("Cell", {
                                                 columnIndex: j,
-                                                workCodes,
                                                 disableModification,
                                                 loading,
                                             })}
@@ -171,10 +147,10 @@ const TimesheetTable = ({
                                 })}
                             </tr>
                         );
-                    })}
+                    })} */}
 
                     {/* new entry button row */}
-                    {!disableModification && (
+                    {
                         <tr>
                             <td className="text-center" colSpan={18}>
                                 <button
@@ -203,7 +179,7 @@ const TimesheetTable = ({
                                 </button>
                             </td>
                         </tr>
-                    )}
+                    }
 
                     {/* alternative transport entry row */}
                     {/* {alternateData && (
@@ -290,26 +266,6 @@ const TimesheetTable = ({
             </table>
         </>
     );
-};
-TimesheetTable.propTypes = {
-    timeEntryPeriodStartDate: PropTypes.object.isRequired,
-    disableModification: PropTypes.bool.isRequired,
-    addNewEntryRow: PropTypes.func.isRequired,
-    alternateData: PropTypes.array.isRequired,
-    columns: PropTypes.array.isRequired,
-    data: PropTypes.array.isRequired,
-    skipPageReset: PropTypes.bool.isRequired,
-    setSkipPageReset: PropTypes.func.isRequired,
-    workCodes: PropTypes.array.isRequired,
-    loading: PropTypes.bool.isRequired,
-    dailyTotals: PropTypes.array.isRequired,
-    dayComments: PropTypes.array.isRequired,
-    workDays: PropTypes.array.isRequired,
-    setIsLocked: PropTypes.func.isRequired,
-    EmployeeID: PropTypes.number.isRequired,
-    isTablet: PropTypes.bool,
-    pinnedRows: PropTypes.array,
-    type: PropTypes.string,
 };
 
 export default TimesheetTable;

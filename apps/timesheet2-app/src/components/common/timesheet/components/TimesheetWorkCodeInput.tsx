@@ -5,7 +5,11 @@ import { toast } from "react-toastify";
 import { Listbox, Transition } from "@headlessui/react";
 import { CheckIcon, SelectorIcon } from "@heroicons/react/solid";
 
-import { useWorkTypesQuery } from "../../../../api";
+import {
+    useGetTimeEntryRowQuery,
+    useUpdateTimeEntryRowMutation,
+    useWorkTypesQuery,
+} from "../../../../api";
 import { updateTimeEntryRowDispatch } from "../../../../redux/actions/timesheetsActions";
 import {
     allowedWorkCodesSelector,
@@ -25,57 +29,64 @@ import "../../../style/TimeEntry.css";
  */
 const TimesheetWorkCodeInput = ({ value, row, column: { id }, userId }) => {
     // We need to keep and update the state of the cell normally
-    const [stateValue, setStateValue] = useState(value);
+    const [workType, setWorkType] = useState({});
 
     // const allWorkCodes = useSelector((state) => state.workCodes);
 
     const { data, error, loading } = useWorkTypesQuery();
-    // const allowedWorkCodes = useSelector((state) =>
-    //     allowedWorkCodesSelector(state, { workCodes, row, data })
-    // );
-    // const unusedWorkCodes = useSelector((state) =>
-    //     unusedWorkCodesSelector(state, { workCodes, row, data })
-    // );
 
+    const [updateTimeEntryRow] = useUpdateTimeEntryRowMutation();
+
+    React.useEffect(() => {
+        if (data) {
+            const workType = data.workTypes.find((type) => type.id === value);
+            setWorkType(workType ?? {});
+        }
+    }, [data, value]);
+
+    // const departmentID = useSelector(() => row.original.department.id);
     // const dispatch = useDispatch();
-    // const [validWorkCodes, setValidWorkCodes] = useState([]);
 
     // When changed, dispatch api call and redux action.
-    const onChange = async (workCode) => {
-        console.log(workCode);
-        // setStateValue(workCode);
-        // // setSkipPageReset(true);
-        // const result = await dispatch(
-        //     updateTimeEntryRowDispatch(
-        //         row.index,
-        //         parseInt(workCode.WorkCodeID),
-        //         id,
-        //         {
-        //             ...row.original,
-        //             [id]: parseInt(workCode.WorkCodeID),
-        //         },
-        //         EmployeeID,
-        //         timeEntryPeriodStartDate
-        //     )
-        // );
-        // if (!result.success) {
-        //     if (result.status === 423) {
-        //         setIsLocked(true);
-        //     }
-        //     toast.warn(result.data);
-        // }
+    const onChange = (workType) => {
+        updateTimeEntryRow({
+            variables: {
+                updateTimeEntryRowId: row.original.id,
+                workTypeId: workType.id,
+            },
+            optimisticResponse: {
+                updateTimeEntryRow: {
+                    __typename: "TimeEntryRow",
+                    id: row.original.id,
+                    createdAt: row.original.createdAt,
+                    updatedAt: row.original.updatedAt,
+                    department: {
+                        __typename: "Department",
+                        id: row.original.department.id,
+                    },
+                    project: {
+                        __typename: "Project",
+                        id: row.original.project.id,
+                    },
+                    workType: {
+                        __typename: "WorkType",
+                        id: workType.id,
+                    },
+                },
+            },
+        });
     };
 
     // Set info field for workcode
-    useEffect(() => {
-        if (data?.workTypes) {
-            const workCode = data?.workTypes.find((code) => code.id === value);
-            // if (!workCode) {
-            //     workCode = data?.workTypes.find((code) => code.WorkCodeID === value);
-            // }
-            setStateValue(workCode ?? {});
-        }
-    }, [value, data]);
+    // useEffect(() => {
+    //     if (data?.workTypes) {
+    //         const workCode = data?.workTypes.find((code) => code.id === value);
+    //         // if (!workCode) {
+    //         //     workCode = data?.workTypes.find((code) => code.WorkCodeID === value);
+    //         // }
+    //         setStateValue(workCode ?? {});
+    //     }
+    // }, [value, data]);
 
     return (
         <>
@@ -83,7 +94,7 @@ const TimesheetWorkCodeInput = ({ value, row, column: { id }, userId }) => {
                 <div className=" w-36">
                     <Listbox
                         aria-label="Project Input"
-                        value={stateValue}
+                        value={workType}
                         onChange={onChange}
                         // onBlur={onBlur}
                         disabled={false}
@@ -96,12 +107,12 @@ const TimesheetWorkCodeInput = ({ value, row, column: { id }, userId }) => {
                             >
                                 <span
                                     className={`block truncate ${
-                                        stateValue.name
+                                        workType.name
                                             ? "text-sky-200"
                                             : "text-slate-400"
                                     }`}
                                 >
-                                    {stateValue.name ?? "Choose a Work Code..."}
+                                    {workType.name ?? "Choose a Work Code..."}
                                 </span>
                                 <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
                                     <SelectorIcon

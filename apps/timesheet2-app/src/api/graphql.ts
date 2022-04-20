@@ -91,7 +91,10 @@ export type MutationCreateTimeEntryArgs = {
 
 
 export type MutationCreateTimeEntryRowArgs = {
-  TimeEntryRow: TimeEntryRowCreateInput;
+  departmentId?: InputMaybe<Scalars['Int']>;
+  projectId?: InputMaybe<Scalars['Int']>;
+  timesheetId: Scalars['Int'];
+  workTypeId?: InputMaybe<Scalars['Int']>;
 };
 
 
@@ -126,7 +129,10 @@ export type MutationUpdateEntryCommentArgs = {
 
 
 export type MutationUpdateTimeEntryRowArgs = {
-  TimeEntryRow: TimeEntryRowUpdateInput;
+  departmentId?: InputMaybe<Scalars['Int']>;
+  id: Scalars['Int'];
+  projectId?: InputMaybe<Scalars['Int']>;
+  workTypeId?: InputMaybe<Scalars['Int']>;
 };
 
 
@@ -176,6 +182,8 @@ export type Query = {
   departments: Array<Department>;
   getEntryComments: Array<EntryComment>;
   getEntryCommentsByTimesheet: Array<EntryComment>;
+  getTimeEntryRow?: Maybe<TimeEntryRow>;
+  getTimeEntryRows: Array<TimeEntryRow>;
   getUserFromEmail?: Maybe<User>;
   getUserFromId?: Maybe<User>;
   projects: Array<Project>;
@@ -191,6 +199,16 @@ export type QueryGetEntryCommentsArgs = {
 
 
 export type QueryGetEntryCommentsByTimesheetArgs = {
+  timesheetId: Scalars['Int'];
+};
+
+
+export type QueryGetTimeEntryRowArgs = {
+  id: Scalars['Int'];
+};
+
+
+export type QueryGetTimeEntryRowsArgs = {
   timesheetId: Scalars['Int'];
 };
 
@@ -242,19 +260,12 @@ export type TimeEntryFromRowDateInput = {
 export type TimeEntryRow = {
   __typename?: 'TimeEntryRow';
   createdAt: Scalars['DateTime'];
-  department: Department;
+  department?: Maybe<Department>;
   id: Scalars['Int'];
-  project: Project;
+  project?: Maybe<Project>;
   timeEntries: Array<TimeEntry>;
   updatedAt: Scalars['DateTime'];
-  workType: WorkType;
-};
-
-export type TimeEntryRowCreateInput = {
-  departmentId: Scalars['Int'];
-  projectId: Scalars['Int'];
-  timesheetId: Scalars['Int'];
-  workTypeId: Scalars['Int'];
+  workType?: Maybe<WorkType>;
 };
 
 export type TimeEntryRowDeleteInput = {
@@ -262,10 +273,10 @@ export type TimeEntryRowDeleteInput = {
 };
 
 export type TimeEntryRowUpdateInput = {
-  departmentId: Scalars['Int'];
+  departmentId?: InputMaybe<Scalars['Int']>;
   id: Scalars['Int'];
-  projectId: Scalars['Int'];
-  workTypeId: Scalars['Int'];
+  projectId?: InputMaybe<Scalars['Int']>;
+  workTypeId?: InputMaybe<Scalars['Int']>;
 };
 
 export type TimeEntryUpdateInput = {
@@ -371,7 +382,7 @@ export type GetorCreateTimesheetMutationVariables = Exact<{
 }>;
 
 
-export type GetorCreateTimesheetMutation = { __typename?: 'Mutation', getorCreateTimesheet?: { __typename?: 'Timesheet', id: number, createdAt: any, updatedAt: any, period: { __typename?: 'Period', id: number, createdAt: any, startDate: any, endDate: any }, user: { __typename?: 'User', id: number, profile?: { __typename?: 'Profile', lastName: string, firstName: string, avatar?: string | null } | null }, timeEntryRows: Array<{ __typename?: 'TimeEntryRow', id: number, createdAt: any, updatedAt: any, workType: { __typename?: 'WorkType', id: number }, project: { __typename?: 'Project', id: number }, department: { __typename?: 'Department', id: number }, timeEntries: Array<{ __typename?: 'TimeEntry', id: number, date: any }> }> } | null };
+export type GetorCreateTimesheetMutation = { __typename?: 'Mutation', getorCreateTimesheet?: { __typename?: 'Timesheet', id: number, period: { __typename?: 'Period', id: number, startDate: any, endDate: any } } | null };
 
 export type DepartmentsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -408,6 +419,59 @@ export type TimeEntryFromIdQueryVariables = Exact<{
 
 
 export type TimeEntryFromIdQuery = { __typename?: 'Query', timeEntryFromId?: { __typename?: 'TimeEntry', id: number, createdAt: any, updatedAt: any, date: any, hours: number, entryComments: Array<{ __typename?: 'EntryComment', id: number }> } | null };
+
+export type CreateEntryCommentMutationVariables = Exact<{
+  data: TimeEntryCreateInput;
+}>;
+
+
+export type CreateEntryCommentMutation = { __typename?: 'Mutation', createTimeEntry?: { __typename?: 'TimeEntry', id: number, createdAt: any, updatedAt: any, date: any, hours: number, entryComments: Array<{ __typename?: 'EntryComment', id: number }> } | null };
+
+export type UpdateTimeEntryhoursMutationVariables = Exact<{
+  updateTimeEntryhoursId: Scalars['Int'];
+  data: TimeEntryUpdateInput;
+}>;
+
+
+export type UpdateTimeEntryhoursMutation = { __typename?: 'Mutation', updateTimeEntryhours?: { __typename?: 'TimeEntry', id: number, createdAt: any, updatedAt: any, date: any, hours: number, entryComments: Array<{ __typename?: 'EntryComment', id: number }> } | null };
+
+export type DeleteTimeEntryMutationVariables = Exact<{
+  deleteTimeEntryId: Scalars['Int'];
+}>;
+
+
+export type DeleteTimeEntryMutation = { __typename?: 'Mutation', deleteTimeEntry?: { __typename?: 'TimeEntry', id: number, hours: number, date: any, updatedAt: any, createdAt: any } | null };
+
+export type UpdateTimeEntryRowMutationVariables = Exact<{
+  updateTimeEntryRowId: Scalars['Int'];
+  departmentId?: InputMaybe<Scalars['Int']>;
+  projectId?: InputMaybe<Scalars['Int']>;
+  workTypeId?: InputMaybe<Scalars['Int']>;
+}>;
+
+
+export type UpdateTimeEntryRowMutation = { __typename?: 'Mutation', updateTimeEntryRow?: { __typename?: 'TimeEntryRow', id: number, createdAt: any, updatedAt: any, workType?: { __typename?: 'WorkType', id: number } | null, project?: { __typename?: 'Project', id: number } | null, department?: { __typename?: 'Department', id: number } | null } | null };
+
+export type GetTimeEntryRowQueryVariables = Exact<{
+  getTimeEntryRowId: Scalars['Int'];
+}>;
+
+
+export type GetTimeEntryRowQuery = { __typename?: 'Query', getTimeEntryRow?: { __typename?: 'TimeEntryRow', id: number, updatedAt: any, createdAt: any, workType?: { __typename?: 'WorkType', id: number, name: string, createdAt: any, updatedAt: any, isActive: boolean, description?: string | null, code: string, isSystem: boolean, isDefault: boolean, multiplier: number, isBillable: boolean } | null, project?: { __typename?: 'Project', id: number, name: string, createdAt: any, updatedAt: any, isActive: boolean, description?: string | null, code: string } | null, department?: { __typename?: 'Department', id: number, name: string, createdAt: any, updatedAt: any, isActive: boolean, description?: string | null, projects: Array<{ __typename?: 'Project', id: number }> } | null } | null };
+
+export type GetTimeEntryRowsQueryVariables = Exact<{
+  timesheetId: Scalars['Int'];
+}>;
+
+
+export type GetTimeEntryRowsQuery = { __typename?: 'Query', getTimeEntryRows: Array<{ __typename?: 'TimeEntryRow', id: number, createdAt: any, updatedAt: any, workType?: { __typename?: 'WorkType', id: number } | null, project?: { __typename?: 'Project', id: number } | null, department?: { __typename?: 'Department', id: number } | null, timeEntries: Array<{ __typename?: 'TimeEntry', id: number, createdAt: any, updatedAt: any, date: any, hours: number, entryComments: Array<{ __typename?: 'EntryComment', id: number }> }> }> };
+
+export type CreateTimeEntryRowMutationVariables = Exact<{
+  timesheetId: Scalars['Int'];
+}>;
+
+
+export type CreateTimeEntryRowMutation = { __typename?: 'Mutation', createTimeEntryRow?: { __typename?: 'TimeEntryRow', id: number, createdAt: any, updatedAt: any, workType?: { __typename?: 'WorkType', id: number } | null, project?: { __typename?: 'Project', id: number } | null, department?: { __typename?: 'Department', id: number } | null, timeEntries: Array<{ __typename?: 'TimeEntry', id: number, createdAt: any, updatedAt: any, date: any, hours: number, entryComments: Array<{ __typename?: 'EntryComment', id: number }> }> } | null };
 
 
 export const InitDataDocument = gql`
@@ -567,39 +631,10 @@ export const GetorCreateTimesheetDocument = gql`
     mutation GetorCreateTimesheet($timesheet: TimesheetGetInput!) {
   getorCreateTimesheet(Timesheet: $timesheet) {
     id
-    createdAt
-    updatedAt
     period {
       id
-      createdAt
       startDate
       endDate
-    }
-    user {
-      id
-      profile {
-        lastName
-        firstName
-        avatar
-      }
-    }
-    timeEntryRows {
-      id
-      createdAt
-      updatedAt
-      workType {
-        id
-      }
-      project {
-        id
-      }
-      department {
-        id
-      }
-      timeEntries {
-        id
-        date
-      }
     }
   }
 }
@@ -885,3 +920,353 @@ export function useTimeEntryFromIdLazyQuery(baseOptions?: Apollo.LazyQueryHookOp
 export type TimeEntryFromIdQueryHookResult = ReturnType<typeof useTimeEntryFromIdQuery>;
 export type TimeEntryFromIdLazyQueryHookResult = ReturnType<typeof useTimeEntryFromIdLazyQuery>;
 export type TimeEntryFromIdQueryResult = Apollo.QueryResult<TimeEntryFromIdQuery, TimeEntryFromIdQueryVariables>;
+export const CreateEntryCommentDocument = gql`
+    mutation CreateEntryComment($data: TimeEntryCreateInput!) {
+  createTimeEntry(data: $data) {
+    id
+    createdAt
+    updatedAt
+    date
+    hours
+    entryComments {
+      id
+    }
+  }
+}
+    `;
+export type CreateEntryCommentMutationFn = Apollo.MutationFunction<CreateEntryCommentMutation, CreateEntryCommentMutationVariables>;
+
+/**
+ * __useCreateEntryCommentMutation__
+ *
+ * To run a mutation, you first call `useCreateEntryCommentMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateEntryCommentMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createEntryCommentMutation, { data, loading, error }] = useCreateEntryCommentMutation({
+ *   variables: {
+ *      data: // value for 'data'
+ *   },
+ * });
+ */
+export function useCreateEntryCommentMutation(baseOptions?: Apollo.MutationHookOptions<CreateEntryCommentMutation, CreateEntryCommentMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateEntryCommentMutation, CreateEntryCommentMutationVariables>(CreateEntryCommentDocument, options);
+      }
+export type CreateEntryCommentMutationHookResult = ReturnType<typeof useCreateEntryCommentMutation>;
+export type CreateEntryCommentMutationResult = Apollo.MutationResult<CreateEntryCommentMutation>;
+export type CreateEntryCommentMutationOptions = Apollo.BaseMutationOptions<CreateEntryCommentMutation, CreateEntryCommentMutationVariables>;
+export const UpdateTimeEntryhoursDocument = gql`
+    mutation UpdateTimeEntryhours($updateTimeEntryhoursId: Int!, $data: TimeEntryUpdateInput!) {
+  updateTimeEntryhours(id: $updateTimeEntryhoursId, data: $data) {
+    id
+    createdAt
+    updatedAt
+    date
+    hours
+    entryComments {
+      id
+    }
+  }
+}
+    `;
+export type UpdateTimeEntryhoursMutationFn = Apollo.MutationFunction<UpdateTimeEntryhoursMutation, UpdateTimeEntryhoursMutationVariables>;
+
+/**
+ * __useUpdateTimeEntryhoursMutation__
+ *
+ * To run a mutation, you first call `useUpdateTimeEntryhoursMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateTimeEntryhoursMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateTimeEntryhoursMutation, { data, loading, error }] = useUpdateTimeEntryhoursMutation({
+ *   variables: {
+ *      updateTimeEntryhoursId: // value for 'updateTimeEntryhoursId'
+ *      data: // value for 'data'
+ *   },
+ * });
+ */
+export function useUpdateTimeEntryhoursMutation(baseOptions?: Apollo.MutationHookOptions<UpdateTimeEntryhoursMutation, UpdateTimeEntryhoursMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateTimeEntryhoursMutation, UpdateTimeEntryhoursMutationVariables>(UpdateTimeEntryhoursDocument, options);
+      }
+export type UpdateTimeEntryhoursMutationHookResult = ReturnType<typeof useUpdateTimeEntryhoursMutation>;
+export type UpdateTimeEntryhoursMutationResult = Apollo.MutationResult<UpdateTimeEntryhoursMutation>;
+export type UpdateTimeEntryhoursMutationOptions = Apollo.BaseMutationOptions<UpdateTimeEntryhoursMutation, UpdateTimeEntryhoursMutationVariables>;
+export const DeleteTimeEntryDocument = gql`
+    mutation DeleteTimeEntry($deleteTimeEntryId: Int!) {
+  deleteTimeEntry(id: $deleteTimeEntryId) {
+    id
+    hours
+    date
+    updatedAt
+    createdAt
+  }
+}
+    `;
+export type DeleteTimeEntryMutationFn = Apollo.MutationFunction<DeleteTimeEntryMutation, DeleteTimeEntryMutationVariables>;
+
+/**
+ * __useDeleteTimeEntryMutation__
+ *
+ * To run a mutation, you first call `useDeleteTimeEntryMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteTimeEntryMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteTimeEntryMutation, { data, loading, error }] = useDeleteTimeEntryMutation({
+ *   variables: {
+ *      deleteTimeEntryId: // value for 'deleteTimeEntryId'
+ *   },
+ * });
+ */
+export function useDeleteTimeEntryMutation(baseOptions?: Apollo.MutationHookOptions<DeleteTimeEntryMutation, DeleteTimeEntryMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteTimeEntryMutation, DeleteTimeEntryMutationVariables>(DeleteTimeEntryDocument, options);
+      }
+export type DeleteTimeEntryMutationHookResult = ReturnType<typeof useDeleteTimeEntryMutation>;
+export type DeleteTimeEntryMutationResult = Apollo.MutationResult<DeleteTimeEntryMutation>;
+export type DeleteTimeEntryMutationOptions = Apollo.BaseMutationOptions<DeleteTimeEntryMutation, DeleteTimeEntryMutationVariables>;
+export const UpdateTimeEntryRowDocument = gql`
+    mutation UpdateTimeEntryRow($updateTimeEntryRowId: Int!, $departmentId: Int, $projectId: Int, $workTypeId: Int) {
+  updateTimeEntryRow(
+    id: $updateTimeEntryRowId
+    departmentId: $departmentId
+    projectId: $projectId
+    workTypeId: $workTypeId
+  ) {
+    id
+    createdAt
+    updatedAt
+    workType {
+      id
+    }
+    project {
+      id
+    }
+    department {
+      id
+    }
+  }
+}
+    `;
+export type UpdateTimeEntryRowMutationFn = Apollo.MutationFunction<UpdateTimeEntryRowMutation, UpdateTimeEntryRowMutationVariables>;
+
+/**
+ * __useUpdateTimeEntryRowMutation__
+ *
+ * To run a mutation, you first call `useUpdateTimeEntryRowMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateTimeEntryRowMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateTimeEntryRowMutation, { data, loading, error }] = useUpdateTimeEntryRowMutation({
+ *   variables: {
+ *      updateTimeEntryRowId: // value for 'updateTimeEntryRowId'
+ *      departmentId: // value for 'departmentId'
+ *      projectId: // value for 'projectId'
+ *      workTypeId: // value for 'workTypeId'
+ *   },
+ * });
+ */
+export function useUpdateTimeEntryRowMutation(baseOptions?: Apollo.MutationHookOptions<UpdateTimeEntryRowMutation, UpdateTimeEntryRowMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateTimeEntryRowMutation, UpdateTimeEntryRowMutationVariables>(UpdateTimeEntryRowDocument, options);
+      }
+export type UpdateTimeEntryRowMutationHookResult = ReturnType<typeof useUpdateTimeEntryRowMutation>;
+export type UpdateTimeEntryRowMutationResult = Apollo.MutationResult<UpdateTimeEntryRowMutation>;
+export type UpdateTimeEntryRowMutationOptions = Apollo.BaseMutationOptions<UpdateTimeEntryRowMutation, UpdateTimeEntryRowMutationVariables>;
+export const GetTimeEntryRowDocument = gql`
+    query GetTimeEntryRow($getTimeEntryRowId: Int!) {
+  getTimeEntryRow(id: $getTimeEntryRowId) {
+    id
+    updatedAt
+    workType {
+      id
+      name
+      createdAt
+      updatedAt
+      isActive
+      description
+      code
+      isSystem
+      isDefault
+      multiplier
+      isBillable
+    }
+    createdAt
+    project {
+      id
+      name
+      createdAt
+      updatedAt
+      isActive
+      description
+      code
+    }
+    department {
+      id
+      name
+      createdAt
+      updatedAt
+      isActive
+      description
+      projects {
+        id
+      }
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetTimeEntryRowQuery__
+ *
+ * To run a query within a React component, call `useGetTimeEntryRowQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetTimeEntryRowQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetTimeEntryRowQuery({
+ *   variables: {
+ *      getTimeEntryRowId: // value for 'getTimeEntryRowId'
+ *   },
+ * });
+ */
+export function useGetTimeEntryRowQuery(baseOptions: Apollo.QueryHookOptions<GetTimeEntryRowQuery, GetTimeEntryRowQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetTimeEntryRowQuery, GetTimeEntryRowQueryVariables>(GetTimeEntryRowDocument, options);
+      }
+export function useGetTimeEntryRowLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetTimeEntryRowQuery, GetTimeEntryRowQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetTimeEntryRowQuery, GetTimeEntryRowQueryVariables>(GetTimeEntryRowDocument, options);
+        }
+export type GetTimeEntryRowQueryHookResult = ReturnType<typeof useGetTimeEntryRowQuery>;
+export type GetTimeEntryRowLazyQueryHookResult = ReturnType<typeof useGetTimeEntryRowLazyQuery>;
+export type GetTimeEntryRowQueryResult = Apollo.QueryResult<GetTimeEntryRowQuery, GetTimeEntryRowQueryVariables>;
+export const GetTimeEntryRowsDocument = gql`
+    query GetTimeEntryRows($timesheetId: Int!) {
+  getTimeEntryRows(timesheetId: $timesheetId) {
+    id
+    createdAt
+    updatedAt
+    workType {
+      id
+    }
+    project {
+      id
+    }
+    department {
+      id
+    }
+    timeEntries {
+      id
+      createdAt
+      updatedAt
+      date
+      hours
+      entryComments {
+        id
+      }
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetTimeEntryRowsQuery__
+ *
+ * To run a query within a React component, call `useGetTimeEntryRowsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetTimeEntryRowsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetTimeEntryRowsQuery({
+ *   variables: {
+ *      timesheetId: // value for 'timesheetId'
+ *   },
+ * });
+ */
+export function useGetTimeEntryRowsQuery(baseOptions: Apollo.QueryHookOptions<GetTimeEntryRowsQuery, GetTimeEntryRowsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetTimeEntryRowsQuery, GetTimeEntryRowsQueryVariables>(GetTimeEntryRowsDocument, options);
+      }
+export function useGetTimeEntryRowsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetTimeEntryRowsQuery, GetTimeEntryRowsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetTimeEntryRowsQuery, GetTimeEntryRowsQueryVariables>(GetTimeEntryRowsDocument, options);
+        }
+export type GetTimeEntryRowsQueryHookResult = ReturnType<typeof useGetTimeEntryRowsQuery>;
+export type GetTimeEntryRowsLazyQueryHookResult = ReturnType<typeof useGetTimeEntryRowsLazyQuery>;
+export type GetTimeEntryRowsQueryResult = Apollo.QueryResult<GetTimeEntryRowsQuery, GetTimeEntryRowsQueryVariables>;
+export const CreateTimeEntryRowDocument = gql`
+    mutation CreateTimeEntryRow($timesheetId: Int!) {
+  createTimeEntryRow(timesheetId: $timesheetId) {
+    id
+    createdAt
+    updatedAt
+    workType {
+      id
+    }
+    project {
+      id
+    }
+    department {
+      id
+    }
+    timeEntries {
+      id
+      createdAt
+      updatedAt
+      date
+      hours
+      entryComments {
+        id
+      }
+    }
+  }
+}
+    `;
+export type CreateTimeEntryRowMutationFn = Apollo.MutationFunction<CreateTimeEntryRowMutation, CreateTimeEntryRowMutationVariables>;
+
+/**
+ * __useCreateTimeEntryRowMutation__
+ *
+ * To run a mutation, you first call `useCreateTimeEntryRowMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateTimeEntryRowMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createTimeEntryRowMutation, { data, loading, error }] = useCreateTimeEntryRowMutation({
+ *   variables: {
+ *      timesheetId: // value for 'timesheetId'
+ *   },
+ * });
+ */
+export function useCreateTimeEntryRowMutation(baseOptions?: Apollo.MutationHookOptions<CreateTimeEntryRowMutation, CreateTimeEntryRowMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateTimeEntryRowMutation, CreateTimeEntryRowMutationVariables>(CreateTimeEntryRowDocument, options);
+      }
+export type CreateTimeEntryRowMutationHookResult = ReturnType<typeof useCreateTimeEntryRowMutation>;
+export type CreateTimeEntryRowMutationResult = Apollo.MutationResult<CreateTimeEntryRowMutation>;
+export type CreateTimeEntryRowMutationOptions = Apollo.BaseMutationOptions<CreateTimeEntryRowMutation, CreateTimeEntryRowMutationVariables>;
