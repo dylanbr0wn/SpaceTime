@@ -171,7 +171,44 @@ const TimesheetEntryInput = ({ value, row, date, userId, timesheetId }) => {
                 variables: {
                     deleteTimeEntryId: work.id,
                 },
-                refetchQueries: [GetTimeEntryRowsDocument],
+                update: (cache, { data: TimeEntryData }) => {
+                    cache.updateQuery<
+                        GetTimeEntryRowsQuery,
+                        GetTimeEntryRowsQueryVariables
+                    >(
+                        {
+                            query: GetTimeEntryRowsDocument,
+                            variables: {
+                                timesheetId,
+                            },
+                        },
+                        (data) => {
+                            const TimeEntry =
+                                TimeEntryData?.deleteTimeEntry ?? {};
+                            // console.log(TimeEntry);
+                            const timeEntryRows = data?.getTimeEntryRows ?? [];
+
+                            return {
+                                getTimeEntryRows: timeEntryRows.map(
+                                    (timeEntryRow) => {
+                                        if (
+                                            timeEntryRow.id === row.original.id
+                                        ) {
+                                            return {
+                                                ...timeEntryRow,
+                                                timeEntries: [
+                                                    ...timeEntryRow.timeEntries,
+                                                    TimeEntry,
+                                                ],
+                                            };
+                                        }
+                                        return timeEntryRow;
+                                    }
+                                ),
+                            };
+                        }
+                    );
+                },
             });
             work.id = "-1"; // set to -1 so we know it's deleted
         }

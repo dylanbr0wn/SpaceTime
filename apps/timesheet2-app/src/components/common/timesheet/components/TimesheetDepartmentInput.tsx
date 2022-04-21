@@ -8,7 +8,6 @@ import { CheckIcon, SelectorIcon } from "@heroicons/react/solid";
 import {
     GetorCreateTimesheetDocument,
     useDepartmentsQuery,
-    useGetTimeEntryRowQuery,
     useUpdateTimeEntryRowMutation,
 } from "../../../../api";
 import ErrorBoundary from "../../ErrorBoundary";
