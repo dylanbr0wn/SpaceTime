@@ -166,7 +166,7 @@ query TimeEntry($timeEntry: TimeEntryFromRowDateInput!) {
     }
 }
 
-query GetUserFromId($getUserFromIdId: Int!) {
+query GetUserFromId($getUserFromIdId: String!) {
     getUserFromId(id: $getUserFromIdId) {
         profile {
             lastName
@@ -189,7 +189,7 @@ query TimeEntryFromId($timeEntry: TimeEntryFromIdInput!) {
     }
 }
 
-mutation CreateEntryComment($data: TimeEntryCreateInput!) {
+mutation CreateTimeEntry($data: TimeEntryCreateInput!) {
     createTimeEntry(data: $data) {
         id
         createdAt
@@ -203,7 +203,7 @@ mutation CreateEntryComment($data: TimeEntryCreateInput!) {
 }
 
 mutation UpdateTimeEntryhours(
-    $updateTimeEntryhoursId: Int!
+    $updateTimeEntryhoursId: String!
     $data: TimeEntryUpdateInput!
 ) {
     updateTimeEntryhours(id: $updateTimeEntryhoursId, data: $data) {
@@ -218,7 +218,7 @@ mutation UpdateTimeEntryhours(
     }
 }
 
-mutation DeleteTimeEntry($deleteTimeEntryId: Int!) {
+mutation DeleteTimeEntry($deleteTimeEntryId: String!) {
     deleteTimeEntry(id: $deleteTimeEntryId) {
         id
         hours
@@ -228,10 +228,10 @@ mutation DeleteTimeEntry($deleteTimeEntryId: Int!) {
     }
 }
 mutation UpdateTimeEntryRow(
-    $updateTimeEntryRowId: Int!
-    $departmentId: Int
-    $projectId: Int
-    $workTypeId: Int
+    $updateTimeEntryRowId: String!
+    $departmentId: String
+    $projectId: String
+    $workTypeId: String
 ) {
     updateTimeEntryRow(
         id: $updateTimeEntryRowId
@@ -254,48 +254,34 @@ mutation UpdateTimeEntryRow(
     }
 }
 
-query GetTimeEntryRow($getTimeEntryRowId: Int!) {
+query GetTimeEntryRow($getTimeEntryRowId: String!) {
     getTimeEntryRow(id: $getTimeEntryRowId) {
         id
+        createdAt
         updatedAt
         workType {
             id
-            name
-            createdAt
-            updatedAt
-            isActive
-            description
-            code
-            isSystem
-            isDefault
-            multiplier
-            isBillable
         }
-        createdAt
         project {
             id
-            name
-            createdAt
-            updatedAt
-            isActive
-            description
-            code
         }
         department {
             id
-            name
+        }
+        timeEntries {
+            id
             createdAt
             updatedAt
-            isActive
-            description
-            projects {
+            date
+            hours
+            entryComments {
                 id
             }
         }
     }
 }
 
-query GetTimeEntryRows($timesheetId: Int!) {
+query GetTimeEntryRows($timesheetId: String!) {
     getTimeEntryRows(timesheetId: $timesheetId) {
         id
         createdAt
@@ -322,7 +308,7 @@ query GetTimeEntryRows($timesheetId: Int!) {
     }
 }
 
-mutation CreateTimeEntryRow($timesheetId: Int!) {
+mutation CreateTimeEntryRow($timesheetId: String!) {
     createTimeEntryRow(timesheetId: $timesheetId) {
         id
         createdAt
@@ -346,5 +332,11 @@ mutation CreateTimeEntryRow($timesheetId: Int!) {
                 id
             }
         }
+    }
+}
+
+mutation DeleteTimeEntryRow($timeEntryRow: TimeEntryRowDeleteInput!) {
+    deleteTimeEntryRow(TimeEntryRow: $timeEntryRow) {
+        id
     }
 }

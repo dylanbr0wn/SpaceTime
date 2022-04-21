@@ -4,10 +4,16 @@ import { toast } from "react-toastify";
 
 import { TrashIcon } from "@heroicons/react/solid";
 
+import {
+    GetTimeEntryRowDocument,
+    GetTimeEntryRowsDocument,
+    useDeleteTimeEntryRowMutation,
+} from "../../../../api";
 import { deleteTimeEntryRowDispatch } from "../../../../redux/actions/timesheetsActions";
 import { createRowHasHoursSelector } from "../../../../services/selectors";
 import ConfirmCloseModal from "../../ConfirmCloseModal";
 import ErrorBoundary from "../../ErrorBoundary";
+import { useRowHasHours } from "../hooks";
 
 /**
  * @name DeleteEntryInput
@@ -16,22 +22,11 @@ import ErrorBoundary from "../../ErrorBoundary";
  * @description Delete button for rows. Provides an icon which can be clicked to delete a row.
  * @param {Object} props Props. See propTypes for details.
  */
-const TimesheetDeleteEntryInput = ({
-    row,
-    disableModification,
-    EmployeeID,
-    setIsLocked,
-    timeEntryPeriodStartDate,
-    isTablet,
-}) => {
+const TimesheetDeleteEntryInput = ({ row, userId }) => {
     const [showDeleteConfirmModal, setShowDeleteConfirmModal] =
         React.useState(false);
 
-    const rowHasHoursSelector = React.useMemo(createRowHasHoursSelector, []);
-
-    const rowHasHours = useSelector((_) => rowHasHoursSelector(row));
-
-    const dispatch = useDispatch();
+    const { hasHours } = useRowHasHours(row.original);
 
     React.useEffect(() => {
         setShowDeleteConfirmModal(false);
@@ -40,31 +35,72 @@ const TimesheetDeleteEntryInput = ({
         };
     }, [row]);
 
+    const [deleteTimeEntryRowMutation] = useDeleteTimeEntryRowMutation();
+
     // Will delete a row. Dispatches deleteTimeEntryRow api call and redux action.
     // Delete button sub component
 
     const deleteRow = async () => {
-        const result = await dispatch(
-            deleteTimeEntryRowDispatch(
-                row.index,
-                row.original,
-                EmployeeID,
-                timeEntryPeriodStartDate
-            )
-        );
-        if (!result.success) {
-            if (result.status === 423) {
-                setIsLocked(true);
-                setShowDeleteConfirmModal(false);
-            } else {
-                toast.warn(result.data);
-            }
-        }
+        console.log(row.original.id);
+
+        deleteTimeEntryRowMutation({
+            variables: {
+                timeEntryRow: {
+                    id: row.original.id,
+                },
+            },
+            optimisticResponse: {
+                deleteTimeEntryRow: {
+                    __typename: "TimeEntryRow",
+                    id: row.original.id,
+                },
+            },
+            // refetchQueries: [GetTimeEntryRowsDocument],
+            update: (cache) => {
+                cache.modify({
+                    id: cache.identify({
+                        __typename: "TimeEntryRow",
+                        id: row.original.id,
+                    }),
+                    fields: {
+                        timeEntries(_existingTimeEntries, { DELETE }) {
+                            return DELETE;
+                        },
+                    },
+                });
+                cache.evict({
+                    id: cache.identify({
+                        __typename: "TimeEntryRow",
+                        id: row.original.id,
+                    }),
+                });
+                cache.gc();
+            },
+        });
+
+        setShowDeleteConfirmModal(false);
+
+        // const result = await dispatch(
+        //     deleteTimeEntryRowDispatch(
+        //         row.index,
+        //         row.original,
+        //         EmployeeID,
+        //         timeEntryPeriodStartDate
+        //     )
+        // );
+        // if (!result.success) {
+        //     if (result.status === 423) {
+        //         setIsLocked(true);
+        //         setShowDeleteConfirmModal(false);
+        //     } else {
+        //         toast.warn(result.data);
+        //     }
+        // }
     };
 
     const handleDeleteRow = () => {
-        console.log(rowHasHours);
-        if (!rowHasHours) {
+        console.log(hasHours);
+        if (!hasHours) {
             deleteRow();
         } else {
             setShowDeleteConfirmModal(true);
@@ -80,13 +116,11 @@ const TimesheetDeleteEntryInput = ({
                     <button
                         aria-label="Delete row"
                         className={`m-0 p-1 h-10 w-10 group ${
-                            disableModification
-                                ? "bg-slate-800"
-                                : "bg-slate-900"
+                            false ? "bg-slate-800" : "bg-slate-900"
                         }`}
                         type="button"
                         // title="Clear timesheet row"
-                        disabled={disableModification}
+                        disabled={false}
                         onClick={handleDeleteRow}
                     >
                         <TrashIcon className="text-slate-500 h-6 w-6 m-auto group-hover:text-red-700  transition-colors duration-200" />

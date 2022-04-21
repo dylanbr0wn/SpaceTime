@@ -2,10 +2,9 @@ import {
     arg,
     extendType,
     inputObjectType,
-    intArg,
     nonNull,
-    nullable,
     objectType,
+    stringArg,
 } from "nexus";
 import * as NexusPrisma from "nexus-prisma";
 
@@ -31,7 +30,7 @@ export const QueryTimeEntryRow = extendType({
         t.field("getTimeEntryRow", {
             type: "TimeEntryRow",
             args: {
-                id: nonNull(intArg()),
+                id: nonNull(stringArg()),
             },
             resolve: (_parent, { id }, context: Context) => {
                 return context.prisma.timeEntryRow.findUnique({
@@ -47,7 +46,7 @@ export const QueryTimeEntryRow = extendType({
         t.nonNull.list.nonNull.field("getTimeEntryRows", {
             type: "TimeEntryRow",
             args: {
-                timesheetId: nonNull(intArg()),
+                timesheetId: nonNull(stringArg()),
             },
             resolve: (_parent, { timesheetId }, context: Context) => {
                 return context.prisma.timeEntryRow.findMany({
@@ -69,10 +68,10 @@ export const MutateTimeEntryRow = extendType({
         t.field("createTimeEntryRow", {
             type: "TimeEntryRow",
             args: {
-                timesheetId: nonNull(intArg()),
-                departmentId: intArg(),
-                projectId: intArg(),
-                workTypeId: intArg(),
+                timesheetId: nonNull(stringArg()),
+                departmentId: stringArg(),
+                projectId: stringArg(),
+                workTypeId: stringArg(),
             },
             resolve: (_parent, args, ctx: Context) => {
                 return ctx.prisma.timeEntryRow.create({
@@ -88,25 +87,25 @@ export const MutateTimeEntryRow = extendType({
         t.field("updateTimeEntryRow", {
             type: "TimeEntryRow",
             args: {
-                id: nonNull(intArg()),
-                departmentId: intArg(),
-                projectId: intArg(),
-                workTypeId: intArg(),
+                id: nonNull(stringArg()),
+                departmentId: stringArg(),
+                projectId: stringArg(),
+                workTypeId: stringArg(),
             },
             resolve: (_parent, args, ctx: Context) => {
                 return ctx.prisma.timeEntryRow.update({
                     where: { id: args.id },
                     data: {
                         workTypeId:
-                            args.workTypeId === -1
+                            args.workTypeId === "-1"
                                 ? null
                                 : args.workTypeId ?? undefined,
                         projectId:
-                            args.projectId === -1
+                            args.projectId === "-1"
                                 ? null
                                 : args.projectId ?? undefined,
                         departmentId:
-                            args.departmentId === -1
+                            args.departmentId === "-1"
                                 ? null
                                 : args.departmentId ?? undefined,
                     },
@@ -122,9 +121,32 @@ export const MutateTimeEntryRow = extendType({
                     })
                 ),
             },
-            resolve: (_parent, { TimeEntryRow }, ctx: Context) => {
-                return ctx.prisma.timeEntryRow.delete({
-                    where: { id: TimeEntryRow.id },
+            resolve: async (_parent, { TimeEntryRow }, ctx: Context) => {
+                const EntryComments = await ctx.prisma.timeEntry.findMany({
+                    where: { timeEntryRowId: TimeEntryRow.id },
+                    select: {
+                        entryComments: true,
+                    },
+                });
+
+                EntryComments.forEach((comment) => {
+                    comment.entryComments.forEach((entryComment) => {
+                        ctx.prisma.entryComment.delete({
+                            where: {
+                                id: entryComment.id,
+                            },
+                        });
+                    });
+                });
+
+                await ctx.prisma.timeEntry.deleteMany({
+                    where: { timeEntryRowId: TimeEntryRow.id },
+                });
+
+                return await ctx.prisma.timeEntryRow.delete({
+                    where: {
+                        id: TimeEntryRow.id,
+                    },
                 });
             },
         });

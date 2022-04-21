@@ -1,5 +1,6 @@
 import { DateTime } from "luxon";
 import * as React from "react";
+
 import {
     Department,
     MakeMaybe,
@@ -46,15 +47,15 @@ export const useTimesheet = (
     React.useEffect(() => {
         if (data) {
             const defaultRow = {
-                id: -1,
+                id: "-1",
                 project: {
-                    id: -1,
+                    id: "-1",
                 },
                 workType: {
-                    id: -1,
+                    id: "-1",
                 },
                 department: {
-                    id: -1,
+                    id: "-1",
                 },
             };
             const timeEntryRows = data.getTimeEntryRows.map((row) => {
@@ -81,7 +82,7 @@ export const useTimesheet = (
                         } else {
                             return {
                                 date,
-                                id: -1,
+                                id: "-1",
                             };
                         }
                     }),
@@ -92,7 +93,7 @@ export const useTimesheet = (
             getorCreateTimesheetMutation({
                 variables: {
                     timesheet: {
-                        userId: parseInt(userId ?? ""),
+                        userId: userId,
                         date: DateTime.now()
                             .startOf("day")
                             .toUTC()
@@ -144,4 +145,17 @@ export const useProjects = (departmentId) => {
         projectsLoading,
         allProjectsLoaded,
     };
+};
+
+export const useRowHasHours = (row) => {
+    const [hasHours, setHasHours] = React.useState(false);
+
+    React.useEffect(() => {
+        if (row) {
+            const hasHours = row.timeEntries.some((entry) => entry.id !== "-1");
+            setHasHours(hasHours);
+        }
+    }, [row]);
+
+    return { hasHours };
 };

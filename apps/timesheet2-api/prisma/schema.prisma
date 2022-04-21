@@ -17,30 +17,30 @@ datasource db {
 }
 
 model Profile {
-  id        Int     @id @default(autoincrement())
+  id        String  @id @default(cuid())
   firstName String
   lastName  String
   avatar    String?
   bio       String? @db.Text
   user      User    @relation(fields: [userId], references: [id])
-  userId    Int     @unique
+  userId    String  @unique
 
   @@index([userId])
 }
 
 model User {
-  id               Int            @id @default(autoincrement())
+  id               String         @id @default(cuid())
   email            String         @unique
   code             String         @unique
   isAdmin          Boolean        @default(false)
   isActive         Boolean        @default(true)
   isManager        Boolean        @default(false)
   isPaymentManager Boolean        @default(false)
-  managerId        Int?
+  managerId        String?
   manager          User?          @relation("management", fields: [managerId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   managees         User[]         @relation("management")
   department       Department     @relation(fields: [departmentId], references: [id])
-  departmentId     Int
+  departmentId     String
   profile          Profile?
   createdAt        DateTime       @default(now())
   updatedAt        DateTime       @updatedAt
@@ -52,13 +52,13 @@ model User {
 }
 
 model TimeEntry {
-  id             Int            @id @default(autoincrement())
+  id             String         @id @default(cuid())
   createdAt      DateTime       @default(now())
   updatedAt      DateTime       @updatedAt
   date           DateTime
   hours          Float
   timeEntryRow   TimeEntryRow   @relation(fields: [timeEntryRowId], references: [id])
-  timeEntryRowId Int
+  timeEntryRowId String
   entryComments  EntryComment[]
 
   @@unique([date, timeEntryRowId])
@@ -66,7 +66,7 @@ model TimeEntry {
 }
 
 model Department {
-  id            Int            @id @default(autoincrement())
+  id            String         @id @default(cuid())
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
   name          String         @db.VarChar(255)
@@ -79,7 +79,7 @@ model Department {
 }
 
 model WorkType {
-  id            Int            @id @default(autoincrement())
+  id            String         @id @default(cuid())
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
   name          String         @db.VarChar(255)
@@ -95,14 +95,14 @@ model WorkType {
 }
 
 model Project {
-  id            Int            @id @default(autoincrement())
+  id            String         @id @default(cuid())
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
   name          String         @db.VarChar(255)
   isActive      Boolean        @default(false)
   description   String?        @db.Text
   department    Department     @relation(fields: [departmentId], references: [id])
-  departmentId  Int
+  departmentId  String
   code          String         @db.VarChar(255)
   timeEntryRows TimeEntryRow[]
   pinnedRows    PinnedRow[]
@@ -111,24 +111,24 @@ model Project {
 }
 
 model TimeEntryRow {
-  id           Int         @id @default(autoincrement())
+  id           String      @id @default(cuid())
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt
-  workType     WorkType?    @relation(fields: [workTypeId], references: [id])
-  workTypeId   Int?
-  project      Project?     @relation(fields: [projectId], references: [id])
-  projectId    Int?
-  department   Department?  @relation(fields: [departmentId], references: [id])
-  departmentId Int?
+  workType     WorkType?   @relation(fields: [workTypeId], references: [id])
+  workTypeId   String?
+  project      Project?    @relation(fields: [projectId], references: [id])
+  projectId    String?
+  department   Department? @relation(fields: [departmentId], references: [id])
+  departmentId String?
   timesheet    Timesheet   @relation(fields: [timesheetId], references: [id])
-  timesheetId  Int
+  timesheetId  String
   timeEntries  TimeEntry[]
 
   @@index([departmentId, projectId, workTypeId, timesheetId])
 }
 
 model Period {
-  id         Int         @id @default(autoincrement())
+  id         String      @id @default(cuid())
   createdAt  DateTime    @default(now())
   startDate  DateTime
   endDate    DateTime
@@ -136,42 +136,42 @@ model Period {
 }
 
 model EntryComment {
-  id          Int       @id @default(autoincrement())
+  id          String    @id @default(cuid())
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   text        String    @db.Text
   user        User      @relation(fields: [userId], references: [id])
-  userId      Int
+  userId      String
   timeEntry   TimeEntry @relation(fields: [timeEntryId], references: [id])
-  timeEntryId Int
+  timeEntryId String
 
   @@index([userId, timeEntryId])
 }
 
 model PinnedRow {
-  id           Int        @id @default(autoincrement())
+  id           String     @id @default(cuid())
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
   user         User       @relation(fields: [userId], references: [id])
-  userId       Int
+  userId       String
   project      Project    @relation(fields: [projectId], references: [id])
-  projectId    Int
+  projectId    String
   worktype     WorkType   @relation(fields: [worktypeId], references: [id])
-  worktypeId   Int
+  worktypeId   String
   department   Department @relation(fields: [departmentId], references: [id])
-  departmentId Int
+  departmentId String
 
   @@index([userId, projectId, worktypeId, departmentId])
 }
 
 model Timesheet {
-  id            Int            @id @default(autoincrement())
+  id            String         @id @default(cuid())
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
   user          User           @relation(fields: [userId], references: [id])
-  userId        Int
+  userId        String
   period        Period         @relation(fields: [periodId], references: [id])
-  periodId      Int
+  periodId      String
   timeEntryRows TimeEntryRow[]
 
   @@unique([userId, periodId])
@@ -179,7 +179,7 @@ model Timesheet {
 }
 
 model ApplicationPreferences {
-  id           Int      @id @default(autoincrement())
+  id           String   @id @default(cuid())
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
   startDate    DateTime

@@ -2,9 +2,9 @@ import {
     arg,
     extendType,
     inputObjectType,
-    intArg,
     nonNull,
     objectType,
+    stringArg,
 } from "nexus";
 import * as NexusPrisma from "nexus-prisma";
 
@@ -92,7 +92,7 @@ export const mutateTimeEntry = extendType({
         t.field("updateTimeEntryhours", {
             type: "TimeEntry",
             args: {
-                id: nonNull(intArg()),
+                id: nonNull(stringArg()),
                 data: nonNull(
                     arg({
                         type: TimeEntryUpdateInput,
@@ -109,10 +109,13 @@ export const mutateTimeEntry = extendType({
         t.field("deleteTimeEntry", {
             type: "TimeEntry",
             args: {
-                id: nonNull(intArg()),
+                id: nonNull(stringArg()),
             },
-            resolve: (_parent, { id }, ctx) => {
-                return ctx.prisma.timeEntry.delete({ where: { id } });
+            resolve: async (_parent, { id }, ctx) => {
+                await ctx.prisma.entryComment.deleteMany({
+                    where: { timeEntryId: id },
+                });
+                return await ctx.prisma.timeEntry.delete({ where: { id } });
             },
         });
     },

@@ -2,9 +2,9 @@ import {
     arg,
     extendType,
     inputObjectType,
-    intArg,
     nonNull,
     objectType,
+    stringArg,
 } from "nexus";
 import * as NexusPrisma from "nexus-prisma";
 
@@ -42,7 +42,7 @@ export const QueryUsers = extendType({
         t.field("getUserFromId", {
             type: "User",
             args: {
-                id: nonNull(intArg()),
+                id: nonNull(stringArg()),
             },
             resolve: (_parent, args, context: Context) => {
                 return context.prisma.user.findFirst({

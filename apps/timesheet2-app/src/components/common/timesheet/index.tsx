@@ -1,3 +1,4 @@
+import cuid from "cuid";
 /* eslint-disable react/jsx-key */
 /* eslint react/prop-types: 0 */
 import { DateTime } from "luxon";
@@ -10,6 +11,8 @@ import { useParams } from "react-router-dom";
 import { useTable } from "react-table";
 
 import {
+    CreateTimeEntryRowDocument,
+    GetTimeEntryRowsDocument,
     useCreateTimeEntryRowMutation,
     useGetorCreateTimesheetMutation,
     useGetTimeEntryRowsQuery,
@@ -32,10 +35,10 @@ import TimesheetWorkCodeInput from "./components/TimesheetWorkCodeInput";
 import TimesheetDesktopView from "./views/TimesheetDesktopView";
 import TimesheetMobileView from "./views/TimesheetMobileView";
 import TimesheetTabletView from "./views/TimesheetTabletView";
+import { useTimesheet, useTimesheetDates } from "./hooks";
 import TimesheetTable from "./TimesheetTable";
 
 import "../../style/UserAdmin.css";
-import { useTimesheet, useTimesheetDates } from "./hooks";
 
 /**
  * @name useTimesheet
@@ -203,7 +206,7 @@ const Timesheet = () => {
 
     const { data, _loading, _error } = useGetTimeEntryRowsQuery({
         variables: {
-            timesheetId: timesheetData?.getorCreateTimesheet?.id ?? -1,
+            timesheetId: timesheetData?.getorCreateTimesheet?.id ?? "-1",
         },
     });
 
@@ -221,28 +224,51 @@ const Timesheet = () => {
     const createTimeEntryRow = () => {
         createTimeEntryRowMutation({
             variables: {
-                timesheetId: timesheetData?.getorCreateTimesheet?.id ?? -1,
+                timesheetId: timesheetData?.getorCreateTimesheet?.id ?? "-1",
             },
+            //refetchQueries: [GetTimeEntryRowsDocument],
             optimisticResponse: {
                 createTimeEntryRow: {
                     __typename: "TimeEntryRow",
-                    id: -1,
+                    id: cuid(),
                     createdAt: DateTime.now().toISO(),
                     updatedAt: DateTime.now().toISO(),
                     timeEntries: [],
                     workType: {
                         __typename: "WorkType",
-                        id: -1,
+                        id: "-1",
                     },
                     project: {
                         __typename: "Project",
-                        id: -1,
+                        id: "-1",
                     },
                     department: {
                         __typename: "Department",
-                        id: -1,
+                        id: "-1",
                     },
                 },
+            },
+            update: (cache, { data }) => {
+                const { getTimeEntryRows } = cache.readQuery({
+                    query: GetTimeEntryRowsDocument,
+                    variables: {
+                        timesheetId:
+                            timesheetData?.getorCreateTimesheet?.id ?? "-1",
+                    },
+                });
+                cache.writeQuery({
+                    query: GetTimeEntryRowsDocument,
+                    variables: {
+                        timesheetId:
+                            timesheetData?.getorCreateTimesheet?.id ?? "-1",
+                    },
+                    data: {
+                        getTimeEntryRows: [
+                            ...getTimeEntryRows,
+                            data?.createTimeEntryRow,
+                        ],
+                    },
+                });
             },
         });
     };
@@ -316,9 +342,10 @@ const Timesheet = () => {
                         },
                         accessor: (row) => row.timeEntries[i],
                         id: date.toFormat("dd"),
-                        Cell: ({ value, row }) => (
+                        Cell: ({ value, row, timesheetId }) => (
                             <TimesheetEntryInput
                                 value={value}
+                                timesheetId={timesheetId}
                                 row={row}
                                 date={date}
                                 userId={userId}
@@ -326,6 +353,15 @@ const Timesheet = () => {
                         ),
                     };
                 }),
+            },
+            {
+                // specifies delete row button column.
+                Header: () => null, // No header
+                id: "deleter", // It needs an ID
+                // eslint-disable-next-line react/display-name, react/prop-types
+                Cell: (props) => (
+                    <TimesheetDeleteEntryInput {...props} userId={userId} />
+                ),
             },
         ],
         [timesheetDates, userId]
@@ -346,104 +382,17 @@ const Timesheet = () => {
             {data && (
                 <>
                     <TimesheetTable
+                        timesheetId={
+                            timesheetData?.getorCreateTimesheet?.id ?? "-1"
+                        }
                         data={timesheet}
                         columns={columns}
                         addNewEntryRow={createTimeEntryRow}
                     />
                 </>
             )}
-
-            {/* <TimesheetDesktopView
-                userInfo={userInfo}
-                disableModification={disableModification}
-                timesheet={timesheet}
-                setTimeEntryPeriodStartDate={setTimeEntryPeriodStartDate}
-                timeEntryPeriodStartDate={timeEntryPeriodStartDate}
-                updateEntryStartDate={updateEntryStartDate}
-                type={type}
-                dailyTotals={dailyTotals}
-                timeSheetLoading={timeSheetLoading}
-                addNewEntryRow={addNewEntryRow}
-                columns={columns}
-                skipPageReset={skipPageReset}
-                setSkipPageReset={setSkipPageReset}
-                setIsLocked={setIsLocked}
-                periodTotalHours={periodTotalHours}
-                pinnedRows={pinnedRows}
-            /> */}
-            {/* <TimesheetTabletView
-                        isTablet={isTablet}
-                        userInfo={userInfo}
-                        disableModification={disableModification}
-                        timesheet={timesheet}
-                        setTimeEntryPeriodStartDate={
-                            setTimeEntryPeriodStartDate
-                        }
-                        timeEntryPeriodStartDate={timeEntryPeriodStartDate}
-                        updateEntryStartDate={updateEntryStartDate}
-                        type={type}
-                        dailyTotals={dailyTotals}
-                        timeSheetLoading={timeSheetLoading}
-                        addNewEntryRow={addNewEntryRow}
-                        columns={columns}
-                        skipPageReset={skipPageReset}
-                        setSkipPageReset={setSkipPageReset}
-                        setIsLocked={setIsLocked}
-                        periodTotalHours={periodTotalHours}
-                        pinnedRows={pinnedRows}
-                    />
-
-                    <TimesheetMobileView
-                        userInfo={userInfo}
-                        timesheet={timesheet}
-                        type={type}
-                        setIsLocked={setIsLocked}
-                        disableModification={disableModification}
-                        timeEntryPeriodStartDate={timeEntryPeriodStartDate}
-                        workCodes={userInfo.workCodes}
-                        departments={departments}
-                        projects={projects}
-                        setSkipPageReset={setSkipPageReset}
-                        addNewEntryRow={addNewEntryRow}
-                        periodTotalHours={periodTotalHours}
-                    /> */}
         </>
     );
 };
-// Timesheet.propTypes = {
-//     userInfo: PropTypes.object.isRequired,
-//     createTimeEntryRowDispatch: PropTypes.func.isRequired,
-//     readUserWorkCodesDispatch: PropTypes.func.isRequired,
-//     settings: PropTypes.object.isRequired,
-//     readTimesheetDispatch: PropTypes.func.isRequired,
-//     timesheet: PropTypes.object.isRequired,
-//     readTemplatesDispatch: PropTypes.func.isRequired,
-//     type: PropTypes.string,
-//     readSubordinateWorkCodesDispatch: PropTypes.func.isRequired,
-//     projects: PropTypes.array.isRequired,
-//     workCodes: PropTypes.array.isRequired,
-//     departments: PropTypes.array.isRequired,
-//     pinnedRows: PropTypes.array.isRequired,
-// };
-
-// const mapStateToProps = (state) => {
-//     return {
-//         loading: state.apiCallsInProgress > 0,
-//         workCodes: state.workCodes,
-//         settings: state.settings || {},
-//         projects: state.projects,
-//         departments: state.departments,
-//         pinnedRows: state.currentUser.preferences.PinnedRows.Value,
-//     };
-// };
-
-// const mapDispatchToProps = {
-//     readTimesheetDispatch,
-//     createTimeEntryRowDispatch,
-//     readTemplatesDispatch,
-//     readSubordinateWorkCodesDispatch,
-//     readUserWorkCodesDispatch,
-//     // loadPinnedRows,
-// };
 
 export default Timesheet;

@@ -50,7 +50,7 @@ export const MutateTimesheet = extendType({
                     const prefs =
                         await context.prisma.applicationPreferences.findUnique({
                             where: {
-                                id: 1,
+                                id: "1",
                             },
                             select: {
                                 startDate: true,

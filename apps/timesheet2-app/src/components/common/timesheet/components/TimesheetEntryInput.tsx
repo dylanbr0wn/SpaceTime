@@ -4,8 +4,13 @@ import { Dialog, Transition } from "@headlessui/react";
 
 import {
     GetTimeEntryRowDocument,
+    GetTimeEntryRowQuery,
+    GetTimeEntryRowQueryVariables,
     GetTimeEntryRowsDocument,
+    GetTimeEntryRowsQuery,
+    GetTimeEntryRowsQueryVariables,
     useCreateEntryCommentMutation,
+    useCreateTimeEntryMutation,
     useDeleteTimeEntryMutation,
     useGetUserFromIdQuery,
     useTimeEntryFromIdQuery,
@@ -25,11 +30,11 @@ import "../../../style/TimeEntry.css";
  * @description Hour entry input. Provides a input field which takes a number.
  * @param {Object} props Props. See propTypes for details.
  */
-const TimesheetEntryInput = ({ value, row, date, userId }) => {
+const TimesheetEntryInput = ({ value, row, date, userId, timesheetId }) => {
     // We need to keep and update the state of the cell normally
 
     const [updateTimeEntryhoursMutation] = useUpdateTimeEntryhoursMutation();
-    const [createEntryCommentMutation] = useCreateEntryCommentMutation();
+    const [createTimeEntryMutation] = useCreateTimeEntryMutation();
     const [deleteTimeEntryMutation] = useDeleteTimeEntryMutation();
 
     const [work, setWork] = React.useState(value);
@@ -45,7 +50,7 @@ const TimesheetEntryInput = ({ value, row, date, userId }) => {
         data: ProfileData,
     } = useGetUserFromIdQuery({
         variables: {
-            getUserFromIdId: parseInt(userId),
+            getUserFromIdId: userId,
         },
     });
 
@@ -62,8 +67,8 @@ const TimesheetEntryInput = ({ value, row, date, userId }) => {
     // We'll only update the external data when the input is blurred
     const onBlur = () => {
         setIsSaving(true);
-        if (work.id === -1 && work.hours > 0) {
-            createEntryCommentMutation({
+        if (work.id === "-1" && work.hours > 0) {
+            createTimeEntryMutation({
                 variables: {
                     data: {
                         date: date.toISO(),
@@ -71,9 +76,46 @@ const TimesheetEntryInput = ({ value, row, date, userId }) => {
                         timeEntryRowId: row.original.id,
                     },
                 },
-                refetchQueries: [GetTimeEntryRowsDocument],
+                update: (cache, { data: TimeEntryData }) => {
+                    cache.updateQuery<
+                        GetTimeEntryRowsQuery,
+                        GetTimeEntryRowsQueryVariables
+                    >(
+                        {
+                            query: GetTimeEntryRowsDocument,
+                            variables: {
+                                timesheetId,
+                            },
+                        },
+                        (data) => {
+                            const TimeEntry =
+                                TimeEntryData?.createTimeEntry ?? {};
+                            // console.log(TimeEntry);
+                            const timeEntryRows = data?.getTimeEntryRows ?? [];
+
+                            return {
+                                getTimeEntryRows: timeEntryRows.map(
+                                    (timeEntryRow) => {
+                                        if (
+                                            timeEntryRow.id === row.original.id
+                                        ) {
+                                            return {
+                                                ...timeEntryRow,
+                                                timeEntries: [
+                                                    ...timeEntryRow.timeEntries,
+                                                    TimeEntry,
+                                                ],
+                                            };
+                                        }
+                                        return timeEntryRow;
+                                    }
+                                ),
+                            };
+                        }
+                    );
+                },
             });
-        } else if (work.id !== -1 && work.hours > 0) {
+        } else if (work.id !== "-1" && work.hours > 0) {
             if (work.hours !== value.hours) {
                 updateTimeEntryhoursMutation({
                     variables: {
@@ -82,17 +124,56 @@ const TimesheetEntryInput = ({ value, row, date, userId }) => {
                             hours: work.hours,
                         },
                     },
-                    refetchQueries: [GetTimeEntryRowsDocument],
+                    update: (cache, { data: TimeEntryData }) => {
+                        cache.updateQuery<
+                            GetTimeEntryRowsQuery,
+                            GetTimeEntryRowsQueryVariables
+                        >(
+                            {
+                                query: GetTimeEntryRowsDocument,
+                                variables: {
+                                    timesheetId,
+                                },
+                            },
+                            (data) => {
+                                const TimeEntry =
+                                    TimeEntryData?.updateTimeEntryhours ?? {};
+                                // console.log(TimeEntry);
+                                const timeEntryRows =
+                                    data?.getTimeEntryRows ?? [];
+
+                                return {
+                                    getTimeEntryRows: timeEntryRows.map(
+                                        (timeEntryRow) => {
+                                            if (
+                                                timeEntryRow.id ===
+                                                row.original.id
+                                            ) {
+                                                return {
+                                                    ...timeEntryRow,
+                                                    timeEntries: [
+                                                        ...timeEntryRow.timeEntries,
+                                                        TimeEntry,
+                                                    ],
+                                                };
+                                            }
+                                            return timeEntryRow;
+                                        }
+                                    ),
+                                };
+                            }
+                        );
+                    },
                 });
             }
-        } else if (work.id !== -1 && work.hours === 0) {
+        } else if (work.id !== "-1" && work.hours === 0) {
             deleteTimeEntryMutation({
                 variables: {
                     deleteTimeEntryId: work.id,
                 },
                 refetchQueries: [GetTimeEntryRowsDocument],
             });
-            work.id = -1; // set to -1 so we know it's deleted
+            work.id = "-1"; // set to -1 so we know it's deleted
         }
         setIsEditing(false);
     };

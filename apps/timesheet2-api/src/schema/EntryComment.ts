@@ -2,9 +2,9 @@ import {
     arg,
     extendType,
     inputObjectType,
-    intArg,
     nonNull,
     objectType,
+    stringArg,
 } from "nexus";
 import * as NexusPrisma from "nexus-prisma";
 
@@ -28,7 +28,7 @@ export const QueryEntryComment = extendType({
         t.nonNull.list.nonNull.field("getEntryComments", {
             type: "EntryComment",
             args: {
-                timeEntryId: nonNull(intArg()),
+                timeEntryId: nonNull(stringArg()),
             },
             resolve: (_parent, args, context: Context) => {
                 return context.prisma.entryComment.findMany({
@@ -52,7 +52,7 @@ export const QueryEntryComment = extendType({
         t.nonNull.list.nonNull.field("getEntryCommentsByTimesheet", {
             type: "EntryComment",
             args: {
-                timesheetId: nonNull(intArg()),
+                timesheetId: nonNull(stringArg()),
             },
             resolve: (_parent, args, context: Context) => {
                 return context.prisma.entryComment.findMany({

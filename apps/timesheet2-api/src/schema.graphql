@@ -4,7 +4,7 @@
 
 type ApplicationPreferences {
   createdAt: DateTime!
-  id: Int!
+  id: ID!
   isActive: Boolean!
   periodLength: Int!
   startDate: DateTime!
@@ -19,7 +19,7 @@ scalar DateTime
 type Department {
   createdAt: DateTime!
   description: String
-  id: Int!
+  id: ID!
   isActive: Boolean!
   name: String!
   projects: [Project!]!
@@ -29,7 +29,7 @@ type Department {
 
 type EntryComment {
   createdAt: DateTime!
-  id: Int!
+  id: ID!
   text: String!
   updatedAt: DateTime!
   user: User!
@@ -37,38 +37,38 @@ type EntryComment {
 
 input EntryCommentCreateInput {
   text: String!
-  timeEntryId: Int!
-  userId: Int!
+  timeEntryId: String!
+  userId: String!
 }
 
 input EntryCommentDeleteInput {
-  id: Int!
+  id: ID!
 }
 
 input EntryCommentUpdateInput {
-  id: Int!
+  id: ID!
   text: String!
 }
 
 type Mutation {
   createEntryComment(entryComment: EntryCommentCreateInput!): EntryComment
   createTimeEntry(data: TimeEntryCreateInput!): TimeEntry
-  createTimeEntryRow(departmentId: Int, projectId: Int, timesheetId: Int!, workTypeId: Int): TimeEntryRow
+  createTimeEntryRow(departmentId: String, projectId: String, timesheetId: String!, workTypeId: String): TimeEntryRow
   createUser(user: UserCreateInput!): User
   deleteEntryComment(EntryComment: EntryCommentDeleteInput!): EntryComment
-  deleteTimeEntry(id: Int!): TimeEntry
+  deleteTimeEntry(id: String!): TimeEntry
   deleteTimeEntryRow(TimeEntryRow: TimeEntryRowDeleteInput!): TimeEntryRow
   getorCreateTimesheet(Timesheet: TimesheetGetInput!): Timesheet
   updateEntryComment(entryComment: EntryCommentUpdateInput!): EntryComment
-  updateTimeEntryRow(departmentId: Int, id: Int!, projectId: Int, workTypeId: Int): TimeEntryRow
-  updateTimeEntryhours(data: TimeEntryUpdateInput!, id: Int!): TimeEntry
+  updateTimeEntryRow(departmentId: String, id: String!, projectId: String, workTypeId: String): TimeEntryRow
+  updateTimeEntryhours(data: TimeEntryUpdateInput!, id: String!): TimeEntry
   updateUser(user: UserUpdateInput!): User
 }
 
 type Period {
   createdAt: DateTime!
   endDate: DateTime!
-  id: Int!
+  id: ID!
   startDate: DateTime!
 }
 
@@ -76,7 +76,7 @@ type Profile {
   avatar: String
   bio: String
   firstName: String!
-  id: Int!
+  id: ID!
   lastName: String!
 }
 
@@ -85,7 +85,7 @@ type Project {
   createdAt: DateTime!
   department: Department!
   description: String
-  id: Int!
+  id: ID!
   isActive: Boolean!
   name: String!
   updatedAt: DateTime!
@@ -95,12 +95,12 @@ type Query {
   allUsers: [User!]!
   applicationPreferences: ApplicationPreferences
   departments: [Department!]!
-  getEntryComments(timeEntryId: Int!): [EntryComment!]!
-  getEntryCommentsByTimesheet(timesheetId: Int!): [EntryComment!]!
-  getTimeEntryRow(id: Int!): TimeEntryRow
-  getTimeEntryRows(timesheetId: Int!): [TimeEntryRow!]!
+  getEntryComments(timeEntryId: String!): [EntryComment!]!
+  getEntryCommentsByTimesheet(timesheetId: String!): [EntryComment!]!
+  getTimeEntryRow(id: String!): TimeEntryRow
+  getTimeEntryRows(timesheetId: String!): [TimeEntryRow!]!
   getUserFromEmail(email: String!): User
-  getUserFromId(id: Int!): User
+  getUserFromId(id: String!): User
   projects: [Project!]!
   timeEntry(TimeEntry: TimeEntryFromRowDateInput!): TimeEntry
   timeEntryFromId(TimeEntry: TimeEntryFromIdInput!): TimeEntry
@@ -112,29 +112,29 @@ type TimeEntry {
   date: DateTime!
   entryComments: [EntryComment!]!
   hours: Float!
-  id: Int!
+  id: ID!
   updatedAt: DateTime!
 }
 
 input TimeEntryCreateInput {
   date: DateTime!
   hours: Float!
-  timeEntryRowId: Int!
+  timeEntryRowId: String!
 }
 
 input TimeEntryFromIdInput {
-  id: Int!
+  id: ID!
 }
 
 input TimeEntryFromRowDateInput {
   date: DateTime!
-  timeEntryRowId: Int!
+  timeEntryRowId: String!
 }
 
 type TimeEntryRow {
   createdAt: DateTime!
   department: Department
-  id: Int!
+  id: ID!
   project: Project
   timeEntries: [TimeEntry!]!
   updatedAt: DateTime!
@@ -142,14 +142,14 @@ type TimeEntryRow {
 }
 
 input TimeEntryRowDeleteInput {
-  id: Int!
+  id: ID!
 }
 
 input TimeEntryRowUpdateInput {
-  departmentId: Int
-  id: Int!
-  projectId: Int
-  workTypeId: Int
+  departmentId: String
+  id: ID!
+  projectId: String
+  workTypeId: String
 }
 
 input TimeEntryUpdateInput {
@@ -158,7 +158,7 @@ input TimeEntryUpdateInput {
 
 type Timesheet {
   createdAt: DateTime!
-  id: Int!
+  id: ID!
   period: Period!
   timeEntryRows: [TimeEntryRow!]!
   updatedAt: DateTime!
@@ -167,7 +167,7 @@ type Timesheet {
 
 input TimesheetGetInput {
   date: DateTime!
-  userId: Int!
+  userId: String!
 }
 
 type User {
@@ -175,7 +175,7 @@ type User {
   createdAt: DateTime!
   department: Department!
   email: String!
-  id: Int!
+  id: ID!
   isActive: Boolean!
   isAdmin: Boolean!
   isManager: Boolean!
@@ -191,7 +191,7 @@ input UserCreateInput {
   avatar: String
   bio: String
   code: String!
-  departmentId: Int!
+  departmentId: String!
   email: String!
   firstName: String!
   isActive: Boolean!
@@ -199,7 +199,7 @@ input UserCreateInput {
   isManager: Boolean!
   isPaymentManager: Boolean!
   lastName: String!
-  managerId: Int!
+  managerId: String!
 }
 
 """User Update Input"""
@@ -207,23 +207,23 @@ input UserUpdateInput {
   avatar: String
   bio: String
   code: String!
-  departmentId: Int!
+  departmentId: String!
   email: String!
   firstName: String!
-  id: Int!
+  id: ID!
   isActive: Boolean!
   isAdmin: Boolean!
   isManager: Boolean!
   isPaymentManager: Boolean!
   lastName: String!
-  managerId: Int!
+  managerId: String!
 }
 
 type WorkType {
   code: String!
   createdAt: DateTime!
   description: String
-  id: Int!
+  id: ID!
   isActive: Boolean!
   isBillable: Boolean!
   isDefault: Boolean!

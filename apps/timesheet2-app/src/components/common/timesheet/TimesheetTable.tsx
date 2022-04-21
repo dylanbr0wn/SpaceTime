@@ -14,7 +14,7 @@ import TimesheetDayCommentInput from "./components/TimesheetDayCommentInput";
  * @description Provides the time entry table interface.
  * @param {Object} props Props. See propTypes for details.
  */
-const TimesheetTable = ({ addNewEntryRow, columns, data }) => {
+const TimesheetTable = ({ addNewEntryRow, columns, data, timesheetId }) => {
     const [pinRows, setPinRows] = useState([]);
     const [otherRows, setOtherRows] = useState([]);
 
@@ -26,6 +26,7 @@ const TimesheetTable = ({ addNewEntryRow, columns, data }) => {
             {
                 columns,
                 data,
+                timesheetId,
                 // use the skipPageReset option to disable page resetting temporarily
                 // autoResetPage: !skipPageReset,
                 // updateMyData isn't part of the API, but

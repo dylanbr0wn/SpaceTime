@@ -6,7 +6,6 @@ import { Listbox, Transition } from "@headlessui/react";
 import { CheckIcon, SelectorIcon } from "@heroicons/react/solid";
 
 import {
-    useGetTimeEntryRowQuery,
     useProjectsQuery,
     useUpdateTimeEntryRowMutation,
 } from "../../../../api";
@@ -42,6 +41,7 @@ const TimesheetProjectInput = ({ value, row, column: { id }, userId }) => {
 
     React.useEffect(() => {
         if (allProjectsLoaded) {
+            if (value === "-1") return;
             const project = filteredProjects.find((proj) => proj.id === value);
             setProject(project ?? {});
             setFoundProject(!!project);
@@ -53,31 +53,31 @@ const TimesheetProjectInput = ({ value, row, column: { id }, userId }) => {
             updateTimeEntryRow({
                 variables: {
                     updateTimeEntryRowId: row.original.id,
-                    projectId: -1,
+                    projectId: "-1",
                 },
-                // optimisticResponse: {
-                //     updateTimeEntryRow: {
-                //         __typename: "TimeEntryRow",
-                //         id: row.original.id,
-                //         createdAt: row.original.createdAt,
-                //         updatedAt: row.original.updatedAt,
-                //         department: {
-                //             __typename: "Department",
-                //             id: row.original.department.id,
-                //         },
-                //         project: {
-                //             __typename: "Project",
-                //             id: -1,
-                //         },
-                //         workType: {
-                //             __typename: "WorkType",
-                //             id: row.original.workType.id,
-                //         },
-                //     },
-                // },
+                optimisticResponse: {
+                    updateTimeEntryRow: {
+                        __typename: "TimeEntryRow",
+                        id: row.original.id,
+                        createdAt: row.original.createdAt,
+                        updatedAt: row.original.updatedAt,
+                        department: {
+                            __typename: "Department",
+                            id: row.original.department.id,
+                        },
+                        project: {
+                            __typename: "Project",
+                            id: "-1",
+                        },
+                        workType: {
+                            __typename: "WorkType",
+                            id: row.original.workType.id,
+                        },
+                    },
+                },
             });
         }
-    }, [foundProject, row.original.id, updateTimeEntryRow]);
+    }, [foundProject, row.original, updateTimeEntryRow, value]);
 
     // When changed, dispatch api call and redux action.
     const onChange = (project) => {
