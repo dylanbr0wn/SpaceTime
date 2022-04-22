@@ -1,3 +1,4 @@
+import { DateTime } from "luxon";
 import React, { useEffect, useState } from "react";
 import { connect, useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
@@ -7,6 +8,11 @@ import { CheckIcon, SelectorIcon } from "@heroicons/react/solid";
 
 import {
     GetorCreateTimesheetDocument,
+    GetTimeEntryRowQuery,
+    GetTimeEntryRowQueryVariables,
+    GetTimeEntryRowsDocument,
+    GetTimeEntryRowsQuery,
+    GetTimeEntryRowsQueryVariables,
     useDepartmentsQuery,
     useUpdateTimeEntryRowMutation,
 } from "../../../../api";
@@ -14,7 +20,6 @@ import ErrorBoundary from "../../ErrorBoundary";
 import Tooltip from "../../Tooltip";
 
 import "../../../style/TimeEntry.css";
-import { DateTime } from "luxon";
 
 /**
  * @name TimesheetDepartmentInput
@@ -24,7 +29,13 @@ import { DateTime } from "luxon";
  * Provides an dropdown menu with filtered options.
  * @param {Object} props Props. See propTypes for details.
  */
-const TimesheetDepartmentInput = ({ value, row, column: { id }, userId }) => {
+const TimesheetDepartmentInput = ({
+    value,
+    row,
+    column: { id },
+    userId,
+    timesheetId,
+}) => {
     // We need to keep and update the state of the cell normally
 
     const [department, setDepartment] = useState({});
@@ -40,6 +51,7 @@ const TimesheetDepartmentInput = ({ value, row, column: { id }, userId }) => {
             variables: {
                 updateTimeEntryRowId: row.original.id,
                 departmentId: department.id,
+                projectId: "-1",
             },
             optimisticResponse: {
                 updateTimeEntryRow: {
@@ -53,13 +65,50 @@ const TimesheetDepartmentInput = ({ value, row, column: { id }, userId }) => {
                     },
                     project: {
                         __typename: "Project",
-                        id: row.original.project.id,
+                        id: "-1",
                     },
                     workType: {
                         __typename: "WorkType",
                         id: row.original.workType.id,
                     },
                 },
+            },
+            update: (cache, { data }) => {
+                const newEntryRow = data?.updateTimeEntryRow ?? {};
+                const rows = cache.readQuery<
+                    GetTimeEntryRowsQuery,
+                    GetTimeEntryRowsQueryVariables
+                >({
+                    query: GetTimeEntryRowsDocument,
+                    variables: {
+                        timesheetId,
+                    },
+                });
+
+                const oldRows = rows?.getTimeEntryRows ?? [];
+
+                const newTimeEntryRows = oldRows.map((timeEntryRow) => {
+                    if (timeEntryRow.id === row.original.id) {
+                        return {
+                            ...timeEntryRow,
+                            ...newEntryRow,
+                        };
+                    }
+                    return timeEntryRow;
+                });
+
+                cache.writeQuery<
+                    GetTimeEntryRowsQuery,
+                    GetTimeEntryRowsQueryVariables
+                >({
+                    query: GetTimeEntryRowsDocument,
+                    variables: {
+                        timesheetId,
+                    },
+                    data: {
+                        getTimeEntryRows: newTimeEntryRows,
+                    },
+                });
             },
         });
     };

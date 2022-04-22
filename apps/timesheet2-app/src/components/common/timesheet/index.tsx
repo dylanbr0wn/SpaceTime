@@ -281,12 +281,13 @@ const Timesheet = () => {
                 Header: "Department",
                 accessor: (row) => row.department.id,
                 id: "department",
-                Cell: ({ value, row, column }) => (
+                Cell: ({ value, row, column, timesheetId }) => (
                     <TimesheetDepartmentInput
                         value={value}
                         row={row}
                         column={column}
                         userId={userId}
+                        timesheetId={timesheetId}
                     />
                 ),
             },
@@ -294,12 +295,13 @@ const Timesheet = () => {
                 Header: "Project",
                 accessor: (row) => row.project.id,
                 id: "project",
-                Cell: ({ value, row, column }) => (
+                Cell: ({ value, row, column, timesheetId }) => (
                     <TimesheetProjectInput
                         value={value}
                         row={row}
                         column={column}
                         userId={userId}
+                        timesheetId={timesheetId}
                     />
                 ),
             },

@@ -29,7 +29,13 @@ import "../../../style/TimeEntry.css";
  * @param {Object} props Props. See propTypes for details.
  */
 
-const TimesheetProjectInput = ({ value, row, column: { id }, userId }) => {
+const TimesheetProjectInput = ({
+    value,
+    row,
+    column: { id },
+    userId,
+    timesheetId,
+}) => {
     // We need to keep and update the state of the cell normally
     const [project, setProject] = useState({});
     const [foundProject, setFoundProject] = useState(true);
@@ -41,43 +47,43 @@ const TimesheetProjectInput = ({ value, row, column: { id }, userId }) => {
 
     React.useEffect(() => {
         if (allProjectsLoaded) {
-            if (value === "-1") return;
             const project = filteredProjects.find((proj) => proj.id === value);
             setProject(project ?? {});
+            if (value === "-1") return;
             setFoundProject(!!project);
         }
     }, [filteredProjects, value, allProjectsLoaded]);
 
-    React.useEffect(() => {
-        if (!foundProject) {
-            updateTimeEntryRow({
-                variables: {
-                    updateTimeEntryRowId: row.original.id,
-                    projectId: "-1",
-                },
-                optimisticResponse: {
-                    updateTimeEntryRow: {
-                        __typename: "TimeEntryRow",
-                        id: row.original.id,
-                        createdAt: row.original.createdAt,
-                        updatedAt: row.original.updatedAt,
-                        department: {
-                            __typename: "Department",
-                            id: row.original.department.id,
-                        },
-                        project: {
-                            __typename: "Project",
-                            id: "-1",
-                        },
-                        workType: {
-                            __typename: "WorkType",
-                            id: row.original.workType.id,
-                        },
-                    },
-                },
-            });
-        }
-    }, [foundProject, row.original, updateTimeEntryRow, value]);
+    // React.useEffect(() => {
+    //     if (!foundProject) {
+    //         updateTimeEntryRow({
+    //             variables: {
+    //                 updateTimeEntryRowId: row.original.id,
+    //                 projectId: "-1",
+    //             },
+    //             optimisticResponse: {
+    //                 updateTimeEntryRow: {
+    //                     __typename: "TimeEntryRow",
+    //                     id: row.original.id,
+    //                     createdAt: row.original.createdAt,
+    //                     updatedAt: row.original.updatedAt,
+    //                     department: {
+    //                         __typename: "Department",
+    //                         id: row.original.department.id,
+    //                     },
+    //                     project: {
+    //                         __typename: "Project",
+    //                         id: "-1",
+    //                     },
+    //                     workType: {
+    //                         __typename: "WorkType",
+    //                         id: row.original.workType.id,
+    //                     },
+    //                 },
+    //             },
+    //         });
+    //     }
+    // }, [foundProject, row.original, updateTimeEntryRow, value]);
 
     // When changed, dispatch api call and redux action.
     const onChange = (project) => {

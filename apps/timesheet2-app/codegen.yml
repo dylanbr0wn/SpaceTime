@@ -1,5 +1,5 @@
 overwrite: true
-schema: "E:/work/Timesheet/apps/timesheet2-api/src/schema.graphql"
+schema: "/Users/dylan/vault/timesheet2/apps/timesheet2-api/src/schema.graphql"
 documents: "src/api/*.graphql"
 generates:
     src/api/graphql.ts:
