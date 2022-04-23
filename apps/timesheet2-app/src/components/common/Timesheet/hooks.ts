@@ -5,12 +5,13 @@ import {
     GetorCreateTimesheetMutation,
     GetorCreateTimesheetMutationFn,
     GetTimeEntryRowsQuery,
+    GetTimesheetQuery,
     Project,
     useProjectsQuery,
 } from "../../../api";
 
 export const useTimesheetDates = (
-    timesheetData: GetorCreateTimesheetMutation | null | undefined,
+    timesheetData: GetTimesheetQuery | null | undefined,
     //getorCreateTimesheetMutation: GetorCreateTimesheetMutationFn,
     userId: string
 ) => {
@@ -24,12 +25,12 @@ export const useTimesheetDates = (
         if (timesheetData) {
             const dates: DateTime[] = [];
             const endDate = DateTime.fromISO(
-                timesheetData?.getorCreateTimesheet?.period.endDate,
+                timesheetData?.getTimesheet?.period.endDate,
                 { zone: "utc" }
             );
 
             const startDate = DateTime.fromISO(
-                timesheetData?.getorCreateTimesheet?.period.startDate,
+                timesheetData?.getTimesheet?.period.startDate,
                 { zone: "utc" }
             );
 
