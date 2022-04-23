@@ -11,6 +11,7 @@ import {
     useGetorCreateTimesheetMutation,
 } from "../../../../api";
 import ErrorBoundary from "../../ErrorBoundary";
+import { Transition } from "@headlessui/react";
 
 /**
  * @name TimesheetDateInput
@@ -32,19 +33,19 @@ const TimesheetDateInput = ({
     timesheetQueryDate: string;
     setTimesheetQueryDate: (date: string) => void;
 }) => {
-    const [focusedDatePicker, setCurrentStartDate] = React.useState(false);
+    const [calendarShowing, setCalendarShowing] = React.useState(false);
 
     // Gets the last 20 years.
-    const getYears = React.useCallback(() => {
-        const years: number[] = [];
-        if (startDate) {
-            for (let i = 0; i < 20; i++) {
-                years.push(startDate.plus({ years: i }).year);
-            }
-        }
+    // const getYears = React.useCallback(() => {
+    //     const years: number[] = [];
+    //     if (startDate) {
+    //         for (let i = 0; i < 20; i++) {
+    //             years.push(startDate.plus({ years: i }).year);
+    //         }
+    //     }
 
-        return years;
-    }, [startDate]);
+    //     return years;
+    // }, [startDate]);
 
     const onChange = (date: Date) => {
         if (!userId) return;
@@ -125,18 +126,17 @@ const TimesheetDateInput = ({
         <>
             <ErrorBoundary>
                 <span>
-                    <span>
+                    <span></span>
+
+                    <div className="flex justify-center">
                         <button
                             onClick={lastPeriod}
-                            className="mr-2 sm:mr-4"
+                            className="mr-2 sm:mr-4 w-10 h-10 bg-slate-900 text-sky-500 hover:bg-slate-800 rounded"
                             title="Go to last period"
                         >
-                            last period
+                            <ChevronLeftIcon className="w-6 h-6 m-auto text-sky-500 " />
                         </button>
-                    </span>
-
-                    <span>
-                        <div className="relative w-40">
+                        <div className="w-40">
                             <DatePicker
                                 selected={startDate?.toJSDate()}
                                 onChange={onChange}
@@ -156,7 +156,7 @@ const TimesheetDateInput = ({
                                         0
                                     );
                                 }}
-                                className="block w-full text-base md:text-sm bg-white border border-gray-300 rounded shadow-sm form-input "
+                                className="block w-full text-base md:text-sm bg-slate-900 text-sky-300 border-2 hover:bg-slate-800 rounded form-input border-none outline-none h-10"
                                 // monthClassName={() =>
                                 //     "inline-block w-8 h-8 text-sm p-1"
                                 // }
@@ -174,19 +174,42 @@ const TimesheetDateInput = ({
                                             (periodLength ?? 14) ===
                                         0
                                     ) {
-                                        return "mb-1 w-8 h-8 inline-block justify-center  text-sm leading-loose transition text-gray-700 rounded cursor-pointer hover:bg-blue-500 hover:text-white";
+                                        return "m-1 w-8 h-8 inline-block justify-center  text-sm leading-loose transition text-sky-300 rounded cursor-pointer hover:bg-sky-500 hover:text-white";
                                     } else {
-                                        return "mb-1 w-8 h-8 inline-block justify-center  text-sm leading-loose transition text-gray-700 rounded  cursor-not-allowed opacity-40";
+                                        return "m-1 w-8 h-8 inline-block justify-center  text-sm leading-loose transition text-slate-300 rounded  cursor-not-allowed opacity-40";
                                     }
                                 }}
                                 weekDayClassName={() =>
-                                    "inline-block w-8 h-8 text-gray-400 font-medium text-center text-xs"
+                                    "inline-block w-8 m-1 h-8 text-sky-500 font-medium text-center text-xs"
                                 }
                                 nextMonthButtonLabel=">"
+                                onCalendarOpen={() => setCalendarShowing(true)}
+                                onCalendarClose={() =>
+                                    setCalendarShowing(false)
+                                }
                                 previousMonthButtonLabel="<"
-                                popperClassName="z-40 offset:2 w-72 text-sm bg-white shadow px-3 py-2 border-2 border-gray-200 rounded"
-                                wrapperClassName="flex  flex-col"
-                                calendarClassName="flex  flex-col "
+                                popperClassName="z-40 offset:2 w-78 text-sm shadow-lg border border-slate-800 bg-slate-900 rounded"
+                                // popperContainer={({ children }) => {
+                                //     return (
+
+                                //     );
+                                // }}
+                                // calendarContainer={({ children }) => {
+                                //     return (
+                                //         <Transition
+                                //             show={calendarShowing}
+                                //             enter="transition-opacity duration-300"
+                                //             enterFrom="opacity-0"
+                                //             enterTo="opacity-100"
+                                //             leave="transition-opacity duration-300"
+                                //             leaveFrom="opacity-100"
+                                //             leaveTo="opacity-0"
+                                //         >
+                                //             {children}
+                                //         </Transition>
+                                //     );
+                                // }}
+                                calendarClassName="flex px-3 py-2 flex-col rounded"
                                 popperModifiers={[
                                     {
                                         name: "offset",
@@ -203,8 +226,8 @@ const TimesheetDateInput = ({
                                     nextMonthButtonDisabled,
                                 }) => (
                                     <div className="flex items-center justify-between px-2 py-2 mb-2">
-                                        <span className="text-lg text-gray-700">
-                                            {DateTime.now().toFormat(
+                                        <span className="text-lg text-sky-300">
+                                            {DateTime.fromJSDate(date).toFormat(
                                                 "LLLL yyyy"
                                             )}
                                         </span>
@@ -221,10 +244,10 @@ const TimesheetDateInput = ({
                                                 prevMonthButtonDisabled &&
                                                 "cursor-not-allowed opacity-50"
                                             }
-                                            inline-flex p-1 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-blue-500
+                                            inline-flex p-1 text-sm font-medium bg-slate-800 rounded transition-colors hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-cyan-500
                                         `}
                                             >
-                                                <ChevronLeftIcon className="w-5 h-5 text-gray-600" />
+                                                <ChevronLeftIcon className="w-6 h-6 text-sky-300" />
                                             </button>
 
                                             <button
@@ -238,27 +261,26 @@ const TimesheetDateInput = ({
                                                 nextMonthButtonDisabled &&
                                                 "cursor-not-allowed opacity-50"
                                             }
-                                            inline-flex p-1 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-blue-500
+                                            inline-flex p-1 text-sm font-medium bg-slate-800 rounded transition-colors  hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-cyan-500
                                         `}
                                             >
-                                                <ChevronRightIcon className="w-5 h-5 text-gray-600" />
+                                                <ChevronRightIcon className="w-6 h-6 text-sky-300" />
                                             </button>
                                         </div>
                                     </div>
                                 )}
                             />
                         </div>
-                    </span>
-
-                    <span>
                         <button
                             onClick={nextPeriod}
-                            className="ml-2 sm:ml-4"
+                            className="ml-2 sm:ml-4 w-10 h-10  bg-slate-900 text-sky-500 rounded hover:bg-slate-800"
                             title="Go to next period"
                         >
-                            next period
+                            <ChevronRightIcon className="w-6 h-6 m-auto text-sky-500 " />
                         </button>
-                    </span>
+                    </div>
+
+                    <div></div>
                 </span>
             </ErrorBoundary>
         </>
