@@ -33,6 +33,7 @@ import { useTimesheet, useTimesheetDates } from "./hooks";
 import TimesheetTable from "./TimesheetTable";
 
 import "../../style/UserAdmin.css";
+import TimesheetDateInput from "./components/TimesheetDateInput";
 
 /**
  * @name useTimesheet
@@ -70,7 +71,8 @@ const Timesheet = () => {
         },
     });
 
-    const { timesheetDates } = useTimesheetDates(timesheetData);
+    const { timesheetDates, startDate, periodLength } =
+        useTimesheetDates(timesheetData);
 
     const { timesheet } = useTimesheet(
         data,
@@ -240,7 +242,14 @@ const Timesheet = () => {
     return (
         <>
             {data && (
-                <>
+                <div className="w-full flex flex-col">
+                    <div className="text-center w-full">
+                        <TimesheetDateInput
+                            periodLength={periodLength}
+                            startDate={startDate}
+                            userId={userId}
+                        />
+                    </div>
                     <TimesheetTable
                         timesheetId={
                             timesheetData?.getorCreateTimesheet?.id ?? "-1"
@@ -249,7 +258,7 @@ const Timesheet = () => {
                         columns={columns}
                         addNewEntryRow={createTimeEntryRow}
                     />
-                </>
+                </div>
             )}
         </>
     );

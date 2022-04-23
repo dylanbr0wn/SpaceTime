@@ -38,9 +38,12 @@ const TimesheetProjectInput = ({
     const [foundProject, setFoundProject] = React.useState(true);
     const [updateTimeEntryRow] = useUpdateTimeEntryRowMutation();
 
-    const { projects, filteredProjects, allProjectsLoaded } = useProjects(
-        row.original.department.id
-    );
+    const {
+        projects,
+        filteredProjects,
+        allProjectsLoaded,
+        disableProjectSelect,
+    } = useProjects(row.original.department.id);
 
     React.useEffect(() => {
         if (allProjectsLoaded) {
@@ -51,8 +54,8 @@ const TimesheetProjectInput = ({
         }
     }, [filteredProjects, value, allProjectsLoaded]);
 
-    // When changed, dispatch api call and redux action.
-    const onChange = (project) => {
+    // When changed, dispatch an apollo query to update the time entry row
+    const onChange = (project: Project) => {
         updateTimeEntryRow({
             variables: {
                 updateTimeEntryRowId: row.original.id,
@@ -127,12 +130,14 @@ const TimesheetProjectInput = ({
                         value={project}
                         onChange={onChange}
                         // onBlur={onBlur}
-                        disabled={false}
+                        disabled={disableProjectSelect}
                     >
                         <div>
                             <Listbox.Button
                                 className={` ${
-                                    false ? "bg-slate-800" : "bg-slate-900"
+                                    disableProjectSelect
+                                        ? "bg-slate-800"
+                                        : "bg-slate-900"
                                 } relative w-full py-2 pl-3 pr-10 h-10 text-left  focus:outline-none focus-visible:ring-2 focus-visible:ring-opacity-75 focus-visible:ring-white focus-visible:ring-offset-cyan-300 focus-visible:ring-offset-2 focus-visible:border-cyan-500 sm:text-sm cursor-pointer`}
                             >
                                 <span

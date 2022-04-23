@@ -13,6 +13,8 @@ export const useTimesheetDates = (
     timesheetData: GetorCreateTimesheetMutation | null | undefined
 ) => {
     const [timesheetDates, setTimesheetDates] = React.useState<DateTime[]>([]);
+    const [startDate, setStartDate] = React.useState<DateTime>();
+    const [periodLength, setPeriodLength] = React.useState<number>();
 
     React.useEffect(() => {
         if (timesheetData) {
@@ -21,11 +23,13 @@ export const useTimesheetDates = (
                 timesheetData?.getorCreateTimesheet?.period.endDate,
                 { zone: "utc" }
             );
+
             const startDate = DateTime.fromISO(
                 timesheetData?.getorCreateTimesheet?.period.startDate,
                 { zone: "utc" }
             );
-
+            setPeriodLength(endDate.diff(startDate, "days").days);
+            setStartDate(startDate);
             let current = startDate;
             while (current < endDate) {
                 dates.push(current);
@@ -36,7 +40,7 @@ export const useTimesheetDates = (
         }
     }, [timesheetData]);
 
-    return { timesheetDates };
+    return { timesheetDates, startDate, periodLength };
 };
 
 type TimeEntryRowPartial = {
@@ -143,6 +147,8 @@ export const useTimesheet = (
 
 export const useProjects = (departmentId: string) => {
     const [projects, setProjects] = React.useState<Project[]>([]);
+    const [disableProjectSelect, setDisableProjectSelect] =
+        React.useState(false);
     const [filteredProjects, setFilteredProjects] = React.useState<Project[]>(
         []
     );
@@ -152,6 +158,14 @@ export const useProjects = (departmentId: string) => {
         error: projectsError,
         loading: projectsLoading,
     } = useProjectsQuery();
+
+    React.useEffect(() => {
+        if (!departmentId || departmentId === "-1") {
+            setDisableProjectSelect(true);
+        } else {
+            setDisableProjectSelect(false);
+        }
+    }, [departmentId]);
 
     React.useEffect(() => {
         setAllProjectsLoaded(false);
@@ -179,6 +193,7 @@ export const useProjects = (departmentId: string) => {
         projectsError,
         projectsLoading,
         allProjectsLoaded,
+        disableProjectSelect,
     };
 };
 
