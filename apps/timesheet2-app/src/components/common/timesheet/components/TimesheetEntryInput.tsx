@@ -3,13 +3,10 @@ import * as React from "react";
 import { Dialog, Transition } from "@headlessui/react";
 
 import {
-    GetTimeEntryRowDocument,
-    GetTimeEntryRowQuery,
-    GetTimeEntryRowQueryVariables,
     GetTimeEntryRowsDocument,
     GetTimeEntryRowsQuery,
     GetTimeEntryRowsQueryVariables,
-    useCreateEntryCommentMutation,
+    TimeEntry,
     useCreateTimeEntryMutation,
     useDeleteTimeEntryMutation,
     useGetUserFromIdQuery,
@@ -22,6 +19,8 @@ import ErrorBoundary from "../../ErrorBoundary";
 import SavingIcon from "../../SavingIcon";
 
 import "../../../style/TimeEntry.css";
+import cuid from "cuid";
+import { DateTime } from "luxon";
 
 /**
  * @name HourEntryInput
@@ -37,7 +36,7 @@ const TimesheetEntryInput = ({ value, row, date, userId, timesheetId }) => {
     const [createTimeEntryMutation] = useCreateTimeEntryMutation();
     const [deleteTimeEntryMutation] = useDeleteTimeEntryMutation();
 
-    const [work, setWork] = React.useState(value);
+    const [work, setWork] = React.useState<TimeEntry>(value);
     const [savingComment, setSavingComment] = React.useState(false);
     const [validTypes, setValidTypes] = React.useState(false);
 
@@ -54,13 +53,12 @@ const TimesheetEntryInput = ({ value, row, date, userId, timesheetId }) => {
         },
     });
 
-    const onHourChange = (e) => {
-        let hours = e.target.value ?? 0;
-        if (hours.length === 0) hours = 0;
-        if (parseFloat(hours) > 24 || parseFloat(hours) < 0) return;
+    const onHourChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const hours = parseFloat(e.target.value) ?? 0;
+        if (hours > 24 || hours < 0) return;
         setWork({
             ...work,
-            hours: parseFloat(hours),
+            hours: hours,
         });
     };
 
@@ -76,6 +74,17 @@ const TimesheetEntryInput = ({ value, row, date, userId, timesheetId }) => {
                         timeEntryRowId: row.original.id,
                     },
                 },
+                optimisticResponse: {
+                    createTimeEntry: {
+                        __typename: "TimeEntry",
+                        id: cuid(),
+                        date: date.toISO(),
+                        createdAt: DateTime.now().toISO(),
+                        updatedAt: DateTime.now().toISO(),
+                        hours: work.hours,
+                        entryComments: [],
+                    },
+                },
                 update: (cache, { data: TimeEntryData }) => {
                     cache.updateQuery<
                         GetTimeEntryRowsQuery,
@@ -88,10 +97,10 @@ const TimesheetEntryInput = ({ value, row, date, userId, timesheetId }) => {
                             },
                         },
                         (data) => {
-                            const TimeEntry =
-                                TimeEntryData?.createTimeEntry ?? {};
-                            // console.log(TimeEntry);
-                            const timeEntryRows = data?.getTimeEntryRows ?? [];
+                            const TimeEntry = TimeEntryData?.createTimeEntry;
+                            if (!TimeEntry) return data;
+                            const timeEntryRows = data?.getTimeEntryRows;
+                            if (!timeEntryRows) return data;
 
                             return {
                                 getTimeEntryRows: timeEntryRows.map(
@@ -136,11 +145,12 @@ const TimesheetEntryInput = ({ value, row, date, userId, timesheetId }) => {
                                 },
                             },
                             (data) => {
+                                if (!TimeEntryData) return data;
                                 const TimeEntry =
-                                    TimeEntryData?.updateTimeEntryhours ?? {};
-                                // console.log(TimeEntry);
-                                const timeEntryRows =
-                                    data?.getTimeEntryRows ?? [];
+                                    TimeEntryData.updateTimeEntryhours;
+                                if (!TimeEntry) return;
+                                const timeEntryRows = data?.getTimeEntryRows;
+                                if (!timeEntryRows) return data;
 
                                 return {
                                     getTimeEntryRows: timeEntryRows.map(
@@ -183,9 +193,6 @@ const TimesheetEntryInput = ({ value, row, date, userId, timesheetId }) => {
                             },
                         },
                         (data) => {
-                            const TimeEntry =
-                                TimeEntryData?.deleteTimeEntry ?? {};
-                            // console.log(TimeEntry);
                             const timeEntryRows = data?.getTimeEntryRows ?? [];
 
                             return {
@@ -196,10 +203,11 @@ const TimesheetEntryInput = ({ value, row, date, userId, timesheetId }) => {
                                         ) {
                                             return {
                                                 ...timeEntryRow,
-                                                timeEntries: [
-                                                    ...timeEntryRow.timeEntries,
-                                                    TimeEntry,
-                                                ],
+                                                timeEntries:
+                                                    timeEntryRow.timeEntries.filter(
+                                                        (entry) =>
+                                                            entry.id !== work.id
+                                                    ),
                                             };
                                         }
                                         return timeEntryRow;

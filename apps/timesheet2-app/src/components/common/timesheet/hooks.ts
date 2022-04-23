@@ -2,14 +2,16 @@ import { DateTime } from "luxon";
 import * as React from "react";
 
 import {
-    Department,
-    MakeMaybe,
+    GetorCreateTimesheetMutation,
+    GetorCreateTimesheetMutationFn,
+    GetTimeEntryRowsQuery,
     Project,
-    ProjectsQueryResult,
     useProjectsQuery,
 } from "../../../api";
 
-export const useTimesheetDates = (timesheetData) => {
+export const useTimesheetDates = (
+    timesheetData: GetorCreateTimesheetMutation | null | undefined
+) => {
     const [timesheetDates, setTimesheetDates] = React.useState<DateTime[]>([]);
 
     React.useEffect(() => {
@@ -37,13 +39,42 @@ export const useTimesheetDates = (timesheetData) => {
     return { timesheetDates };
 };
 
+type TimeEntryRowPartial = {
+    __typename?: "TimeEntryRow";
+    id: string;
+    project?: {
+        id: string;
+    };
+    department?: {
+        id: string;
+    };
+    workType?: {
+        id: string;
+    };
+    createdAt?: string;
+    updatedAt?: string;
+    timeEntries: TimeEntryPartial[];
+};
+
+type TimeEntryPartial = {
+    __typename?: "TimeEntry";
+    id: string;
+    date: DateTime;
+    createdAt?: string;
+    updatedAt?: string;
+    hours?: number;
+    entryComments: {
+        id: string;
+    }[];
+};
+
 export const useTimesheet = (
-    data,
-    timesheetDates,
-    getorCreateTimesheetMutation,
-    userId
+    data: GetTimeEntryRowsQuery | undefined,
+    timesheetDates: DateTime[],
+    getorCreateTimesheetMutation: GetorCreateTimesheetMutationFn,
+    userId: string
 ) => {
-    const [timesheet, setTimesheet] = React.useState([]);
+    const [timesheet, setTimesheet] = React.useState<TimeEntryRowPartial[]>([]);
     React.useEffect(() => {
         if (data) {
             const defaultRow = {
@@ -57,37 +88,39 @@ export const useTimesheet = (
                 department: {
                     id: "-1",
                 },
+                createdAt: DateTime.now().toISO(),
+                updatedAt: DateTime.now().toISO(),
             };
-            const timeEntryRows = data.getTimeEntryRows.map((row) => {
-                const newRow = { ...defaultRow, ...row };
+            const timeEntryRows: TimeEntryRowPartial[] =
+                data.getTimeEntryRows.map((row) => {
+                    const newRow = { ...defaultRow, ...row };
 
-                if (!newRow.project) newRow.project = defaultRow.project;
-                if (!newRow.workType) newRow.workType = defaultRow.workType;
-                if (!newRow.department)
-                    newRow.department = defaultRow.department;
+                    return {
+                        id: newRow.id ?? defaultRow.id,
+                        project: newRow.project ?? defaultRow.project,
+                        workType: newRow.workType ?? defaultRow.workType,
+                        department: newRow.department ?? defaultRow.department,
+                        createdAt: newRow.createdAt ?? defaultRow.createdAt,
+                        updatedAt: newRow.updatedAt ?? defaultRow.updatedAt,
+                        timeEntries: timesheetDates.map((date) => {
+                            const timeEntry = row.timeEntries.find(
+                                (entry) => entry.date === date.toISO()
+                            );
+                            const newTimeEntry: TimeEntryPartial = timeEntry
+                                ? {
+                                      ...timeEntry,
+                                      date,
+                                  }
+                                : {
+                                      entryComments: [],
+                                      date,
+                                      id: "-1",
+                                  };
 
-                return {
-                    ...defaultRow,
-                    ...newRow,
-                    timeEntries: timesheetDates.map((date) => {
-                        const timeEntry = row.timeEntries.find(
-                            (entry) => entry.date === date.toISO()
-                        );
-
-                        if (timeEntry) {
-                            return {
-                                ...timeEntry,
-                                date,
-                            };
-                        } else {
-                            return {
-                                date,
-                                id: "-1",
-                            };
-                        }
-                    }),
-                };
-            });
+                            return newTimeEntry;
+                        }),
+                    };
+                });
             setTimesheet(timeEntryRows);
         } else {
             getorCreateTimesheetMutation({
@@ -108,9 +141,11 @@ export const useTimesheet = (
     return { timesheet };
 };
 
-export const useProjects = (departmentId) => {
-    const [projects, setProjects] = React.useState([]);
-    const [filteredProjects, setFilteredProjects] = React.useState([]);
+export const useProjects = (departmentId: string) => {
+    const [projects, setProjects] = React.useState<Project[]>([]);
+    const [filteredProjects, setFilteredProjects] = React.useState<Project[]>(
+        []
+    );
     const [allProjectsLoaded, setAllProjectsLoaded] = React.useState(false);
     const {
         data,
@@ -121,7 +156,7 @@ export const useProjects = (departmentId) => {
     React.useEffect(() => {
         setAllProjectsLoaded(false);
         if (data) {
-            setProjects(data?.projects ?? []);
+            setProjects((data.projects as Project[]) ?? []);
         }
     }, [data]);
 

@@ -25,7 +25,7 @@ export const EntryComment = objectType({
 export const QueryEntryComment = extendType({
     type: "Query",
     definition(t) {
-        t.nonNull.list.nonNull.field("getEntryComments", {
+        t.list.nonNull.field("getEntryComments", {
             type: "EntryComment",
             args: {
                 timeEntryId: nonNull(stringArg()),

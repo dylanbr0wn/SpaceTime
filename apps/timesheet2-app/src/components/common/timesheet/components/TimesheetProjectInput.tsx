@@ -1,19 +1,16 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import * as React from "react";
 import { toast } from "react-toastify";
 
 import { Listbox, Transition } from "@headlessui/react";
 import { CheckIcon, SelectorIcon } from "@heroicons/react/solid";
 
 import {
-    useProjectsQuery,
+    GetTimeEntryRowsDocument,
+    GetTimeEntryRowsQuery,
+    GetTimeEntryRowsQueryVariables,
+    Project,
     useUpdateTimeEntryRowMutation,
 } from "../../../../api";
-import { updateTimeEntryRowDispatch } from "../../../../redux/actions/timesheetsActions";
-import {
-    createValidProjectsSelector,
-    getComputedData,
-} from "../../../../services/selectors";
 import { checkValidProject } from "../../../../services/utils";
 import ErrorBoundary from "../../ErrorBoundary";
 import { useProjects } from "../hooks";
@@ -37,8 +34,8 @@ const TimesheetProjectInput = ({
     timesheetId,
 }) => {
     // We need to keep and update the state of the cell normally
-    const [project, setProject] = useState({});
-    const [foundProject, setFoundProject] = useState(true);
+    const [project, setProject] = React.useState<Project | null>(null);
+    const [foundProject, setFoundProject] = React.useState(true);
     const [updateTimeEntryRow] = useUpdateTimeEntryRowMutation();
 
     const { projects, filteredProjects, allProjectsLoaded } = useProjects(
@@ -48,42 +45,11 @@ const TimesheetProjectInput = ({
     React.useEffect(() => {
         if (allProjectsLoaded) {
             const project = filteredProjects.find((proj) => proj.id === value);
-            setProject(project ?? {});
+            setProject(project ?? null);
             if (value === "-1") return;
             setFoundProject(!!project);
         }
     }, [filteredProjects, value, allProjectsLoaded]);
-
-    // React.useEffect(() => {
-    //     if (!foundProject) {
-    //         updateTimeEntryRow({
-    //             variables: {
-    //                 updateTimeEntryRowId: row.original.id,
-    //                 projectId: "-1",
-    //             },
-    //             optimisticResponse: {
-    //                 updateTimeEntryRow: {
-    //                     __typename: "TimeEntryRow",
-    //                     id: row.original.id,
-    //                     createdAt: row.original.createdAt,
-    //                     updatedAt: row.original.updatedAt,
-    //                     department: {
-    //                         __typename: "Department",
-    //                         id: row.original.department.id,
-    //                     },
-    //                     project: {
-    //                         __typename: "Project",
-    //                         id: "-1",
-    //                     },
-    //                     workType: {
-    //                         __typename: "WorkType",
-    //                         id: row.original.workType.id,
-    //                     },
-    //                 },
-    //             },
-    //         });
-    //     }
-    // }, [foundProject, row.original, updateTimeEntryRow, value]);
 
     // When changed, dispatch api call and redux action.
     const onChange = (project) => {
@@ -112,6 +78,43 @@ const TimesheetProjectInput = ({
                     },
                 },
             },
+            update: (cache, { data }) => {
+                const newEntryRow = data?.updateTimeEntryRow ?? {};
+                const rows = cache.readQuery<
+                    GetTimeEntryRowsQuery,
+                    GetTimeEntryRowsQueryVariables
+                >({
+                    query: GetTimeEntryRowsDocument,
+                    variables: {
+                        timesheetId,
+                    },
+                });
+
+                const oldRows = rows?.getTimeEntryRows ?? [];
+
+                const newTimeEntryRows = oldRows.map((timeEntryRow) => {
+                    if (timeEntryRow.id === row.original.id) {
+                        return {
+                            ...timeEntryRow,
+                            ...newEntryRow,
+                        };
+                    }
+                    return timeEntryRow;
+                });
+
+                cache.writeQuery<
+                    GetTimeEntryRowsQuery,
+                    GetTimeEntryRowsQueryVariables
+                >({
+                    query: GetTimeEntryRowsDocument,
+                    variables: {
+                        timesheetId,
+                    },
+                    data: {
+                        getTimeEntryRows: newTimeEntryRows,
+                    },
+                });
+            },
         });
     };
 
@@ -134,12 +137,12 @@ const TimesheetProjectInput = ({
                             >
                                 <span
                                     className={`block truncate ${
-                                        project.name
+                                        project?.name
                                             ? "text-sky-200"
                                             : "text-slate-400"
                                     }`}
                                 >
-                                    {project.name ?? "Choose a Project..."}
+                                    {project?.name ?? "Choose a Project..."}
                                 </span>
                                 <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
                                     <SelectorIcon

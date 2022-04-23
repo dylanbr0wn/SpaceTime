@@ -115,7 +115,12 @@ export const mutateTimeEntry = extendType({
                 await ctx.prisma.entryComment.deleteMany({
                     where: { timeEntryId: id },
                 });
-                return await ctx.prisma.timeEntry.delete({ where: { id } });
+                return await ctx.prisma.timeEntry.delete({
+                    where: { id },
+                    include: {
+                        entryComments: true,
+                    },
+                });
             },
         });
     },

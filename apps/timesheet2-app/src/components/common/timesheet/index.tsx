@@ -11,19 +11,13 @@ import { useParams } from "react-router-dom";
 import { useTable } from "react-table";
 
 import {
-    CreateTimeEntryRowDocument,
     GetTimeEntryRowsDocument,
+    GetTimeEntryRowsQuery,
+    GetTimeEntryRowsQueryVariables,
     useCreateTimeEntryRowMutation,
     useGetorCreateTimesheetMutation,
     useGetTimeEntryRowsQuery,
 } from "../../../api";
-import { readUserWorkCodesDispatch } from "../../../redux/actions/employeesActions";
-import { readSubordinateWorkCodesDispatch } from "../../../redux/actions/subordinatesActions";
-import { readTemplatesDispatch } from "../../../redux/actions/templatesActions";
-import {
-    createTimeEntryRowDispatch,
-    readTimesheetDispatch,
-} from "../../../redux/actions/timesheetsActions";
 import { getDayFeatures } from "../../../services/utils";
 
 import TimesheetDeleteEntryInput from "./components/TimesheetDeleteEntryInput";
@@ -54,140 +48,6 @@ import "../../style/UserAdmin.css";
  * @param {Object} currentUser Currently logged in user information.
  */
 
-// const useTimesheet = ({
-//     settings,
-//     timesheet,
-//     readTimesheetDispatch,
-//     readUserWorkCodesDispatch,
-//     readTemplatesDispatch,
-//     userInfo,
-//     type,
-//     readSubordinateWorkCodesDispatch,
-// }) => {
-//     const [timeEntryPeriodStartDate, setTimeEntryPeriodStartDate] = useState(
-//         moment.utc(settings.CutOffDate)
-//     );
-//     const [skipPageReset, setSkipPageReset] = useState(false); // For inidcating to table plugin that it need to update or not.
-//     const [timeSheetLoading, setTimeSheetLoading] = useState(true);
-//     const [disableModification, setDisableModification] = useState(false);
-//     const [dailyTotals, setDailyTotals] = useState([]);
-//     const [periodTotalHours, setPeriodTotalHours] = useState(0);
-//     const [isLocked, setIsLocked] = useState(false);
-
-//     // Computes daily total hours
-//     const getDailyTotals = useCallback(() => {
-//         const totals = new Array(timesheet.workDays.length).fill(0);
-//         timesheet.hourEntries.map((row) => {
-//             row.dates.map((col, i) => {
-//                 totals[i] += parseFloat(col.HoursWorked)
-//                     ? parseFloat(col.HoursWorked)
-//                     : 0;
-//             });
-//         });
-//         return totals.map((total) => total.toFixed(2));
-//     }, [timesheet.hourEntries, timesheet.workDays]);
-
-//     // Computes period total hours
-//     const sumDailyTotals = useCallback(() => {
-//         return dailyTotals
-//             .reduce((total, num) => total + parseFloat(num), 0)
-//             .toFixed(2);
-//     }, [dailyTotals]);
-
-//     // Loads the timesheet and sets modification status when parametrs change
-//     useEffect(() => {
-//         setDisableModification(
-//             timeEntryPeriodStartDate.isBefore(moment.utc(settings.CutOffDate))
-//         );
-//         readTimesheetDispatch(
-//             userInfo.user.EmployeeID,
-//             moment.utc(timeEntryPeriodStartDate).toDate(),
-//             type
-//         ).then((res) => {
-//             if (res.status === 423 && type === "user") {
-//                 setIsLocked(true);
-//                 setTimeSheetLoading(false);
-//                 // toast.warn(res.data)
-//             }
-//         });
-//     }, [
-//         timeEntryPeriodStartDate,
-//         userInfo.user.EmployeeID,
-//         type,
-//         settings.CutOffDate,
-//         readTimesheetDispatch,
-//     ]);
-
-//     // Runs at begining to load entry templates and workc codes
-//     useEffect(() => {
-//         readTemplatesDispatch(userInfo.user.EmployeeID);
-//         if (type === "manager" || type === "payroll") {
-//             readSubordinateWorkCodesDispatch(userInfo.user.EmployeeID);
-//         } else {
-//             readUserWorkCodesDispatch(userInfo.user.EmployeeID);
-//         }
-//     }, [
-//         userInfo.user.EmployeeID,
-//         type,
-//         readTemplatesDispatch,
-//         readSubordinateWorkCodesDispatch,
-//         readUserWorkCodesDispatch,
-//     ]);
-
-//     // Runs whenever the timesheet is updated and updates the daily totals and the laoding bool
-//     useEffect(() => {
-//         if (timesheet.initialLoad) {
-//             setDailyTotals(getDailyTotals());
-//             setTimeSheetLoading(false);
-//         }
-//     }, [timesheet.initialLoad, getDailyTotals, timesheet.hourEntries]);
-
-//     // Handles modification status based on date and payroll status.
-//     useEffect(() => {
-//         if (type === "payroll" && timesheet.approval.ApprovalStatus > 1) {
-//             setDisableModification(true);
-//         } else if (timesheet.approval.ApprovalStatus > 0) {
-//             setDisableModification(true);
-//         } else {
-//             setDisableModification(
-//                 timeEntryPeriodStartDate.isBefore(
-//                     moment.utc(settings.CutOffDate)
-//                 )
-//             );
-//         }
-//     }, [
-//         type,
-//         timesheet.approval,
-//         settings.CutOffDate,
-//         timeEntryPeriodStartDate,
-//     ]);
-
-//     // const isTablet = useMediaQuery({ minWidth: 768, maxWidth: 1279 });
-//     const [isTablet, setIsTablet] = React.useState(false);
-
-//     // Sets local state when computations of hours are complete.
-//     useEffect(() => {
-//         setPeriodTotalHours(sumDailyTotals());
-//     }, [dailyTotals, sumDailyTotals]);
-
-//     return {
-//         timeEntryPeriodStartDate,
-//         setTimeEntryPeriodStartDate,
-//         skipPageReset,
-//         setSkipPageReset,
-//         timeSheetLoading,
-//         setTimeSheetLoading,
-//         disableModification,
-//         setDisableModification,
-//         dailyTotals,
-//         setDailyTotals,
-//         periodTotalHours,
-//         isLocked,
-//         setIsLocked,
-//         isTablet,
-//     };
-// };
-
 /**
  * @name Timesheet
  * @component
@@ -216,7 +76,7 @@ const Timesheet = () => {
         data,
         timesheetDates,
         getorCreateTimesheetMutation,
-        userId
+        String(userId)
     );
 
     const [createTimeEntryRowMutation] = useCreateTimeEntryRowMutation();
@@ -226,7 +86,7 @@ const Timesheet = () => {
             variables: {
                 timesheetId: timesheetData?.getorCreateTimesheet?.id ?? "-1",
             },
-            //refetchQueries: [GetTimeEntryRowsDocument],
+            // refetchQueries: [GetTimeEntryRowsDocument],
             optimisticResponse: {
                 createTimeEntryRow: {
                     __typename: "TimeEntryRow",
@@ -249,24 +109,31 @@ const Timesheet = () => {
                 },
             },
             update: (cache, { data }) => {
-                const { getTimeEntryRows } = cache.readQuery({
+                const timeEntryRow = data?.createTimeEntryRow;
+                if (!timeEntryRow) return;
+                const timeEntryRowsData = cache.readQuery<
+                    GetTimeEntryRowsQuery,
+                    GetTimeEntryRowsQueryVariables
+                >({
                     query: GetTimeEntryRowsDocument,
                     variables: {
                         timesheetId:
                             timesheetData?.getorCreateTimesheet?.id ?? "-1",
                     },
                 });
-                cache.writeQuery({
+                const timeEntryRows = timeEntryRowsData?.getTimeEntryRows;
+                if (!timeEntryRows) return;
+                cache.writeQuery<
+                    GetTimeEntryRowsQuery,
+                    GetTimeEntryRowsQueryVariables
+                >({
                     query: GetTimeEntryRowsDocument,
                     variables: {
                         timesheetId:
                             timesheetData?.getorCreateTimesheet?.id ?? "-1",
                     },
                     data: {
-                        getTimeEntryRows: [
-                            ...getTimeEntryRows,
-                            data?.createTimeEntryRow,
-                        ],
+                        getTimeEntryRows: [...timeEntryRows, timeEntryRow],
                     },
                 });
             },
@@ -309,12 +176,13 @@ const Timesheet = () => {
                 Header: "Work Type",
                 accessor: (row) => row.workType.id,
                 id: "workType",
-                Cell: ({ value, row, column }) => (
+                Cell: ({ value, row, column, timesheetId }) => (
                     <TimesheetWorkCodeInput
                         value={value}
                         row={row}
                         column={column}
                         userId={userId}
+                        timesheetId={timesheetId}
                     />
                 ),
             },
@@ -368,16 +236,6 @@ const Timesheet = () => {
         ],
         [timesheetDates, userId]
     );
-
-    // const tableData = React.useMemo(() => timesheet ?? [], [timesheet]);
-
-    // const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
-    //     useTable({
-    //         columns,
-    //         data: tableData,
-    //     });
-
-    // Initiates request to download the timesheet report printout.
 
     return (
         <>

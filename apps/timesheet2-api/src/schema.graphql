@@ -95,7 +95,7 @@ type Query {
   allUsers: [User!]!
   applicationPreferences: ApplicationPreferences
   departments: [Department!]!
-  getEntryComments(timeEntryId: String!): [EntryComment!]!
+  getEntryComments(timeEntryId: String!): [EntryComment!]
   getEntryCommentsByTimesheet(timesheetId: String!): [EntryComment!]!
   getTimeEntryRow(id: String!): TimeEntryRow
   getTimeEntryRows(timesheetId: String!): [TimeEntryRow!]!

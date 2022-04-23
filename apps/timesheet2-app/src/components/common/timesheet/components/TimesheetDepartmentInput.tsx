@@ -1,15 +1,10 @@
-import { DateTime } from "luxon";
 import React, { useEffect, useState } from "react";
-import { connect, useDispatch, useSelector } from "react-redux";
-import { toast } from "react-toastify";
 
 import { Listbox, Transition } from "@headlessui/react";
 import { CheckIcon, SelectorIcon } from "@heroicons/react/solid";
 
 import {
-    GetorCreateTimesheetDocument,
-    GetTimeEntryRowQuery,
-    GetTimeEntryRowQueryVariables,
+    Department,
     GetTimeEntryRowsDocument,
     GetTimeEntryRowsQuery,
     GetTimeEntryRowsQueryVariables,
@@ -17,8 +12,8 @@ import {
     useUpdateTimeEntryRowMutation,
 } from "../../../../api";
 import ErrorBoundary from "../../ErrorBoundary";
-import Tooltip from "../../Tooltip";
 
+// import Tooltip from "../../Tooltip";
 import "../../../style/TimeEntry.css";
 
 /**
@@ -38,9 +33,9 @@ const TimesheetDepartmentInput = ({
 }) => {
     // We need to keep and update the state of the cell normally
 
-    const [department, setDepartment] = useState({});
+    const [department, setDepartment] = useState<Department | null>(null);
 
-    const { data: departmentsData, error, loading } = useDepartmentsQuery();
+    const { data: departmentsData } = useDepartmentsQuery();
 
     const [updateTimeEntryRow] = useUpdateTimeEntryRowMutation();
 
@@ -116,17 +111,18 @@ const TimesheetDepartmentInput = ({
     // If the initialValue is changed external, sync it up with our state
     useEffect(() => {
         if (departmentsData?.departments) {
+            console.log(value);
             const department = departmentsData.departments.find(
                 (dep) => dep.id === value
             );
-            setDepartment(department ?? {});
+            setDepartment((department as Department) ?? null);
         }
     }, [value, departmentsData]);
     return (
         <>
             <ErrorBoundary>
                 <div className=" w-44">
-                    {department && (
+                    {departmentsData?.departments && (
                         <Listbox
                             aria-label="Department Input"
                             value={department}
@@ -138,12 +134,12 @@ const TimesheetDepartmentInput = ({
                                 <Listbox.Button className="relative w-full py-2 pl-3 pr-10 text-left shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-opacity-75 focus-visible:ring-white focus-visible:ring-offset-cyan-300 focus-visible:ring-offset-2 focus-visible:border-cyan-500 sm:text-sm cursor-pointer ">
                                     <span
                                         className={`block truncate ${
-                                            department.name
+                                            department?.name
                                                 ? "text-sky-200"
                                                 : "text-slate-400"
                                         }`}
                                     >
-                                        {department.name ??
+                                        {department?.name ??
                                             "Choose a department..."}
                                     </span>
                                     <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">

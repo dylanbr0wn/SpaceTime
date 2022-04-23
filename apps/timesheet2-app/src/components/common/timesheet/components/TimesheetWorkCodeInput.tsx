@@ -1,20 +1,16 @@
-import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { toast } from "react-toastify";
+import * as React from "react";
 
 import { Listbox, Transition } from "@headlessui/react";
 import { CheckIcon, SelectorIcon } from "@heroicons/react/solid";
 
 import {
-    useGetTimeEntryRowQuery,
+    GetTimeEntryRowsDocument,
+    GetTimeEntryRowsQuery,
+    GetTimeEntryRowsQueryVariables,
     useUpdateTimeEntryRowMutation,
     useWorkTypesQuery,
+    WorkType,
 } from "../../../../api";
-import { updateTimeEntryRowDispatch } from "../../../../redux/actions/timesheetsActions";
-import {
-    allowedWorkCodesSelector,
-    unusedWorkCodesSelector,
-} from "../../../../services/selectors";
 import ErrorBoundary from "../../ErrorBoundary";
 
 import "../../../style/TimeEntry.css";
@@ -27,20 +23,26 @@ import "../../../style/TimeEntry.css";
  * Provides an dropdown menu with filtered options.
  * @param {Object} props Props. See propTypes for details.
  */
-const TimesheetWorkCodeInput = ({ value, row, column: { id }, userId }) => {
+const TimesheetWorkCodeInput = ({
+    value,
+    row,
+    column: { id },
+    userId,
+    timesheetId,
+}) => {
     // We need to keep and update the state of the cell normally
-    const [workType, setWorkType] = useState({});
+    const [workType, setWorkType] = React.useState<WorkType | null>(null);
 
     // const allWorkCodes = useSelector((state) => state.workCodes);
 
-    const { data, error, loading } = useWorkTypesQuery();
+    const { data } = useWorkTypesQuery();
 
     const [updateTimeEntryRow] = useUpdateTimeEntryRowMutation();
 
     React.useEffect(() => {
         if (data) {
             const workType = data.workTypes.find((type) => type.id === value);
-            setWorkType(workType ?? {});
+            setWorkType(workType ?? null);
         }
     }, [data, value]);
 
@@ -48,7 +50,7 @@ const TimesheetWorkCodeInput = ({ value, row, column: { id }, userId }) => {
     // const dispatch = useDispatch();
 
     // When changed, dispatch api call and redux action.
-    const onChange = (workType) => {
+    const onChange = (workType: WorkType) => {
         updateTimeEntryRow({
             variables: {
                 updateTimeEntryRowId: row.original.id,
@@ -73,6 +75,43 @@ const TimesheetWorkCodeInput = ({ value, row, column: { id }, userId }) => {
                         id: workType.id,
                     },
                 },
+            },
+            update: (cache, { data }) => {
+                const newEntryRow = data?.updateTimeEntryRow ?? {};
+                const rows = cache.readQuery<
+                    GetTimeEntryRowsQuery,
+                    GetTimeEntryRowsQueryVariables
+                >({
+                    query: GetTimeEntryRowsDocument,
+                    variables: {
+                        timesheetId,
+                    },
+                });
+
+                const oldRows = rows?.getTimeEntryRows ?? [];
+
+                const newTimeEntryRows = oldRows.map((timeEntryRow) => {
+                    if (timeEntryRow.id === row.original.id) {
+                        return {
+                            ...timeEntryRow,
+                            ...newEntryRow,
+                        };
+                    }
+                    return timeEntryRow;
+                });
+
+                cache.writeQuery<
+                    GetTimeEntryRowsQuery,
+                    GetTimeEntryRowsQueryVariables
+                >({
+                    query: GetTimeEntryRowsDocument,
+                    variables: {
+                        timesheetId,
+                    },
+                    data: {
+                        getTimeEntryRows: newTimeEntryRows,
+                    },
+                });
             },
         });
     };
@@ -107,12 +146,12 @@ const TimesheetWorkCodeInput = ({ value, row, column: { id }, userId }) => {
                             >
                                 <span
                                     className={`block truncate ${
-                                        workType.name
+                                        workType?.name
                                             ? "text-sky-200"
                                             : "text-slate-400"
                                     }`}
                                 >
-                                    {workType.name ?? "Choose a Work Code..."}
+                                    {workType?.name ?? "Choose a Work Code..."}
                                 </span>
                                 <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
                                     <SelectorIcon

@@ -1,8 +1,7 @@
-overwrite: true
-schema: "/Users/dylan/vault/timesheet2/apps/timesheet2-api/src/schema.graphql"
-documents: "src/api/*.graphql"
+schema: ./apps/timesheet2-api/src/schema.graphql
+documents: ./apps/timesheet2-app/src/api/operation.graphql
 generates:
-    src/api/graphql.ts:
+    ./apps/timesheet2-app/src/api/graphql.ts:
         plugins:
             - "typescript"
             - "typescript-operations"
