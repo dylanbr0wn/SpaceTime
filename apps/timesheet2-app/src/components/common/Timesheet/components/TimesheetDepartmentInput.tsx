@@ -120,7 +120,7 @@ const TimesheetDepartmentInput = ({
     return (
         <>
             <ErrorBoundary>
-                <div className=" w-44">
+                <div className=" w-full ">
                     {departmentsData?.departments && (
                         <Listbox
                             aria-label="Department Input"

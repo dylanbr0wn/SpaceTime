@@ -265,7 +265,7 @@ const TimesheetEntryInput = ({ value, row, date, userId, timesheetId }) => {
     return (
         <>
             <ErrorBoundary>
-                <div className="bg-slate-900 w-16 h-10">
+                <div className="bg-slate-900 w-full h-10">
                     <input
                         aria-label="timesheetEntryInput"
                         type="number"
@@ -281,11 +281,11 @@ const TimesheetEntryInput = ({ value, row, date, userId, timesheetId }) => {
                         onChange={onHourChange}
                         onBlur={onBlur}
                         onFocus={() => setIsEditing(true)}
-                        className={`px-1 text-sky-200 m-0 appearance-none outline-none w-16  h-10 ${
+                        className={`px-1 text-sky-200 w-full h-full border-0 focus:border-sky-500 focus:border ${
                             false || validTypes
                                 ? "bg-slate-800"
                                 : "bg-slate-900"
-                        }  caret-sky-500 box-border ${
+                        }  caret-sky-500  ${
                             (value.entryComments?.length ?? 0) > 0
                                 ? "border-2 border-green-500"
                                 : ""

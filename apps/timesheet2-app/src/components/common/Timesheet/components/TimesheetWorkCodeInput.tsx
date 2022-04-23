@@ -130,7 +130,7 @@ const TimesheetWorkCodeInput = ({
     return (
         <>
             <ErrorBoundary>
-                <div className=" w-36">
+                <div className="w-full h-full">
                     <Listbox
                         aria-label="Project Input"
                         value={workType}
@@ -138,7 +138,7 @@ const TimesheetWorkCodeInput = ({
                         // onBlur={onBlur}
                         disabled={false}
                     >
-                        <div className="relative mt-1">
+                        <div className="relative h-full">
                             <Listbox.Button
                                 className={
                                     "relative w-full py-2 pl-3 pr-10 text-left  focus:outline-none focus-visible:ring-2 focus-visible:ring-opacity-75 focus-visible:ring-white focus-visible:ring-offset-cyan-300 focus-visible:ring-offset-2 focus-visible:border-cyan-500 sm:text-sm cursor-pointer"

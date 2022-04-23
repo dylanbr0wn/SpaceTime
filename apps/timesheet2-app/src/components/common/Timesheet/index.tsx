@@ -155,47 +155,57 @@ const Timesheet = () => {
     const columns = React.useMemo(
         () => [
             {
-                Header: "Department",
-                accessor: (row) => row.department.id,
-                id: "department",
-                Cell: ({ value, row, column, timesheetId }) => (
-                    <TimesheetDepartmentInput
-                        value={value}
-                        row={row}
-                        column={column}
-                        userId={userId}
-                        timesheetId={timesheetId}
-                    />
-                ),
+                Header: "",
+                id: "workdescription",
+                columns: [
+                    {
+                        Header: "Department",
+                        accessor: (row) => row.department.id,
+                        id: "department",
+                        minWidth: 75,
+                        Cell: ({ value, row, column, timesheetId }) => (
+                            <TimesheetDepartmentInput
+                                value={value}
+                                row={row}
+                                column={column}
+                                userId={userId}
+                                timesheetId={timesheetId}
+                            />
+                        ),
+                    },
+                    {
+                        Header: "Project",
+                        accessor: (row) => row.project.id,
+                        id: "project",
+                        minWidth: 75,
+                        Cell: ({ value, row, column, timesheetId }) => (
+                            <TimesheetProjectInput
+                                value={value}
+                                row={row}
+                                column={column}
+                                userId={userId}
+                                timesheetId={timesheetId}
+                            />
+                        ),
+                    },
+                    {
+                        Header: "Work Type",
+                        accessor: (row) => row.workType.id,
+                        id: "workType",
+                        minWidth: 75,
+                        Cell: ({ value, row, column, timesheetId }) => (
+                            <TimesheetWorkCodeInput
+                                value={value}
+                                row={row}
+                                column={column}
+                                userId={userId}
+                                timesheetId={timesheetId}
+                            />
+                        ),
+                    },
+                ],
             },
-            {
-                Header: "Project",
-                accessor: (row) => row.project.id,
-                id: "project",
-                Cell: ({ value, row, column, timesheetId }) => (
-                    <TimesheetProjectInput
-                        value={value}
-                        row={row}
-                        column={column}
-                        userId={userId}
-                        timesheetId={timesheetId}
-                    />
-                ),
-            },
-            {
-                Header: "Work Type",
-                accessor: (row) => row.workType.id,
-                id: "workType",
-                Cell: ({ value, row, column, timesheetId }) => (
-                    <TimesheetWorkCodeInput
-                        value={value}
-                        row={row}
-                        column={column}
-                        userId={userId}
-                        timesheetId={timesheetId}
-                    />
-                ),
-            },
+
             {
                 Header: "Hours",
                 columns: timesheetDates.map((date, i) => {
@@ -206,7 +216,7 @@ const Timesheet = () => {
                         Header: () => {
                             return (
                                 <div
-                                    className={`w-16 box-border ${dayFeatures.style}`}
+                                    className={`w-full box-border ${dayFeatures.style}`}
                                 >
                                     <div className="text-center">
                                         {date.toFormat("dd")}
@@ -220,6 +230,7 @@ const Timesheet = () => {
                                 </div>
                             );
                         },
+                        width: 40,
                         accessor: (row) => row.timeEntries[i],
                         id: date.toFormat("dd"),
                         Cell: ({ value, row, timesheetId }) => (
@@ -239,6 +250,7 @@ const Timesheet = () => {
                 Header: () => null, // No header
                 id: "deleter", // It needs an ID
                 // eslint-disable-next-line react/display-name, react/prop-types
+                width: 30,
                 Cell: (props) => (
                     <TimesheetDeleteEntryInput {...props} userId={userId} />
                 ),

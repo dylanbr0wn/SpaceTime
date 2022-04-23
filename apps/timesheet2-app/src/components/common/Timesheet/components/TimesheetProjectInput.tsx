@@ -124,7 +124,7 @@ const TimesheetProjectInput = ({
     return (
         <>
             <ErrorBoundary>
-                <div className="w-56 ">
+                <div className="w-full ">
                     <Listbox
                         aria-label="Project Input"
                         value={project}
@@ -132,7 +132,7 @@ const TimesheetProjectInput = ({
                         // onBlur={onBlur}
                         disabled={disableProjectSelect}
                     >
-                        <div>
+                        <div className="relative h-full">
                             <Listbox.Button
                                 className={` ${
                                     disableProjectSelect
@@ -162,7 +162,7 @@ const TimesheetProjectInput = ({
                                 leaveFrom="opacity-100"
                                 leaveTo="opacity-0"
                             >
-                                <Listbox.Options className="absolute z-10 py-1 mt-1 overflow-auto text-base bg-slate-800 rounded-md shadow-lg max-h-60 ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                                <Listbox.Options className="absolute z-10 w-full py-1 mt-1 overflow-auto text-base bg-slate-800 rounded-md shadow-lg max-h-60 ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
                                     {filteredProjects.map((project) => {
                                         return (
                                             <Listbox.Option
