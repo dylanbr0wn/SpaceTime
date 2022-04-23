@@ -16,17 +16,10 @@ export const Timesheet = objectType({
     },
 });
 
-// export const QueryTimesheet = extendType({
-//     type: "Query",
-//     definition(t) {
-
-//     },
-// });
-
-export const MutateTimesheet = extendType({
-    type: "Mutation",
+export const QueryTimesheet = extendType({
+    type: "Query",
     definition(t) {
-        t.field("getorCreateTimesheet", {
+        t.field("getTimesheet", {
             type: Timesheet,
             args: {
                 Timesheet: nonNull(arg({ type: TimesheetGetInput })),
@@ -111,6 +104,13 @@ export const MutateTimesheet = extendType({
         });
     },
 });
+
+// export const MutateTimesheet = extendType({
+//     type: "Mutation",
+//     definition(t) {
+
+//     },
+// });
 
 export const TimesheetGetInput = inputObjectType({
     name: "TimesheetGetInput",

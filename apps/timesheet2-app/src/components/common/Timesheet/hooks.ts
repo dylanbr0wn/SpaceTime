@@ -10,13 +10,17 @@ import {
 } from "../../../api";
 
 export const useTimesheetDates = (
-    timesheetData: GetorCreateTimesheetMutation | null | undefined
+    timesheetData: GetorCreateTimesheetMutation | null | undefined,
+    //getorCreateTimesheetMutation: GetorCreateTimesheetMutationFn,
+    userId: string
 ) => {
     const [timesheetDates, setTimesheetDates] = React.useState<DateTime[]>([]);
     const [startDate, setStartDate] = React.useState<DateTime>();
     const [periodLength, setPeriodLength] = React.useState<number>();
+    //const [timesheetId, setTimesheetId] = React.useState();
 
     React.useEffect(() => {
+        console.log(timesheetData);
         if (timesheetData) {
             const dates: DateTime[] = [];
             const endDate = DateTime.fromISO(
@@ -28,6 +32,7 @@ export const useTimesheetDates = (
                 timesheetData?.getorCreateTimesheet?.period.startDate,
                 { zone: "utc" }
             );
+
             setPeriodLength(endDate.diff(startDate, "days").days);
             setStartDate(startDate);
             let current = startDate;
@@ -37,8 +42,22 @@ export const useTimesheetDates = (
             }
 
             setTimesheetDates(dates);
+        } else {
+            console.log("refetch");
+            // getorCreateTimesheetMutation({
+            //     variables: {
+            //         timesheet: {
+            //             userId: userId,
+            //             date: DateTime.now()
+            //                 .startOf("day")
+            //                 .toUTC()
+            //                 .startOf("day")
+            //                 .toISO(),
+            //         },
+            //     },
+            // });
         }
-    }, [timesheetData]);
+    }, [timesheetData, userId]);
 
     return { timesheetDates, startDate, periodLength };
 };
@@ -75,12 +94,13 @@ type TimeEntryPartial = {
 export const useTimesheet = (
     data: GetTimeEntryRowsQuery | undefined,
     timesheetDates: DateTime[],
-    getorCreateTimesheetMutation: GetorCreateTimesheetMutationFn,
+
     userId: string
 ) => {
     const [timesheet, setTimesheet] = React.useState<TimeEntryRowPartial[]>([]);
     React.useEffect(() => {
         if (data) {
+            console.log("parsing");
             const defaultRow = {
                 id: "-1",
                 project: {
@@ -126,21 +146,8 @@ export const useTimesheet = (
                     };
                 });
             setTimesheet(timeEntryRows);
-        } else {
-            getorCreateTimesheetMutation({
-                variables: {
-                    timesheet: {
-                        userId: userId,
-                        date: DateTime.now()
-                            .startOf("day")
-                            .toUTC()
-                            .startOf("day")
-                            .toISO(),
-                    },
-                },
-            });
         }
-    }, [data, getorCreateTimesheetMutation, userId, timesheetDates]);
+    }, [data, userId, timesheetDates]);
 
     return { timesheet };
 };

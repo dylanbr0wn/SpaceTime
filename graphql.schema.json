@@ -781,35 +781,6 @@
             "deprecationReason": null
           },
           {
-            "name": "getorCreateTimesheet",
-            "description": null,
-            "args": [
-              {
-                "name": "Timesheet",
-                "description": null,
-                "type": {
-                  "kind": "NON_NULL",
-                  "name": null,
-                  "ofType": {
-                    "kind": "INPUT_OBJECT",
-                    "name": "TimesheetGetInput",
-                    "ofType": null
-                  }
-                },
-                "defaultValue": null,
-                "isDeprecated": false,
-                "deprecationReason": null
-              }
-            ],
-            "type": {
-              "kind": "OBJECT",
-              "name": "Timesheet",
-              "ofType": null
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
             "name": "updateEntryComment",
             "description": null,
             "args": [
@@ -1485,6 +1456,35 @@
                   }
                 }
               }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "getTimesheet",
+            "description": null,
+            "args": [
+              {
+                "name": "Timesheet",
+                "description": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "TimesheetGetInput",
+                    "ofType": null
+                  }
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              }
+            ],
+            "type": {
+              "kind": "OBJECT",
+              "name": "Timesheet",
+              "ofType": null
             },
             "isDeprecated": false,
             "deprecationReason": null

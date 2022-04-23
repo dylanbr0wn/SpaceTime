@@ -58,7 +58,6 @@ type Mutation {
   deleteEntryComment(EntryComment: EntryCommentDeleteInput!): EntryComment
   deleteTimeEntry(id: String!): TimeEntry
   deleteTimeEntryRow(TimeEntryRow: TimeEntryRowDeleteInput!): TimeEntryRow
-  getorCreateTimesheet(Timesheet: TimesheetGetInput!): Timesheet
   updateEntryComment(entryComment: EntryCommentUpdateInput!): EntryComment
   updateTimeEntryRow(departmentId: String, id: String!, projectId: String, workTypeId: String): TimeEntryRow
   updateTimeEntryhours(data: TimeEntryUpdateInput!, id: String!): TimeEntry
@@ -99,6 +98,7 @@ type Query {
   getEntryCommentsByTimesheet(timesheetId: String!): [EntryComment!]!
   getTimeEntryRow(id: String!): TimeEntryRow
   getTimeEntryRows(timesheetId: String!): [TimeEntryRow!]!
+  getTimesheet(Timesheet: TimesheetGetInput!): Timesheet
   getUserFromEmail(email: String!): User
   getUserFromId(id: String!): User
   projects: [Project!]!

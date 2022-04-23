@@ -93,13 +93,11 @@ query GetUserFromEmail($email: String!) {
     }
 }
 
-mutation GetorCreateTimesheet($timesheet: TimesheetGetInput!) {
-    getorCreateTimesheet(Timesheet: $timesheet) {
+query GetTimesheet($timesheet: TimesheetGetInput!) {
+    getTimesheet(Timesheet: $timesheet) {
         id
-
         period {
             id
-
             startDate
             endDate
         }

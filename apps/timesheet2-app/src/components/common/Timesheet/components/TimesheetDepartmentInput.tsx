@@ -111,7 +111,6 @@ const TimesheetDepartmentInput = ({
     // If the initialValue is changed external, sync it up with our state
     useEffect(() => {
         if (departmentsData?.departments) {
-            console.log(value);
             const department = departmentsData.departments.find(
                 (dep) => dep.id === value
             );

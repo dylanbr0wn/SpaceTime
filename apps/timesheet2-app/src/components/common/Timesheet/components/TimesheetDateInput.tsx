@@ -2,11 +2,15 @@ import { DateTime } from "luxon";
 import * as React from "react";
 import DatePicker from "react-datepicker";
 
+import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/solid";
 import Tippy from "@tippyjs/react";
 
-import { useGetorCreateTimesheetMutation } from "../../../../api";
+import {
+    GetorCreateTimesheetMutationFn,
+    GetTimeEntryRowsDocument,
+    useGetorCreateTimesheetMutation,
+} from "../../../../api";
 import ErrorBoundary from "../../ErrorBoundary";
-import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/solid";
 
 /**
  * @name TimesheetDateInput
@@ -19,14 +23,16 @@ const TimesheetDateInput = ({
     startDate,
     userId,
     periodLength,
+    timesheetQueryDate,
+    setTimesheetQueryDate,
 }: {
     startDate: DateTime | undefined;
     userId: string | undefined;
     periodLength: number | undefined;
+    timesheetQueryDate: string;
+    setTimesheetQueryDate: (date: string) => void;
 }) => {
     const [focusedDatePicker, setCurrentStartDate] = React.useState(false);
-
-    const [getorCreateTimesheetMutation] = useGetorCreateTimesheetMutation();
 
     // Gets the last 20 years.
     const getYears = React.useCallback(() => {
@@ -42,91 +48,78 @@ const TimesheetDateInput = ({
 
     const onChange = (date: Date) => {
         if (!userId) return;
-        getorCreateTimesheetMutation({
-            variables: {
-                timesheet: {
-                    userId: userId,
-                    date: DateTime.fromJSDate(date)
-                        .startOf("day")
-                        .toUTC()
-                        .startOf("day")
-                        .toISO(),
-                },
-            },
-        });
+        setTimesheetQueryDate(
+            DateTime.fromJSDate(date)
+                .startOf("day")
+                .toUTC()
+                .startOf("day")
+                .toISO()
+        );
+        // getorCreateTimesheetMutation({
+        //     variables: {
+        //         timesheet: {
+        //             userId: userId,
+        //             date: DateTime.fromJSDate(date)
+        //                 .startOf("day")
+        //                 .toUTC()
+        //                 .startOf("day")
+        //                 .toISO(),
+        //         },
+        //     },
+        // });
     };
 
     const nextPeriod = () => {
         if (!userId) return;
         if (!startDate) return;
-        getorCreateTimesheetMutation({
-            variables: {
-                timesheet: {
-                    userId: userId,
-                    date: startDate
-                        .plus({ days: periodLength })
-                        .startOf("day")
-                        .toUTC()
-                        .startOf("day")
-                        .toISO(),
-                },
-            },
-        });
+        setTimesheetQueryDate(
+            startDate
+                .plus({ days: periodLength })
+                .startOf("day")
+                .toUTC()
+                .startOf("day")
+                .toISO()
+        );
+        // getorCreateTimesheetMutation({
+        //     variables: {
+        //         timesheet: {
+        //             userId: userId,
+        //             date: startDate
+        //                 .plus({ days: periodLength })
+        //                 .startOf("day")
+        //                 .toUTC()
+        //                 .startOf("day")
+        //                 .toISO(),
+        //         },
+        //     },
+        // });
     };
 
     const lastPeriod = () => {
         if (!userId) return;
         if (!startDate) return;
-        getorCreateTimesheetMutation({
-            variables: {
-                timesheet: {
-                    userId: userId,
-                    date: startDate
-                        .minus({ days: periodLength })
-                        .startOf("day")
-                        .toUTC()
-                        .startOf("day")
-                        .toISO(),
-                },
-            },
-        });
+        setTimesheetQueryDate(
+            startDate
+                .minus({ days: periodLength })
+                .startOf("day")
+                .toUTC()
+                .startOf("day")
+                .toISO()
+        );
+        // getorCreateTimesheetMutation({
+        //     variables: {
+        //         timesheet: {
+        //             userId: userId,
+        //             date: startDate
+        //                 .minus({ days: periodLength })
+        //                 .startOf("day")
+        //                 .toUTC()
+        //                 .startOf("day")
+        //                 .toISO(),
+        //         },
+        //     },
+        // });
     };
-
-    // const years = React.useMemo(() => getYears(), [getYears]);
-
-    // custom month element for React Dates. Shows the month and year selector.
-    // const renderMonthElement = ({ month, onMonthSelect, onYearSelect }) => {
-    //     return (
-    //         <div style={{ display: "flex", justifyContent: "center" }}>
-    //             <div style={{ marginRight: 5 }}>
-    //                 <select
-    //                     className="custom-select custom-select-sm"
-    //                     value={month.month()}
-    //                     onChange={(e) => onMonthSelect(month, e.target.value)}
-    //                 >
-    //                     {moment.months().map((label, value) => (
-    //                         <option key={value} value={value}>
-    //                             {label}
-    //                         </option>
-    //                     ))}
-    //                 </select>
-    //             </div>
-    //             <div>
-    //                 <select
-    //                     className="custom-select custom-select-sm"
-    //                     value={month.year()}
-    //                     onChange={(e) => onYearSelect(month, e.target.value)}
-    //                 >
-    //                     {years.map((year, i) => (
-    //                         <option key={i} value={year.year()}>
-    //                             {year.format("YYYY")}
-    //                         </option>
-    //                     ))}
-    //                 </select>
-    //             </div>
-    //         </div>
-    //     );
-    // };
 
     return (
         <>
@@ -143,49 +136,47 @@ const TimesheetDateInput = ({
                     </span>
 
                     <span>
-                        {/* <DatePicker
-                            selected={startDate?.toJSDate()}
-                            onChange={onChange}
-                            filterDate={(date) =>
-                                DateTime.fromJSDate(date).diff(
-                                    DateTime.now(),
-                                    "days"
-                                ).days %
-                                    14 ===
-                                0
-                            }
-                        /> */}
                         <div className="relative w-40">
                             <DatePicker
                                 selected={startDate?.toJSDate()}
                                 onChange={onChange}
                                 selectsStart
-                                filterDate={(date) =>
-                                    !!(
-                                        DateTime.fromJSDate(date).diff(
-                                            startDate ?? DateTime.now(),
-                                            "days"
-                                        ).days %
+                                filterDate={(date) => {
+                                    const dateTime = DateTime.fromJSDate(date, {
+                                        zone: "utc",
+                                    }).startOf("day");
+                                    return !!(
+                                        Math.abs(
+                                            dateTime.diff(
+                                                startDate ?? DateTime.now(),
+                                                "days"
+                                            ).days
+                                        ) %
                                             (periodLength ?? 14) ===
                                         0
-                                    )
-                                }
+                                    );
+                                }}
                                 className="block w-full text-base md:text-sm bg-white border border-gray-300 rounded shadow-sm form-input "
-                                monthClassName={() =>
-                                    "inline-block mb-1 w-8 h-8 text-sm"
-                                }
+                                // monthClassName={() =>
+                                //     "inline-block w-8 h-8 text-sm p-1"
+                                // }
                                 dayClassName={(date) => {
+                                    const dateTime = DateTime.fromJSDate(date, {
+                                        zone: "utc",
+                                    }).startOf("day");
                                     if (
-                                        DateTime.fromJSDate(date).diff(
-                                            startDate ?? DateTime.now(),
-                                            "days"
-                                        ).days %
+                                        Math.abs(
+                                            dateTime.diff(
+                                                startDate ?? DateTime.now(),
+                                                "days"
+                                            ).days
+                                        ) %
                                             (periodLength ?? 14) ===
                                         0
                                     ) {
-                                        return "mb-1 w-8 h-8 inline-block justify-center py-1 text-sm leading-loose transition text-gray-700 rounded ";
+                                        return "mb-1 w-8 h-8 inline-block justify-center  text-sm leading-loose transition text-gray-700 rounded cursor-pointer hover:bg-blue-500 hover:text-white";
                                     } else {
-                                        return "mb-1 w-8 h-8 inline-block justify-center py-1 text-sm leading-loose transition text-gray-700 rounded  cursor-not-allowed opacity-40";
+                                        return "mb-1 w-8 h-8 inline-block justify-center  text-sm leading-loose transition text-gray-700 rounded  cursor-not-allowed opacity-40";
                                     }
                                 }}
                                 weekDayClassName={() =>
@@ -193,9 +184,17 @@ const TimesheetDateInput = ({
                                 }
                                 nextMonthButtonLabel=">"
                                 previousMonthButtonLabel="<"
-                                popperClassName="z-40 w-72 text-sm bg-white shadow px-3 py-2 border-2 border-gray-200 rounded"
+                                popperClassName="z-40 offset:2 w-72 text-sm bg-white shadow px-3 py-2 border-2 border-gray-200 rounded"
                                 wrapperClassName="flex  flex-col"
-                                calendarClassName="flex  flex-col"
+                                calendarClassName="flex  flex-col "
+                                popperModifiers={[
+                                    {
+                                        name: "offset",
+                                        options: {
+                                            offset: [0, 4],
+                                        },
+                                    },
+                                ]}
                                 renderCustomHeader={({
                                     date,
                                     decreaseMonth,
@@ -203,7 +202,7 @@ const TimesheetDateInput = ({
                                     prevMonthButtonDisabled,
                                     nextMonthButtonDisabled,
                                 }) => (
-                                    <div className="flex items-center justify-between px-2 py-2">
+                                    <div className="flex items-center justify-between px-2 py-2 mb-2">
                                         <span className="text-lg text-gray-700">
                                             {DateTime.now().toFormat(
                                                 "LLLL yyyy"

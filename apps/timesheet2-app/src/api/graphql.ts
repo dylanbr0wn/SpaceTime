@@ -72,7 +72,6 @@ export type Mutation = {
   deleteEntryComment?: Maybe<EntryComment>;
   deleteTimeEntry?: Maybe<TimeEntry>;
   deleteTimeEntryRow?: Maybe<TimeEntryRow>;
-  getorCreateTimesheet?: Maybe<Timesheet>;
   updateEntryComment?: Maybe<EntryComment>;
   updateTimeEntryRow?: Maybe<TimeEntryRow>;
   updateTimeEntryhours?: Maybe<TimeEntry>;
@@ -115,11 +114,6 @@ export type MutationDeleteTimeEntryArgs = {
 
 export type MutationDeleteTimeEntryRowArgs = {
   TimeEntryRow: TimeEntryRowDeleteInput;
-};
-
-
-export type MutationGetorCreateTimesheetArgs = {
-  Timesheet: TimesheetGetInput;
 };
 
 
@@ -184,6 +178,7 @@ export type Query = {
   getEntryCommentsByTimesheet: Array<EntryComment>;
   getTimeEntryRow?: Maybe<TimeEntryRow>;
   getTimeEntryRows: Array<TimeEntryRow>;
+  getTimesheet?: Maybe<Timesheet>;
   getUserFromEmail?: Maybe<User>;
   getUserFromId?: Maybe<User>;
   projects: Array<Project>;
@@ -210,6 +205,11 @@ export type QueryGetTimeEntryRowArgs = {
 
 export type QueryGetTimeEntryRowsArgs = {
   timesheetId: Scalars['String'];
+};
+
+
+export type QueryGetTimesheetArgs = {
+  Timesheet: TimesheetGetInput;
 };
 
 
@@ -377,12 +377,12 @@ export type GetUserFromEmailQueryVariables = Exact<{
 
 export type GetUserFromEmailQuery = { __typename?: 'Query', getUserFromEmail?: { __typename?: 'User', id: string, email: string, code: string, isActive: boolean, isAdmin: boolean, createdAt: any, updatedAt: any, isPaymentManager: boolean, isManager: boolean, profile?: { __typename?: 'Profile', id: string, lastName: string, firstName: string, avatar?: string | null, bio?: string | null } | null, manager?: { __typename?: 'User', id: string } | null, managees: Array<{ __typename?: 'User', id: string }>, department: { __typename?: 'Department', id: string } } | null };
 
-export type GetorCreateTimesheetMutationVariables = Exact<{
+export type GetTimesheetQueryVariables = Exact<{
   timesheet: TimesheetGetInput;
 }>;
 
 
-export type GetorCreateTimesheetMutation = { __typename?: 'Mutation', getorCreateTimesheet?: { __typename?: 'Timesheet', id: string, period: { __typename?: 'Period', id: string, startDate: any, endDate: any } } | null };
+export type GetTimesheetQuery = { __typename?: 'Query', getTimesheet?: { __typename?: 'Timesheet', id: string, period: { __typename?: 'Period', id: string, startDate: any, endDate: any } } | null };
 
 export type DepartmentsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -634,9 +634,9 @@ export function useGetUserFromEmailLazyQuery(baseOptions?: Apollo.LazyQueryHookO
 export type GetUserFromEmailQueryHookResult = ReturnType<typeof useGetUserFromEmailQuery>;
 export type GetUserFromEmailLazyQueryHookResult = ReturnType<typeof useGetUserFromEmailLazyQuery>;
 export type GetUserFromEmailQueryResult = Apollo.QueryResult<GetUserFromEmailQuery, GetUserFromEmailQueryVariables>;
-export const GetorCreateTimesheetDocument = gql`
-    mutation GetorCreateTimesheet($timesheet: TimesheetGetInput!) {
-  getorCreateTimesheet(Timesheet: $timesheet) {
+export const GetTimesheetDocument = gql`
+    query GetTimesheet($timesheet: TimesheetGetInput!) {
+  getTimesheet(Timesheet: $timesheet) {
     id
     period {
       id
@@ -646,32 +646,34 @@ export const GetorCreateTimesheetDocument = gql`
   }
 }
     `;
-export type GetorCreateTimesheetMutationFn = Apollo.MutationFunction<GetorCreateTimesheetMutation, GetorCreateTimesheetMutationVariables>;
 
 /**
- * __useGetorCreateTimesheetMutation__
+ * __useGetTimesheetQuery__
  *
- * To run a mutation, you first call `useGetorCreateTimesheetMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useGetorCreateTimesheetMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
+ * To run a query within a React component, call `useGetTimesheetQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetTimesheetQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
  *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const [getorCreateTimesheetMutation, { data, loading, error }] = useGetorCreateTimesheetMutation({
+ * const { data, loading, error } = useGetTimesheetQuery({
  *   variables: {
  *      timesheet: // value for 'timesheet'
  *   },
  * });
  */
-export function useGetorCreateTimesheetMutation(baseOptions?: Apollo.MutationHookOptions<GetorCreateTimesheetMutation, GetorCreateTimesheetMutationVariables>) {
+export function useGetTimesheetQuery(baseOptions: Apollo.QueryHookOptions<GetTimesheetQuery, GetTimesheetQueryVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<GetorCreateTimesheetMutation, GetorCreateTimesheetMutationVariables>(GetorCreateTimesheetDocument, options);
+        return Apollo.useQuery<GetTimesheetQuery, GetTimesheetQueryVariables>(GetTimesheetDocument, options);
       }
-export type GetorCreateTimesheetMutationHookResult = ReturnType<typeof useGetorCreateTimesheetMutation>;
-export type GetorCreateTimesheetMutationResult = Apollo.MutationResult<GetorCreateTimesheetMutation>;
-export type GetorCreateTimesheetMutationOptions = Apollo.BaseMutationOptions<GetorCreateTimesheetMutation, GetorCreateTimesheetMutationVariables>;
+export function useGetTimesheetLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetTimesheetQuery, GetTimesheetQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetTimesheetQuery, GetTimesheetQueryVariables>(GetTimesheetDocument, options);
+        }
+export type GetTimesheetQueryHookResult = ReturnType<typeof useGetTimesheetQuery>;
+export type GetTimesheetLazyQueryHookResult = ReturnType<typeof useGetTimesheetLazyQuery>;
+export type GetTimesheetQueryResult = Apollo.QueryResult<GetTimesheetQuery, GetTimesheetQueryVariables>;
 export const DepartmentsDocument = gql`
     query Departments {
   departments {
