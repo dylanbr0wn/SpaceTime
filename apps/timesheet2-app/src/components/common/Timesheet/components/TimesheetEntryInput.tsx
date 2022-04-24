@@ -1,4 +1,7 @@
+import cuid from "cuid";
+import { DateTime } from "luxon";
 import * as React from "react";
+import { Row } from "react-table";
 
 import { Dialog, Transition } from "@headlessui/react";
 
@@ -7,20 +10,15 @@ import {
     GetTimeEntryRowsQuery,
     GetTimeEntryRowsQueryVariables,
     TimeEntry,
+    TimeEntryRow,
     useCreateTimeEntryMutation,
     useDeleteTimeEntryMutation,
     useGetUserFromIdQuery,
-    useTimeEntryFromIdQuery,
-    useTimeEntryQuery,
     useUpdateTimeEntryhoursMutation,
 } from "../../../../api";
-import { useDebounce } from "../../../../services/hooks";
 import ErrorBoundary from "../../ErrorBoundary";
-import SavingIcon from "../../SavingIcon";
 
 import "../../../style/TimeEntry.css";
-import cuid from "cuid";
-import { DateTime } from "luxon";
 
 /**
  * @name HourEntryInput
@@ -29,29 +27,41 @@ import { DateTime } from "luxon";
  * @description Hour entry input. Provides a input field which takes a number.
  * @param {Object} props Props. See propTypes for details.
  */
-const TimesheetEntryInput = ({ value, row, date, userId, timesheetId }) => {
+const TimesheetEntryInput = ({
+    value,
+    row,
+    date,
+    userId,
+    timesheetId,
+}: {
+    value: Partial<TimeEntry>;
+    row: Row<Partial<TimeEntryRow>>;
+    date: DateTime;
+    userId: string;
+    timesheetId: string;
+}) => {
     // We need to keep and update the state of the cell normally
 
     const [updateTimeEntryhoursMutation] = useUpdateTimeEntryhoursMutation();
     const [createTimeEntryMutation] = useCreateTimeEntryMutation();
     const [deleteTimeEntryMutation] = useDeleteTimeEntryMutation();
 
-    const [work, setWork] = React.useState<TimeEntry>(value);
+    const [work, setWork] = React.useState<Partial<TimeEntry>>(value);
     const [savingComment, setSavingComment] = React.useState(false);
-    const [validTypes, setValidTypes] = React.useState(false);
+    const [disableEntryInput, setDisableEntryInput] = React.useState(true);
 
     React.useEffect(() => {
         if (
-            !row.original.project.id ||
-            row.original.project.id === "-1" ||
-            !row.original.workType.id ||
-            row.original.workType.id === "-1" ||
-            !row.original.department.id ||
-            row.original.department.id === "-1"
+            !row?.original?.project?.id ||
+            row.original?.project?.id === "-1" ||
+            !row?.original?.workType?.id ||
+            row?.original?.workType?.id === "-1" ||
+            !row?.original?.department?.id ||
+            row?.original?.department?.id === "-1"
         ) {
-            setValidTypes(false);
+            setDisableEntryInput(true);
         } else {
-            setValidTypes(true);
+            setDisableEntryInput(false);
         }
     }, [row]);
 
@@ -80,13 +90,13 @@ const TimesheetEntryInput = ({ value, row, date, userId, timesheetId }) => {
     // We'll only update the external data when the input is blurred
     const onBlur = () => {
         setIsSaving(true);
-        if (work.id === "-1" && work.hours > 0) {
+        if (work.id === "-1" && (work?.hours ?? 0) > 0) {
             createTimeEntryMutation({
                 variables: {
                     data: {
                         date: date.toISO(),
-                        hours: work.hours,
-                        timeEntryRowId: row.original.id,
+                        hours: work?.hours ?? 0,
+                        timeEntryRowId: row?.original?.id ?? "-1",
                     },
                 },
                 optimisticResponse: {
@@ -96,7 +106,7 @@ const TimesheetEntryInput = ({ value, row, date, userId, timesheetId }) => {
                         date: date.toISO(),
                         createdAt: DateTime.now().toISO(),
                         updatedAt: DateTime.now().toISO(),
-                        hours: work.hours,
+                        hours: work?.hours ?? 0,
                         entryComments: [],
                     },
                 },
@@ -139,13 +149,13 @@ const TimesheetEntryInput = ({ value, row, date, userId, timesheetId }) => {
                     );
                 },
             });
-        } else if (work.id !== "-1" && work.hours > 0) {
+        } else if (work.id !== "-1" && (work?.hours ?? 0) > 0) {
             if (work.hours !== value.hours) {
                 updateTimeEntryhoursMutation({
                     variables: {
-                        updateTimeEntryhoursId: work.id,
+                        updateTimeEntryhoursId: work?.id ?? "-1",
                         data: {
-                            hours: work.hours,
+                            hours: work?.hours ?? 0,
                         },
                     },
                     update: (cache, { data: TimeEntryData }) => {
@@ -194,7 +204,7 @@ const TimesheetEntryInput = ({ value, row, date, userId, timesheetId }) => {
         } else if (work.id !== "-1" && work.hours === 0) {
             deleteTimeEntryMutation({
                 variables: {
-                    deleteTimeEntryId: work.id,
+                    deleteTimeEntryId: work?.id ?? "-1",
                 },
                 update: (cache, { data: TimeEntryData }) => {
                     cache.updateQuery<
@@ -245,7 +255,7 @@ const TimesheetEntryInput = ({ value, row, date, userId, timesheetId }) => {
     // If the initialValue is changed external, sync it up with our state
     React.useEffect(() => {
         if (!isEditing && !isSaving) {
-            if (value.id !== -1) {
+            if (value?.id !== "-1") {
                 // If it's not a new entry dont update the state
                 setWork(value ?? {});
             }
@@ -297,7 +307,7 @@ const TimesheetEntryInput = ({ value, row, date, userId, timesheetId }) => {
                         onBlur={onBlur}
                         onFocus={() => setIsEditing(true)}
                         className={`px-1 text-sky-200 w-full h-full border-0 focus:border-sky-500 focus:border ${
-                            false || validTypes
+                            false || disableEntryInput
                                 ? "bg-slate-800"
                                 : "bg-slate-900"
                         }  caret-sky-500  ${
@@ -305,7 +315,7 @@ const TimesheetEntryInput = ({ value, row, date, userId, timesheetId }) => {
                                 ? "border-2 border-green-500"
                                 : ""
                         }`}
-                        disabled={false || validTypes}
+                        disabled={false || disableEntryInput}
                         step="0.01"
                     />
                 </div>

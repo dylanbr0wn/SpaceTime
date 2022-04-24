@@ -8,6 +8,7 @@ import {
     GetTimeEntryRowsDocument,
     GetTimeEntryRowsQuery,
     GetTimeEntryRowsQueryVariables,
+    TimeEntryRow,
     useDepartmentsQuery,
     useUpdateTimeEntryRowMutation,
 } from "../../../../api";
@@ -15,6 +16,7 @@ import ErrorBoundary from "../../ErrorBoundary";
 
 // import Tooltip from "../../Tooltip";
 import "../../../style/TimeEntry.css";
+import { Column, Row } from "react-table";
 
 /**
  * @name TimesheetDepartmentInput
@@ -30,6 +32,12 @@ const TimesheetDepartmentInput = ({
     column: { id },
     userId,
     timesheetId,
+}: {
+    value: string;
+    row: Row<Partial<TimeEntryRow>>;
+    column: Column;
+    userId: string;
+    timesheetId: string;
 }) => {
     // We need to keep and update the state of the cell normally
 
@@ -40,11 +48,11 @@ const TimesheetDepartmentInput = ({
     const [updateTimeEntryRow] = useUpdateTimeEntryRowMutation();
 
     // When changed, dispatch api call and redux action.
-    const onChange = async (department) => {
+    const onChange = async (department: Department) => {
         // setDepartment(department);
         updateTimeEntryRow({
             variables: {
-                updateTimeEntryRowId: row.original.id,
+                updateTimeEntryRowId: row.original.id ?? "-1",
                 departmentId: department.id,
                 projectId: "-1",
                 workTypeId: "-1",
@@ -52,7 +60,7 @@ const TimesheetDepartmentInput = ({
             optimisticResponse: {
                 updateTimeEntryRow: {
                     __typename: "TimeEntryRow",
-                    id: row.original.id,
+                    id: row.original.id ?? "-1",
                     createdAt: row.original.createdAt,
                     updatedAt: row.original.updatedAt,
                     department: {

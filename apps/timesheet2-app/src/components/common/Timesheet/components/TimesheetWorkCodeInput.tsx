@@ -1,4 +1,5 @@
 import * as React from "react";
+import { Column, Row } from "react-table";
 
 import { Listbox, Transition } from "@headlessui/react";
 import { CheckIcon, SelectorIcon } from "@heroicons/react/solid";
@@ -12,12 +13,11 @@ import {
     useWorkTypesQuery,
     WorkType,
 } from "../../../../api";
+import ConfirmCloseModal from "../../ConfirmCloseModal";
 import ErrorBoundary from "../../ErrorBoundary";
+import { useWorkTypes } from "../hooks";
 
 import "../../../style/TimeEntry.css";
-import { Column, Row } from "react-table";
-import { useWorkTypes } from "../hooks";
-import ConfirmCloseModal from "../../ConfirmCloseModal";
 
 /**
  * @name TimesheetWorkCodeInput

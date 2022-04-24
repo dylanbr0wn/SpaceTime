@@ -1,5 +1,5 @@
 import * as React from "react";
-import { toast } from "react-toastify";
+import { Row } from "react-table";
 
 import { Listbox, Transition } from "@headlessui/react";
 import { CheckIcon, SelectorIcon } from "@heroicons/react/solid";
@@ -12,12 +12,10 @@ import {
     TimeEntryRow,
     useUpdateTimeEntryRowMutation,
 } from "../../../../api";
-import { checkValidProject } from "../../../../services/utils";
 import ErrorBoundary from "../../ErrorBoundary";
 import { useProjects } from "../hooks";
 
 import "../../../style/TimeEntry.css";
-import { Row } from "react-table";
 
 /**
  * @name TimesheetProjectInput
@@ -45,11 +43,11 @@ const TimesheetProjectInput = ({
 }) => {
     // We need to keep and update the state of the cell normally
     const [project, setProject] = React.useState<Project | null>(null);
-    const [foundProject, setFoundProject] = React.useState(true);
+    // const [foundProject, setFoundProject] = React.useState(true);
     const [updateTimeEntryRow] = useUpdateTimeEntryRowMutation();
 
     const {
-        projects,
+        // projects,
         filteredProjects,
         allProjectsLoaded,
         disableProjectSelect,
@@ -59,8 +57,8 @@ const TimesheetProjectInput = ({
         if (allProjectsLoaded) {
             const project = filteredProjects.find((proj) => proj.id === value);
             setProject(project ?? null);
-            if (value === "-1") return;
-            setFoundProject(!!project);
+            // if (value === "-1") return;
+            // setFoundProject(!!project);
         }
     }, [filteredProjects, value, allProjectsLoaded]);
 
