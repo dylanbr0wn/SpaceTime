@@ -40,6 +40,21 @@ const TimesheetEntryInput = ({ value, row, date, userId, timesheetId }) => {
     const [savingComment, setSavingComment] = React.useState(false);
     const [validTypes, setValidTypes] = React.useState(false);
 
+    React.useEffect(() => {
+        if (
+            !row.original.project.id ||
+            row.original.project.id === "-1" ||
+            !row.original.workType.id ||
+            row.original.workType.id === "-1" ||
+            !row.original.department.id ||
+            row.original.department.id === "-1"
+        ) {
+            setValidTypes(false);
+        } else {
+            setValidTypes(true);
+        }
+    }, [row]);
+
     const [isEditing, setIsEditing] = React.useState(false); // Is the input field active?
     const [isSaving, setIsSaving] = React.useState(false); // Keep track of saving state
 

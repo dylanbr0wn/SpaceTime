@@ -47,6 +47,7 @@ const TimesheetDepartmentInput = ({
                 updateTimeEntryRowId: row.original.id,
                 departmentId: department.id,
                 projectId: "-1",
+                workTypeId: "-1",
             },
             optimisticResponse: {
                 updateTimeEntryRow: {
@@ -64,7 +65,7 @@ const TimesheetDepartmentInput = ({
                     },
                     workType: {
                         __typename: "WorkType",
-                        id: row.original.workType.id,
+                        id: "-1",
                     },
                 },
             },

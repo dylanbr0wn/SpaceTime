@@ -70,6 +70,7 @@ const TimesheetProjectInput = ({
             variables: {
                 updateTimeEntryRowId: row?.original?.id ?? "-1",
                 projectId: project.id,
+                workTypeId: "-1",
             },
             optimisticResponse: {
                 updateTimeEntryRow: {
@@ -87,7 +88,7 @@ const TimesheetProjectInput = ({
                     },
                     workType: {
                         __typename: "WorkType",
-                        id: row.original?.workType?.id ?? "-1",
+                        id: "-1",
                     },
                 },
             },

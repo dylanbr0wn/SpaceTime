@@ -23,7 +23,6 @@ export const useTimesheetDates = (
     // const [timesheetId, setTimesheetId] = React.useState();
 
     React.useEffect(() => {
-        console.log(timesheetData);
         if (timesheetData) {
             const dates: DateTime[] = [];
             const endDate = DateTime.fromISO(
@@ -89,7 +88,6 @@ export const useTimesheet = (
     const [timesheet, setTimesheet] = React.useState<TimeEntryRowPartial[]>([]);
     React.useEffect(() => {
         if (data) {
-            console.log("parsing");
             const defaultRow = {
                 id: "-1",
                 project: {
@@ -161,6 +159,7 @@ export const useProjects = (
     const { data: WorkTypesData } = useWorkTypesQuery();
 
     // disable project select if department is not set
+
     React.useEffect(() => {
         if (
             !currentRow?.original?.department?.id ||

@@ -25,7 +25,6 @@ export const createValidProjectsSelector = () =>
         getProjects,
         getRowDepartmentID,
         (projects, DepartmentID) => {
-            console.log(DepartmentID);
             return (
                 projects
                     // .filter(project => project.IsActive)

@@ -26,5 +26,16 @@ export const cache = new InMemoryCache({
                 },
             },
         },
+        TimeEntryRow: {
+            keyFields: [
+                "id",
+                "project",
+                ["id"],
+                "workType",
+                ["id"],
+                "department",
+                ["id"],
+            ],
+        },
     },
 });
