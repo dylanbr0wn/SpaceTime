@@ -178,10 +178,11 @@ const Timesheet = () => {
                         accessor: (row) => row.project.id,
                         id: "project",
                         minWidth: 75,
-                        Cell: ({ value, row, column, timesheetId }) => (
+                        Cell: ({ value, row, column, timesheetId, rows }) => (
                             <TimesheetProjectInput
                                 value={value}
                                 row={row}
+                                rows={rows}
                                 column={column}
                                 userId={userId}
                                 timesheetId={timesheetId}
@@ -193,12 +194,13 @@ const Timesheet = () => {
                         accessor: (row) => row.workType.id,
                         id: "workType",
                         minWidth: 75,
-                        Cell: ({ value, row, column, timesheetId }) => (
+                        Cell: ({ value, row, column, timesheetId, rows }) => (
                             <TimesheetWorkCodeInput
                                 value={value}
                                 row={row}
+                                rows={rows}
                                 column={column}
-                                userId={userId}
+                                userId={String(userId)}
                                 timesheetId={timesheetId}
                             />
                         ),

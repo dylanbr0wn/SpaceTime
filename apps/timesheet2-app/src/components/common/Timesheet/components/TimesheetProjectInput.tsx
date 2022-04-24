@@ -9,6 +9,7 @@ import {
     GetTimeEntryRowsQuery,
     GetTimeEntryRowsQueryVariables,
     Project,
+    TimeEntryRow,
     useUpdateTimeEntryRowMutation,
 } from "../../../../api";
 import { checkValidProject } from "../../../../services/utils";
@@ -16,6 +17,7 @@ import ErrorBoundary from "../../ErrorBoundary";
 import { useProjects } from "../hooks";
 
 import "../../../style/TimeEntry.css";
+import { Row } from "react-table";
 
 /**
  * @name TimesheetProjectInput
@@ -32,6 +34,14 @@ const TimesheetProjectInput = ({
     column: { id },
     userId,
     timesheetId,
+    rows,
+}: {
+    value: string;
+    row: Row<Partial<TimeEntryRow>>;
+    column: { id: string };
+    userId: string;
+    timesheetId: string;
+    rows: Row<Partial<TimeEntryRow>>[];
 }) => {
     // We need to keep and update the state of the cell normally
     const [project, setProject] = React.useState<Project | null>(null);
@@ -43,7 +53,7 @@ const TimesheetProjectInput = ({
         filteredProjects,
         allProjectsLoaded,
         disableProjectSelect,
-    } = useProjects(row.original.department.id);
+    } = useProjects(row, rows);
 
     React.useEffect(() => {
         if (allProjectsLoaded) {
@@ -58,18 +68,18 @@ const TimesheetProjectInput = ({
     const onChange = (project: Project) => {
         updateTimeEntryRow({
             variables: {
-                updateTimeEntryRowId: row.original.id,
+                updateTimeEntryRowId: row?.original?.id ?? "-1",
                 projectId: project.id,
             },
             optimisticResponse: {
                 updateTimeEntryRow: {
                     __typename: "TimeEntryRow",
-                    id: row.original.id,
+                    id: row?.original?.id ?? "-1",
                     createdAt: row.original.createdAt,
                     updatedAt: row.original.updatedAt,
                     department: {
                         __typename: "Department",
-                        id: row.original.department.id,
+                        id: row?.original?.department?.id ?? "-1",
                     },
                     project: {
                         __typename: "Project",
@@ -77,7 +87,7 @@ const TimesheetProjectInput = ({
                     },
                     workType: {
                         __typename: "WorkType",
-                        id: row.original.workType.id,
+                        id: row.original?.workType?.id ?? "-1",
                     },
                 },
             },

@@ -1,24 +1,26 @@
 import { DateTime } from "luxon";
 import * as React from "react";
+import { Row } from "react-table";
 
 import {
-    GetorCreateTimesheetMutation,
-    GetorCreateTimesheetMutationFn,
     GetTimeEntryRowsQuery,
     GetTimesheetQuery,
     Project,
+    TimeEntryRow,
     useProjectsQuery,
+    useWorkTypesQuery,
+    WorkType,
 } from "../../../api";
 
 export const useTimesheetDates = (
     timesheetData: GetTimesheetQuery | null | undefined,
-    //getorCreateTimesheetMutation: GetorCreateTimesheetMutationFn,
+    // getorCreateTimesheetMutation: GetorCreateTimesheetMutationFn,
     userId: string
 ) => {
     const [timesheetDates, setTimesheetDates] = React.useState<DateTime[]>([]);
     const [startDate, setStartDate] = React.useState<DateTime>();
     const [periodLength, setPeriodLength] = React.useState<number>();
-    //const [timesheetId, setTimesheetId] = React.useState();
+    // const [timesheetId, setTimesheetId] = React.useState();
 
     React.useEffect(() => {
         console.log(timesheetData);
@@ -43,20 +45,6 @@ export const useTimesheetDates = (
             }
 
             setTimesheetDates(dates);
-        } else {
-            console.log("refetch");
-            // getorCreateTimesheetMutation({
-            //     variables: {
-            //         timesheet: {
-            //             userId: userId,
-            //             date: DateTime.now()
-            //                 .startOf("day")
-            //                 .toUTC()
-            //                 .startOf("day")
-            //                 .toISO(),
-            //         },
-            //     },
-            // });
         }
     }, [timesheetData, userId]);
 
@@ -153,7 +141,10 @@ export const useTimesheet = (
     return { timesheet };
 };
 
-export const useProjects = (departmentId: string) => {
+export const useProjects = (
+    currentRow: Row<Partial<TimeEntryRow>>,
+    rows: Row<Partial<TimeEntryRow>>[]
+) => {
     const [projects, setProjects] = React.useState<Project[]>([]);
     const [disableProjectSelect, setDisableProjectSelect] =
         React.useState(false);
@@ -167,13 +158,19 @@ export const useProjects = (departmentId: string) => {
         loading: projectsLoading,
     } = useProjectsQuery();
 
+    const { data: WorkTypesData } = useWorkTypesQuery();
+
+    // disable project select if department is not set
     React.useEffect(() => {
-        if (!departmentId || departmentId === "-1") {
+        if (
+            !currentRow?.original?.department?.id ||
+            currentRow?.original?.department?.id === "-1"
+        ) {
             setDisableProjectSelect(true);
         } else {
             setDisableProjectSelect(false);
         }
-    }, [departmentId]);
+    }, [currentRow]);
 
     React.useEffect(() => {
         setAllProjectsLoaded(false);
@@ -184,16 +181,45 @@ export const useProjects = (departmentId: string) => {
 
     React.useEffect(() => {
         if (projects.length === 0) return; // Don't filter if there are no projects
-        if (departmentId) {
+        if (currentRow?.original?.department?.id) {
+            // if there all the work types for a project are used, dont show the project
+
+            const usedWorkTypes = rows.reduce((acc, row) => {
+                /**
+                 * So essentially we are going to count how many other times a project has been used.
+                 * We know that we cannot add the same work type to a project twice so we know that
+                 * the maximum number of appearances of a project is equal to the number of work types.
+                 * So.. if the number of appearances is equal to the number of work types, we know that
+                 * the project is completely used and can be filtered out. One note is that we need to
+                 * make sure to not check the current row.
+                 */
+                if (
+                    row.original?.project?.id &&
+                    row.original?.project?.id !== "-1" &&
+                    row.index !== currentRow.index
+                ) {
+                    if (acc[row.original?.project?.id])
+                        acc[row.original?.project?.id]++;
+                    else acc[row.original?.project?.id] = 1;
+                }
+                return acc;
+            }, {});
+
+            const numberOfWorkTypes = WorkTypesData?.workTypes.length ?? 0;
+
             const filtered = projects.filter(
-                (project) => project.department.id === departmentId
+                (project) =>
+                    project.department.id ===
+                        currentRow?.original?.department?.id &&
+                    (usedWorkTypes[project.id] ?? 0) < numberOfWorkTypes
             );
+
             setFilteredProjects(filtered ?? []);
         } else {
             setFilteredProjects(projects ?? []);
         }
         setAllProjectsLoaded(true);
-    }, [projects, departmentId]);
+    }, [projects, currentRow, WorkTypesData, rows]);
 
     return {
         projects,
@@ -216,4 +242,54 @@ export const useRowHasHours = (row) => {
     }, [row]);
 
     return { hasHours };
+};
+
+export const useWorkTypes = (
+    rows: Row<Partial<TimeEntryRow>>[],
+    currentRow: Row<Partial<TimeEntryRow>>
+) => {
+    const [filteredWorkTypes, setFilteredWorkTypes] = React.useState<
+        WorkType[]
+    >([]);
+
+    const [disableWorkTypeSelect, setDisableWorkTypeSelect] =
+        React.useState(true);
+
+    const [allWorkTypesUsed, setAllWorkTypesUsed] = React.useState(false);
+
+    const { data } = useWorkTypesQuery();
+
+    React.useEffect(() => {
+        const currentWorkTypes: string[] = rows
+            .filter(
+                (row) =>
+                    row.index !== currentRow.index &&
+                    row?.original?.project?.id ===
+                        currentRow?.original?.project?.id
+            )
+
+            .map((row) => row?.original?.workType?.id ?? "");
+        const workTypes = data?.workTypes ?? [];
+
+        const filteredWorkTypes = workTypes.filter(
+            (workType) => !currentWorkTypes.includes(workType.id)
+        );
+        setFilteredWorkTypes(filteredWorkTypes);
+        if (filteredWorkTypes.length === 0 && workTypes.length > 0) {
+            setAllWorkTypesUsed(true);
+        }
+    }, [rows, data, currentRow]);
+
+    React.useEffect(() => {
+        if (
+            currentRow.original.department &&
+            currentRow?.original?.department?.id !== "-1" &&
+            currentRow?.original?.project &&
+            currentRow?.original?.project?.id !== "-1"
+        ) {
+            setDisableWorkTypeSelect(false);
+        }
+    }, [currentRow]);
+
+    return { filteredWorkTypes, disableWorkTypeSelect, allWorkTypesUsed };
 };

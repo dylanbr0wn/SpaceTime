@@ -106,15 +106,30 @@ const TimesheetTable = ({ addNewEntryRow, columns, data, timesheetId }) => {
                                 key={i}
                             >
                                 {row.cells.map((cell, j) => {
-                                    return (
-                                        <div
-                                            className=""
-                                            {...cell.getCellProps()}
-                                            key={j}
-                                        >
-                                            {cell.render("Cell")}
-                                        </div>
-                                    );
+                                    if (
+                                        cell.column.id === "workType" ||
+                                        cell.column.id === "project"
+                                    ) {
+                                        return (
+                                            <div
+                                                className=""
+                                                {...cell.getCellProps()}
+                                                key={j}
+                                            >
+                                                {cell.render("Cell", { rows })}
+                                            </div>
+                                        );
+                                    } else {
+                                        return (
+                                            <div
+                                                className=""
+                                                {...cell.getCellProps()}
+                                                key={j}
+                                            >
+                                                {cell.render("Cell")}
+                                            </div>
+                                        );
+                                    }
                                 })}
                             </div>
                         );
