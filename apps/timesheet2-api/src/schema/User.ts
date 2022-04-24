@@ -16,6 +16,7 @@ export const User = objectType({
     definition(t) {
         t.field(NexusPrisma.User.id);
         t.field(NexusPrisma.User.email);
+        t.field(NexusPrisma.User.auth0Id);
         t.field(NexusPrisma.User.code);
         t.field(NexusPrisma.User.isActive);
         t.field(NexusPrisma.User.isAdmin);
@@ -42,9 +43,15 @@ export const QueryUsers = extendType({
         t.field("getUserFromId", {
             type: "User",
             args: {
-                id: nonNull(stringArg()),
+                auth0Id: nonNull(stringArg()),
             },
-            resolve: (_parent, args, context: Context) => {
+            resolve: async (_parent, args, context: Context) => {
+                const user = await context.prisma.user.findUnique({
+                    where: {
+                        auth0Id: args.auth0Id,
+                    },
+                });
+
                 return context.prisma.user.findFirst({
                     where: {
                         id: args.id,

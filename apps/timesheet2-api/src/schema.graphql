@@ -100,7 +100,7 @@ type Query {
   getTimeEntryRows(timesheetId: String!): [TimeEntryRow!]!
   getTimesheet(Timesheet: TimesheetGetInput!): Timesheet
   getUserFromEmail(email: String!): User
-  getUserFromId(id: String!): User
+  getUserFromId(auth0Id: String!): User
   projects: [Project!]!
   timeEntry(TimeEntry: TimeEntryFromRowDateInput!): TimeEntry
   timeEntryFromId(TimeEntry: TimeEntryFromIdInput!): TimeEntry
@@ -171,6 +171,7 @@ input TimesheetGetInput {
 }
 
 type User {
+  auth0Id: String!
   code: String!
   createdAt: DateTime!
   department: Department!

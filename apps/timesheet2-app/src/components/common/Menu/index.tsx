@@ -11,6 +11,8 @@ import ErrorBoundary from "../ErrorBoundary";
 import NavButton from "./NavLinkButton";
 import NavMenuButton from "./NavMenuButton";
 import NavSubTitle from "./NavSubTitle";
+import { useAuth0 } from "@auth0/auth0-react";
+import { useProfile } from "../../../services/hooks";
 
 /**
  * @name Sidebar
@@ -21,6 +23,7 @@ import NavSubTitle from "./NavSubTitle";
  */
 const Menu = () => {
     const account = useAccount();
+    const { userMetadata, user } = useProfile();
 
     const { error, loading, data, refetch } = useGetUserFromEmailQuery({
         variables: {
@@ -33,6 +36,10 @@ const Menu = () => {
             refetch();
         }
     }, [account, refetch]);
+
+    React.useEffect(() => {
+        console.log("userMetadata", userMetadata);
+    }, [userMetadata]);
 
     return (
         <ErrorBoundary>
