@@ -13,7 +13,6 @@ import {
     TimeEntryRow,
     useCreateTimeEntryMutation,
     useDeleteTimeEntryMutation,
-    useGetUserFromIdQuery,
     useUpdateTimeEntryhoursMutation,
 } from "../../../../api";
 import ErrorBoundary from "../../ErrorBoundary";
@@ -67,16 +66,6 @@ const TimesheetEntryInput = ({
 
     const [isEditing, setIsEditing] = React.useState(false); // Is the input field active?
     const [isSaving, setIsSaving] = React.useState(false); // Keep track of saving state
-
-    const {
-        loading: ProfileLoading,
-        error: ProfileError,
-        data: ProfileData,
-    } = useGetUserFromIdQuery({
-        variables: {
-            getUserFromIdId: userId,
-        },
-    });
 
     const onHourChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const hours = parseFloat(e.target.value) ?? 0;
@@ -362,14 +351,7 @@ const TimesheetEntryInput = ({
                                         Add a comment to your entry...
                                     </Dialog.Title>
                                     <div className="mt-3 flex">
-                                        <div className="rounded-full bg-sky-300 h-8 w-8 mr-2 p-1 font-medium text-center">
-                                            {ProfileData?.getUserFromId?.profile?.firstName?.charAt(
-                                                0
-                                            ) +
-                                                ProfileData?.getUserFromId?.profile?.lastName?.charAt(
-                                                    0
-                                                )}
-                                        </div>
+                                        <div className="rounded-full bg-sky-300 h-8 w-8 mr-2 p-1 font-medium text-center"></div>
                                         <input
                                             type="text"
                                             disabled={false}

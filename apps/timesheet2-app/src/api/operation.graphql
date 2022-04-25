@@ -1,93 +1,34 @@
-query InitData($email: String!) {
-    getUserFromEmail(email: $email) {
+query TenantFromId($tenantId: String!) {
+    tenantFromId(tenantId: $tenantId) {
         id
-        email
-        code
         isActive
-        isAdmin
-        profile {
-            id
-            lastName
-            firstName
-            avatar
-            bio
-        }
-        createdAt
-        updatedAt
-        department {
-            id
-        }
-        manager {
-            id
-        }
-        isPaymentManager
-        isManager
-    }
-    applicationPreferences {
-        id
-        createdAt
-        updatedAt
-        isActive
-        startDate
-        periodLength
-    }
-    projects {
-        id
         name
-        createdAt
-        updatedAt
-        isActive
         description
-        code
-    }
-    departments {
-        id
-        name
-        createdAt
-        updatedAt
-        isActive
-        description
-    }
-    workTypes {
-        id
-        name
-        createdAt
-        updatedAt
-        isActive
-        description
-        code
-        isSystem
-        isDefault
-        multiplier
-        isBillable
     }
 }
 
-query GetUserFromEmail($email: String!) {
-    getUserFromEmail(email: $email) {
+query GetUserFromAuth0($auth0Id: String!) {
+    getUserFromAuth0(auth0Id: $auth0Id) {
         id
         email
+        auth0Id
         code
         isActive
         isAdmin
-        profile {
-            id
-            lastName
-            firstName
-            avatar
-            bio
-        }
         createdAt
         updatedAt
-        isPaymentManager
-        isManager
-        manager {
+        department {
             id
         }
         managees {
             id
         }
-        department {
+        manager {
+            id
+        }
+        isPaymentManager
+        isManager
+        tenant {
             id
         }
     }
@@ -160,16 +101,6 @@ query TimeEntry($timeEntry: TimeEntryFromRowDateInput!) {
             user {
                 id
             }
-        }
-    }
-}
-
-query GetUserFromId($getUserFromIdId: String!) {
-    getUserFromId(id: $getUserFromIdId) {
-        profile {
-            lastName
-            firstName
-            avatar
         }
     }
 }
@@ -336,5 +267,46 @@ mutation CreateTimeEntryRow($timesheetId: String!) {
 mutation DeleteTimeEntryRow($timeEntryRow: TimeEntryRowDeleteInput!) {
     deleteTimeEntryRow(TimeEntryRow: $timeEntryRow) {
         id
+    }
+}
+
+query getUserFromToken($token: ID!) {
+    getUserFromToken(token: $token) {
+        id
+        tenant {
+            name
+            description
+            logo
+            isActive
+            updatedAt
+            createdAt
+        }
+    }
+}
+
+mutation AttachAuth0Id($auth0Id: String!, $userId: ID!) {
+    attachAuth0Id(auth0Id: $auth0Id, userId: $userId) {
+        id
+        email
+        auth0Id
+        code
+        isActive
+        isAdmin
+        createdAt
+        updatedAt
+        department {
+            id
+        }
+        tenant {
+            id
+        }
+        managees {
+            id
+        }
+        manager {
+            id
+        }
+        isPaymentManager
+        isManager
     }
 }

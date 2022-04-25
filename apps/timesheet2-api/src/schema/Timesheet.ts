@@ -36,20 +36,25 @@ export const QueryTimesheet = extendType({
                         },
                     },
                 });
+
+                const user = await context.prisma.user.findUnique({
+                    where: {
+                        id: Timesheet.userId,
+                    },
+                });
                 if (!period) {
                     // if the period doesnt exist, create it
 
                     // find the period params
-                    const prefs =
-                        await context.prisma.applicationPreferences.findUnique({
-                            where: {
-                                id: "1",
-                            },
-                            select: {
-                                startDate: true,
-                                periodLength: true,
-                            },
-                        });
+                    const prefs = await context.prisma.tenant.findUnique({
+                        where: {
+                            id: user?.tenantId,
+                        },
+                        select: {
+                            startDate: true,
+                            periodLength: true,
+                        },
+                    });
                     if (prefs) {
                         // got prefs, find the period params
                         const timesheetDate = DateTime.fromJSDate(
@@ -78,6 +83,11 @@ export const QueryTimesheet = extendType({
                             data: {
                                 startDate: interval.start.toJSDate(),
                                 endDate: interval.end.toJSDate(),
+                                tenant: {
+                                    connect: {
+                                        id: user?.tenantId,
+                                    },
+                                },
                             },
                         });
                     } else {

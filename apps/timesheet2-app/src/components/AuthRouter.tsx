@@ -2,32 +2,24 @@
 import PropTypes from "prop-types";
 import React, { Suspense, useEffect } from "react";
 import { connect } from "react-redux";
-import { Route, Routes, useLocation } from "react-router-dom";
+import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 
+import { useAuth0 } from "@auth0/auth0-react";
 import { animated, useTransition } from "@react-spring/web";
 
-import { readObjectsDispatch } from "../redux/actions/objectsActions";
+import { useGetUserFromAuth0Query } from "../api";
+import Register from "../register/Register";
 
+import AuthProvider, { Navigate } from "./common/AuthProvider";
 import ErrorBoundary from "./common/ErrorBoundary";
 import Loading from "./common/Loading";
 import Menu from "./common/Menu";
-import ProtectedRoute from "./common/ProtectedRoute";
-// const Settings = lazy(() => import("./settings/Settings"));
-// const DepartmentAdmin = lazy(() => import("./admin/DepartmentAdmin"));
-// const ProjectAdmin = lazy(() => import("./admin/ProjectAdmin"));
-// const EmployeeAdmin = lazy(() => import("./admin/EmployeeAdmin"));
-// const WorkCodeAdmin = lazy(() => import("./admin/WorkCodeAdmin"));
-// const ToolsDashboard = lazy(() => import("./clerkTools/ToolsDashboard"));
 import EmployeeTimesheet from "./EmployeeTimesheet";
-// const ManagerDashboard = lazy(() => import("./managerTools/ManagerDashboard"));
-// import ManagerTimesheet from "./managerTools/ManagerTimesheet";
-// const PayrollTimesheetDashboard = lazy(() =>
-//     import("./clerkTools/PayrollTimesheetDashboard")
-// );
-// import PayrollTimesheet from "./clerkTools/PayrollTimesheet";
-// import ProtectedRoute from './common/ProtectedRoute'
-
-// import PageNotFound from './PageNotFound'
+import ConfirmTenant from "../register/ConfirmTenant";
+import Join from "../register/Join";
+import Create from "../register/Create";
+import UserDetails from "../register/UserDetails";
+import DashBoard from "./common/Dashboard";
 
 /**
  * @name AuthRoute
@@ -38,6 +30,26 @@ import EmployeeTimesheet from "./EmployeeTimesheet";
 const AuthRouter = () => {
     const location = useLocation();
 
+    const { user } = useAuth0();
+
+    const {
+        error,
+        loading,
+        data: TimesheetUserData,
+    } = useGetUserFromAuth0Query({
+        variables: {
+            auth0Id: String(user?.sub),
+        },
+        skip: !user,
+    });
+
+    // React.useEffect(() => {
+    //     if (!TimesheetUserData?.getUserFromAuth0) {
+    //         console.log("here");
+    //         navigate("/register");
+    //     }
+    // }, [TimesheetUserData, navigate]);
+
     // React Spring hook for animating page transisitons.
     const transitions = useTransition(location, {
         from: { opacity: 0 },
@@ -45,136 +57,70 @@ const AuthRouter = () => {
         leave: { opacity: 0 },
     });
 
-    // useEffect(() => {
-    //     if (!objectsLoaded) {
-    //         readObjectsDispatch();
-    //     }
-    // }, [objectsLoaded, readObjectsDispatch]);
-
     return (
-        <div className="w-full h-full p-3 m-0">
-            <Menu />
+        <div className="w-full h-full">
+            {/* <Menu /> */}
 
-            <div
-                id="page-content-wrapper"
-                // style={
-                //     sidebarPinToggle
-                //         ? { width: isTablet ? "78vw" : "84vw" }
-                //         : {}
-                // }
-            >
-                {/* This is to adjust to the width of the content depending on if the sidebar is pinned or not */}
-                {
-                    <ErrorBoundary>
-                        <>
-                            {transitions(({ opacity }, item) => (
-                                <animated.div className="w-full">
-                                    <Suspense fallback={<Loading />}>
-                                        {/* This is to adjust to the width of the content depending on if the sidebar is pinned or not */}
-                                        <Routes location={item}>
-                                            {/* <ProtectedRoute
-                                                path="/managerDashboard"
-                                                component={ManagerDashboard}
-                                                condition={user.IsSupervisor}
-                                            />
-                                            <ProtectedRoute
-                                                path="/timesheet/:id/manager"
-                                                component={ManagerTimesheet}
-                                                condition={user.IsSupervisor}
-                                            />
-                                            <ProtectedRoute
-                                                path="/payrollTimesheetDashboard"
-                                                component={
-                                                    PayrollTimesheetDashboard
-                                                }
+            {
+                <ErrorBoundary>
+                    <>
+                        <Suspense fallback={<Loading />}>
+                            {/* This is to adjust to the width of the content depending on if the sidebar is pinned or not */}
+                            <Routes>
+                                <Route path="/" element={<DashBoard />}>
+                                    <Route
+                                        path="time/:userId"
+                                        element={
+                                            <AuthProvider
                                                 condition={
-                                                    user.IsPayrollClerk ||
-                                                    user.IsAdministrator
+                                                    TimesheetUserData?.getUserFromAuth0
                                                 }
-                                            />
-                                            <ProtectedRoute
-                                                path="/timesheet/:id/payroll"
-                                                component={PayrollTimesheet}
-                                                condition={
-                                                    user.IsPayrollClerk ||
-                                                    user.IsAdministrator
-                                                }
-                                            /> */}
-                                            <Route
-                                                path="/timesheet/:id"
-                                                element={<EmployeeTimesheet />}
-                                            />
-
-                                            {/* <ProtectedRoute
-                                                exact
-                                                path="/employeeAdmin"
-                                                component={EmployeeAdmin}
-                                                condition={
-                                                    user.IsPayrollClerk ||
-                                                    user.IsAdministrator
-                                                }
-                                            />
-                                            <ProtectedRoute
-                                                exact
-                                                path="/departmentAdmin"
-                                                component={DepartmentAdmin}
-                                                condition={
-                                                    user.IsPayrollClerk ||
-                                                    user.IsAdministrator
-                                                }
-                                            />
-                                            <ProtectedRoute
-                                                exact
-                                                path="/projectAdmin"
-                                                component={ProjectAdmin}
-                                                condition={
-                                                    user.IsPayrollClerk ||
-                                                    user.IsAdministrator
-                                                }
-                                            />
-                                            <ProtectedRoute
-                                                exact
-                                                path="/workCodeAdmin"
-                                                component={WorkCodeAdmin}
-                                                condition={
-                                                    user.IsPayrollClerk ||
-                                                    user.IsAdministrator
-                                                }
-                                            />
-                                            <ProtectedRoute
-                                                exact
-                                                path="/clerkDashboard"
-                                                component={ToolsDashboard}
-                                                condition={
-                                                    user.IsPayrollClerk ||
-                                                    user.IsAdministrator
-                                                }
-                                            />
-                                            <Route
-                                                path="/settings"
-                                                element={<Settings />}
-                                            />
-                                            <Route
-                                                element={
-                                                    <Navigate
-                                                        to={`/timesheet/${user.EmployeeID}`}
-                                                    />
-                                                }
-                                            />
-
-                                            {!loading && (
-                                                <Route
-                                                    element={<PageNotFound />}
+                                            >
+                                                <EmployeeTimesheet
+                                                    user={
+                                                        TimesheetUserData?.getUserFromAuth0
+                                                    }
                                                 />
-                                            )} */}
-                                        </Routes>
-                                    </Suspense>
-                                </animated.div>
-                            ))}
-                        </>
-                    </ErrorBoundary>
-                }
-            </div>
+                                            </AuthProvider>
+                                        }
+                                    />
+                                    <Route
+                                        index
+                                        element={
+                                            <Navigate
+                                                to={`/time/${TimesheetUserData?.getUserFromAuth0?.id}`}
+                                                replace
+                                            />
+                                        }
+                                    />
+                                </Route>
+
+                                <Route
+                                    path="register"
+                                    element={
+                                        <Register
+                                            timesheetUserData={
+                                                TimesheetUserData
+                                            }
+                                        />
+                                    }
+                                >
+                                    <Route path="join" element={<Join />} />
+                                    <Route path="create" element={<Create />} />
+                                    <Route
+                                        path="token/:token"
+                                        element={<ConfirmTenant />}
+                                    ></Route>
+                                    <Route
+                                        path="tenant/:tenantId/user/create"
+                                        element={<UserDetails />}
+                                    />
+                                </Route>
+                            </Routes>
+                        </Suspense>
+                    </>
+                </ErrorBoundary>
+            }
         </div>
     );
 };

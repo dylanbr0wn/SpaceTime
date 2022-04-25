@@ -5,7 +5,7 @@ import { useAccount } from "@azure/msal-react";
 import { Popover, Transition } from "@headlessui/react";
 import Tippy from "@tippyjs/react";
 
-import { useGetUserFromEmailQuery } from "../../../api";
+import { useGetUserFromAuth0Query } from "../../../api";
 import ErrorBoundary from "../ErrorBoundary";
 
 import NavButton from "./NavLinkButton";
@@ -22,24 +22,14 @@ import { useProfile } from "../../../services/hooks";
  * @description Sidebar navigation menu.
  */
 const Menu = () => {
-    const account = useAccount();
-    const { userMetadata, user } = useProfile();
+    // const { userMetadata, user } = useProfile();
+    const { user } = useAuth0();
 
-    const { error, loading, data, refetch } = useGetUserFromEmailQuery({
+    const { data } = useGetUserFromAuth0Query({
         variables: {
-            email: account?.username || "",
+            auth0Id: String(user?.sub),
         },
     });
-
-    React.useEffect(() => {
-        if (account?.username) {
-            refetch();
-        }
-    }, [account, refetch]);
-
-    React.useEffect(() => {
-        console.log("userMetadata", userMetadata);
-    }, [userMetadata]);
 
     return (
         <ErrorBoundary>
@@ -89,13 +79,13 @@ const Menu = () => {
                                                         </svg>
                                                     }
                                                     title={"Timesheet"}
-                                                    url={`/timesheet/${
-                                                        data?.getUserFromEmail
+                                                    url={`/time/${
+                                                        data?.getUserFromAuth0
                                                             ?.id ?? ""
                                                     }`}
                                                 />
 
-                                                {data?.getUserFromEmail
+                                                {data?.getUserFromAuth0
                                                     ?.isManager && (
                                                     <>
                                                         <NavSubTitle
@@ -127,7 +117,7 @@ const Menu = () => {
                                                         />
                                                     </>
                                                 )}
-                                                {data?.getUserFromEmail
+                                                {data?.getUserFromAuth0
                                                     ?.isAdmin && (
                                                     <>
                                                         <NavSubTitle
@@ -155,9 +145,9 @@ const Menu = () => {
                                                         />
                                                     </>
                                                 )}
-                                                {(data?.getUserFromEmail
+                                                {(data?.getUserFromAuth0
                                                     ?.isAdmin ||
-                                                    data?.getUserFromEmail
+                                                    data?.getUserFromAuth0
                                                         ?.isPaymentManager) && (
                                                     <>
                                                         <NavSubTitle

@@ -17,16 +17,6 @@ export type Scalars = {
   DateTime: any;
 };
 
-export type ApplicationPreferences = {
-  __typename?: 'ApplicationPreferences';
-  createdAt: Scalars['DateTime'];
-  id: Scalars['ID'];
-  isActive: Scalars['Boolean'];
-  periodLength: Scalars['Int'];
-  startDate: Scalars['DateTime'];
-  updatedAt: Scalars['DateTime'];
-};
-
 export type Department = {
   __typename?: 'Department';
   createdAt: Scalars['DateTime'];
@@ -65,6 +55,7 @@ export type EntryCommentUpdateInput = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  attachAuth0Id?: Maybe<User>;
   createEntryComment?: Maybe<EntryComment>;
   createTimeEntry?: Maybe<TimeEntry>;
   createTimeEntryRow?: Maybe<TimeEntryRow>;
@@ -76,6 +67,12 @@ export type Mutation = {
   updateTimeEntryRow?: Maybe<TimeEntryRow>;
   updateTimeEntryhours?: Maybe<TimeEntry>;
   updateUser?: Maybe<User>;
+};
+
+
+export type MutationAttachAuth0IdArgs = {
+  auth0Id: Scalars['String'];
+  userId: Scalars['ID'];
 };
 
 
@@ -148,15 +145,6 @@ export type Period = {
   startDate: Scalars['DateTime'];
 };
 
-export type Profile = {
-  __typename?: 'Profile';
-  avatar?: Maybe<Scalars['String']>;
-  bio?: Maybe<Scalars['String']>;
-  firstName: Scalars['String'];
-  id: Scalars['ID'];
-  lastName: Scalars['String'];
-};
-
 export type Project = {
   __typename?: 'Project';
   code: Scalars['String'];
@@ -172,16 +160,16 @@ export type Project = {
 export type Query = {
   __typename?: 'Query';
   allUsers: Array<User>;
-  applicationPreferences?: Maybe<ApplicationPreferences>;
   departments: Array<Department>;
   getEntryComments?: Maybe<Array<EntryComment>>;
   getEntryCommentsByTimesheet: Array<EntryComment>;
   getTimeEntryRow?: Maybe<TimeEntryRow>;
   getTimeEntryRows: Array<TimeEntryRow>;
   getTimesheet?: Maybe<Timesheet>;
-  getUserFromEmail?: Maybe<User>;
-  getUserFromId?: Maybe<User>;
+  getUserFromAuth0?: Maybe<User>;
+  getUserFromToken?: Maybe<User>;
   projects: Array<Project>;
+  tenantFromId?: Maybe<Tenant>;
   timeEntry?: Maybe<TimeEntry>;
   timeEntryFromId?: Maybe<TimeEntry>;
   workTypes: Array<WorkType>;
@@ -213,13 +201,18 @@ export type QueryGetTimesheetArgs = {
 };
 
 
-export type QueryGetUserFromEmailArgs = {
-  email: Scalars['String'];
+export type QueryGetUserFromAuth0Args = {
+  auth0Id: Scalars['String'];
 };
 
 
-export type QueryGetUserFromIdArgs = {
-  id: Scalars['String'];
+export type QueryGetUserFromTokenArgs = {
+  token: Scalars['ID'];
+};
+
+
+export type QueryTenantFromIdArgs = {
+  tenantId: Scalars['String'];
 };
 
 
@@ -230,6 +223,19 @@ export type QueryTimeEntryArgs = {
 
 export type QueryTimeEntryFromIdArgs = {
   TimeEntry: TimeEntryFromIdInput;
+};
+
+export type Tenant = {
+  __typename?: 'Tenant';
+  createdAt: Scalars['DateTime'];
+  description?: Maybe<Scalars['String']>;
+  id: Scalars['ID'];
+  isActive: Scalars['Boolean'];
+  logo?: Maybe<Scalars['String']>;
+  name: Scalars['String'];
+  periodLength: Scalars['Int'];
+  startDate: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
 };
 
 export type TimeEntry = {
@@ -300,6 +306,7 @@ export type TimesheetGetInput = {
 
 export type User = {
   __typename?: 'User';
+  auth0Id?: Maybe<Scalars['String']>;
   code: Scalars['String'];
   createdAt: Scalars['DateTime'];
   department: Department;
@@ -311,40 +318,35 @@ export type User = {
   isPaymentManager: Scalars['Boolean'];
   managees: Array<User>;
   manager?: Maybe<User>;
-  profile?: Maybe<Profile>;
+  tenant: Tenant;
   updatedAt: Scalars['DateTime'];
 };
 
 /** User Create Input */
 export type UserCreateInput = {
-  avatar?: InputMaybe<Scalars['String']>;
-  bio?: InputMaybe<Scalars['String']>;
+  auth0Id: Scalars['String'];
   code: Scalars['String'];
   departmentId: Scalars['String'];
   email: Scalars['String'];
-  firstName: Scalars['String'];
   isActive: Scalars['Boolean'];
   isAdmin: Scalars['Boolean'];
   isManager: Scalars['Boolean'];
   isPaymentManager: Scalars['Boolean'];
-  lastName: Scalars['String'];
   managerId: Scalars['String'];
+  tenantId: Scalars['String'];
 };
 
 /** User Update Input */
 export type UserUpdateInput = {
-  avatar?: InputMaybe<Scalars['String']>;
-  bio?: InputMaybe<Scalars['String']>;
+  auth0Id: Scalars['String'];
   code: Scalars['String'];
   departmentId: Scalars['String'];
   email: Scalars['String'];
-  firstName: Scalars['String'];
   id: Scalars['ID'];
   isActive: Scalars['Boolean'];
   isAdmin: Scalars['Boolean'];
   isManager: Scalars['Boolean'];
   isPaymentManager: Scalars['Boolean'];
-  lastName: Scalars['String'];
   managerId: Scalars['String'];
 };
 
@@ -363,19 +365,19 @@ export type WorkType = {
   updatedAt: Scalars['DateTime'];
 };
 
-export type InitDataQueryVariables = Exact<{
-  email: Scalars['String'];
+export type TenantFromIdQueryVariables = Exact<{
+  tenantId: Scalars['String'];
 }>;
 
 
-export type InitDataQuery = { __typename?: 'Query', getUserFromEmail?: { __typename?: 'User', id: string, email: string, code: string, isActive: boolean, isAdmin: boolean, createdAt: any, updatedAt: any, isPaymentManager: boolean, isManager: boolean, profile?: { __typename?: 'Profile', id: string, lastName: string, firstName: string, avatar?: string | null, bio?: string | null } | null, department: { __typename?: 'Department', id: string }, manager?: { __typename?: 'User', id: string } | null } | null, applicationPreferences?: { __typename?: 'ApplicationPreferences', id: string, createdAt: any, updatedAt: any, isActive: boolean, startDate: any, periodLength: number } | null, projects: Array<{ __typename?: 'Project', id: string, name: string, createdAt: any, updatedAt: any, isActive: boolean, description?: string | null, code: string }>, departments: Array<{ __typename?: 'Department', id: string, name: string, createdAt: any, updatedAt: any, isActive: boolean, description?: string | null }>, workTypes: Array<{ __typename?: 'WorkType', id: string, name: string, createdAt: any, updatedAt: any, isActive: boolean, description?: string | null, code: string, isSystem: boolean, isDefault: boolean, multiplier: number, isBillable: boolean }> };
+export type TenantFromIdQuery = { __typename?: 'Query', tenantFromId?: { __typename?: 'Tenant', id: string, isActive: boolean, name: string, description?: string | null } | null };
 
-export type GetUserFromEmailQueryVariables = Exact<{
-  email: Scalars['String'];
+export type GetUserFromAuth0QueryVariables = Exact<{
+  auth0Id: Scalars['String'];
 }>;
 
 
-export type GetUserFromEmailQuery = { __typename?: 'Query', getUserFromEmail?: { __typename?: 'User', id: string, email: string, code: string, isActive: boolean, isAdmin: boolean, createdAt: any, updatedAt: any, isPaymentManager: boolean, isManager: boolean, profile?: { __typename?: 'Profile', id: string, lastName: string, firstName: string, avatar?: string | null, bio?: string | null } | null, manager?: { __typename?: 'User', id: string } | null, managees: Array<{ __typename?: 'User', id: string }>, department: { __typename?: 'Department', id: string } } | null };
+export type GetUserFromAuth0Query = { __typename?: 'Query', getUserFromAuth0?: { __typename?: 'User', id: string, email: string, auth0Id?: string | null, code: string, isActive: boolean, isAdmin: boolean, createdAt: any, updatedAt: any, isPaymentManager: boolean, isManager: boolean, department: { __typename?: 'Department', id: string }, managees: Array<{ __typename?: 'User', id: string }>, manager?: { __typename?: 'User', id: string } | null, tenant: { __typename?: 'Tenant', id: string } } | null };
 
 export type GetTimesheetQueryVariables = Exact<{
   timesheet: TimesheetGetInput;
@@ -405,13 +407,6 @@ export type TimeEntryQueryVariables = Exact<{
 
 
 export type TimeEntryQuery = { __typename?: 'Query', timeEntry?: { __typename?: 'TimeEntry', id: string, createdAt: any, updatedAt: any, date: any, hours: number, entryComments: Array<{ __typename?: 'EntryComment', id: string, createdAt: any, updatedAt: any, text: string, user: { __typename?: 'User', id: string } }> } | null };
-
-export type GetUserFromIdQueryVariables = Exact<{
-  getUserFromIdId: Scalars['String'];
-}>;
-
-
-export type GetUserFromIdQuery = { __typename?: 'Query', getUserFromId?: { __typename?: 'User', profile?: { __typename?: 'Profile', lastName: string, firstName: string, avatar?: string | null } | null } | null };
 
 export type TimeEntryFromIdQueryVariables = Exact<{
   timeEntry: TimeEntryFromIdInput;
@@ -480,127 +475,83 @@ export type DeleteTimeEntryRowMutationVariables = Exact<{
 
 export type DeleteTimeEntryRowMutation = { __typename?: 'Mutation', deleteTimeEntryRow?: { __typename?: 'TimeEntryRow', id: string } | null };
 
+export type GetUserFromTokenQueryVariables = Exact<{
+  token: Scalars['ID'];
+}>;
 
-export const InitDataDocument = gql`
-    query InitData($email: String!) {
-  getUserFromEmail(email: $email) {
+
+export type GetUserFromTokenQuery = { __typename?: 'Query', getUserFromToken?: { __typename?: 'User', id: string, tenant: { __typename?: 'Tenant', name: string, description?: string | null, logo?: string | null, isActive: boolean, updatedAt: any, createdAt: any } } | null };
+
+export type AttachAuth0IdMutationVariables = Exact<{
+  auth0Id: Scalars['String'];
+  userId: Scalars['ID'];
+}>;
+
+
+export type AttachAuth0IdMutation = { __typename?: 'Mutation', attachAuth0Id?: { __typename?: 'User', id: string, email: string, auth0Id?: string | null, code: string, isActive: boolean, isAdmin: boolean, createdAt: any, updatedAt: any, isPaymentManager: boolean, isManager: boolean, department: { __typename?: 'Department', id: string }, tenant: { __typename?: 'Tenant', id: string }, managees: Array<{ __typename?: 'User', id: string }>, manager?: { __typename?: 'User', id: string } | null } | null };
+
+
+export const TenantFromIdDocument = gql`
+    query TenantFromId($tenantId: String!) {
+  tenantFromId(tenantId: $tenantId) {
     id
-    email
-    code
     isActive
-    isAdmin
-    profile {
-      id
-      lastName
-      firstName
-      avatar
-      bio
-    }
-    createdAt
-    updatedAt
-    department {
-      id
-    }
-    manager {
-      id
-    }
-    isPaymentManager
-    isManager
-  }
-  applicationPreferences {
-    id
-    createdAt
-    updatedAt
-    isActive
-    startDate
-    periodLength
-  }
-  projects {
-    id
     name
-    createdAt
-    updatedAt
-    isActive
     description
-    code
-  }
-  departments {
-    id
-    name
-    createdAt
-    updatedAt
-    isActive
-    description
-  }
-  workTypes {
-    id
-    name
-    createdAt
-    updatedAt
-    isActive
-    description
-    code
-    isSystem
-    isDefault
-    multiplier
-    isBillable
   }
 }
     `;
 
 /**
- * __useInitDataQuery__
+ * __useTenantFromIdQuery__
  *
- * To run a query within a React component, call `useInitDataQuery` and pass it any options that fit your needs.
- * When your component renders, `useInitDataQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useTenantFromIdQuery` and pass it any options that fit your needs.
+ * When your component renders, `useTenantFromIdQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useInitDataQuery({
+ * const { data, loading, error } = useTenantFromIdQuery({
  *   variables: {
- *      email: // value for 'email'
+ *      tenantId: // value for 'tenantId'
  *   },
  * });
  */
-export function useInitDataQuery(baseOptions: Apollo.QueryHookOptions<InitDataQuery, InitDataQueryVariables>) {
+export function useTenantFromIdQuery(baseOptions: Apollo.QueryHookOptions<TenantFromIdQuery, TenantFromIdQueryVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<InitDataQuery, InitDataQueryVariables>(InitDataDocument, options);
+        return Apollo.useQuery<TenantFromIdQuery, TenantFromIdQueryVariables>(TenantFromIdDocument, options);
       }
-export function useInitDataLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<InitDataQuery, InitDataQueryVariables>) {
+export function useTenantFromIdLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<TenantFromIdQuery, TenantFromIdQueryVariables>) {
           const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<InitDataQuery, InitDataQueryVariables>(InitDataDocument, options);
+          return Apollo.useLazyQuery<TenantFromIdQuery, TenantFromIdQueryVariables>(TenantFromIdDocument, options);
         }
-export type InitDataQueryHookResult = ReturnType<typeof useInitDataQuery>;
-export type InitDataLazyQueryHookResult = ReturnType<typeof useInitDataLazyQuery>;
-export type InitDataQueryResult = Apollo.QueryResult<InitDataQuery, InitDataQueryVariables>;
-export const GetUserFromEmailDocument = gql`
-    query GetUserFromEmail($email: String!) {
-  getUserFromEmail(email: $email) {
+export type TenantFromIdQueryHookResult = ReturnType<typeof useTenantFromIdQuery>;
+export type TenantFromIdLazyQueryHookResult = ReturnType<typeof useTenantFromIdLazyQuery>;
+export type TenantFromIdQueryResult = Apollo.QueryResult<TenantFromIdQuery, TenantFromIdQueryVariables>;
+export const GetUserFromAuth0Document = gql`
+    query GetUserFromAuth0($auth0Id: String!) {
+  getUserFromAuth0(auth0Id: $auth0Id) {
     id
     email
+    auth0Id
     code
     isActive
     isAdmin
-    profile {
-      id
-      lastName
-      firstName
-      avatar
-      bio
-    }
     createdAt
     updatedAt
-    isPaymentManager
-    isManager
-    manager {
+    department {
       id
     }
     managees {
       id
     }
-    department {
+    manager {
+      id
+    }
+    isPaymentManager
+    isManager
+    tenant {
       id
     }
   }
@@ -608,32 +559,32 @@ export const GetUserFromEmailDocument = gql`
     `;
 
 /**
- * __useGetUserFromEmailQuery__
+ * __useGetUserFromAuth0Query__
  *
- * To run a query within a React component, call `useGetUserFromEmailQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetUserFromEmailQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useGetUserFromAuth0Query` and pass it any options that fit your needs.
+ * When your component renders, `useGetUserFromAuth0Query` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useGetUserFromEmailQuery({
+ * const { data, loading, error } = useGetUserFromAuth0Query({
  *   variables: {
- *      email: // value for 'email'
+ *      auth0Id: // value for 'auth0Id'
  *   },
  * });
  */
-export function useGetUserFromEmailQuery(baseOptions: Apollo.QueryHookOptions<GetUserFromEmailQuery, GetUserFromEmailQueryVariables>) {
+export function useGetUserFromAuth0Query(baseOptions: Apollo.QueryHookOptions<GetUserFromAuth0Query, GetUserFromAuth0QueryVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetUserFromEmailQuery, GetUserFromEmailQueryVariables>(GetUserFromEmailDocument, options);
+        return Apollo.useQuery<GetUserFromAuth0Query, GetUserFromAuth0QueryVariables>(GetUserFromAuth0Document, options);
       }
-export function useGetUserFromEmailLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetUserFromEmailQuery, GetUserFromEmailQueryVariables>) {
+export function useGetUserFromAuth0LazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetUserFromAuth0Query, GetUserFromAuth0QueryVariables>) {
           const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetUserFromEmailQuery, GetUserFromEmailQueryVariables>(GetUserFromEmailDocument, options);
+          return Apollo.useLazyQuery<GetUserFromAuth0Query, GetUserFromAuth0QueryVariables>(GetUserFromAuth0Document, options);
         }
-export type GetUserFromEmailQueryHookResult = ReturnType<typeof useGetUserFromEmailQuery>;
-export type GetUserFromEmailLazyQueryHookResult = ReturnType<typeof useGetUserFromEmailLazyQuery>;
-export type GetUserFromEmailQueryResult = Apollo.QueryResult<GetUserFromEmailQuery, GetUserFromEmailQueryVariables>;
+export type GetUserFromAuth0QueryHookResult = ReturnType<typeof useGetUserFromAuth0Query>;
+export type GetUserFromAuth0LazyQueryHookResult = ReturnType<typeof useGetUserFromAuth0LazyQuery>;
+export type GetUserFromAuth0QueryResult = Apollo.QueryResult<GetUserFromAuth0Query, GetUserFromAuth0QueryVariables>;
 export const GetTimesheetDocument = gql`
     query GetTimesheet($timesheet: TimesheetGetInput!) {
   getTimesheet(Timesheet: $timesheet) {
@@ -848,45 +799,6 @@ export function useTimeEntryLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<
 export type TimeEntryQueryHookResult = ReturnType<typeof useTimeEntryQuery>;
 export type TimeEntryLazyQueryHookResult = ReturnType<typeof useTimeEntryLazyQuery>;
 export type TimeEntryQueryResult = Apollo.QueryResult<TimeEntryQuery, TimeEntryQueryVariables>;
-export const GetUserFromIdDocument = gql`
-    query GetUserFromId($getUserFromIdId: String!) {
-  getUserFromId(id: $getUserFromIdId) {
-    profile {
-      lastName
-      firstName
-      avatar
-    }
-  }
-}
-    `;
-
-/**
- * __useGetUserFromIdQuery__
- *
- * To run a query within a React component, call `useGetUserFromIdQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetUserFromIdQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetUserFromIdQuery({
- *   variables: {
- *      getUserFromIdId: // value for 'getUserFromIdId'
- *   },
- * });
- */
-export function useGetUserFromIdQuery(baseOptions: Apollo.QueryHookOptions<GetUserFromIdQuery, GetUserFromIdQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetUserFromIdQuery, GetUserFromIdQueryVariables>(GetUserFromIdDocument, options);
-      }
-export function useGetUserFromIdLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetUserFromIdQuery, GetUserFromIdQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetUserFromIdQuery, GetUserFromIdQueryVariables>(GetUserFromIdDocument, options);
-        }
-export type GetUserFromIdQueryHookResult = ReturnType<typeof useGetUserFromIdQuery>;
-export type GetUserFromIdLazyQueryHookResult = ReturnType<typeof useGetUserFromIdLazyQuery>;
-export type GetUserFromIdQueryResult = Apollo.QueryResult<GetUserFromIdQuery, GetUserFromIdQueryVariables>;
 export const TimeEntryFromIdDocument = gql`
     query TimeEntryFromId($timeEntry: TimeEntryFromIdInput!) {
   timeEntryFromId(TimeEntry: $timeEntry) {
@@ -1298,3 +1210,101 @@ export function useDeleteTimeEntryRowMutation(baseOptions?: Apollo.MutationHookO
 export type DeleteTimeEntryRowMutationHookResult = ReturnType<typeof useDeleteTimeEntryRowMutation>;
 export type DeleteTimeEntryRowMutationResult = Apollo.MutationResult<DeleteTimeEntryRowMutation>;
 export type DeleteTimeEntryRowMutationOptions = Apollo.BaseMutationOptions<DeleteTimeEntryRowMutation, DeleteTimeEntryRowMutationVariables>;
+export const GetUserFromTokenDocument = gql`
+    query getUserFromToken($token: ID!) {
+  getUserFromToken(token: $token) {
+    id
+    tenant {
+      name
+      description
+      logo
+      isActive
+      updatedAt
+      createdAt
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetUserFromTokenQuery__
+ *
+ * To run a query within a React component, call `useGetUserFromTokenQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetUserFromTokenQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetUserFromTokenQuery({
+ *   variables: {
+ *      token: // value for 'token'
+ *   },
+ * });
+ */
+export function useGetUserFromTokenQuery(baseOptions: Apollo.QueryHookOptions<GetUserFromTokenQuery, GetUserFromTokenQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetUserFromTokenQuery, GetUserFromTokenQueryVariables>(GetUserFromTokenDocument, options);
+      }
+export function useGetUserFromTokenLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetUserFromTokenQuery, GetUserFromTokenQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetUserFromTokenQuery, GetUserFromTokenQueryVariables>(GetUserFromTokenDocument, options);
+        }
+export type GetUserFromTokenQueryHookResult = ReturnType<typeof useGetUserFromTokenQuery>;
+export type GetUserFromTokenLazyQueryHookResult = ReturnType<typeof useGetUserFromTokenLazyQuery>;
+export type GetUserFromTokenQueryResult = Apollo.QueryResult<GetUserFromTokenQuery, GetUserFromTokenQueryVariables>;
+export const AttachAuth0IdDocument = gql`
+    mutation AttachAuth0Id($auth0Id: String!, $userId: ID!) {
+  attachAuth0Id(auth0Id: $auth0Id, userId: $userId) {
+    id
+    email
+    auth0Id
+    code
+    isActive
+    isAdmin
+    createdAt
+    updatedAt
+    department {
+      id
+    }
+    tenant {
+      id
+    }
+    managees {
+      id
+    }
+    manager {
+      id
+    }
+    isPaymentManager
+    isManager
+  }
+}
+    `;
+export type AttachAuth0IdMutationFn = Apollo.MutationFunction<AttachAuth0IdMutation, AttachAuth0IdMutationVariables>;
+
+/**
+ * __useAttachAuth0IdMutation__
+ *
+ * To run a mutation, you first call `useAttachAuth0IdMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useAttachAuth0IdMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [attachAuth0IdMutation, { data, loading, error }] = useAttachAuth0IdMutation({
+ *   variables: {
+ *      auth0Id: // value for 'auth0Id'
+ *      userId: // value for 'userId'
+ *   },
+ * });
+ */
+export function useAttachAuth0IdMutation(baseOptions?: Apollo.MutationHookOptions<AttachAuth0IdMutation, AttachAuth0IdMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<AttachAuth0IdMutation, AttachAuth0IdMutationVariables>(AttachAuth0IdDocument, options);
+      }
+export type AttachAuth0IdMutationHookResult = ReturnType<typeof useAttachAuth0IdMutation>;
+export type AttachAuth0IdMutationResult = Apollo.MutationResult<AttachAuth0IdMutation>;
+export type AttachAuth0IdMutationOptions = Apollo.BaseMutationOptions<AttachAuth0IdMutation, AttachAuth0IdMutationVariables>;

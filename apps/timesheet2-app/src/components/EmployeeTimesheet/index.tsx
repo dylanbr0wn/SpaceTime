@@ -15,10 +15,10 @@ import "../style/UserAdmin.css";
  * @description Root time entry screen componenet.
  * @param {Object} props Props. See propTypes for details.
  */
-const EmployeeTimesheet = () => {
+const EmployeeTimesheet = ({ ...props }) => {
     return (
         <div className="w-full">
-            <Timesheet />
+            <Timesheet {...props} />
         </div>
     );
 };

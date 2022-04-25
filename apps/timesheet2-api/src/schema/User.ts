@@ -20,7 +20,8 @@ export const User = objectType({
         t.field(NexusPrisma.User.code);
         t.field(NexusPrisma.User.isActive);
         t.field(NexusPrisma.User.isAdmin);
-        t.field(NexusPrisma.User.profile);
+        t.field(NexusPrisma.User.tenant);
+        // t.field(NexusPrisma.User.profile);
         t.field(NexusPrisma.User.createdAt);
         t.field(NexusPrisma.User.updatedAt);
         t.field(NexusPrisma.User.department);
@@ -40,34 +41,35 @@ export const QueryUsers = extendType({
                 return context.prisma.user.findMany();
             },
         });
-        t.field("getUserFromId", {
+        t.field("getUserFromToken", {
             type: "User",
             args: {
-                auth0Id: nonNull(stringArg()),
+                token: nonNull(arg(NexusPrisma.OneTimeToken.id)),
             },
             resolve: async (_parent, args, context: Context) => {
-                const user = await context.prisma.user.findUnique({
+                const user = await context.prisma.oneTimeToken.findUnique({
                     where: {
-                        auth0Id: args.auth0Id,
+                        id: args.token,
+                    },
+                    select: {
+                        user: true,
                     },
                 });
-
-                return context.prisma.user.findFirst({
-                    where: {
-                        id: args.id,
-                    },
-                });
+                if (!user) {
+                    throw new Error("Invalid token");
+                }
+                return user?.user;
             },
         });
-        t.field("getUserFromEmail", {
+        t.field("getUserFromAuth0", {
             type: "User",
             args: {
-                email: nonNull(arg(NexusPrisma.User.email)),
+                auth0Id: nonNull(arg(NexusPrisma.User.auth0Id)),
             },
             resolve: (_parent, args, context: Context) => {
                 return context.prisma.user.findUnique({
                     where: {
-                        email: args.email,
+                        auth0Id: args.auth0Id,
                     },
                 });
             },
@@ -78,6 +80,32 @@ export const QueryUsers = extendType({
 export const MutateUsers = extendType({
     type: "Mutation",
     definition(t) {
+        t.field("attachAuth0Id", {
+            type: "User",
+            args: {
+                auth0Id: nonNull(arg(NexusPrisma.User.auth0Id)),
+                userId: nonNull(arg(NexusPrisma.User.id)),
+            },
+            resolve: async (_parent, args, context: Context) => {
+                await context.prisma.oneTimeToken.deleteMany({
+                    where: {
+                        user: {
+                            id: args.userId,
+                        },
+                    },
+                });
+
+                return await context.prisma.user.update({
+                    where: {
+                        id: args.userId,
+                    },
+                    data: {
+                        auth0Id: args.auth0Id,
+                    },
+                });
+            },
+        });
+
         t.field("createUser", {
             type: "User",
             args: {
@@ -87,6 +115,12 @@ export const MutateUsers = extendType({
                 return context.prisma.user.create({
                     data: {
                         email: user.email,
+                        auth0Id: user.auth0Id,
+                        tenant: {
+                            connect: {
+                                id: user.tenantId,
+                            },
+                        },
                         code: user.code,
                         isActive: user.isActive,
                         isAdmin: user.isAdmin,
@@ -102,14 +136,6 @@ export const MutateUsers = extendType({
                         },
                         isPaymentManager: user.isPaymentManager,
                         isManager: user.isManager,
-                        profile: {
-                            create: {
-                                firstName: user.firstName,
-                                lastName: user.lastName,
-                                avatar: user.avatar,
-                                bio: user.bio,
-                            },
-                        },
                     },
                 });
             },
@@ -142,14 +168,6 @@ export const MutateUsers = extendType({
                         },
                         isPaymentManager: user.isPaymentManager,
                         isManager: user.isManager,
-                        profile: {
-                            create: {
-                                firstName: user.firstName,
-                                lastName: user.lastName,
-                                avatar: user.avatar,
-                                bio: user.bio,
-                            },
-                        },
                     },
                 });
             },
@@ -162,17 +180,15 @@ export const UserCreateInput = inputObjectType({
     description: "User Create Input",
     definition(t) {
         t.nonNull.field(NexusPrisma.User.code);
-        t.nonNull.field(NexusPrisma.User.email);
+        t.field(NexusPrisma.User.email);
+        t.nonNull.field(NexusPrisma.User.tenantId);
+        t.nonNull.field(NexusPrisma.User.auth0Id);
         t.nonNull.field(NexusPrisma.User.isActive);
         t.nonNull.field(NexusPrisma.User.isAdmin);
         t.nonNull.field(NexusPrisma.User.departmentId);
         t.nonNull.field(NexusPrisma.User.managerId);
         t.nonNull.field(NexusPrisma.User.isPaymentManager);
         t.nonNull.field(NexusPrisma.User.isManager);
-        t.nonNull.field(NexusPrisma.Profile.lastName);
-        t.nonNull.field(NexusPrisma.Profile.firstName);
-        t.field(NexusPrisma.Profile.avatar);
-        t.field(NexusPrisma.Profile.bio);
     },
 });
 
@@ -182,6 +198,7 @@ export const UserUpdateInput = inputObjectType({
     definition(t) {
         t.nonNull.field(NexusPrisma.User.id);
         t.nonNull.field(NexusPrisma.User.code);
+        t.nonNull.field(NexusPrisma.User.auth0Id);
         t.nonNull.field(NexusPrisma.User.email);
         t.nonNull.field(NexusPrisma.User.isActive);
         t.nonNull.field(NexusPrisma.User.isAdmin);
@@ -189,9 +206,5 @@ export const UserUpdateInput = inputObjectType({
         t.nonNull.field(NexusPrisma.User.managerId);
         t.nonNull.field(NexusPrisma.User.isPaymentManager);
         t.nonNull.field(NexusPrisma.User.isManager);
-        t.nonNull.field(NexusPrisma.Profile.lastName);
-        t.nonNull.field(NexusPrisma.Profile.firstName);
-        t.field(NexusPrisma.Profile.avatar);
-        t.field(NexusPrisma.Profile.bio);
     },
 });

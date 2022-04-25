@@ -2,15 +2,6 @@
 ### Do not make changes to this file directly
 
 
-type ApplicationPreferences {
-  createdAt: DateTime!
-  id: ID!
-  isActive: Boolean!
-  periodLength: Int!
-  startDate: DateTime!
-  updatedAt: DateTime!
-}
-
 """
 A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
 """
@@ -51,6 +42,7 @@ input EntryCommentUpdateInput {
 }
 
 type Mutation {
+  attachAuth0Id(auth0Id: String!, userId: ID!): User
   createEntryComment(entryComment: EntryCommentCreateInput!): EntryComment
   createTimeEntry(data: TimeEntryCreateInput!): TimeEntry
   createTimeEntryRow(departmentId: String, projectId: String, timesheetId: String!, workTypeId: String): TimeEntryRow
@@ -71,14 +63,6 @@ type Period {
   startDate: DateTime!
 }
 
-type Profile {
-  avatar: String
-  bio: String
-  firstName: String!
-  id: ID!
-  lastName: String!
-}
-
 type Project {
   code: String!
   createdAt: DateTime!
@@ -92,19 +76,31 @@ type Project {
 
 type Query {
   allUsers: [User!]!
-  applicationPreferences: ApplicationPreferences
   departments: [Department!]!
   getEntryComments(timeEntryId: String!): [EntryComment!]
   getEntryCommentsByTimesheet(timesheetId: String!): [EntryComment!]!
   getTimeEntryRow(id: String!): TimeEntryRow
   getTimeEntryRows(timesheetId: String!): [TimeEntryRow!]!
   getTimesheet(Timesheet: TimesheetGetInput!): Timesheet
-  getUserFromEmail(email: String!): User
-  getUserFromId(auth0Id: String!): User
+  getUserFromAuth0(auth0Id: String!): User
+  getUserFromToken(token: ID!): User
   projects: [Project!]!
+  tenantFromId(tenantId: String!): Tenant
   timeEntry(TimeEntry: TimeEntryFromRowDateInput!): TimeEntry
   timeEntryFromId(TimeEntry: TimeEntryFromIdInput!): TimeEntry
   workTypes: [WorkType!]!
+}
+
+type Tenant {
+  createdAt: DateTime!
+  description: String
+  id: ID!
+  isActive: Boolean!
+  logo: String
+  name: String!
+  periodLength: Int!
+  startDate: DateTime!
+  updatedAt: DateTime!
 }
 
 type TimeEntry {
@@ -171,7 +167,7 @@ input TimesheetGetInput {
 }
 
 type User {
-  auth0Id: String!
+  auth0Id: String
   code: String!
   createdAt: DateTime!
   department: Department!
@@ -183,40 +179,35 @@ type User {
   isPaymentManager: Boolean!
   managees: [User!]!
   manager: User
-  profile: Profile
+  tenant: Tenant!
   updatedAt: DateTime!
 }
 
 """User Create Input"""
 input UserCreateInput {
-  avatar: String
-  bio: String
+  auth0Id: String!
   code: String!
   departmentId: String!
   email: String!
-  firstName: String!
   isActive: Boolean!
   isAdmin: Boolean!
   isManager: Boolean!
   isPaymentManager: Boolean!
-  lastName: String!
   managerId: String!
+  tenantId: String!
 }
 
 """User Update Input"""
 input UserUpdateInput {
-  avatar: String
-  bio: String
+  auth0Id: String!
   code: String!
   departmentId: String!
   email: String!
-  firstName: String!
   id: ID!
   isActive: Boolean!
   isAdmin: Boolean!
   isManager: Boolean!
   isPaymentManager: Boolean!
-  lastName: String!
   managerId: String!
 }
 

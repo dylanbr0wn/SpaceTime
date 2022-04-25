@@ -5,6 +5,7 @@ import "./style/reactDatesStyles.css";
 import { useAuth0 } from "@auth0/auth0-react";
 import * as React from "react";
 import Loading from "./common/Loading";
+import TimesheetAuthProvider from "../auth/TimesheetAuthProvider";
 
 /**
  * @name App
@@ -20,14 +21,15 @@ const App = () => {
 
     return (
         <div
-            className="w-full h-full dark:bg-black appearance-none "
+            className="w-screen min-h-screen h-screen dark:bg-black appearance-none "
             style={{ margin: 0, padding: 0 }}
         >
             {!isLoading ? (
                 <>
                     {isAuthenticated ? (
-                        <AuthRouter /> // DB Login is complete and successful
+                        <AuthRouter />
                     ) : (
+                        // DB Login is complete and successful
                         <div className="w-full h-full flex flex-col">
                             <div className="flex flex-col w-40 h-40 m-auto bg-slate-900 rounded ">
                                 <div className="text-center text-sky-300 text-2xl my-6">

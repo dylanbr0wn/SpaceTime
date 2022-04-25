@@ -14,9 +14,11 @@ import {
     GetTimeEntryRowsDocument,
     GetTimeEntryRowsQuery,
     GetTimeEntryRowsQueryVariables,
+    GetUserFromAuth0Query,
     useCreateTimeEntryRowMutation,
     useGetTimeEntryRowsQuery,
     useGetTimesheetQuery,
+    User,
 } from "../../../api";
 import { getDayFeatures } from "../../../services/utils";
 
@@ -56,9 +58,9 @@ import "../../style/UserAdmin.css";
  * @description Root timesheet screen componenet.
  * @param {Object} props Props. See propTypes for details.
  */
-const Timesheet = () => {
+const Timesheet = ({ user }: { user: Partial<User> }) => {
     const [type, setType] = React.useState("user");
-    const { id: userId } = useParams();
+    // const { userId } = useParams();
 
     const [timesheetQueryDate, setTimesheetQueryDate] = React.useState<string>(
         DateTime.now().startOf("day").toUTC().startOf("day").toISO()
@@ -71,7 +73,7 @@ const Timesheet = () => {
     } = useGetTimesheetQuery({
         variables: {
             timesheet: {
-                userId: String(userId),
+                userId: String(user?.id),
                 date: timesheetQueryDate,
             },
         },
@@ -86,10 +88,10 @@ const Timesheet = () => {
     const { timesheetDates, startDate, periodLength } = useTimesheetDates(
         timesheetData,
         // getorCreateTimesheetMutation,
-        String(userId)
+        String(user?.id)
     );
 
-    const { timesheet } = useTimesheet(data, timesheetDates, String(userId));
+    const { timesheet } = useTimesheet(data, timesheetDates, String(user?.id));
 
     const [createTimeEntryRowMutation] = useCreateTimeEntryRowMutation();
 
@@ -168,7 +170,7 @@ const Timesheet = () => {
                                 value={value}
                                 row={row}
                                 column={column}
-                                userId={userId}
+                                userId={String(user?.id)}
                                 timesheetId={timesheetId}
                             />
                         ),
@@ -184,7 +186,7 @@ const Timesheet = () => {
                                 row={row}
                                 rows={rows}
                                 column={column}
-                                userId={userId}
+                                userId={String(user?.id)}
                                 timesheetId={timesheetId}
                             />
                         ),
@@ -200,7 +202,7 @@ const Timesheet = () => {
                                 row={row}
                                 rows={rows}
                                 column={column}
-                                userId={String(userId)}
+                                userId={String(String(user?.id))}
                                 timesheetId={timesheetId}
                             />
                         ),
@@ -241,7 +243,7 @@ const Timesheet = () => {
                                 timesheetId={timesheetId}
                                 row={row}
                                 date={date}
-                                userId={userId}
+                                userId={String(user?.id)}
                             />
                         ),
                     };
@@ -254,11 +256,14 @@ const Timesheet = () => {
                 // eslint-disable-next-line react/display-name, react/prop-types
                 width: 30,
                 Cell: (props) => (
-                    <TimesheetDeleteEntryInput {...props} userId={userId} />
+                    <TimesheetDeleteEntryInput
+                        {...props}
+                        userId={String(user?.id)}
+                    />
                 ),
             },
         ],
-        [timesheetDates, userId]
+        [timesheetDates, user]
     );
 
     return (
@@ -274,7 +279,7 @@ const Timesheet = () => {
                             // }
                             periodLength={periodLength}
                             startDate={startDate}
-                            userId={userId}
+                            userId={String(user?.id)}
                         />
                     </div>
                     <TimesheetTable
