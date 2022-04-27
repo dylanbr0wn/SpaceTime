@@ -1,5 +1,5 @@
 import * as React from "react";
-import { toast } from "react-toastify";
+import { Row } from "react-table";
 
 import { Listbox, Transition } from "@headlessui/react";
 import { CheckIcon, SelectorIcon } from "@heroicons/react/solid";
@@ -9,9 +9,9 @@ import {
     GetTimeEntryRowsQuery,
     GetTimeEntryRowsQueryVariables,
     Project,
+    TimeEntryRow,
     useUpdateTimeEntryRowMutation,
 } from "../../../../api";
-import { checkValidProject } from "../../../../services/utils";
 import ErrorBoundary from "../../ErrorBoundary";
 import { useProjects } from "../hooks";
 
@@ -32,41 +32,53 @@ const TimesheetProjectInput = ({
     column: { id },
     userId,
     timesheetId,
+    rows,
+}: {
+    value: string;
+    row: Row<Partial<TimeEntryRow>>;
+    column: { id: string };
+    userId: string;
+    timesheetId: string;
+    rows: Row<Partial<TimeEntryRow>>[];
 }) => {
     // We need to keep and update the state of the cell normally
     const [project, setProject] = React.useState<Project | null>(null);
-    const [foundProject, setFoundProject] = React.useState(true);
+    // const [foundProject, setFoundProject] = React.useState(true);
     const [updateTimeEntryRow] = useUpdateTimeEntryRowMutation();
 
-    const { projects, filteredProjects, allProjectsLoaded } = useProjects(
-        row.original.department.id
-    );
+    const {
+        // projects,
+        filteredProjects,
+        allProjectsLoaded,
+        disableProjectSelect,
+    } = useProjects(row, rows);
 
     React.useEffect(() => {
         if (allProjectsLoaded) {
             const project = filteredProjects.find((proj) => proj.id === value);
             setProject(project ?? null);
-            if (value === "-1") return;
-            setFoundProject(!!project);
+            // if (value === "-1") return;
+            // setFoundProject(!!project);
         }
     }, [filteredProjects, value, allProjectsLoaded]);
 
-    // When changed, dispatch api call and redux action.
-    const onChange = (project) => {
+    // When changed, dispatch an apollo query to update the time entry row
+    const onChange = (project: Project) => {
         updateTimeEntryRow({
             variables: {
-                updateTimeEntryRowId: row.original.id,
+                updateTimeEntryRowId: row?.original?.id ?? "-1",
                 projectId: project.id,
+                workTypeId: "-1",
             },
             optimisticResponse: {
                 updateTimeEntryRow: {
                     __typename: "TimeEntryRow",
-                    id: row.original.id,
+                    id: row?.original?.id ?? "-1",
                     createdAt: row.original.createdAt,
                     updatedAt: row.original.updatedAt,
                     department: {
                         __typename: "Department",
-                        id: row.original.department.id,
+                        id: row?.original?.department?.id ?? "-1",
                     },
                     project: {
                         __typename: "Project",
@@ -74,7 +86,7 @@ const TimesheetProjectInput = ({
                     },
                     workType: {
                         __typename: "WorkType",
-                        id: row.original.workType.id,
+                        id: "-1",
                     },
                 },
             },
@@ -121,18 +133,20 @@ const TimesheetProjectInput = ({
     return (
         <>
             <ErrorBoundary>
-                <div className="w-56 ">
+                <div className="w-full ">
                     <Listbox
                         aria-label="Project Input"
                         value={project}
                         onChange={onChange}
                         // onBlur={onBlur}
-                        disabled={false}
+                        disabled={disableProjectSelect}
                     >
-                        <div>
+                        <div className="relative h-full">
                             <Listbox.Button
                                 className={` ${
-                                    false ? "bg-slate-800" : "bg-slate-900"
+                                    disableProjectSelect
+                                        ? "bg-slate-800"
+                                        : "bg-slate-900"
                                 } relative w-full py-2 pl-3 pr-10 h-10 text-left  focus:outline-none focus-visible:ring-2 focus-visible:ring-opacity-75 focus-visible:ring-white focus-visible:ring-offset-cyan-300 focus-visible:ring-offset-2 focus-visible:border-cyan-500 sm:text-sm cursor-pointer`}
                             >
                                 <span
@@ -157,7 +171,7 @@ const TimesheetProjectInput = ({
                                 leaveFrom="opacity-100"
                                 leaveTo="opacity-0"
                             >
-                                <Listbox.Options className="absolute z-10 py-1 mt-1 overflow-auto text-base bg-slate-800 rounded-md shadow-lg max-h-60 ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                                <Listbox.Options className="absolute z-10 w-full py-1 mt-1 overflow-auto text-base bg-slate-800 rounded-md shadow-lg max-h-60 ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
                                     {filteredProjects.map((project) => {
                                         return (
                                             <Listbox.Option

@@ -41,8 +41,6 @@ const TimesheetDeleteEntryInput = ({ row, userId }) => {
     // Delete button sub component
 
     const deleteRow = async () => {
-        console.log(row.original.id);
-
         deleteTimeEntryRowMutation({
             variables: {
                 timeEntryRow: {
@@ -99,7 +97,6 @@ const TimesheetDeleteEntryInput = ({ row, userId }) => {
     };
 
     const handleDeleteRow = () => {
-        console.log(hasHours);
         if (!hasHours) {
             deleteRow();
         } else {

@@ -1,6 +1,14 @@
 import { InMemoryCache, makeVar } from "@apollo/client";
 
+type usedRow = {
+    department: string;
+    project: string;
+    workType: string;
+};
+
 export const msalAccountVar = makeVar([]);
+
+export const usedRowsVar = makeVar<usedRow[]>([]);
 
 export const cache = new InMemoryCache({
     typePolicies: {
@@ -11,7 +19,23 @@ export const cache = new InMemoryCache({
                         return msalAccountVar();
                     },
                 },
+                usedRows: {
+                    read() {
+                        return usedRowsVar();
+                    },
+                },
             },
+        },
+        TimeEntryRow: {
+            keyFields: [
+                "id",
+                "project",
+                ["id"],
+                "workType",
+                ["id"],
+                "department",
+                ["id"],
+            ],
         },
     },
 });

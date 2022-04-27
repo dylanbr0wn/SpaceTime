@@ -1,3 +1,4 @@
+import { useAuth0 } from "@auth0/auth0-react";
 import * as React from "react";
 
 // Hook
@@ -20,4 +21,42 @@ export const useDebounce = (value, delay) => {
         [value, delay] // Only re-call effect if value or delay changes
     );
     return debouncedValue;
+};
+
+export const useProfile = () => {
+    const [userMetadata, setUserMetadata] = React.useState(null);
+    const [accessToken, setaccessToken] = React.useState<string>();
+
+    const { user, isAuthenticated, getAccessTokenSilently } = useAuth0();
+
+    React.useEffect(() => {
+        const getUserMetadata = async () => {
+            const domain = "dev-es0mr9n7.us.auth0.com";
+
+            try {
+                const accessToken = await getAccessTokenSilently({
+                    audience: `https://${domain}/api/v2/`,
+                    scope: "read:current_user",
+                });
+                setaccessToken(accessToken);
+                const userDetailsByIdUrl = `https://${domain}/api/v2/users/${user.sub}`;
+
+                const metadataResponse = await fetch(userDetailsByIdUrl, {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                    },
+                });
+
+                const { userMetadata } = await metadataResponse.json();
+
+                setUserMetadata(userMetadata);
+            } catch (e) {
+                console.log(e.message);
+            }
+        };
+
+        getUserMetadata();
+    }, [getAccessTokenSilently, user?.sub]);
+
+    return { userMetadata, isAuthenticated, user, accessToken };
 };

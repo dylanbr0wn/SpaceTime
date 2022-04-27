@@ -16,21 +16,22 @@ datasource db {
   referentialIntegrity = "prisma"
 }
 
-model Profile {
-  id        String  @id @default(cuid())
-  firstName String
-  lastName  String
-  avatar    String?
-  bio       String? @db.Text
-  user      User    @relation(fields: [userId], references: [id])
-  userId    String  @unique
+// model Profile {
+//   id        String  @id @default(cuid())
+//   firstName String
+//   lastName  String
+//   avatar    String?
+//   bio       String? @db.Text
+//   user      User    @relation(fields: [userId], references: [id])
+//   userId    String  @unique
 
-  @@index([userId])
-}
+//   @@index([userId])
+// }
 
 model User {
   id               String         @id @default(cuid())
-  email            String         @unique
+  email            String
+  auth0Id          String?        @unique
   code             String         @unique
   isAdmin          Boolean        @default(false)
   isActive         Boolean        @default(true)
@@ -41,14 +42,16 @@ model User {
   managees         User[]         @relation("management")
   department       Department     @relation(fields: [departmentId], references: [id])
   departmentId     String
-  profile          Profile?
   createdAt        DateTime       @default(now())
   updatedAt        DateTime       @updatedAt
   pinnedRows       PinnedRow[]
   entryComments    EntryComment[]
   timesheets       Timesheet[]
+  tenant           Tenant         @relation(fields: [tenantId], references: [id])
+  tenantId         String
+  oneTimeToken     OneTimeToken[]
 
-  @@index([departmentId, managerId])
+  @@index([departmentId, managerId, tenantId])
 }
 
 model TimeEntry {
@@ -133,6 +136,11 @@ model Period {
   startDate  DateTime
   endDate    DateTime
   timesheets Timesheet[]
+  tenant     Tenant      @relation(fields: [tenantId], references: [id])
+  tenantId   String
+
+
+  @@index([tenantId])
 }
 
 model EntryComment {
@@ -178,12 +186,29 @@ model Timesheet {
   @@index([userId, periodId])
 }
 
-model ApplicationPreferences {
-  id           String   @id @default(cuid())
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+model Tenant {
+  id           String         @id @default(cuid())
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
   startDate    DateTime
   periodLength Int
-  isActive     Boolean  @default(false)
+  isActive     Boolean        @default(true)
+  periods      Period[]
+  users        User[]
+  name         String         @db.Text
+  description  String?        @db.Text
+  logo         String?        @db.Text
+  oneTimeToken OneTimeToken[]
+}
 
+model OneTimeToken {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id])
+  tenantId  String
+
+  @@index([userId, tenantId])
 }

@@ -16,17 +16,10 @@ export const Timesheet = objectType({
     },
 });
 
-// export const QueryTimesheet = extendType({
-//     type: "Query",
-//     definition(t) {
-
-//     },
-// });
-
-export const MutateTimesheet = extendType({
-    type: "Mutation",
+export const QueryTimesheet = extendType({
+    type: "Query",
     definition(t) {
-        t.field("getorCreateTimesheet", {
+        t.field("getTimesheet", {
             type: Timesheet,
             args: {
                 Timesheet: nonNull(arg({ type: TimesheetGetInput })),
@@ -43,20 +36,25 @@ export const MutateTimesheet = extendType({
                         },
                     },
                 });
+
+                const user = await context.prisma.user.findUnique({
+                    where: {
+                        id: Timesheet.userId,
+                    },
+                });
                 if (!period) {
                     // if the period doesnt exist, create it
 
                     // find the period params
-                    const prefs =
-                        await context.prisma.applicationPreferences.findUnique({
-                            where: {
-                                id: "1",
-                            },
-                            select: {
-                                startDate: true,
-                                periodLength: true,
-                            },
-                        });
+                    const prefs = await context.prisma.tenant.findUnique({
+                        where: {
+                            id: user?.tenantId,
+                        },
+                        select: {
+                            startDate: true,
+                            periodLength: true,
+                        },
+                    });
                     if (prefs) {
                         // got prefs, find the period params
                         const timesheetDate = DateTime.fromJSDate(
@@ -85,6 +83,11 @@ export const MutateTimesheet = extendType({
                             data: {
                                 startDate: interval.start.toJSDate(),
                                 endDate: interval.end.toJSDate(),
+                                tenant: {
+                                    connect: {
+                                        id: user?.tenantId,
+                                    },
+                                },
                             },
                         });
                     } else {
@@ -111,6 +114,13 @@ export const MutateTimesheet = extendType({
         });
     },
 });
+
+// export const MutateTimesheet = extendType({
+//     type: "Mutation",
+//     definition(t) {
+
+//     },
+// });
 
 export const TimesheetGetInput = inputObjectType({
     name: "TimesheetGetInput",

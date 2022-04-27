@@ -1,21 +1,11 @@
-import PropTypes from "prop-types";
-import * as React from "react";
-import { connect } from "react-redux";
-import { ToastContainer } from "react-toastify";
-
-import { useQuery } from "@apollo/client";
-import { useAccount, useIsAuthenticated } from "@azure/msal-react";
-
-import { TIMESHEET_DATA, useInitDataQuery } from "../api";
-import { ADLoginCurrentUser } from "../redux/actions/currentUserActions";
-import { useIdToken } from "../services/authProvider";
-
 import ErrorPage from "./login/Error";
-import Loading from "./login/Loading";
 import AuthRouter from "./AuthRouter";
 
-import "react-toastify/dist/ReactToastify.css";
 import "./style/reactDatesStyles.css";
+import { useAuth0 } from "@auth0/auth0-react";
+import * as React from "react";
+import Loading from "./common/Loading";
+import TimesheetAuthProvider from "../auth/TimesheetAuthProvider";
 
 /**
  * @name App
@@ -24,66 +14,40 @@ import "./style/reactDatesStyles.css";
  * Will attempt JWT authentication on mount.
  */
 const App = () => {
-    const [failMessage, setFailMessage] = React.useState("");
-    const [doneLogin, setDoneLogin] = React.useState(false);
     // const idToken = useIdToken();
 
     // const account = useAccount();
-    const isAuthenticated = useIsAuthenticated();
-
-    // useEffect(() => {
-    //     if (!doneLogin && idToken) {
-
-    //         // // If AAD is done and this is the first attempt at loading then proceed to get details from API
-    //         // ADLoginCurrentUser(idToken).then((res: any) => {
-    //         //     if (!res.success) {
-    //         //         setFailMessage(
-    //         //             res.data ||
-    //         //                 "An unknown error occured while trying to log you in. Please contact IT."
-    //         //         );
-    //         //     }
-    //         //     setDoneLogin(true);
-    //         // });
-    //     }
-    // }, [ADLoginCurrentUser, idToken, doneLogin]);
-
-    // const { loading, error, data, refetch } = useInitDataQuery({
-    //     variables: {
-    //         email: account?.username || "",
-    //     },
-    // });
-
-    // React.useEffect(() => {
-    //     if (account?.username) {
-    //         refetch();
-    //     }
-    // }, [account, refetch]);
-
-    // React.useEffect(() => {
-    //     if (data) {
-    //         console.log(data);
-    //     }
-    // }, [data]);
+    const { isAuthenticated, loginWithRedirect, isLoading } = useAuth0();
 
     return (
         <div
-            className="w-full h-full dark:bg-black appearance-none "
+            className="w-screen min-h-screen h-screen dark:bg-black appearance-none "
             style={{ margin: 0, padding: 0 }}
         >
-            {
+            {!isLoading ? (
                 <>
                     {isAuthenticated ? (
-                        <AuthRouter /> // DB Login is complete and successful
+                        <AuthRouter />
                     ) : (
-                        <ErrorPage error={failMessage} /> // DB Login is complete and failed
+                        // DB Login is complete and successful
+                        <div className="w-full h-full flex flex-col">
+                            <div className="flex flex-col w-40 h-40 m-auto bg-slate-900 rounded ">
+                                <div className="text-center text-sky-300 text-2xl my-6">
+                                    Timesheet
+                                </div>
+                                <button
+                                    onClick={() => loginWithRedirect()}
+                                    className="bg-slate-800 mx-auto h-10 w-28 rounded p-2 text-sky-300 hover:bg-slate-700 transition-colors"
+                                >
+                                    Login
+                                </button>
+                            </div>
+                        </div>
                     )}
                 </>
-            }
-            <ToastContainer
-                autoClose={3000}
-                position="top-center"
-                closeOnClick
-            />
+            ) : (
+                <Loading />
+            )}
         </div>
     );
 };

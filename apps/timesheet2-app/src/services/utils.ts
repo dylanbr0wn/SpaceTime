@@ -1,6 +1,8 @@
 import Holidays from "date-holidays";
 import { DateTime } from "luxon";
 import moment from "moment";
+import { Row } from "react-table";
+import { TimeEntryRow, WorkType } from "../api";
 
 export const getTimesheetApprovalStatus = (
     ApprovalStatus,
@@ -315,3 +317,9 @@ export const getSortedRows = ({ rows, departments, projects, workCodes }) => {
             return row;
         });
 };
+
+// export const workTypeCheck = (
+//     workTypes: WorkType[],
+//     rows: Row<Partial<TimeEntryRow>>[],
+//     projectId: string
+// ) => {};

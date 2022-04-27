@@ -14,12 +14,15 @@ import {
     GetTimeEntryRowsDocument,
     GetTimeEntryRowsQuery,
     GetTimeEntryRowsQueryVariables,
+    GetUserFromAuth0Query,
     useCreateTimeEntryRowMutation,
-    useGetorCreateTimesheetMutation,
     useGetTimeEntryRowsQuery,
+    useGetTimesheetQuery,
+    User,
 } from "../../../api";
 import { getDayFeatures } from "../../../services/utils";
 
+import TimesheetDateInput from "./components/TimesheetDateInput";
 import TimesheetDeleteEntryInput from "./components/TimesheetDeleteEntryInput";
 import TimesheetDepartmentInput from "./components/TimesheetDepartmentInput";
 import TimesheetEntryInput from "./components/TimesheetEntryInput";
@@ -55,36 +58,47 @@ import "../../style/UserAdmin.css";
  * @description Root timesheet screen componenet.
  * @param {Object} props Props. See propTypes for details.
  */
-const Timesheet = () => {
+const Timesheet = ({ user }: { user: Partial<User> }) => {
     const [type, setType] = React.useState("user");
-    const { id: userId } = useParams();
+    // const { userId } = useParams();
 
-    const [
-        getorCreateTimesheetMutation,
-        { data: timesheetData, loading, error },
-    ] = useGetorCreateTimesheetMutation();
+    const [timesheetQueryDate, setTimesheetQueryDate] = React.useState<string>(
+        DateTime.now().startOf("day").toUTC().startOf("day").toISO()
+    );
 
-    const { data, _loading, _error } = useGetTimeEntryRowsQuery({
+    const {
+        data: timesheetData,
+        loading,
+        error,
+    } = useGetTimesheetQuery({
         variables: {
-            timesheetId: timesheetData?.getorCreateTimesheet?.id ?? "-1",
+            timesheet: {
+                userId: String(user?.id),
+                date: timesheetQueryDate,
+            },
         },
     });
+    const { data, _loading, _error } = useGetTimeEntryRowsQuery({
+        variables: {
+            timesheetId: timesheetData?.getTimesheet?.id ?? "-1",
+        },
+        skip: !timesheetData?.getTimesheet?.id,
+    });
 
-    const { timesheetDates } = useTimesheetDates(timesheetData);
-
-    const { timesheet } = useTimesheet(
-        data,
-        timesheetDates,
-        getorCreateTimesheetMutation,
-        String(userId)
+    const { timesheetDates, startDate, periodLength } = useTimesheetDates(
+        timesheetData,
+        // getorCreateTimesheetMutation,
+        String(user?.id)
     );
+
+    const { timesheet } = useTimesheet(data, timesheetDates, String(user?.id));
 
     const [createTimeEntryRowMutation] = useCreateTimeEntryRowMutation();
 
     const createTimeEntryRow = () => {
         createTimeEntryRowMutation({
             variables: {
-                timesheetId: timesheetData?.getorCreateTimesheet?.id ?? "-1",
+                timesheetId: timesheetData?.getTimesheet?.id ?? "-1",
             },
             // refetchQueries: [GetTimeEntryRowsDocument],
             optimisticResponse: {
@@ -117,8 +131,7 @@ const Timesheet = () => {
                 >({
                     query: GetTimeEntryRowsDocument,
                     variables: {
-                        timesheetId:
-                            timesheetData?.getorCreateTimesheet?.id ?? "-1",
+                        timesheetId: timesheetData?.getTimesheet?.id ?? "-1",
                     },
                 });
                 const timeEntryRows = timeEntryRowsData?.getTimeEntryRows;
@@ -129,8 +142,7 @@ const Timesheet = () => {
                 >({
                     query: GetTimeEntryRowsDocument,
                     variables: {
-                        timesheetId:
-                            timesheetData?.getorCreateTimesheet?.id ?? "-1",
+                        timesheetId: timesheetData?.getTimesheet?.id ?? "-1",
                     },
                     data: {
                         getTimeEntryRows: [...timeEntryRows, timeEntryRow],
@@ -145,47 +157,59 @@ const Timesheet = () => {
     const columns = React.useMemo(
         () => [
             {
-                Header: "Department",
-                accessor: (row) => row.department.id,
-                id: "department",
-                Cell: ({ value, row, column, timesheetId }) => (
-                    <TimesheetDepartmentInput
-                        value={value}
-                        row={row}
-                        column={column}
-                        userId={userId}
-                        timesheetId={timesheetId}
-                    />
-                ),
+                Header: "",
+                id: "workdescription",
+                columns: [
+                    {
+                        Header: "Department",
+                        accessor: (row) => row.department.id,
+                        id: "department",
+                        minWidth: 75,
+                        Cell: ({ value, row, column, timesheetId }) => (
+                            <TimesheetDepartmentInput
+                                value={value}
+                                row={row}
+                                column={column}
+                                userId={String(user?.id)}
+                                timesheetId={timesheetId}
+                            />
+                        ),
+                    },
+                    {
+                        Header: "Project",
+                        accessor: (row) => row.project.id,
+                        id: "project",
+                        minWidth: 75,
+                        Cell: ({ value, row, column, timesheetId, rows }) => (
+                            <TimesheetProjectInput
+                                value={value}
+                                row={row}
+                                rows={rows}
+                                column={column}
+                                userId={String(user?.id)}
+                                timesheetId={timesheetId}
+                            />
+                        ),
+                    },
+                    {
+                        Header: "Work Type",
+                        accessor: (row) => row.workType.id,
+                        id: "workType",
+                        minWidth: 75,
+                        Cell: ({ value, row, column, timesheetId, rows }) => (
+                            <TimesheetWorkCodeInput
+                                value={value}
+                                row={row}
+                                rows={rows}
+                                column={column}
+                                userId={String(String(user?.id))}
+                                timesheetId={timesheetId}
+                            />
+                        ),
+                    },
+                ],
             },
-            {
-                Header: "Project",
-                accessor: (row) => row.project.id,
-                id: "project",
-                Cell: ({ value, row, column, timesheetId }) => (
-                    <TimesheetProjectInput
-                        value={value}
-                        row={row}
-                        column={column}
-                        userId={userId}
-                        timesheetId={timesheetId}
-                    />
-                ),
-            },
-            {
-                Header: "Work Type",
-                accessor: (row) => row.workType.id,
-                id: "workType",
-                Cell: ({ value, row, column, timesheetId }) => (
-                    <TimesheetWorkCodeInput
-                        value={value}
-                        row={row}
-                        column={column}
-                        userId={userId}
-                        timesheetId={timesheetId}
-                    />
-                ),
-            },
+
             {
                 Header: "Hours",
                 columns: timesheetDates.map((date, i) => {
@@ -196,7 +220,7 @@ const Timesheet = () => {
                         Header: () => {
                             return (
                                 <div
-                                    className={`w-16 box-border ${dayFeatures.style}`}
+                                    className={`w-full box-border ${dayFeatures.style}`}
                                 >
                                     <div className="text-center">
                                         {date.toFormat("dd")}
@@ -210,6 +234,7 @@ const Timesheet = () => {
                                 </div>
                             );
                         },
+                        width: 40,
                         accessor: (row) => row.timeEntries[i],
                         id: date.toFormat("dd"),
                         Cell: ({ value, row, timesheetId }) => (
@@ -218,7 +243,7 @@ const Timesheet = () => {
                                 timesheetId={timesheetId}
                                 row={row}
                                 date={date}
-                                userId={userId}
+                                userId={String(user?.id)}
                             />
                         ),
                     };
@@ -229,27 +254,41 @@ const Timesheet = () => {
                 Header: () => null, // No header
                 id: "deleter", // It needs an ID
                 // eslint-disable-next-line react/display-name, react/prop-types
+                width: 30,
                 Cell: (props) => (
-                    <TimesheetDeleteEntryInput {...props} userId={userId} />
+                    <TimesheetDeleteEntryInput
+                        {...props}
+                        userId={String(user?.id)}
+                    />
                 ),
             },
         ],
-        [timesheetDates, userId]
+        [timesheetDates, user]
     );
 
     return (
         <>
             {data && (
-                <>
+                <div className="w-full flex flex-col">
+                    <div className="text-center w-full">
+                        <TimesheetDateInput
+                            timesheetQueryDate={timesheetQueryDate}
+                            setTimesheetQueryDate={setTimesheetQueryDate}
+                            // getorCreateTimesheetMutation={
+                            //     getorCreateTimesheetMutation
+                            // }
+                            periodLength={periodLength}
+                            startDate={startDate}
+                            userId={String(user?.id)}
+                        />
+                    </div>
                     <TimesheetTable
-                        timesheetId={
-                            timesheetData?.getorCreateTimesheet?.id ?? "-1"
-                        }
+                        timesheetId={timesheetData?.getTimesheet?.id ?? "-1"}
                         data={timesheet}
                         columns={columns}
                         addNewEntryRow={createTimeEntryRow}
                     />
-                </>
+                </div>
             )}
         </>
     );

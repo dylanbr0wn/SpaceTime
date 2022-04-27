@@ -3,12 +3,11 @@ import path from "path";
 import { DateTimeResolver } from "graphql-scalars";
 import { asNexusMethod, makeSchema } from "nexus";
 
-import * as ApplicationPreferences from "./ApplicationPreferences";
 import * as Department from "./Department";
 import * as EntryComment from "./EntryComment";
 import * as Period from "./Period";
-import * as Profile from "./Profile";
 import * as Project from "./Project";
+import * as Tenant from "./Tenant";
 import * as TimeEntry from "./TimeEntry";
 import * as TimeEntryRow from "./TimeEntryRow";
 import * as Timesheet from "./Timesheet";
@@ -18,11 +17,11 @@ import * as Worktype from "./WorkType";
 export const DateTime = asNexusMethod(DateTimeResolver, "date"); // it will break without this....b
 export const schema = makeSchema({
     types: {
-        ApplicationPreferences,
+        Tenant,
         Department,
         EntryComment,
         Period,
-        Profile,
+        // Profile,
         Project,
         TimeEntry,
         TimeEntryRow,

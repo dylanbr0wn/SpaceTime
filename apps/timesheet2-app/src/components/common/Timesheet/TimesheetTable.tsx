@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 import React, { useEffect, useState } from "react";
-import { useTable } from "react-table";
+import { useTable, useFlexLayout } from "react-table";
 
 import { getDayFeatures, getPinnedRows } from "../../../services/utils";
 
@@ -36,7 +36,8 @@ const TimesheetTable = ({ addNewEntryRow, columns, data, timesheetId }) => {
                 // cell renderer!
                 // setSkipPageReset,
                 //setIsLocked,
-            }
+            },
+            useFlexLayout
             // useSortBy
         );
 
@@ -54,23 +55,23 @@ const TimesheetTable = ({ addNewEntryRow, columns, data, timesheetId }) => {
     return (
         <>
             {/* {!loading && */}
-            <table
-                className="bg-slate-900 my-2 border-cyan-500 border rounded-md table-auto"
+            <div
+                className="bg-slate-900 my-2 border-cyan-500 border rounded-md table-auto max-w-screen-2xl p-2"
                 {...getTableProps()}
             >
-                <thead>
+                <div>
                     {headerGroups.map((headerGroup, i) => (
-                        <tr {...headerGroup.getHeaderGroupProps()} key={i}>
+                        <div {...headerGroup.getHeaderGroupProps()} key={i}>
                             {headerGroup.headers.map((column, j) => {
                                 if (!Number.isInteger(column.id)) {
                                     return (
-                                        <th
-                                            className="text-slate-400"
+                                        <div
+                                            className="text-slate-400 text-center h-full"
                                             {...column.getHeaderProps()}
                                             key={column.id}
                                         >
                                             {column.render("Header")}
-                                        </th>
+                                        </div>
                                     );
                                 } else {
                                     return (
@@ -79,40 +80,58 @@ const TimesheetTable = ({ addNewEntryRow, columns, data, timesheetId }) => {
                                         //     content={getHoverText(j - 4)}
                                         //     // ...and many more!
                                         // >
-                                        <th
-                                            className="w-16 box-border  p-0"
+                                        <div
+                                            className="w-full text-center"
                                             {...column.getHeaderProps()}
                                         >
                                             {column.render("Header")}
-                                        </th>
+                                        </div>
                                         //</Tippy>
                                     );
                                 }
                             })}
-                        </tr>
+                        </div>
                     ))}
-                </thead>
-                <tbody className="" {...getTableBodyProps()}>
+                </div>
+                <div
+                    className="divide-y divide-purple-500 border-t border-t-purple-500 "
+                    {...getTableBodyProps()}
+                >
                     {rows.map((row, i) => {
                         prepareRow(row);
                         return (
-                            <tr
-                                className=" p-0 m-0 "
+                            <div
+                                className="divide-x divide-purple-500 border-x-purple-500 border-x "
                                 {...row.getRowProps()}
                                 key={i}
                             >
                                 {row.cells.map((cell, j) => {
-                                    return (
-                                        <td
-                                            className="border border-purple-500 p-0 m-0"
-                                            {...cell.getCellProps()}
-                                            key={j}
-                                        >
-                                            {cell.render("Cell")}
-                                        </td>
-                                    );
+                                    if (
+                                        cell.column.id === "workType" ||
+                                        cell.column.id === "project"
+                                    ) {
+                                        return (
+                                            <div
+                                                className=""
+                                                {...cell.getCellProps()}
+                                                key={j}
+                                            >
+                                                {cell.render("Cell", { rows })}
+                                            </div>
+                                        );
+                                    } else {
+                                        return (
+                                            <div
+                                                className=""
+                                                {...cell.getCellProps()}
+                                                key={j}
+                                            >
+                                                {cell.render("Cell")}
+                                            </div>
+                                        );
+                                    }
                                 })}
-                            </tr>
+                            </div>
                         );
                     })}
                     {/* {pinRows.length > 0 && (
@@ -152,10 +171,10 @@ const TimesheetTable = ({ addNewEntryRow, columns, data, timesheetId }) => {
 
                     {/* new entry button row */}
                     {
-                        <tr>
-                            <td className="text-center" colSpan={18}>
+                        <div>
+                            <div className="text-center">
                                 <button
-                                    className="bg-gradient-to-r my-1 rounded-md from-blue-500 to-cyan-500 p-0.5 transform active:translate-y-0.5 group"
+                                    className="bg-gradient-to-r mt-2 rounded-md from-blue-500 to-cyan-500 p-0.5 transform active:translate-y-0.5 group"
                                     onClick={addNewEntryRow}
                                 >
                                     <div className="flex rounded-md p-2 bg-slate-900 group-hover:bg-slate-800">
@@ -178,8 +197,8 @@ const TimesheetTable = ({ addNewEntryRow, columns, data, timesheetId }) => {
                                         </div>
                                     </div>
                                 </button>
-                            </td>
-                        </tr>
+                            </div>
+                        </div>
                     }
 
                     {/* alternative transport entry row */}
@@ -263,8 +282,8 @@ const TimesheetTable = ({ addNewEntryRow, columns, data, timesheetId }) => {
                             );
                         })}
                     </tr> */}
-                </tbody>
-            </table>
+                </div>
+            </div>
         </>
     );
 };
