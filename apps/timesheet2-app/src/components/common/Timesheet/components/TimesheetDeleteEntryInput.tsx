@@ -2,7 +2,7 @@ import * as React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 
-import { TrashIcon } from "@heroicons/react/solid";
+import { TrashIcon, XIcon, BackspaceIcon } from "@heroicons/react/outline";
 
 import {
     GetTimeEntryRowDocument,
@@ -111,6 +111,7 @@ const TimesheetDeleteEntryInput = ({ row, userId }) => {
             <ErrorBoundary>
                 <span>
                     <button
+                        title="Delete row"
                         aria-label="Delete row"
                         className={`m-0 p-1 h-10 w-10 group ${
                             false ? "bg-slate-800" : "bg-slate-900"
@@ -120,7 +121,7 @@ const TimesheetDeleteEntryInput = ({ row, userId }) => {
                         disabled={false}
                         onClick={handleDeleteRow}
                     >
-                        <TrashIcon className="text-slate-500 h-6 w-6 m-auto group-hover:text-red-700  transition-colors duration-200" />
+                        <BackspaceIcon className="text-slate-500 h-6 w-6 m-auto group-hover:text-pink-600  transition-colors duration-200" />
                     </button>
                     <React.Suspense fallback={renderLoader()}>
                         <ConfirmCloseModal

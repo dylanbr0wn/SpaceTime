@@ -191,6 +191,7 @@ importers:
       '@floating-ui/react-dom-interactions': ^0.1.1
       '@headlessui/react': ^1.5.0
       '@heroicons/react': ^1.0.6
+      '@react-hook/debounce': ^4.0.0
       '@react-spring/web': ^9.4.4
       '@reduxjs/toolkit': ^1.8.1
       '@tailwindcss/forms': ^0.5.0
@@ -234,6 +235,7 @@ importers:
       '@floating-ui/react-dom-interactions': 0.1.1_b49bddbe4b905ced4713cb857cca91fa
       '@headlessui/react': 1.5.0_react-dom@17.0.2+react@17.0.2
       '@heroicons/react': 1.0.6_react@17.0.2
+      '@react-hook/debounce': 4.0.0_react@17.0.2
       '@react-spring/web': 9.4.4_react-dom@17.0.2+react@17.0.2
       '@reduxjs/toolkit': 1.8.1_react-redux@7.2.8+react@17.0.2
       '@tippyjs/react': 4.2.6_react-dom@17.0.2+react@17.0.2
@@ -2771,6 +2773,23 @@ packages:
 
   /@protobufjs/utf8/1.1.0:
     resolution: {integrity: sha1-p3c2C1s5oaLlEG+OhY8v0tBgxXA=}
+    dev: false
+
+  /@react-hook/debounce/4.0.0_react@17.0.2:
+    resolution: {integrity: sha512-706Xcg+KKWHk9BuZQUQ0ZQKp9zhv3/MbqFenWVfHcynYpSGRVwQTzJRGvPxvsdtXxJv+HfgKTY/O/hEejakwmA==}
+    peerDependencies:
+      react: '>=16.8'
+    dependencies:
+      '@react-hook/latest': 1.0.3_react@17.0.2
+      react: 17.0.2
+    dev: false
+
+  /@react-hook/latest/1.0.3_react@17.0.2:
+    resolution: {integrity: sha512-dy6duzl+JnAZcDbNTfmaP3xHiKtbXYOaz3G51MGVljh548Y8MWzTr+PHLOfvpypEVW9zwvl+VyKjbWKEVbV1Rg==}
+    peerDependencies:
+      react: '>=16.8'
+    dependencies:
+      react: 17.0.2
     dev: false
 
   /@react-spring/animated/9.4.4_react@17.0.2:

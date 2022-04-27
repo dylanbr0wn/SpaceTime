@@ -129,7 +129,7 @@ const TimesheetDepartmentInput = ({
     return (
         <>
             <ErrorBoundary>
-                <div className=" w-full ">
+                <div className="">
                     {departmentsData?.departments && (
                         <Listbox
                             aria-label="Department Input"
@@ -138,8 +138,15 @@ const TimesheetDepartmentInput = ({
                             // onBlur={onBlur}
                             disabled={false}
                         >
-                            <div className="relative mt-1">
-                                <Listbox.Button className="relative w-full py-2 pl-3 pr-10 text-left shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-opacity-75 focus-visible:ring-white focus-visible:ring-offset-cyan-300 focus-visible:ring-offset-2 focus-visible:border-cyan-500 sm:text-sm cursor-pointer ">
+                            <div className="w-full px-1 relative">
+                                <Listbox.Button
+                                    className={`relative w-full h-10 py-2 pl-3 pr-10  text-left rounded
+                                    border border-slate-700
+                                     focus:outline-none focus-visible:ring-2 bg-slate-800
+                                    focus-visible:ring-opacity-75 focus-visible:ring-white
+                                     focus-visible:ring-offset-cyan-300 focus-visible:ring-offset-2
+                                      focus-visible:border-cyan-500 sm:text-sm cursor-pointer `}
+                                >
                                     <span
                                         className={`block truncate ${
                                             department?.name
@@ -163,7 +170,7 @@ const TimesheetDepartmentInput = ({
                                     leaveFrom="opacity-100"
                                     leaveTo="opacity-0"
                                 >
-                                    <Listbox.Options className="absolute z-10 w-full py-1 mt-1 overflow-auto text-base bg-slate-800 rounded-md shadow-lg max-h-60 ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                                    <Listbox.Options className="absolute z-10 w-full divide-y divide-slate-700 py-1 mt-1 overflow-auto text-base bg-slate-800 border border-slate-700 rounded-md shadow-xl shadow-black/40 max-h-60 ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
                                         {departmentsData?.departments.map(
                                             (department) => {
                                                 return (
@@ -173,7 +180,7 @@ const TimesheetDepartmentInput = ({
                                                         }) =>
                                                             `cursor-pointer select-none relative py-2 pl-10 pr-4 ${
                                                                 active
-                                                                    ? "text-sky-300 bg-slate-700"
+                                                                    ? "text-white bg-sky-500"
                                                                     : "text-sky-400"
                                                             }`
                                                         }
@@ -194,7 +201,9 @@ const TimesheetDepartmentInput = ({
                                                                     }
                                                                 </span>
                                                                 {selected ? (
-                                                                    <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-sky-400">
+                                                                    <span
+                                                                        className={`absolute inset-y-0 left-0 flex items-center pl-3`}
+                                                                    >
                                                                         <CheckIcon
                                                                             className="w-5 h-5"
                                                                             aria-hidden="true"

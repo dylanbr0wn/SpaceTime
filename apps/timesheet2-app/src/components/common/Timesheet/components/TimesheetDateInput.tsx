@@ -131,10 +131,10 @@ const TimesheetDateInput = ({
                     <div className="flex justify-center">
                         <button
                             onClick={lastPeriod}
-                            className="mr-2 sm:mr-4 w-10 h-10 bg-slate-900 text-sky-500 hover:bg-slate-800 rounded"
+                            className="mr-2 sm:mr-4 w-10 h-10 bg-slate-800 text-sky-300 rounded transition-colors border-slate-700 border hover:bg-sky-500 hover:text-white duration-75"
                             title="Go to last period"
                         >
-                            <ChevronLeftIcon className="w-6 h-6 m-auto text-sky-500 " />
+                            <ChevronLeftIcon className="w-6 h-6 m-auto " />
                         </button>
                         <div className="w-40">
                             <DatePicker
@@ -156,7 +156,7 @@ const TimesheetDateInput = ({
                                         0
                                     );
                                 }}
-                                className="block w-full text-base md:text-sm bg-slate-900 text-sky-300 border-2 hover:bg-slate-800 rounded form-input border-none outline-none h-10"
+                                className="block w-full text-base md:text-sm bg-slate-800 text-sky-300 hover:bg-slate-700 rounded form-input border border-slate-700 outline-none h-10 focus:ring-sky-500 focus:border-sky-500"
                                 // monthClassName={() =>
                                 //     "inline-block w-8 h-8 text-sm p-1"
                                 // }
@@ -188,7 +188,7 @@ const TimesheetDateInput = ({
                                     setCalendarShowing(false)
                                 }
                                 previousMonthButtonLabel="<"
-                                popperClassName="z-40 offset:2 w-78 text-sm shadow-lg border border-slate-800 bg-slate-900 rounded"
+                                popperClassName="z-40 offset:2 w-78 text-sm shadow-lg shadow-black/40 border border-slate-700 bg-slate-800 rounded"
                                 // popperContainer={({ children }) => {
                                 //     return (
 
@@ -261,7 +261,7 @@ const TimesheetDateInput = ({
                                                 nextMonthButtonDisabled &&
                                                 "cursor-not-allowed opacity-50"
                                             }
-                                            inline-flex p-1 text-sm font-medium bg-slate-800 rounded transition-colors  hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-cyan-500
+                                            inline-flex p-1 text-sm font-medium bg-slate-800  rounded transition-colors  hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-cyan-500
                                         `}
                                             >
                                                 <ChevronRightIcon className="w-6 h-6 text-sky-300" />
@@ -273,10 +273,10 @@ const TimesheetDateInput = ({
                         </div>
                         <button
                             onClick={nextPeriod}
-                            className="ml-2 sm:ml-4 w-10 h-10  bg-slate-900 text-sky-500 rounded hover:bg-slate-800"
+                            className="ml-2 sm:ml-4 w-10 h-10  bg-slate-800 text-sky-300 rounded transition-colors border-slate-700 border hover:bg-sky-500 hover:text-white duration-75"
                             title="Go to next period"
                         >
-                            <ChevronRightIcon className="w-6 h-6 m-auto text-sky-500 " />
+                            <ChevronRightIcon className="w-6 h-6 m-auto" />
                         </button>
                     </div>
 

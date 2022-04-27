@@ -99,6 +99,7 @@ const AuthRouter = () => {
                                     path="register"
                                     element={
                                         <Register
+                                            loadingTimesheetUser={loading}
                                             timesheetUserData={
                                                 TimesheetUserData
                                             }

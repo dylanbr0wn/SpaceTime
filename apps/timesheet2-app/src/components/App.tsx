@@ -21,7 +21,7 @@ const App = () => {
 
     return (
         <div
-            className="w-screen min-h-screen h-screen dark:bg-black appearance-none "
+            className="w-screen min-h-screen h-screen dark:bg-slate-900 appearance-none "
             style={{ margin: 0, padding: 0 }}
         >
             {!isLoading ? (

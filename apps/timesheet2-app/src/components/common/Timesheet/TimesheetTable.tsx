@@ -56,17 +56,22 @@ const TimesheetTable = ({ addNewEntryRow, columns, data, timesheetId }) => {
         <>
             {/* {!loading && */}
             <div
-                className="bg-slate-900 my-2 border-cyan-500 border rounded-md table-auto max-w-screen-2xl p-2"
+                className=" my-2 table-auto max-w-screen-2xl p-2 mx-auto w-full "
                 {...getTableProps()}
             >
-                <div>
+                <div className=" bg-slate-800 rounded-md border mx-1 shadow border-slate-700 ">
                     {headerGroups.map((headerGroup, i) => (
                         <div {...headerGroup.getHeaderGroupProps()} key={i}>
                             {headerGroup.headers.map((column, j) => {
-                                if (!Number.isInteger(column.id)) {
+                                if (
+                                    column.id === "workType" ||
+                                    column.id === "project" ||
+                                    column.id === "department" ||
+                                    column.id === "hours"
+                                ) {
                                     return (
                                         <div
-                                            className="text-slate-400 text-center h-full"
+                                            className="text-slate-200 py-2 text-center text-lg "
                                             {...column.getHeaderProps()}
                                             key={column.id}
                                         >
@@ -81,8 +86,9 @@ const TimesheetTable = ({ addNewEntryRow, columns, data, timesheetId }) => {
                                         //     // ...and many more!
                                         // >
                                         <div
-                                            className="w-full text-center"
+                                            className="w-full text-center py-1 text-lg text-slate-200 "
                                             {...column.getHeaderProps()}
+                                            key={column.id}
                                         >
                                             {column.render("Header")}
                                         </div>
@@ -93,47 +99,56 @@ const TimesheetTable = ({ addNewEntryRow, columns, data, timesheetId }) => {
                         </div>
                     ))}
                 </div>
-                <div
-                    className="divide-y divide-purple-500 border-t border-t-purple-500 "
-                    {...getTableBodyProps()}
-                >
-                    {rows.map((row, i) => {
-                        prepareRow(row);
-                        return (
-                            <div
-                                className="divide-x divide-purple-500 border-x-purple-500 border-x "
-                                {...row.getRowProps()}
-                                key={i}
-                            >
-                                {row.cells.map((cell, j) => {
-                                    if (
-                                        cell.column.id === "workType" ||
-                                        cell.column.id === "project"
-                                    ) {
-                                        return (
-                                            <div
-                                                className=""
-                                                {...cell.getCellProps()}
-                                                key={j}
-                                            >
-                                                {cell.render("Cell", { rows })}
-                                            </div>
-                                        );
-                                    } else {
-                                        return (
-                                            <div
-                                                className=""
-                                                {...cell.getCellProps()}
-                                                key={j}
-                                            >
-                                                {cell.render("Cell")}
-                                            </div>
-                                        );
-                                    }
-                                })}
-                            </div>
-                        );
-                    })}
+                <div className="  mt-2  " {...getTableBodyProps()}>
+                    {rows.length > 0 ? (
+                        <div className=" space-y-2">
+                            {rows.map((row, i) => {
+                                prepareRow(row);
+                                return (
+                                    <div
+                                        className="bg-slate-900 rounded-md "
+                                        {...row.getRowProps()}
+                                        key={i}
+                                    >
+                                        {row.cells.map((cell, j) => {
+                                            if (
+                                                cell.column.id === "workType" ||
+                                                cell.column.id === "project"
+                                            ) {
+                                                return (
+                                                    <div
+                                                        className=""
+                                                        {...cell.getCellProps()}
+                                                        key={j}
+                                                    >
+                                                        {cell.render("Cell", {
+                                                            rows,
+                                                        })}
+                                                    </div>
+                                                );
+                                            } else {
+                                                return (
+                                                    <div
+                                                        className=""
+                                                        {...cell.getCellProps()}
+                                                        key={j}
+                                                    >
+                                                        {cell.render("Cell")}
+                                                    </div>
+                                                );
+                                            }
+                                        })}
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    ) : (
+                        <div className="text-cyan-500 text-lg w-full text-center py-3">
+                            Looks like you have no rows... Click the button
+                            below to make one!
+                        </div>
+                    )}
+
                     {/* {pinRows.length > 0 && (
                         <tr className="h-1 bg-slate-800">
                             <td colSpan={19} />
@@ -170,36 +185,6 @@ const TimesheetTable = ({ addNewEntryRow, columns, data, timesheetId }) => {
                     })} */}
 
                     {/* new entry button row */}
-                    {
-                        <div>
-                            <div className="text-center">
-                                <button
-                                    className="bg-gradient-to-r mt-2 rounded-md from-blue-500 to-cyan-500 p-0.5 transform active:translate-y-0.5 group"
-                                    onClick={addNewEntryRow}
-                                >
-                                    <div className="flex rounded-md p-2 bg-slate-900 group-hover:bg-slate-800">
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            className="h-6 w-6 mr-2 text-cyan-300"
-                                            fill="none"
-                                            viewBox="0 0 24 24"
-                                            stroke="currentColor"
-                                            strokeWidth={2}
-                                        >
-                                            <path
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                d="M12 4v16m8-8H4"
-                                            />
-                                        </svg>
-                                        <div className="text-cyan-300 text-sm">
-                                            New Row
-                                        </div>
-                                    </div>
-                                </button>
-                            </div>
-                        </div>
-                    }
 
                     {/* alternative transport entry row */}
                     {/* {alternateData && (
@@ -282,6 +267,30 @@ const TimesheetTable = ({ addNewEntryRow, columns, data, timesheetId }) => {
                             );
                         })}
                     </tr> */}
+                </div>
+                <div>
+                    <div className="text-center mt-4">
+                        <button
+                            className="border-2 border-teal-500 shadow-transparent shadow-lg hover:shadow-cyan-500/20 text-teal-300 transition-all hover:text-white  hover:bg-teal-500 rounded-md flex p-2 mx-auto group "
+                            onClick={addNewEntryRow}
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="h-6 w-6 mr-2"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                                strokeWidth={2}
+                            >
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    d="M12 4v16m8-8H4"
+                                />
+                            </svg>
+                            <div className="text-sm font-bold">New Row</div>
+                        </button>
+                    </div>
                 </div>
             </div>
         </>

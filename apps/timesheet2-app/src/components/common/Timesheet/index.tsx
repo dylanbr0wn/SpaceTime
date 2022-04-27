@@ -36,6 +36,7 @@ import { useTimesheet, useTimesheetDates } from "./hooks";
 import TimesheetTable from "./TimesheetTable";
 
 import "../../style/UserAdmin.css";
+import Loading from "../Loading";
 
 /**
  * @name useTimesheet
@@ -212,6 +213,7 @@ const Timesheet = ({ user }: { user: Partial<User> }) => {
 
             {
                 Header: "Hours",
+                id: "hours",
                 columns: timesheetDates.map((date, i) => {
                     const dayFeatures = getDayFeatures(date);
 
@@ -236,7 +238,7 @@ const Timesheet = ({ user }: { user: Partial<User> }) => {
                         },
                         width: 40,
                         accessor: (row) => row.timeEntries[i],
-                        id: date.toFormat("dd"),
+                        id: `timeEntryCol${i}`,
                         Cell: ({ value, row, timesheetId }) => (
                             <TimesheetEntryInput
                                 value={value}
@@ -254,7 +256,7 @@ const Timesheet = ({ user }: { user: Partial<User> }) => {
                 Header: () => null, // No header
                 id: "deleter", // It needs an ID
                 // eslint-disable-next-line react/display-name, react/prop-types
-                width: 30,
+                width: 0,
                 Cell: (props) => (
                     <TimesheetDeleteEntryInput
                         {...props}
@@ -268,28 +270,32 @@ const Timesheet = ({ user }: { user: Partial<User> }) => {
 
     return (
         <>
-            {data && (
-                <div className="w-full flex flex-col">
-                    <div className="text-center w-full">
-                        <TimesheetDateInput
-                            timesheetQueryDate={timesheetQueryDate}
-                            setTimesheetQueryDate={setTimesheetQueryDate}
-                            // getorCreateTimesheetMutation={
-                            //     getorCreateTimesheetMutation
-                            // }
-                            periodLength={periodLength}
-                            startDate={startDate}
-                            userId={String(user?.id)}
-                        />
-                    </div>
+            <div className="w-full flex flex-col">
+                <div className="text-center w-full">
+                    <TimesheetDateInput
+                        timesheetQueryDate={timesheetQueryDate}
+                        setTimesheetQueryDate={setTimesheetQueryDate}
+                        // getorCreateTimesheetMutation={
+                        //     getorCreateTimesheetMutation
+                        // }
+                        periodLength={periodLength}
+                        startDate={startDate}
+                        userId={String(user?.id)}
+                    />
+                </div>
+                {data ? (
                     <TimesheetTable
                         timesheetId={timesheetData?.getTimesheet?.id ?? "-1"}
                         data={timesheet}
                         columns={columns}
                         addNewEntryRow={createTimeEntryRow}
                     />
-                </div>
-            )}
+                ) : (
+                    <div className="w-full h-full mt-10">
+                        <Loading />
+                    </div>
+                )}
+            </div>
         </>
     );
 };
