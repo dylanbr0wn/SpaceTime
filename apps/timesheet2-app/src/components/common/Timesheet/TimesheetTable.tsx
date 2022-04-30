@@ -271,7 +271,7 @@ const TimesheetTable = ({ addNewEntryRow, columns, data, timesheetId }) => {
                 <div>
                     <div className="text-center mt-4">
                         <button
-                            className="border-2 border-teal-500 shadow-transparent shadow-lg hover:shadow-cyan-500/20 text-teal-300 transition-all hover:text-white  hover:bg-teal-500 rounded-md flex p-2 mx-auto group "
+                            className="border-2 flex border-teal-500 shadow-transparent shadow-lg hover:shadow-cyan-500/20 text-teal-300 transition-all hover:text-white  hover:bg-teal-500 rounded-md p-2 mx-auto group "
                             onClick={addNewEntryRow}
                         >
                             <svg
@@ -288,7 +288,9 @@ const TimesheetTable = ({ addNewEntryRow, columns, data, timesheetId }) => {
                                     d="M12 4v16m8-8H4"
                                 />
                             </svg>
-                            <div className="text-sm font-bold">New Row</div>
+                            <div className="text-sm font-bold my-auto">
+                                New Row
+                            </div>
                         </button>
                     </div>
                 </div>

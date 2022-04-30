@@ -5,9 +5,11 @@ import Menu from "../Menu";
 
 const DashBoard = () => {
     return (
-        <div className="w-full h-full">
+        <div className=" w-full h-full">
             <Menu />
-            <Outlet />
+            <div className="max-w-screen-2xl mx-auto pt-4">
+                <Outlet />
+            </div>
         </div>
     );
 };
