@@ -37,6 +37,8 @@ model User {
   isActive         Boolean        @default(true)
   isManager        Boolean        @default(false)
   isPaymentManager Boolean        @default(false)
+  name             String?
+  avatar           String?
   managerId        String?
   manager          User?          @relation("management", fields: [managerId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   managees         User[]         @relation("management")

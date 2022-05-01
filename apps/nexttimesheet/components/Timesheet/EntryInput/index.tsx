@@ -16,6 +16,7 @@ import {
     useUpdateTimeEntryhoursMutation,
 } from "../../../lib/apollo";
 import ErrorBoundary from "../../common/ErrorBoundary";
+import Comments from "./Comments";
 
 /**
  * @name HourEntryInput
@@ -342,32 +343,14 @@ const TimesheetEntryInput = ({
                                 leaveTo="opacity-0 scale-95"
                             >
                                 <div className="inline-block w-full max-w-md p-6 my-8 overflow-hidden text-left align-middle transition-all transform bg-slate-900 shadow-xl rounded-2xl">
-                                    <Dialog.Title
-                                        as="h3"
-                                        className="text-lg font-medium leading-6 text-sky-200"
-                                    >
-                                        Add a comment to your entry...
-                                    </Dialog.Title>
-                                    <div className="mt-3 flex">
-                                        <div className="rounded-full bg-sky-300 h-8 w-8 mr-2 p-1 font-medium text-center"></div>
-                                        <input
-                                            type="text"
-                                            disabled={false}
-                                            onChange={onCommentChange}
-                                            className="bg-slate-800 outline-none p-1 rounded-r-md rounded-tl-md caret-sky-300 text-sky-300"
-                                            value={""}
-                                        />
-                                    </div>
-
-                                    <div className="mt-4">
-                                        <button
-                                            type="button"
-                                            className="inline-flex justify-center px-4 py-2 text-sm font-medium text-sky-300 bg-slate-800 border border-transparent rounded-md hover:bg-slate-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-sky-500"
-                                            onClick={closeModal}
-                                        >
-                                            Save my comment
-                                        </button>
-                                    </div>
+                                    <Comments
+                                        timeEntryRowId={row.original.id}
+                                        timeEntryId={work?.id ?? "-1"}
+                                        userId={userId}
+                                        closeModal={closeModal}
+                                        // onCommentChange={onCommentChange}
+                                        comments={work.entryComments}
+                                    />
                                 </div>
                             </Transition.Child>
                         </div>

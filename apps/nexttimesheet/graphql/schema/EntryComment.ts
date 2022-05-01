@@ -25,6 +25,22 @@ export const EntryComment = objectType({
 export const QueryEntryComment = extendType({
     type: "Query",
     definition(t) {
+        t.field("getEntryComment", {
+            type: "EntryComment",
+            args: {
+                commentId: nonNull(stringArg()),
+            },
+            resolve: (_parent, args, context: Context) => {
+                return context.prisma.entryComment.findUnique({
+                    where: {
+                        id: args.commentId,
+                    },
+                    include: {
+                        user: true,
+                    },
+                });
+            },
+        });
         t.list.nonNull.field("getEntryComments", {
             type: "EntryComment",
             args: {
@@ -40,11 +56,7 @@ export const QueryEntryComment = extendType({
                     },
 
                     include: {
-                        user: {
-                            include: {
-                                profile: true,
-                            },
-                        },
+                        user: true,
                     },
                 });
             },
@@ -70,11 +82,7 @@ export const QueryEntryComment = extendType({
                     },
 
                     include: {
-                        user: {
-                            include: {
-                                profile: true,
-                            },
-                        },
+                        user: true,
                     },
                 });
             },

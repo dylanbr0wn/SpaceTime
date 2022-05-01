@@ -122,22 +122,26 @@ export const MutateTimeEntryRow = extendType({
                 ),
             },
             resolve: async (_parent, { TimeEntryRow }, ctx: Context) => {
-                const EntryComments = await ctx.prisma.timeEntry.findMany({
+                const entries = await ctx.prisma.timeEntry.findMany({
                     where: { timeEntryRowId: TimeEntryRow.id },
                     select: {
                         entryComments: true,
                     },
                 });
 
-                EntryComments.forEach((comment) => {
-                    comment.entryComments.forEach((entryComment) => {
-                        ctx.prisma.entryComment.delete({
-                            where: {
-                                id: entryComment.id,
-                            },
-                        });
-                    });
-                });
+                await Promise.all(
+                    entries.map(async (entry) => {
+                        return await Promise.all(
+                            entry.entryComments.map(async (entryComment) => {
+                                await ctx.prisma.entryComment.delete({
+                                    where: {
+                                        id: entryComment.id,
+                                    },
+                                });
+                            })
+                        );
+                    })
+                );
 
                 await ctx.prisma.timeEntry.deleteMany({
                     where: { timeEntryRowId: TimeEntryRow.id },

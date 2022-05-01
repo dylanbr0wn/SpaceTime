@@ -310,3 +310,31 @@ mutation AttachAuth0Id($auth0Id: String!, $userId: ID!) {
         isManager
     }
 }
+
+query GetEntryComment($commentId: String!) {
+    getEntryComment(commentId: $commentId) {
+        id
+        createdAt
+        updatedAt
+        text
+        user {
+            id
+            name
+            avatar
+        }
+    }
+}
+
+mutation createEntryComment($entryComment: EntryCommentCreateInput!) {
+    createEntryComment(entryComment: $entryComment) {
+        id
+        createdAt
+        updatedAt
+        text
+        user {
+            id
+            name
+            avatar
+        }
+    }
+}

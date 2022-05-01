@@ -2,9 +2,7 @@ import cuid from "cuid";
 /* eslint-disable react/jsx-key */
 /* eslint react/prop-types: 0 */
 import { DateTime } from "luxon";
-import PropTypes from "prop-types";
 import * as React from "react";
-import { useTable } from "react-table";
 
 import {
     GetTimeEntryRowsDocument,
@@ -59,7 +57,7 @@ const Timesheet = ({ user }: { user: Partial<User> }) => {
 
     const {
         data: timesheetData,
-        loading,
+        loading: timesheetLoading,
         error,
     } = useGetTimesheetQuery({
         variables: {
@@ -69,12 +67,6 @@ const Timesheet = ({ user }: { user: Partial<User> }) => {
             },
         },
     });
-    const { data, _loading, _error } = useGetTimeEntryRowsQuery({
-        variables: {
-            timesheetId: timesheetData?.getTimesheet?.id ?? "-1",
-        },
-        skip: !timesheetData?.getTimesheet?.id,
-    });
 
     const { timesheetDates, startDate, periodLength } = useTimesheetDates(
         timesheetData,
@@ -82,181 +74,7 @@ const Timesheet = ({ user }: { user: Partial<User> }) => {
         String(user?.id)
     );
 
-    const { timesheet } = useTimesheet(data, timesheetDates, String(user?.id));
-
-    const [createTimeEntryRowMutation] = useCreateTimeEntryRowMutation();
-
-    const createTimeEntryRow = () => {
-        createTimeEntryRowMutation({
-            variables: {
-                timesheetId: timesheetData?.getTimesheet?.id ?? "-1",
-            },
-            // refetchQueries: [GetTimeEntryRowsDocument],
-            optimisticResponse: {
-                createTimeEntryRow: {
-                    __typename: "TimeEntryRow",
-                    id: cuid(),
-                    createdAt: DateTime.now().toISO(),
-                    updatedAt: DateTime.now().toISO(),
-                    timeEntries: [],
-                    workType: {
-                        __typename: "WorkType",
-                        id: "-1",
-                    },
-                    project: {
-                        __typename: "Project",
-                        id: "-1",
-                    },
-                    department: {
-                        __typename: "Department",
-                        id: "-1",
-                    },
-                },
-            },
-            update: (cache, { data }) => {
-                const timeEntryRow = data?.createTimeEntryRow;
-                if (!timeEntryRow) return;
-                const timeEntryRowsData = cache.readQuery<
-                    GetTimeEntryRowsQuery,
-                    GetTimeEntryRowsQueryVariables
-                >({
-                    query: GetTimeEntryRowsDocument,
-                    variables: {
-                        timesheetId: timesheetData?.getTimesheet?.id ?? "-1",
-                    },
-                });
-                const timeEntryRows = timeEntryRowsData?.getTimeEntryRows;
-                if (!timeEntryRows) return;
-                cache.writeQuery<
-                    GetTimeEntryRowsQuery,
-                    GetTimeEntryRowsQueryVariables
-                >({
-                    query: GetTimeEntryRowsDocument,
-                    variables: {
-                        timesheetId: timesheetData?.getTimesheet?.id ?? "-1",
-                    },
-                    data: {
-                        getTimeEntryRows: [...timeEntryRows, timeEntryRow],
-                    },
-                });
-            },
-        });
-    };
-
     // Updates the timesheet start date by subtracting or adding 14 days
-
-    const columns = React.useMemo(
-        () => [
-            {
-                Header: "",
-                id: "workdescription",
-                columns: [
-                    {
-                        Header: "Department",
-                        accessor: (row) => row.department.id,
-                        id: "department",
-                        minWidth: 75,
-                        Cell: ({ value, row, column, timesheetId }) => (
-                            <TimesheetDepartmentInput
-                                value={value}
-                                row={row}
-                                column={column}
-                                userId={String(user?.id)}
-                                timesheetId={timesheetId}
-                            />
-                        ),
-                    },
-                    {
-                        Header: "Project",
-                        accessor: (row) => row.project.id,
-                        id: "project",
-                        minWidth: 75,
-                        Cell: ({ value, row, column, timesheetId, rows }) => (
-                            <TimesheetProjectInput
-                                value={value}
-                                row={row}
-                                rows={rows}
-                                column={column}
-                                userId={String(user?.id)}
-                                timesheetId={timesheetId}
-                            />
-                        ),
-                    },
-                    {
-                        Header: "Work Type",
-                        accessor: (row) => row.workType.id,
-                        id: "workType",
-                        minWidth: 75,
-                        Cell: ({ value, row, column, timesheetId, rows }) => (
-                            <TimesheetWorkCodeInput
-                                value={value}
-                                row={row}
-                                rows={rows}
-                                column={column}
-                                userId={String(String(user?.id))}
-                                timesheetId={timesheetId}
-                            />
-                        ),
-                    },
-                ],
-            },
-
-            {
-                Header: "Hours",
-                id: "hours",
-                columns: timesheetDates.map((date, i) => {
-                    const dayFeatures = getDayFeatures(date);
-
-                    return {
-                        // eslint-disable-next-line react/display-name
-                        Header: () => {
-                            return (
-                                <div
-                                    className={`w-full box-border ${dayFeatures.style}`}
-                                >
-                                    <div className="text-center">
-                                        {date.toFormat("dd")}
-                                    </div>
-                                    <div
-                                        className="text-center"
-                                        style={{ fontWeight: 400 }}
-                                    >
-                                        {date.toFormat("L/d")}
-                                    </div>
-                                </div>
-                            );
-                        },
-                        width: 40,
-                        accessor: (row) => row.timeEntries[i],
-                        id: `timeEntryCol${i}`,
-                        Cell: ({ value, row, timesheetId }) => (
-                            <TimesheetEntryInput
-                                value={value}
-                                timesheetId={timesheetId}
-                                row={row}
-                                date={date}
-                                userId={String(user?.id)}
-                            />
-                        ),
-                    };
-                }),
-            },
-            {
-                // specifies delete row button column.
-                Header: () => null, // No header
-                id: "deleter", // It needs an ID
-                // eslint-disable-next-line react/display-name, react/prop-types
-                width: 0,
-                Cell: (props) => (
-                    <TimesheetDeleteEntryInput
-                        {...props}
-                        userId={String(user?.id)}
-                    />
-                ),
-            },
-        ],
-        [timesheetDates, user]
-    );
 
     return (
         <>
@@ -273,12 +91,11 @@ const Timesheet = ({ user }: { user: Partial<User> }) => {
                         userId={String(user?.id)}
                     />
                 </div>
-                {data ? (
+                {!timesheetLoading ? (
                     <TimesheetTable
-                        timesheetId={timesheetData?.getTimesheet?.id ?? "-1"}
-                        data={timesheet}
-                        columns={columns}
-                        addNewEntryRow={createTimeEntryRow}
+                        timesheetData={timesheetData?.getTimesheet}
+                        timesheetDates={timesheetDates}
+                        user={user}
                     />
                 ) : (
                     <div className="w-full h-full mt-10">

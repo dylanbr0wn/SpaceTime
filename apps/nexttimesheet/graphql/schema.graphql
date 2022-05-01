@@ -77,6 +77,7 @@ type Project {
 type Query {
   allUsers: [User!]!
   departments: [Department!]!
+  getEntryComment(commentId: String!): EntryComment
   getEntryComments(timeEntryId: String!): [EntryComment!]
   getEntryCommentsByTimesheet(timesheetId: String!): [EntryComment!]!
   getTimeEntryRow(id: String!): TimeEntryRow
@@ -168,6 +169,7 @@ input TimesheetGetInput {
 
 type User {
   auth0Id: String
+  avatar: String
   code: String!
   createdAt: DateTime!
   department: Department!
@@ -179,6 +181,7 @@ type User {
   isPaymentManager: Boolean!
   managees: [User!]!
   manager: User
+  name: String
   tenant: Tenant!
   updatedAt: DateTime!
 }

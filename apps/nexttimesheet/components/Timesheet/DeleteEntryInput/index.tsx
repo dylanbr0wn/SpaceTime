@@ -5,7 +5,7 @@ import { BackspaceIcon } from "@heroicons/react/outline";
 import { useDeleteTimeEntryRowMutation } from "../../../lib/apollo";
 import ConfirmCloseModal from "../../common/ConfirmCloseModal";
 import ErrorBoundary from "../../common/ErrorBoundary";
-import { useRowHasHours } from "../hooks";
+import { useRowHasHours } from "./hooks";
 
 /**
  * @name DeleteEntryInput

@@ -13,7 +13,7 @@ import {
     useUpdateTimeEntryRowMutation,
 } from "../../../lib/apollo";
 import ErrorBoundary from "../../common/ErrorBoundary";
-import { useProjects } from "../hooks";
+import { useProjects } from "./hooks";
 
 /**
  * @name TimesheetProjectInput

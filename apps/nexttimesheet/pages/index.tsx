@@ -3,7 +3,13 @@ import type { GetServerSidePropsContext, NextPage } from "next";
 import Head from "next/head";
 import Image from "next/image";
 import EmployeeTimesheet from "../components/EmployeeTimesheet";
-import { client, GetUserFromAuth0Document, User } from "../lib/apollo";
+import {
+    client,
+    GetUserFromAuth0Document,
+    GetUserFromAuth0Query,
+    GetUserFromAuth0QueryVariables,
+    User,
+} from "../lib/apollo";
 import styles from "../styles/Home.module.css";
 
 export const getServerSideProps = withPageAuthRequired({
@@ -12,7 +18,10 @@ export const getServerSideProps = withPageAuthRequired({
 
         const user = session?.user;
 
-        const { data: userData } = await client.query({
+        const { data: userData } = await client.query<
+            GetUserFromAuth0Query,
+            GetUserFromAuth0QueryVariables
+        >({
             query: GetUserFromAuth0Document,
             variables: {
                 auth0Id: String(user?.sub),
@@ -21,7 +30,7 @@ export const getServerSideProps = withPageAuthRequired({
 
         return {
             props: {
-                userData,
+                userData: userData?.getUserFromAuth0,
             },
         };
     },

@@ -15,7 +15,7 @@ import {
 } from "../../../lib/apollo";
 import ConfirmCloseModal from "../../common/ConfirmCloseModal";
 import ErrorBoundary from "../../common/ErrorBoundary";
-import { useWorkTypes } from "../hooks";
+import { useWorkTypes } from "./hooks";
 
 /**
  * @name TimesheetWorkCodeInput

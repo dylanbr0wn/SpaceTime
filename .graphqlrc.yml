@@ -1,7 +1,7 @@
 schema: ./apps/nexttimesheet/graphql/schema.graphql
 documents: ./apps/nexttimesheet/graphql/operation.graphql
 generates:
-    ./apps/nexttimesheet/lib/graphql.ts:
+    ./apps/nexttimesheet/lib/apollo/graphql.ts:
         plugins:
             - "typescript"
             - "typescript-operations"

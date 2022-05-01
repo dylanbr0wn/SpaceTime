@@ -161,6 +161,7 @@ export type Query = {
   __typename?: 'Query';
   allUsers: Array<User>;
   departments: Array<Department>;
+  getEntryComment?: Maybe<EntryComment>;
   getEntryComments?: Maybe<Array<EntryComment>>;
   getEntryCommentsByTimesheet: Array<EntryComment>;
   getTimeEntryRow?: Maybe<TimeEntryRow>;
@@ -173,6 +174,11 @@ export type Query = {
   timeEntry?: Maybe<TimeEntry>;
   timeEntryFromId?: Maybe<TimeEntry>;
   workTypes: Array<WorkType>;
+};
+
+
+export type QueryGetEntryCommentArgs = {
+  commentId: Scalars['String'];
 };
 
 
@@ -307,6 +313,7 @@ export type TimesheetGetInput = {
 export type User = {
   __typename?: 'User';
   auth0Id?: Maybe<Scalars['String']>;
+  avatar?: Maybe<Scalars['String']>;
   code: Scalars['String'];
   createdAt: Scalars['DateTime'];
   department: Department;
@@ -318,6 +325,7 @@ export type User = {
   isPaymentManager: Scalars['Boolean'];
   managees: Array<User>;
   manager?: Maybe<User>;
+  name?: Maybe<Scalars['String']>;
   tenant: Tenant;
   updatedAt: Scalars['DateTime'];
 };
@@ -489,6 +497,20 @@ export type AttachAuth0IdMutationVariables = Exact<{
 
 
 export type AttachAuth0IdMutation = { __typename?: 'Mutation', attachAuth0Id?: { __typename?: 'User', id: string, email: string, auth0Id?: string | null, code: string, isActive: boolean, isAdmin: boolean, createdAt: any, updatedAt: any, isPaymentManager: boolean, isManager: boolean, department: { __typename?: 'Department', id: string }, tenant: { __typename?: 'Tenant', id: string }, managees: Array<{ __typename?: 'User', id: string }>, manager?: { __typename?: 'User', id: string } | null } | null };
+
+export type GetEntryCommentQueryVariables = Exact<{
+  commentId: Scalars['String'];
+}>;
+
+
+export type GetEntryCommentQuery = { __typename?: 'Query', getEntryComment?: { __typename?: 'EntryComment', id: string, createdAt: any, updatedAt: any, text: string, user: { __typename?: 'User', id: string, name?: string | null, avatar?: string | null } } | null };
+
+export type CreateEntryCommentMutationVariables = Exact<{
+  entryComment: EntryCommentCreateInput;
+}>;
+
+
+export type CreateEntryCommentMutation = { __typename?: 'Mutation', createEntryComment?: { __typename?: 'EntryComment', id: string, createdAt: any, updatedAt: any, text: string, user: { __typename?: 'User', id: string, name?: string | null, avatar?: string | null } } | null };
 
 
 export const TenantFromIdDocument = gql`
@@ -1308,3 +1330,87 @@ export function useAttachAuth0IdMutation(baseOptions?: Apollo.MutationHookOption
 export type AttachAuth0IdMutationHookResult = ReturnType<typeof useAttachAuth0IdMutation>;
 export type AttachAuth0IdMutationResult = Apollo.MutationResult<AttachAuth0IdMutation>;
 export type AttachAuth0IdMutationOptions = Apollo.BaseMutationOptions<AttachAuth0IdMutation, AttachAuth0IdMutationVariables>;
+export const GetEntryCommentDocument = gql`
+    query GetEntryComment($commentId: String!) {
+  getEntryComment(commentId: $commentId) {
+    id
+    createdAt
+    updatedAt
+    text
+    user {
+      id
+      name
+      avatar
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetEntryCommentQuery__
+ *
+ * To run a query within a React component, call `useGetEntryCommentQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetEntryCommentQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetEntryCommentQuery({
+ *   variables: {
+ *      commentId: // value for 'commentId'
+ *   },
+ * });
+ */
+export function useGetEntryCommentQuery(baseOptions: Apollo.QueryHookOptions<GetEntryCommentQuery, GetEntryCommentQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetEntryCommentQuery, GetEntryCommentQueryVariables>(GetEntryCommentDocument, options);
+      }
+export function useGetEntryCommentLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetEntryCommentQuery, GetEntryCommentQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetEntryCommentQuery, GetEntryCommentQueryVariables>(GetEntryCommentDocument, options);
+        }
+export type GetEntryCommentQueryHookResult = ReturnType<typeof useGetEntryCommentQuery>;
+export type GetEntryCommentLazyQueryHookResult = ReturnType<typeof useGetEntryCommentLazyQuery>;
+export type GetEntryCommentQueryResult = Apollo.QueryResult<GetEntryCommentQuery, GetEntryCommentQueryVariables>;
+export const CreateEntryCommentDocument = gql`
+    mutation createEntryComment($entryComment: EntryCommentCreateInput!) {
+  createEntryComment(entryComment: $entryComment) {
+    id
+    createdAt
+    updatedAt
+    text
+    user {
+      id
+      name
+      avatar
+    }
+  }
+}
+    `;
+export type CreateEntryCommentMutationFn = Apollo.MutationFunction<CreateEntryCommentMutation, CreateEntryCommentMutationVariables>;
+
+/**
+ * __useCreateEntryCommentMutation__
+ *
+ * To run a mutation, you first call `useCreateEntryCommentMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateEntryCommentMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createEntryCommentMutation, { data, loading, error }] = useCreateEntryCommentMutation({
+ *   variables: {
+ *      entryComment: // value for 'entryComment'
+ *   },
+ * });
+ */
+export function useCreateEntryCommentMutation(baseOptions?: Apollo.MutationHookOptions<CreateEntryCommentMutation, CreateEntryCommentMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateEntryCommentMutation, CreateEntryCommentMutationVariables>(CreateEntryCommentDocument, options);
+      }
+export type CreateEntryCommentMutationHookResult = ReturnType<typeof useCreateEntryCommentMutation>;
+export type CreateEntryCommentMutationResult = Apollo.MutationResult<CreateEntryCommentMutation>;
+export type CreateEntryCommentMutationOptions = Apollo.BaseMutationOptions<CreateEntryCommentMutation, CreateEntryCommentMutationVariables>;

@@ -21,6 +21,8 @@ export const User = objectType({
         t.field(NexusPrisma.User.isActive);
         t.field(NexusPrisma.User.isAdmin);
         t.field(NexusPrisma.User.tenant);
+        t.field(NexusPrisma.User.name);
+        t.field(NexusPrisma.User.avatar);
         // t.field(NexusPrisma.User.profile);
         t.field(NexusPrisma.User.createdAt);
         t.field(NexusPrisma.User.updatedAt);
