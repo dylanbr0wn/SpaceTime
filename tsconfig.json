@@ -25,7 +25,7 @@
     "references": [
         // if you tsconfig is something different
         { "path": "./apps/timesheet2-app" },
-        { "path": "./apps/timesheet2-api" },
+        { "path": "./apps/timesheetnext" },
         { "path": "./libs/types" }
     ]
 }

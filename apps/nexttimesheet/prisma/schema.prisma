@@ -1,0 +1,214 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["referentialIntegrity"]
+}
+
+generator nexusPrisma {
+  provider = "nexus-prisma"
+}
+
+datasource db {
+  provider             = "mysql"
+  url                  = env("DATABASE_URL")
+  referentialIntegrity = "prisma"
+}
+
+// model Profile {
+//   id        String  @id @default(cuid())
+//   firstName String
+//   lastName  String
+//   avatar    String?
+//   bio       String? @db.Text
+//   user      User    @relation(fields: [userId], references: [id])
+//   userId    String  @unique
+
+//   @@index([userId])
+// }
+
+model User {
+  id               String         @id @default(cuid())
+  email            String
+  auth0Id          String?        @unique
+  code             String         @unique
+  isAdmin          Boolean        @default(false)
+  isActive         Boolean        @default(true)
+  isManager        Boolean        @default(false)
+  isPaymentManager Boolean        @default(false)
+  managerId        String?
+  manager          User?          @relation("management", fields: [managerId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  managees         User[]         @relation("management")
+  department       Department     @relation(fields: [departmentId], references: [id])
+  departmentId     String
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  pinnedRows       PinnedRow[]
+  entryComments    EntryComment[]
+  timesheets       Timesheet[]
+  tenant           Tenant         @relation(fields: [tenantId], references: [id])
+  tenantId         String
+  oneTimeToken     OneTimeToken[]
+
+  @@index([departmentId, managerId, tenantId])
+}
+
+model TimeEntry {
+  id             String         @id @default(cuid())
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  date           DateTime
+  hours          Float
+  timeEntryRow   TimeEntryRow   @relation(fields: [timeEntryRowId], references: [id])
+  timeEntryRowId String
+  entryComments  EntryComment[]
+
+  @@unique([date, timeEntryRowId])
+  @@index([timeEntryRowId])
+}
+
+model Department {
+  id            String         @id @default(cuid())
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  name          String         @db.VarChar(255)
+  isActive      Boolean        @default(false)
+  description   String?        @db.Text
+  pinnedRows    PinnedRow[]
+  projects      Project[]
+  users         User[]
+  timeEntryRows TimeEntryRow[]
+}
+
+model WorkType {
+  id            String         @id @default(cuid())
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  name          String         @db.VarChar(255)
+  isActive      Boolean        @default(false)
+  code          String         @db.VarChar(255)
+  isBillable    Boolean        @default(false)
+  isDefault     Boolean        @default(false)
+  multiplier    Float          @default(1.0)
+  description   String?        @db.Text
+  isSystem      Boolean        @default(false)
+  pinnedRows    PinnedRow[]
+  timeEntryRows TimeEntryRow[]
+}
+
+model Project {
+  id            String         @id @default(cuid())
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  name          String         @db.VarChar(255)
+  isActive      Boolean        @default(false)
+  description   String?        @db.Text
+  department    Department     @relation(fields: [departmentId], references: [id])
+  departmentId  String
+  code          String         @db.VarChar(255)
+  timeEntryRows TimeEntryRow[]
+  pinnedRows    PinnedRow[]
+
+  @@index([departmentId])
+}
+
+model TimeEntryRow {
+  id           String      @id @default(cuid())
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  workType     WorkType?   @relation(fields: [workTypeId], references: [id])
+  workTypeId   String?
+  project      Project?    @relation(fields: [projectId], references: [id])
+  projectId    String?
+  department   Department? @relation(fields: [departmentId], references: [id])
+  departmentId String?
+  timesheet    Timesheet   @relation(fields: [timesheetId], references: [id])
+  timesheetId  String
+  timeEntries  TimeEntry[]
+
+  @@index([departmentId, projectId, workTypeId, timesheetId])
+}
+
+model Period {
+  id         String      @id @default(cuid())
+  createdAt  DateTime    @default(now())
+  startDate  DateTime
+  endDate    DateTime
+  timesheets Timesheet[]
+  tenant     Tenant      @relation(fields: [tenantId], references: [id])
+  tenantId   String
+
+
+  @@index([tenantId])
+}
+
+model EntryComment {
+  id          String    @id @default(cuid())
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  text        String    @db.Text
+  user        User      @relation(fields: [userId], references: [id])
+  userId      String
+  timeEntry   TimeEntry @relation(fields: [timeEntryId], references: [id])
+  timeEntryId String
+
+  @@index([userId, timeEntryId])
+}
+
+model PinnedRow {
+  id           String     @id @default(cuid())
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  user         User       @relation(fields: [userId], references: [id])
+  userId       String
+  project      Project    @relation(fields: [projectId], references: [id])
+  projectId    String
+  worktype     WorkType   @relation(fields: [worktypeId], references: [id])
+  worktypeId   String
+  department   Department @relation(fields: [departmentId], references: [id])
+  departmentId String
+
+  @@index([userId, projectId, worktypeId, departmentId])
+}
+
+model Timesheet {
+  id            String         @id @default(cuid())
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  user          User           @relation(fields: [userId], references: [id])
+  userId        String
+  period        Period         @relation(fields: [periodId], references: [id])
+  periodId      String
+  timeEntryRows TimeEntryRow[]
+
+  @@unique([userId, periodId])
+  @@index([userId, periodId])
+}
+
+model Tenant {
+  id           String         @id @default(cuid())
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  startDate    DateTime
+  periodLength Int
+  isActive     Boolean        @default(true)
+  periods      Period[]
+  users        User[]
+  name         String         @db.Text
+  description  String?        @db.Text
+  logo         String?        @db.Text
+  oneTimeToken OneTimeToken[]
+}
+
+model OneTimeToken {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id])
+  tenantId  String
+
+  @@index([userId, tenantId])
+}
