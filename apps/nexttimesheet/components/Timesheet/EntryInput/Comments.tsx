@@ -81,6 +81,7 @@ const Comments = ({
                 });
             },
         });
+        setComment("");
     };
 
     return (
@@ -114,16 +115,23 @@ const Comments = ({
             )}
 
             <div className="mt-3 flex space-x-2">
-                <div className="rounded-full bg-sky-300 h-8 w-8 p-1 font-medium text-center text-slate-900">
-                    {" "}
-                    {user?.name?.charAt(0)}
-                </div>
+                {user?.picture ? (
+                    <img
+                        src={user?.picture}
+                        className="w-8 h-8 rounded-full my-auto"
+                    />
+                ) : (
+                    <div className="rounded-full bg-sky-300 h-8 w-8 p-1 font-medium text-center text-slate-900">
+                        {user?.name?.charAt(0)}
+                    </div>
+                )}
+
                 <input
                     placeholder="Add a comment..."
                     type="text"
                     disabled={false}
                     onChange={onCommentChange}
-                    className="bg-slate-800 placeholder:text-slate-500 appearance-none p-1 rounded-r-md rounded-tl-md border border-slate-700 caret-sky-300 text-sky-300 focus:border-sky-500 outline-none ring-transparent"
+                    className="bg-slate-800 placeholder:text-slate-500 appearance-none py-1 px-2 rounded-r-md rounded-tl-md border border-slate-700 caret-sky-300 text-sky-300 focus:border-sky-500 outline-none ring-transparent"
                     value={comment}
                 />
                 <button
