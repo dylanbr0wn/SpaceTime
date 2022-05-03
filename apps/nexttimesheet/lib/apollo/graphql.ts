@@ -57,6 +57,7 @@ export type Mutation = {
   __typename?: 'Mutation';
   attachAuth0Id?: Maybe<User>;
   createEntryComment?: Maybe<EntryComment>;
+  createOneTimeToken?: Maybe<OneTimeToken>;
   createTimeEntry?: Maybe<TimeEntry>;
   createTimeEntryRow?: Maybe<TimeEntryRow>;
   createUser?: Maybe<User>;
@@ -78,6 +79,12 @@ export type MutationAttachAuth0IdArgs = {
 
 export type MutationCreateEntryCommentArgs = {
   entryComment: EntryCommentCreateInput;
+};
+
+
+export type MutationCreateOneTimeTokenArgs = {
+  tenantId: Scalars['String'];
+  userId: Scalars['String'];
 };
 
 
@@ -137,6 +144,15 @@ export type MutationUpdateUserArgs = {
   user: UserUpdateInput;
 };
 
+export type OneTimeToken = {
+  __typename?: 'OneTimeToken';
+  createdAt: Scalars['DateTime'];
+  id: Scalars['ID'];
+  tenant: Tenant;
+  updatedAt: Scalars['DateTime'];
+  user: User;
+};
+
 export type Period = {
   __typename?: 'Period';
   createdAt: Scalars['DateTime'];
@@ -164,6 +180,7 @@ export type Query = {
   getEntryComment?: Maybe<EntryComment>;
   getEntryComments?: Maybe<Array<EntryComment>>;
   getEntryCommentsByTimesheet: Array<EntryComment>;
+  getOneTimeToken?: Maybe<OneTimeToken>;
   getTimeEntryRow?: Maybe<TimeEntryRow>;
   getTimeEntryRows: Array<TimeEntryRow>;
   getTimesheet?: Maybe<Timesheet>;
@@ -189,6 +206,11 @@ export type QueryGetEntryCommentsArgs = {
 
 export type QueryGetEntryCommentsByTimesheetArgs = {
   timesheetId: Scalars['String'];
+};
+
+
+export type QueryGetOneTimeTokenArgs = {
+  id: Scalars['String'];
 };
 
 
@@ -333,6 +355,7 @@ export type User = {
 /** User Create Input */
 export type UserCreateInput = {
   auth0Id: Scalars['String'];
+  avatar?: InputMaybe<Scalars['String']>;
   code: Scalars['String'];
   departmentId: Scalars['String'];
   email: Scalars['String'];
@@ -341,6 +364,7 @@ export type UserCreateInput = {
   isManager: Scalars['Boolean'];
   isPaymentManager: Scalars['Boolean'];
   managerId: Scalars['String'];
+  name?: InputMaybe<Scalars['String']>;
   tenantId: Scalars['String'];
 };
 
@@ -511,6 +535,21 @@ export type CreateEntryCommentMutationVariables = Exact<{
 
 
 export type CreateEntryCommentMutation = { __typename?: 'Mutation', createEntryComment?: { __typename?: 'EntryComment', id: string, createdAt: any, updatedAt: any, text: string, user: { __typename?: 'User', id: string, name?: string | null, avatar?: string | null } } | null };
+
+export type CreateOneTimeTokenMutationVariables = Exact<{
+  userId: Scalars['String'];
+  tenantId: Scalars['String'];
+}>;
+
+
+export type CreateOneTimeTokenMutation = { __typename?: 'Mutation', createOneTimeToken?: { __typename?: 'OneTimeToken', id: string, createdAt: any, updatedAt: any, user: { __typename?: 'User', id: string }, tenant: { __typename?: 'Tenant', id: string } } | null };
+
+export type CreateUserMutationVariables = Exact<{
+  user: UserCreateInput;
+}>;
+
+
+export type CreateUserMutation = { __typename?: 'Mutation', createUser?: { __typename?: 'User', id: string, email: string, auth0Id?: string | null, isActive: boolean, code: string, isAdmin: boolean, name?: string | null, avatar?: string | null, createdAt: any, updatedAt: any, isPaymentManager: boolean, isManager: boolean, tenant: { __typename?: 'Tenant', id: string }, department: { __typename?: 'Department', id: string }, manager?: { __typename?: 'User', id: string } | null, managees: Array<{ __typename?: 'User', id: string }> } | null };
 
 
 export const TenantFromIdDocument = gql`
@@ -1414,3 +1453,101 @@ export function useCreateEntryCommentMutation(baseOptions?: Apollo.MutationHookO
 export type CreateEntryCommentMutationHookResult = ReturnType<typeof useCreateEntryCommentMutation>;
 export type CreateEntryCommentMutationResult = Apollo.MutationResult<CreateEntryCommentMutation>;
 export type CreateEntryCommentMutationOptions = Apollo.BaseMutationOptions<CreateEntryCommentMutation, CreateEntryCommentMutationVariables>;
+export const CreateOneTimeTokenDocument = gql`
+    mutation CreateOneTimeToken($userId: String!, $tenantId: String!) {
+  createOneTimeToken(userId: $userId, tenantId: $tenantId) {
+    id
+    user {
+      id
+    }
+    tenant {
+      id
+    }
+    createdAt
+    updatedAt
+  }
+}
+    `;
+export type CreateOneTimeTokenMutationFn = Apollo.MutationFunction<CreateOneTimeTokenMutation, CreateOneTimeTokenMutationVariables>;
+
+/**
+ * __useCreateOneTimeTokenMutation__
+ *
+ * To run a mutation, you first call `useCreateOneTimeTokenMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateOneTimeTokenMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createOneTimeTokenMutation, { data, loading, error }] = useCreateOneTimeTokenMutation({
+ *   variables: {
+ *      userId: // value for 'userId'
+ *      tenantId: // value for 'tenantId'
+ *   },
+ * });
+ */
+export function useCreateOneTimeTokenMutation(baseOptions?: Apollo.MutationHookOptions<CreateOneTimeTokenMutation, CreateOneTimeTokenMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateOneTimeTokenMutation, CreateOneTimeTokenMutationVariables>(CreateOneTimeTokenDocument, options);
+      }
+export type CreateOneTimeTokenMutationHookResult = ReturnType<typeof useCreateOneTimeTokenMutation>;
+export type CreateOneTimeTokenMutationResult = Apollo.MutationResult<CreateOneTimeTokenMutation>;
+export type CreateOneTimeTokenMutationOptions = Apollo.BaseMutationOptions<CreateOneTimeTokenMutation, CreateOneTimeTokenMutationVariables>;
+export const CreateUserDocument = gql`
+    mutation CreateUser($user: UserCreateInput!) {
+  createUser(user: $user) {
+    id
+    email
+    auth0Id
+    isActive
+    code
+    isAdmin
+    tenant {
+      id
+    }
+    name
+    avatar
+    createdAt
+    updatedAt
+    department {
+      id
+    }
+    manager {
+      id
+    }
+    isPaymentManager
+    isManager
+    managees {
+      id
+    }
+  }
+}
+    `;
+export type CreateUserMutationFn = Apollo.MutationFunction<CreateUserMutation, CreateUserMutationVariables>;
+
+/**
+ * __useCreateUserMutation__
+ *
+ * To run a mutation, you first call `useCreateUserMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateUserMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createUserMutation, { data, loading, error }] = useCreateUserMutation({
+ *   variables: {
+ *      user: // value for 'user'
+ *   },
+ * });
+ */
+export function useCreateUserMutation(baseOptions?: Apollo.MutationHookOptions<CreateUserMutation, CreateUserMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateUserMutation, CreateUserMutationVariables>(CreateUserDocument, options);
+      }
+export type CreateUserMutationHookResult = ReturnType<typeof useCreateUserMutation>;
+export type CreateUserMutationResult = Apollo.MutationResult<CreateUserMutation>;
+export type CreateUserMutationOptions = Apollo.BaseMutationOptions<CreateUserMutation, CreateUserMutationVariables>;

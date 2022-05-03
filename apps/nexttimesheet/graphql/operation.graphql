@@ -338,3 +338,46 @@ mutation createEntryComment($entryComment: EntryCommentCreateInput!) {
         }
     }
 }
+
+mutation CreateOneTimeToken($userId: String!, $tenantId: String!) {
+    createOneTimeToken(userId: $userId, tenantId: $tenantId) {
+        id
+        user {
+            id
+        }
+        tenant {
+            id
+        }
+        createdAt
+        updatedAt
+    }
+}
+
+mutation CreateUser($user: UserCreateInput!) {
+    createUser(user: $user) {
+        id
+        email
+        auth0Id
+        isActive
+        code
+        isAdmin
+        tenant {
+            id
+        }
+        name
+        avatar
+        createdAt
+        updatedAt
+        department {
+            id
+        }
+        manager {
+            id
+        }
+        isPaymentManager
+        isManager
+        managees {
+            id
+        }
+    }
+}

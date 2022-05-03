@@ -13,6 +13,7 @@ import * as TimeEntryRow from "./schema/TimeEntryRow";
 import * as Timesheet from "./schema/Timesheet";
 import * as User from "./schema/User";
 import * as Worktype from "./schema/WorkType";
+import * as OneTimeToken from "./schema/OneTimeToken";
 
 export const DateTime = asNexusMethod(DateTimeResolver, "date"); // it will break without this....b
 export const schema = makeSchema({
@@ -21,6 +22,7 @@ export const schema = makeSchema({
         Department,
         EntryComment,
         Period,
+        OneTimeToken,
         // Profile,
         Project,
         TimeEntry,

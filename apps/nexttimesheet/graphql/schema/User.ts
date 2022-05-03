@@ -191,6 +191,8 @@ export const UserCreateInput = inputObjectType({
         t.nonNull.field(NexusPrisma.User.managerId);
         t.nonNull.field(NexusPrisma.User.isPaymentManager);
         t.nonNull.field(NexusPrisma.User.isManager);
+        t.field(NexusPrisma.User.name);
+        t.field(NexusPrisma.User.avatar);
     },
 });
 

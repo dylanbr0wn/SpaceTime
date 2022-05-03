@@ -44,6 +44,7 @@ input EntryCommentUpdateInput {
 type Mutation {
   attachAuth0Id(auth0Id: String!, userId: ID!): User
   createEntryComment(entryComment: EntryCommentCreateInput!): EntryComment
+  createOneTimeToken(tenantId: String!, userId: String!): OneTimeToken
   createTimeEntry(data: TimeEntryCreateInput!): TimeEntry
   createTimeEntryRow(departmentId: String, projectId: String, timesheetId: String!, workTypeId: String): TimeEntryRow
   createUser(user: UserCreateInput!): User
@@ -54,6 +55,14 @@ type Mutation {
   updateTimeEntryRow(departmentId: String, id: String!, projectId: String, workTypeId: String): TimeEntryRow
   updateTimeEntryhours(data: TimeEntryUpdateInput!, id: String!): TimeEntry
   updateUser(user: UserUpdateInput!): User
+}
+
+type OneTimeToken {
+  createdAt: DateTime!
+  id: ID!
+  tenant: Tenant!
+  updatedAt: DateTime!
+  user: User!
 }
 
 type Period {
@@ -80,6 +89,7 @@ type Query {
   getEntryComment(commentId: String!): EntryComment
   getEntryComments(timeEntryId: String!): [EntryComment!]
   getEntryCommentsByTimesheet(timesheetId: String!): [EntryComment!]!
+  getOneTimeToken(id: String!): OneTimeToken
   getTimeEntryRow(id: String!): TimeEntryRow
   getTimeEntryRows(timesheetId: String!): [TimeEntryRow!]!
   getTimesheet(Timesheet: TimesheetGetInput!): Timesheet
@@ -189,6 +199,7 @@ type User {
 """User Create Input"""
 input UserCreateInput {
   auth0Id: String!
+  avatar: String
   code: String!
   departmentId: String!
   email: String!
@@ -197,6 +208,7 @@ input UserCreateInput {
   isManager: Boolean!
   isPaymentManager: Boolean!
   managerId: String!
+  name: String
   tenantId: String!
 }
 

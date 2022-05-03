@@ -12,7 +12,7 @@ const NavMenuButton = ({ open }: { open: boolean }) => {
         from: { opacity: 0 },
         enter: { opacity: 1 },
         leave: { opacity: 0 },
-        config: config.gentle,
+        config: config.wobbly,
     });
 
     return (
@@ -24,17 +24,17 @@ const NavMenuButton = ({ open }: { open: boolean }) => {
             {transition(({ opacity }, item) =>
                 item ? (
                     <animated.div
-                        className="absolute top-0 left-0 h-full"
+                        className="absolute top-0 left-0 h-full "
                         style={{ opacity }}
                     >
-                        <ViewGridIconSolid className="w-10 h-10 my-3 ml-4" />
+                        <ViewGridIconSolid className="w-9 h-9 my-3 ml-4 stroke-1" />
                     </animated.div>
                 ) : (
                     <animated.div
                         className="absolute top-0 left-0"
                         style={{ opacity }}
                     >
-                        <ViewGridIconOutline className="w-10 h-10 my-3 ml-4" />
+                        <ViewGridIconOutline className="w-9 h-9 my-3 ml-4 stroke-1" />
                     </animated.div>
                 )
             )}
