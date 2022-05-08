@@ -1,8 +1,8 @@
 import * as React from "react";
-import { Row } from "react-table";
 
 import { Listbox, Transition } from "@headlessui/react";
 import { CheckIcon, SelectorIcon } from "@heroicons/react/solid";
+import { Row } from "@tanstack/react-table";
 
 import {
     GetTimeEntryRowsDocument,
@@ -13,6 +13,8 @@ import {
     useUpdateTimeEntryRowMutation,
 } from "../../../lib/apollo";
 import ErrorBoundary from "../../common/ErrorBoundary";
+import { MyTableGenerics } from "../Table";
+
 import { useProjects } from "./hooks";
 
 /**
@@ -27,17 +29,13 @@ import { useProjects } from "./hooks";
 const TimesheetProjectInput = ({
     value,
     row,
-    column: { id },
-    userId,
     timesheetId,
     rows,
 }: {
     value: string;
-    row: Row<Partial<TimeEntryRow>>;
-    column: { id: string };
-    userId: string;
+    row: Partial<TimeEntryRow> | undefined;
     timesheetId: string;
-    rows: Row<Partial<TimeEntryRow>>[];
+    rows: Partial<Row<MyTableGenerics>>[];
 }) => {
     // We need to keep and update the state of the cell normally
     const [project, setProject] = React.useState<Project | null>(null);
@@ -64,19 +62,19 @@ const TimesheetProjectInput = ({
     const onChange = (project: Project) => {
         updateTimeEntryRow({
             variables: {
-                updateTimeEntryRowId: row?.original?.id ?? "-1",
+                updateTimeEntryRowId: row?.id ?? "-1",
                 projectId: project.id,
                 workTypeId: "-1",
             },
             optimisticResponse: {
                 updateTimeEntryRow: {
                     __typename: "TimeEntryRow",
-                    id: row?.original?.id ?? "-1",
-                    createdAt: row.original.createdAt,
-                    updatedAt: row.original.updatedAt,
+                    id: row?.id ?? "-1",
+                    createdAt: row?.createdAt,
+                    updatedAt: row?.updatedAt,
                     department: {
                         __typename: "Department",
-                        id: row?.original?.department?.id ?? "-1",
+                        id: row?.department?.id ?? "-1",
                     },
                     project: {
                         __typename: "Project",
@@ -103,7 +101,7 @@ const TimesheetProjectInput = ({
                 const oldRows = rows?.getTimeEntryRows ?? [];
 
                 const newTimeEntryRows = oldRows.map((timeEntryRow) => {
-                    if (timeEntryRow.id === row.original.id) {
+                    if (timeEntryRow.id === row?.id) {
                         return {
                             ...timeEntryRow,
                             ...newEntryRow,
@@ -139,7 +137,7 @@ const TimesheetProjectInput = ({
                         // onBlur={onBlur}
                         disabled={disableProjectSelect}
                     >
-                        <div className="relative w-full px-1">
+                        <div className="relative w-full">
                             <Listbox.Button
                                 className={` bg-slate-800 rounded border border-slate-700
                                  relative w-full py-2 pl-3 pr-10 h-10 text-left  focus:outline-none 

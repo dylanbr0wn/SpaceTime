@@ -5,7 +5,9 @@ import { Row } from "react-table";
 import {
     GetTimeEntryRowsQuery,
     GetTimesheetQuery,
+    Maybe,
     Project,
+    TimeEntry,
     TimeEntryRow,
     useProjectsQuery,
     useWorkTypesQuery,
@@ -33,7 +35,6 @@ export const useTimesheetDates = (
                 timesheetData?.getTimesheet?.period.startDate,
                 { zone: "utc" }
             );
-
             setPeriodLength(endDate.diff(startDate, "days").days);
             setStartDate(startDate);
             let current = startDate;
@@ -84,7 +85,10 @@ export const useTimesheet = (
 
     userId: string
 ) => {
-    const [timesheet, setTimesheet] = React.useState<TimeEntryRowPartial[]>([]);
+    const [timesheet, setTimesheet] = React.useState<Partial<TimeEntryRow>[]>(
+        []
+    );
+    const memoTimesheet = React.useMemo(() => timesheet, [timesheet]);
     React.useEffect(() => {
         if (data) {
             const defaultRow = {
@@ -101,7 +105,7 @@ export const useTimesheet = (
                 createdAt: DateTime.now().toISO(),
                 updatedAt: DateTime.now().toISO(),
             };
-            const timeEntryRows: TimeEntryRowPartial[] =
+            const timeEntryRows: Partial<TimeEntryRow>[] =
                 data.getTimeEntryRows.map((row) => {
                     const newRow = { ...defaultRow, ...row };
 
@@ -116,7 +120,7 @@ export const useTimesheet = (
                             const timeEntry = row.timeEntries.find(
                                 (entry) => entry.date === date.toISO()
                             );
-                            const newTimeEntry: TimeEntryPartial = timeEntry
+                            const newTimeEntry: TimeEntry = timeEntry
                                 ? {
                                       ...timeEntry,
                                       date,
@@ -135,5 +139,5 @@ export const useTimesheet = (
         }
     }, [data, userId, timesheetDates]);
 
-    return { timesheet };
+    return { timesheet, memoTimesheet };
 };

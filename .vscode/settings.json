@@ -1,7 +1,3 @@
 {
-    "eslint.workingDirectories": [
-        "apps/timesheet2-app",
-        "apps/timesheet2-api",
-        "libs/types"
-    ]
+    "eslint.workingDirectories": ["apps/nexttimesheet", "libs/types"]
 }

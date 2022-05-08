@@ -1,10 +1,13 @@
 import * as React from "react";
-import { Row } from "react-table";
+
+import { Row } from "@tanstack/react-table";
+
 import { TimeEntryRow, useWorkTypesQuery, WorkType } from "../../../lib/apollo";
+import { MyTableGenerics } from "../Table";
 
 export const useWorkTypes = (
-    rows: Row<Partial<TimeEntryRow>>[],
-    currentRow: Row<Partial<TimeEntryRow>>
+    rows: Row<MyTableGenerics>[],
+    currentRow: Partial<TimeEntryRow> | undefined
 ) => {
     const [filteredWorkTypes, setFilteredWorkTypes] = React.useState<
         WorkType[]
@@ -21,12 +24,12 @@ export const useWorkTypes = (
         const currentWorkTypes: string[] = rows
             .filter(
                 (row) =>
-                    row.index !== currentRow.index &&
-                    row?.original?.project?.id ===
-                        currentRow?.original?.project?.id
+                    row?.original?.id !== currentRow?.id &&
+                    row?.original?.project?.id === currentRow?.project?.id
             )
 
             .map((row) => row?.original?.workType?.id ?? "");
+        // console.log(currentWorkTypes);
         const workTypes = data?.workTypes ?? [];
 
         const filteredWorkTypes = workTypes.filter(
@@ -40,10 +43,10 @@ export const useWorkTypes = (
 
     React.useEffect(() => {
         if (
-            currentRow.original.department &&
-            currentRow?.original?.department?.id !== "-1" &&
-            currentRow?.original?.project &&
-            currentRow?.original?.project?.id !== "-1"
+            currentRow?.department &&
+            currentRow?.department?.id !== "-1" &&
+            currentRow?.project &&
+            currentRow?.project?.id !== "-1"
         ) {
             setDisableWorkTypeSelect(false);
         }

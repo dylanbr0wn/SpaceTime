@@ -85,8 +85,8 @@ const Manage: NextPage<{ userData: Partial<User> }> = ({ userData }) => {
                 </div>
             </div>
             <div className="flex flex-col w-full px-3">
-                <div className="rounded bg-slate-800 border border-slate-700 h-96">
-                    <EmployeeForm />
+                <div className="rounded bg-slate-800 border border-slate-700">
+                    <EmployeeForm currentUser={userData} />
                 </div>
             </div>
         </div>

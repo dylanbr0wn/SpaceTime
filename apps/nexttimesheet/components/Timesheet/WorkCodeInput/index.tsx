@@ -1,8 +1,8 @@
 import * as React from "react";
-import { Column, Row } from "react-table";
 
 import { Listbox, Transition } from "@headlessui/react";
 import { CheckIcon, SelectorIcon } from "@heroicons/react/solid";
+import { Row } from "@tanstack/react-table";
 
 import {
     GetTimeEntryRowsDocument,
@@ -10,11 +10,11 @@ import {
     GetTimeEntryRowsQueryVariables,
     TimeEntryRow,
     useUpdateTimeEntryRowMutation,
-    useWorkTypesQuery,
     WorkType,
 } from "../../../lib/apollo";
-import ConfirmCloseModal from "../../common/ConfirmCloseModal";
 import ErrorBoundary from "../../common/ErrorBoundary";
+import { MyTableGenerics } from "../Table";
+
 import { useWorkTypes } from "./hooks";
 
 /**
@@ -28,15 +28,13 @@ import { useWorkTypes } from "./hooks";
 const TimesheetWorkCodeInput = ({
     value,
     row,
-    column: { id },
     userId,
     rows,
     timesheetId,
 }: {
-    value: string;
-    row: Row<Partial<TimeEntryRow>>;
-    rows: Row<Partial<TimeEntryRow>>[];
-    column: Column;
+    value: string | undefined;
+    row: Partial<TimeEntryRow> | undefined;
+    rows: Row<MyTableGenerics>[];
     userId: string;
     timesheetId: string;
 }) => {
@@ -74,22 +72,22 @@ const TimesheetWorkCodeInput = ({
     const onChange = (workType: WorkType) => {
         updateTimeEntryRow({
             variables: {
-                updateTimeEntryRowId: row.original.id ?? "-1",
+                updateTimeEntryRowId: row?.id ?? "-1",
                 workTypeId: workType.id,
             },
             optimisticResponse: {
                 updateTimeEntryRow: {
                     __typename: "TimeEntryRow",
-                    id: row.original.id ?? "-1",
-                    createdAt: row.original.createdAt,
-                    updatedAt: row.original.updatedAt,
+                    id: row?.id ?? "-1",
+                    createdAt: row?.createdAt,
+                    updatedAt: row?.updatedAt,
                     department: {
                         __typename: "Department",
-                        id: row.original.department?.id ?? "-1",
+                        id: row?.department?.id ?? "-1",
                     },
                     project: {
                         __typename: "Project",
-                        id: row.original.project?.id ?? "-1",
+                        id: row?.project?.id ?? "-1",
                     },
                     workType: {
                         __typename: "WorkType",
@@ -112,7 +110,7 @@ const TimesheetWorkCodeInput = ({
                 const oldRows = rows?.getTimeEntryRows ?? [];
 
                 const newTimeEntryRows = oldRows.map((timeEntryRow) => {
-                    if (timeEntryRow.id === row.original.id) {
+                    if (timeEntryRow.id === row?.id) {
                         return {
                             ...timeEntryRow,
                             ...newEntryRow,
@@ -148,8 +146,6 @@ const TimesheetWorkCodeInput = ({
     //     }
     // }, [value, data]);
 
-    const renderLoader = () => <p></p>;
-
     return (
         <>
             <ErrorBoundary>
@@ -161,7 +157,7 @@ const TimesheetWorkCodeInput = ({
                         // onBlur={onBlur}
                         disabled={disableWorkTypeSelect}
                     >
-                        <div className="relative w-full px-1">
+                        <div className="relative w-full">
                             <Listbox.Button
                                 className={` ${
                                     disableWorkTypeSelect

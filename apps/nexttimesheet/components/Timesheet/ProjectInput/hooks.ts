@@ -1,15 +1,18 @@
 import * as React from "react";
-import { Row } from "react-table";
+
+import { Row } from "@tanstack/react-table";
+
 import {
     Project,
     TimeEntryRow,
     useProjectsQuery,
     useWorkTypesQuery,
 } from "../../../lib/apollo";
+import { MyTableGenerics } from "../Table";
 
 export const useProjects = (
-    currentRow: Row<Partial<TimeEntryRow>>,
-    rows: Row<Partial<TimeEntryRow>>[]
+    currentRow: Partial<TimeEntryRow> | undefined,
+    rows: Partial<Row<MyTableGenerics>>[]
 ) => {
     const [projects, setProjects] = React.useState<Project[]>([]);
     const [disableProjectSelect, setDisableProjectSelect] =
@@ -30,8 +33,8 @@ export const useProjects = (
 
     React.useEffect(() => {
         if (
-            !currentRow?.original?.department?.id ||
-            currentRow?.original?.department?.id === "-1"
+            !currentRow?.department?.id ||
+            currentRow?.department?.id === "-1"
         ) {
             setDisableProjectSelect(true);
         } else {
@@ -48,7 +51,7 @@ export const useProjects = (
 
     React.useEffect(() => {
         if (projects.length === 0) return; // Don't filter if there are no projects
-        if (currentRow?.original?.department?.id) {
+        if (currentRow?.department?.id) {
             // if there all the work types for a project are used, dont show the project
 
             const usedWorkTypes = rows.reduce((acc, row) => {
@@ -61,13 +64,13 @@ export const useProjects = (
                  * make sure to not check the current row.
                  */
                 if (
-                    row.original?.project?.id &&
-                    row.original?.project?.id !== "-1" &&
-                    row.index !== currentRow.index
+                    row?.original?.project?.id &&
+                    row?.original?.project?.id !== "-1" &&
+                    row?.original?.id !== currentRow.id
                 ) {
-                    if (acc[row.original?.project?.id])
+                    if (acc[row?.original?.project.id])
                         acc[row.original?.project?.id]++;
-                    else acc[row.original?.project?.id] = 1;
+                    else acc[row?.original?.project.id] = 1;
                 }
                 return acc;
             }, {});
@@ -76,8 +79,7 @@ export const useProjects = (
 
             const filtered = projects.filter(
                 (project) =>
-                    project.department.id ===
-                        currentRow?.original?.department?.id &&
+                    project.department.id === currentRow?.department?.id &&
                     (usedWorkTypes[project.id] ?? 0) < numberOfWorkTypes
             );
 

@@ -32,8 +32,8 @@ const TimesheetEntryInput = ({
     userId,
     timesheetId,
 }: {
-    value: Partial<TimeEntry>;
-    row: Row<Partial<TimeEntryRow>>;
+    value: Partial<TimeEntry> | undefined;
+    row: Partial<TimeEntryRow> | undefined;
     date: DateTime;
     userId: string;
     timesheetId: string;
@@ -44,18 +44,20 @@ const TimesheetEntryInput = ({
     const [createTimeEntryMutation] = useCreateTimeEntryMutation();
     const [deleteTimeEntryMutation] = useDeleteTimeEntryMutation();
 
-    const [work, setWork] = React.useState<Partial<TimeEntry>>(value);
+    const [work, setWork] = React.useState<Partial<TimeEntry> | undefined>(
+        value
+    );
     const [savingComment, setSavingComment] = React.useState(false);
     const [disableEntryInput, setDisableEntryInput] = React.useState(true);
 
     React.useEffect(() => {
         if (
-            !row?.original?.project?.id ||
-            row.original?.project?.id === "-1" ||
-            !row?.original?.workType?.id ||
-            row?.original?.workType?.id === "-1" ||
-            !row?.original?.department?.id ||
-            row?.original?.department?.id === "-1"
+            !row?.project?.id ||
+            row?.project?.id === "-1" ||
+            !row?.workType?.id ||
+            row?.workType?.id === "-1" ||
+            !row?.department?.id ||
+            row?.department?.id === "-1"
         ) {
             setDisableEntryInput(true);
         } else {
@@ -78,13 +80,13 @@ const TimesheetEntryInput = ({
     // We'll only update the external data when the input is blurred
     const onBlur = () => {
         setIsSaving(true);
-        if (work.id === "-1" && (work?.hours ?? 0) > 0) {
+        if (work?.id === "-1" && (work?.hours ?? 0) > 0) {
             createTimeEntryMutation({
                 variables: {
                     data: {
                         date: date.toISO(),
                         hours: work?.hours ?? 0,
-                        timeEntryRowId: row?.original?.id ?? "-1",
+                        timeEntryRowId: row?.id ?? "-1",
                     },
                 },
                 optimisticResponse: {
@@ -118,9 +120,7 @@ const TimesheetEntryInput = ({
                             return {
                                 getTimeEntryRows: timeEntryRows.map(
                                     (timeEntryRow) => {
-                                        if (
-                                            timeEntryRow.id === row.original.id
-                                        ) {
+                                        if (timeEntryRow.id === row?.id) {
                                             return {
                                                 ...timeEntryRow,
                                                 timeEntries: [
@@ -137,8 +137,8 @@ const TimesheetEntryInput = ({
                     );
                 },
             });
-        } else if (work.id !== "-1" && (work?.hours ?? 0) > 0) {
-            if (work.hours !== value.hours) {
+        } else if (work?.id !== "-1" && (work?.hours ?? 0) > 0) {
+            if (work?.hours !== value?.hours) {
                 updateTimeEntryhoursMutation({
                     variables: {
                         updateTimeEntryhoursId: work?.id ?? "-1",
@@ -168,10 +168,7 @@ const TimesheetEntryInput = ({
                                 return {
                                     getTimeEntryRows: timeEntryRows.map(
                                         (timeEntryRow) => {
-                                            if (
-                                                timeEntryRow.id ===
-                                                row.original.id
-                                            ) {
+                                            if (timeEntryRow.id === row?.id) {
                                                 return {
                                                     ...timeEntryRow,
                                                     timeEntries: [
@@ -189,7 +186,7 @@ const TimesheetEntryInput = ({
                     },
                 });
             }
-        } else if (work.id !== "-1" && work.hours === 0) {
+        } else if (work?.id !== "-1" && work?.hours === 0) {
             deleteTimeEntryMutation({
                 variables: {
                     deleteTimeEntryId: work?.id ?? "-1",
@@ -211,9 +208,7 @@ const TimesheetEntryInput = ({
                             return {
                                 getTimeEntryRows: timeEntryRows.map(
                                     (timeEntryRow) => {
-                                        if (
-                                            timeEntryRow.id === row.original.id
-                                        ) {
+                                        if (timeEntryRow.id === row?.id) {
                                             return {
                                                 ...timeEntryRow,
                                                 timeEntries:
@@ -278,7 +273,7 @@ const TimesheetEntryInput = ({
     return (
         <>
             <ErrorBoundary>
-                <div className=" w-full px-0.5 h-10">
+                <div className=" w-full h-10">
                     <input
                         aria-label="timesheetEntryInput"
                         type="number"
@@ -294,12 +289,12 @@ const TimesheetEntryInput = ({
                         onChange={onHourChange}
                         onBlur={onBlur}
                         onFocus={() => setIsEditing(true)}
-                        className={`px-1 text-sky-200 w-full h-full bg-slate-800 border rounded border-slate-700 focus:border-sky-500 focus:border ${
+                        className={`px-1 appearance-none text-sky-200 w-full h-full bg-slate-800 border rounded border-slate-700 focus:border-sky-500 focus:border ${
                             false || disableEntryInput
                                 ? "opacity-50 cursor-not-allowed"
                                 : "opacity-100"
                         }  caret-sky-500  ${
-                            (value.entryComments?.length ?? 0) > 0
+                            (value?.entryComments?.length ?? 0) > 0
                                 ? "border-2 border-green-500"
                                 : ""
                         }`}
@@ -344,12 +339,12 @@ const TimesheetEntryInput = ({
                             >
                                 <div className="inline-block w-full max-w-md p-6 my-8 overflow-hidden text-left align-middle transition-all transform bg-slate-900 shadow-xl rounded-2xl">
                                     <Comments
-                                        timeEntryRowId={row.original.id}
+                                        timeEntryRowId={row?.id}
                                         timeEntryId={work?.id ?? "-1"}
                                         userId={userId}
                                         closeModal={closeModal}
                                         // onCommentChange={onCommentChange}
-                                        comments={work.entryComments}
+                                        comments={work?.entryComments}
                                     />
                                 </div>
                             </Transition.Child>

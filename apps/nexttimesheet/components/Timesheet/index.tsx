@@ -1,30 +1,14 @@
-import cuid from "cuid";
 /* eslint-disable react/jsx-key */
 /* eslint react/prop-types: 0 */
 import { DateTime } from "luxon";
 import * as React from "react";
 
-import {
-    GetTimeEntryRowsDocument,
-    GetTimeEntryRowsQuery,
-    GetTimeEntryRowsQueryVariables,
-    GetUserFromAuth0Query,
-    useCreateTimeEntryRowMutation,
-    useGetTimeEntryRowsQuery,
-    useGetTimesheetQuery,
-    User,
-} from "../../lib/apollo";
-import { getDayFeatures } from "../../lib/utils";
+import { useGetTimesheetQuery, User } from "../../lib/apollo";
+import Loading from "../common/Loading";
 
 import TimesheetDateInput from "./DateInput";
-import TimesheetDeleteEntryInput from "./DeleteEntryInput";
-import TimesheetDepartmentInput from "./DepartmentInput";
-import TimesheetEntryInput from "./EntryInput";
-import TimesheetProjectInput from "./ProjectInput";
-import TimesheetWorkCodeInput from "./WorkCodeInput";
-import { useTimesheet, useTimesheetDates } from "./hooks";
+import { useTimesheetDates } from "./hooks";
 import TimesheetTable from "./Table";
-import Loading from "../common/Loading";
 
 /**
  * @name useTimesheet
@@ -48,25 +32,22 @@ import Loading from "../common/Loading";
  * @param {Object} props Props. See propTypes for details.
  */
 const Timesheet = ({ user }: { user: Partial<User> }) => {
-    const [type, setType] = React.useState("user");
+    // const [type, setType] = React.useState("user");
     // const { userId } = useParams();
 
     const [timesheetQueryDate, setTimesheetQueryDate] = React.useState<string>(
         DateTime.now().startOf("day").toUTC().startOf("day").toISO()
     );
 
-    const {
-        data: timesheetData,
-        loading: timesheetLoading,
-        error,
-    } = useGetTimesheetQuery({
-        variables: {
-            timesheet: {
-                userId: String(user?.id),
-                date: timesheetQueryDate,
+    const { data: timesheetData, loading: timesheetLoading } =
+        useGetTimesheetQuery({
+            variables: {
+                timesheet: {
+                    userId: String(user?.id),
+                    date: timesheetQueryDate,
+                },
             },
-        },
-    });
+        });
 
     const { timesheetDates, startDate, periodLength } = useTimesheetDates(
         timesheetData,
