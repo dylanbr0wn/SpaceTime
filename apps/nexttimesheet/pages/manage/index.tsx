@@ -43,25 +43,7 @@ const Manage: NextPage<{ userData: Partial<User> }> = ({ userData }) => {
         >
             <div className="flex">
                 <div className="w-full m-3 flex flex-col bg-slate-800 rounded p-3 border border-slate-700">
-                    <div className="flex  content-middle">
-                        <UserAddIcon className="w-7 h-7 mx-2 my-1 text-teal-500" />
-                        <div className="text-teal-300 text-xl w-full my-auto">
-                            Invite
-                        </div>
-                    </div>
-                    <div className="text-sky-200 p-2">
-                        Add a user to your tenant so you can start using
-                        SpaceTime together!
-                    </div>
-                    <div>
-                        <button className="border-2 flex border-teal-500 shadow-transparent shadow-lg hover:shadow-cyan-500/20 text-teal-300 transition-all hover:text-white  hover:bg-teal-500 rounded-md p-2 mx-auto group ">
-                            <PlusIcon className="h-6 w-6 mr-2" />
-
-                            <div className="text-sm font-bold my-auto">
-                                Invite
-                            </div>
-                        </button>
-                    </div>
+                    <EmployeeForm currentUser={userData} />
                 </div>
                 <div className="w-full m-3 flex flex-col bg-slate-800 rounded p-3 border border-slate-700">
                     <div className="flex  content-middle">
@@ -85,9 +67,7 @@ const Manage: NextPage<{ userData: Partial<User> }> = ({ userData }) => {
                 </div>
             </div>
             <div className="flex flex-col w-full px-3">
-                <div className="rounded bg-slate-800 border border-slate-700">
-                    <EmployeeForm currentUser={userData} />
-                </div>
+                <div className="rounded bg-slate-800 border border-slate-700"></div>
             </div>
         </div>
     );

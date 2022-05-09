@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
-import React from "react";
+import * as React from "react";
 
-import { Dialog } from "@headlessui/react";
+import { Dialog, Transition } from "@headlessui/react";
 
 import ErrorBoundary from "./ErrorBoundary";
 import Loading from "./Loading";
@@ -16,67 +16,57 @@ import Loading from "./Loading";
 const CustModal = ({
     show,
     onHide,
-    SubmitButton = null,
     title,
     children = null,
-    contentLoading = false,
-    closeable = true,
-    backdrop = true,
+}: {
+    show: boolean;
+    onHide: () => void;
+    title: string;
+    children?: React.ReactNode;
 }) => {
     return (
-        <>
-            {show && (
-                <Dialog
-                    onHide={onHide}
-                    show={show}
-                    size="lg"
-                    backdrop={backdrop}
-                    aria-labelledby="contained-modal-title-vcenter"
-                    centered
+        <Transition appear show={show} as={React.Fragment}>
+            <Dialog as="div" className="relative z-10" onClose={onHide}>
+                <Transition.Child
+                    as={React.Fragment}
+                    enter="ease-out duration-300"
+                    enterFrom="opacity-0"
+                    enterTo="opacity-100"
+                    leave="ease-in duration-200"
+                    leaveFrom="opacity-100"
+                    leaveTo="opacity-0"
                 >
-                    <Dialog.Overlay />
-                    <Dialog.Title id="contained-modal-title-vcenter">
-                        {title}
-                    </Dialog.Title>
-                    <>
-                        {contentLoading ? (
-                            <div>
-                                <div className="text-center">
-                                    <Loading />
+                    <div className="fixed inset-0 bg-black bg-opacity-25" />
+                </Transition.Child>
+
+                <div className="fixed inset-0 overflow-y-auto">
+                    <div className="flex min-h-full items-center justify-center p-4 text-center">
+                        <Transition.Child
+                            as={React.Fragment}
+                            enter="ease-out duration-300"
+                            enterFrom="opacity-0 scale-95"
+                            enterTo="opacity-100 scale-100"
+                            leave="ease-in duration-200"
+                            leaveFrom="opacity-100 scale-100"
+                            leaveTo="opacity-0 scale-95"
+                        >
+                            <Dialog.Panel className="w-full max-w-xl transform overflow-hidden rounded-2xl bg-slate-800 border border-slate-700 p-6 text-left align-middle shadow-xl transition-all">
+                                <Dialog.Title
+                                    as="h3"
+                                    className="text-lg font-medium leading-6 text-slate-300"
+                                >
+                                    {title}
+                                </Dialog.Title>
+                                <div className="mt-2">
+                                    <ErrorBoundary>{children}</ErrorBoundary>
                                 </div>
-                            </div>
-                        ) : (
-                            <ErrorBoundary>{children}</ErrorBoundary>
-                        )}
-                    </>
-                    <>
-                        {closeable && <button onClick={onHide}>Close</button>}
-
-                        {SubmitButton ? <SubmitButton /> : null}
-                    </>
-                </Dialog>
-            )}
-        </>
+                            </Dialog.Panel>
+                        </Transition.Child>
+                    </div>
+                </div>
+            </Dialog>
+        </Transition>
     );
-};
-
-CustModal.propTypes = {
-    // Boolean for specify if the modal should be shown
-    show: PropTypes.bool.isRequired,
-    // Function for hiding modal on close or completion
-    onHide: PropTypes.func.isRequired,
-    // React component for confirming modal.
-    SubmitButton: PropTypes.func,
-    // String with modal title
-    title: PropTypes.string.isRequired,
-    // React component(s) that are included inside the modal body. Form etc...
-    children: PropTypes.object,
-    // Boolean indicating if modal content is loaded or not
-    contentLoading: PropTypes.bool,
-    // Bool indicating if the modal can be dissmissed/closed or not
-    closeable: PropTypes.bool,
-    // Bool indicating if the modal can be closed by clicking on the backdrop
-    backdrop: PropTypes.bool,
 };
 
 export default CustModal;

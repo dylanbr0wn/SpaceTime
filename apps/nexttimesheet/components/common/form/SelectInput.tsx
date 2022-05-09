@@ -1,15 +1,17 @@
+import { useField } from "formik";
+import { Department } from "nexus-prisma";
+import * as React from "react";
+
 import { Listbox, Transition } from "@headlessui/react";
 import { CheckIcon, SelectorIcon } from "@heroicons/react/solid";
-import { useField } from "formik";
-import { Department } from "nexus-prisma/index";
-import * as React from "react";
+import { DepartmentsQuery } from "../../../lib/apollo";
 
 const SelectInput = ({
     elements,
     label,
     ...props
 }: {
-    elements: Partial<Department>[];
+    elements: DepartmentsQuery["departments"];
     label: string;
     name: string;
 }) => {

@@ -1,6 +1,6 @@
 import { useField } from "formik";
 
-const MyTextField = ({
+const TextInput = ({
     label,
     ...props
 }: {
@@ -19,10 +19,10 @@ const MyTextField = ({
                 <input type="text" className="input" {...props} {...field} />
             </label>
 
-            {/* {meta.touched && meta.error ? (
+            {meta.touched && meta.error ? (
                 <div className="text-pink-600">{meta.error}</div>
-            ) : null} */}
+            ) : null}
         </>
     );
 };
-export default MyTextField;
+export default TextInput;
