@@ -1,6 +1,7 @@
 import cuid from "cuid";
 import { Form, Formik, FormikHelpers } from "formik";
 import * as React from "react";
+import validator from "validator";
 
 import {
     Department,
@@ -14,10 +15,38 @@ import Section from "../../common/form/Section";
 import SelectInput from "../../common/form/SelectInput";
 import TextInput from "../../common/form/TextInput";
 
-type formUser = Omit<Partial<User>, "department"> & {
+type formUser = Omit<Omit<Partial<User>, "department">, "manager"> & {
     tenantId: string;
     managerId: string;
     department: Partial<Department>;
+    manager: Partial<User>;
+};
+
+const validateEmail = (email: string) => {
+    if (!email) {
+        return "An email is required!";
+    } else if (!validator.isEmail(email)) {
+        return "Please enter a valid email!";
+    }
+    return undefined;
+};
+
+const validateName = (name: string) => {
+    if (!name) {
+        return "A name is required!";
+    } else if (!validator.isAscii(name)) {
+        return "Please only use ASCII characters!";
+    }
+    return undefined;
+};
+
+const validateCode = (code: string) => {
+    if (!code) {
+        return "A code is required!";
+    } else if (!validator.isAscii(code)) {
+        return "Please only use ASCII characters!";
+    }
+    return undefined;
 };
 
 const UserForm = ({ currentUser }: { currentUser: Partial<User> }) => {
@@ -55,7 +84,7 @@ const UserForm = ({ currentUser }: { currentUser: Partial<User> }) => {
                     isActive: true,
                     isManager: false,
                     department: {},
-                    managerId: "",
+                    manager: {},
                     isPaymentManager: false,
                     name: "",
                     avatar: "",
@@ -93,10 +122,12 @@ const UserForm = ({ currentUser }: { currentUser: Partial<User> }) => {
                                 name="name"
                                 id="name"
                                 placeholder="Anakin Skywalker"
+                                validate={validateName}
                             />
                         </div>
                         <div className="flex flex-col mx-1">
                             <TextInput
+                                validate={validateEmail}
                                 label="Email"
                                 name="email"
                                 id="email"
@@ -107,10 +138,20 @@ const UserForm = ({ currentUser }: { currentUser: Partial<User> }) => {
                     <Section>
                         <div className="flex flex-col mx-1">
                             <TextInput
+                                validate={validateCode}
                                 label="Code"
                                 name="code"
                                 id="code"
                                 placeholder="ANI66"
+                            />
+                        </div>
+                    </Section>
+                    <Section>
+                        <div className="flex flex-col mx-1">
+                            <SelectInput
+                                name="department"
+                                label="Department"
+                                elements={data?.departments ?? []}
                             />
                         </div>
                         <div className="flex flex-col mx-1">

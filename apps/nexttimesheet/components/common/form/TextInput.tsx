@@ -8,6 +8,7 @@ const TextInput = ({
     id: string;
     label: string;
     placeholder: string;
+    validate: (value: string) => string | void | Promise<string | void>;
 }) => {
     const [field, meta, helpers] = useField(props);
 

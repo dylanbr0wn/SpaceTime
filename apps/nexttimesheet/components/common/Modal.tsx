@@ -1,10 +1,8 @@
-import PropTypes from "prop-types";
 import * as React from "react";
 
 import { Dialog, Transition } from "@headlessui/react";
 
 import ErrorBoundary from "./ErrorBoundary";
-import Loading from "./Loading";
 
 /**
  * @name CustModal

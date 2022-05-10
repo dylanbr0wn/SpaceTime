@@ -1,4 +1,3 @@
-import PropTypes from "prop-types";
 import React from "react";
 import type { NavigateProps } from "react-router-dom";
 import { Route, useLocation, useNavigate } from "react-router-dom";

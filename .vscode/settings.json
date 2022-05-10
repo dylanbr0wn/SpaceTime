@@ -1,3 +1,10 @@
 {
-    "eslint.workingDirectories": ["apps/nexttimesheet", "libs/types"]
+    "eslint.workingDirectories": [
+        "apps/nexttimesheet",
+        "libs/types"
+    ],
+    "prettier.enable": false,
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": true
+    },
 }

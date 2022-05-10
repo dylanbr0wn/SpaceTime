@@ -1,9 +1,9 @@
 import { useField } from "formik";
-import { Department } from "nexus-prisma";
 import * as React from "react";
 
 import { Listbox, Transition } from "@headlessui/react";
 import { CheckIcon, SelectorIcon } from "@heroicons/react/solid";
+
 import { DepartmentsQuery } from "../../../lib/apollo";
 
 const SelectInput = ({

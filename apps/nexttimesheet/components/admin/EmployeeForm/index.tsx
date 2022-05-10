@@ -15,8 +15,6 @@ import Form from "./Form";
  * @description Form for editting a employee object and associated work codes.
  */
 
-const validateEmail = (email) => {};
-
 const EmployeeForm = ({ currentUser }: { currentUser: Partial<User> }) => {
     const [openForm, setOpenForm] = React.useState(false);
 
