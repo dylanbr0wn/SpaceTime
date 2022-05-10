@@ -90,11 +90,14 @@ type Query {
   getEntryComments(timeEntryId: String!): [EntryComment!]
   getEntryCommentsByTimesheet(timesheetId: String!): [EntryComment!]!
   getOneTimeToken(id: String!): OneTimeToken
+  getOneTimeTokens(tenantId: String!): [OneTimeToken!]!
   getTimeEntryRow(id: String!): TimeEntryRow
   getTimeEntryRows(timesheetId: String!): [TimeEntryRow!]!
   getTimesheet(Timesheet: TimesheetGetInput!): Timesheet
   getUserFromAuth0(auth0Id: String!): User
+  getUserFromCode(code: String!, tenantId: String!): User
   getUserFromToken(token: ID!): User
+  managers(tenantId: String!): [User!]!
   projects: [Project!]!
   tenantFromId(tenantId: String!): Tenant
   timeEntry(TimeEntry: TimeEntryFromRowDateInput!): TimeEntry

@@ -1,4 +1,5 @@
 import type { AppProps } from "next/app";
+import { Toaster } from "react-hot-toast";
 
 import { ApolloProvider } from "@apollo/client";
 import { UserProvider } from "@auth0/nextjs-auth0";
@@ -16,6 +17,7 @@ function MyApp({ Component, pageProps }: AppProps) {
                 <DashBoard>
                     <Component {...pageProps} />
                 </DashBoard>
+                <Toaster />
             </UserProvider>
         </ApolloProvider>
     );

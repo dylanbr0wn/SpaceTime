@@ -43,6 +43,22 @@ export const QueryUsers = extendType({
                 return context.prisma.user.findMany();
             },
         });
+        t.nonNull.list.nonNull.field("managers", {
+            type: "User",
+            args: {
+                tenantId: nonNull(stringArg()),
+            },
+            resolve: (_parent, args, context: Context) => {
+                return context.prisma.user.findMany({
+                    where: {
+                        isManager: true,
+                        tenant: {
+                            id: args.tenantId,
+                        },
+                    },
+                });
+            },
+        });
         t.field("getUserFromToken", {
             type: "User",
             args: {
@@ -72,6 +88,23 @@ export const QueryUsers = extendType({
                 return context.prisma.user.findUnique({
                     where: {
                         auth0Id: args.auth0Id,
+                    },
+                });
+            },
+        });
+        t.field("getUserFromCode", {
+            type: "User",
+            args: {
+                code: nonNull(arg(NexusPrisma.User.code)),
+                tenantId: nonNull(stringArg()),
+            },
+            resolve: (_parent, args, context: Context) => {
+                return context.prisma.user.findUnique({
+                    where: {
+                        code_tenantId: {
+                            code: args.code,
+                            tenantId: args.tenantId,
+                        },
                     },
                 });
             },
@@ -113,7 +146,18 @@ export const MutateUsers = extendType({
             args: {
                 user: nonNull(arg({ type: UserCreateInput })),
             },
-            resolve: (_parent, { user }, context: Context) => {
+            resolve: async (_parent, { user }, context: Context) => {
+                const userExists = await context.prisma.user.findUnique({
+                    where: {
+                        code_tenantId: {
+                            code: user.code,
+                            tenantId: user.tenantId,
+                        },
+                    },
+                });
+
+                if (userExists) throw Error("Code already exists");
+
                 return context.prisma.user.create({
                     data: {
                         email: user.email,

@@ -181,11 +181,14 @@ export type Query = {
   getEntryComments?: Maybe<Array<EntryComment>>;
   getEntryCommentsByTimesheet: Array<EntryComment>;
   getOneTimeToken?: Maybe<OneTimeToken>;
+  getOneTimeTokens: Array<OneTimeToken>;
   getTimeEntryRow?: Maybe<TimeEntryRow>;
   getTimeEntryRows: Array<TimeEntryRow>;
   getTimesheet?: Maybe<Timesheet>;
   getUserFromAuth0?: Maybe<User>;
+  getUserFromCode?: Maybe<User>;
   getUserFromToken?: Maybe<User>;
+  managers: Array<User>;
   projects: Array<Project>;
   tenantFromId?: Maybe<Tenant>;
   timeEntry?: Maybe<TimeEntry>;
@@ -214,6 +217,11 @@ export type QueryGetOneTimeTokenArgs = {
 };
 
 
+export type QueryGetOneTimeTokensArgs = {
+  tenantId: Scalars['String'];
+};
+
+
 export type QueryGetTimeEntryRowArgs = {
   id: Scalars['String'];
 };
@@ -234,8 +242,19 @@ export type QueryGetUserFromAuth0Args = {
 };
 
 
+export type QueryGetUserFromCodeArgs = {
+  code: Scalars['String'];
+  tenantId: Scalars['String'];
+};
+
+
 export type QueryGetUserFromTokenArgs = {
   token: Scalars['ID'];
+};
+
+
+export type QueryManagersArgs = {
+  tenantId: Scalars['String'];
 };
 
 
@@ -550,6 +569,28 @@ export type CreateUserMutationVariables = Exact<{
 
 
 export type CreateUserMutation = { __typename?: 'Mutation', createUser?: { __typename?: 'User', id: string, email: string, auth0Id?: string | null, isActive: boolean, code: string, isAdmin: boolean, name?: string | null, avatar?: string | null, createdAt: any, updatedAt: any, isPaymentManager: boolean, isManager: boolean, tenant: { __typename?: 'Tenant', id: string }, department: { __typename?: 'Department', id: string }, manager?: { __typename?: 'User', id: string } | null, managees: Array<{ __typename?: 'User', id: string }> } | null };
+
+export type ManagersQueryVariables = Exact<{
+  tenantId: Scalars['String'];
+}>;
+
+
+export type ManagersQuery = { __typename?: 'Query', managers: Array<{ __typename?: 'User', id: string, name?: string | null }> };
+
+export type GetUserFromCodeQueryVariables = Exact<{
+  code: Scalars['String'];
+  tenantId: Scalars['String'];
+}>;
+
+
+export type GetUserFromCodeQuery = { __typename?: 'Query', getUserFromCode?: { __typename?: 'User', id: string } | null };
+
+export type GetOneTimeTokensQueryVariables = Exact<{
+  tenantId: Scalars['String'];
+}>;
+
+
+export type GetOneTimeTokensQuery = { __typename?: 'Query', getOneTimeTokens: Array<{ __typename?: 'OneTimeToken', id: string, createdAt: any, user: { __typename?: 'User', id: string, name?: string | null, avatar?: string | null } }> };
 
 
 export const TenantFromIdDocument = gql`
@@ -1551,3 +1592,116 @@ export function useCreateUserMutation(baseOptions?: Apollo.MutationHookOptions<C
 export type CreateUserMutationHookResult = ReturnType<typeof useCreateUserMutation>;
 export type CreateUserMutationResult = Apollo.MutationResult<CreateUserMutation>;
 export type CreateUserMutationOptions = Apollo.BaseMutationOptions<CreateUserMutation, CreateUserMutationVariables>;
+export const ManagersDocument = gql`
+    query Managers($tenantId: String!) {
+  managers(tenantId: $tenantId) {
+    id
+    name
+  }
+}
+    `;
+
+/**
+ * __useManagersQuery__
+ *
+ * To run a query within a React component, call `useManagersQuery` and pass it any options that fit your needs.
+ * When your component renders, `useManagersQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useManagersQuery({
+ *   variables: {
+ *      tenantId: // value for 'tenantId'
+ *   },
+ * });
+ */
+export function useManagersQuery(baseOptions: Apollo.QueryHookOptions<ManagersQuery, ManagersQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<ManagersQuery, ManagersQueryVariables>(ManagersDocument, options);
+      }
+export function useManagersLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ManagersQuery, ManagersQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<ManagersQuery, ManagersQueryVariables>(ManagersDocument, options);
+        }
+export type ManagersQueryHookResult = ReturnType<typeof useManagersQuery>;
+export type ManagersLazyQueryHookResult = ReturnType<typeof useManagersLazyQuery>;
+export type ManagersQueryResult = Apollo.QueryResult<ManagersQuery, ManagersQueryVariables>;
+export const GetUserFromCodeDocument = gql`
+    query GetUserFromCode($code: String!, $tenantId: String!) {
+  getUserFromCode(code: $code, tenantId: $tenantId) {
+    id
+  }
+}
+    `;
+
+/**
+ * __useGetUserFromCodeQuery__
+ *
+ * To run a query within a React component, call `useGetUserFromCodeQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetUserFromCodeQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetUserFromCodeQuery({
+ *   variables: {
+ *      code: // value for 'code'
+ *      tenantId: // value for 'tenantId'
+ *   },
+ * });
+ */
+export function useGetUserFromCodeQuery(baseOptions: Apollo.QueryHookOptions<GetUserFromCodeQuery, GetUserFromCodeQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetUserFromCodeQuery, GetUserFromCodeQueryVariables>(GetUserFromCodeDocument, options);
+      }
+export function useGetUserFromCodeLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetUserFromCodeQuery, GetUserFromCodeQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetUserFromCodeQuery, GetUserFromCodeQueryVariables>(GetUserFromCodeDocument, options);
+        }
+export type GetUserFromCodeQueryHookResult = ReturnType<typeof useGetUserFromCodeQuery>;
+export type GetUserFromCodeLazyQueryHookResult = ReturnType<typeof useGetUserFromCodeLazyQuery>;
+export type GetUserFromCodeQueryResult = Apollo.QueryResult<GetUserFromCodeQuery, GetUserFromCodeQueryVariables>;
+export const GetOneTimeTokensDocument = gql`
+    query GetOneTimeTokens($tenantId: String!) {
+  getOneTimeTokens(tenantId: $tenantId) {
+    id
+    user {
+      id
+      name
+      avatar
+    }
+    createdAt
+  }
+}
+    `;
+
+/**
+ * __useGetOneTimeTokensQuery__
+ *
+ * To run a query within a React component, call `useGetOneTimeTokensQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetOneTimeTokensQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetOneTimeTokensQuery({
+ *   variables: {
+ *      tenantId: // value for 'tenantId'
+ *   },
+ * });
+ */
+export function useGetOneTimeTokensQuery(baseOptions: Apollo.QueryHookOptions<GetOneTimeTokensQuery, GetOneTimeTokensQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetOneTimeTokensQuery, GetOneTimeTokensQueryVariables>(GetOneTimeTokensDocument, options);
+      }
+export function useGetOneTimeTokensLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetOneTimeTokensQuery, GetOneTimeTokensQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetOneTimeTokensQuery, GetOneTimeTokensQueryVariables>(GetOneTimeTokensDocument, options);
+        }
+export type GetOneTimeTokensQueryHookResult = ReturnType<typeof useGetOneTimeTokensQuery>;
+export type GetOneTimeTokensLazyQueryHookResult = ReturnType<typeof useGetOneTimeTokensLazyQuery>;
+export type GetOneTimeTokensQueryResult = Apollo.QueryResult<GetOneTimeTokensQuery, GetOneTimeTokensQueryVariables>;

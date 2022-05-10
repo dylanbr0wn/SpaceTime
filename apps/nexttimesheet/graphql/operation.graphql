@@ -381,3 +381,28 @@ mutation CreateUser($user: UserCreateInput!) {
         }
     }
 }
+
+query Managers($tenantId: String!) {
+  managers(tenantId: $tenantId) {
+    id
+    name
+  }
+}
+
+query GetUserFromCode($code: String!, $tenantId: String!) {
+  getUserFromCode(code: $code, tenantId: $tenantId) {
+    id
+  }
+}
+
+query GetOneTimeTokens($tenantId: String!) {
+  getOneTimeTokens(tenantId: $tenantId) {
+    id
+    user {
+      id
+      name
+      avatar
+    }
+    createdAt
+  }
+}

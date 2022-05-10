@@ -1,6 +1,8 @@
 import { useField } from "formik";
 import * as React from "react";
 
+import ErrorBoundary from "../ErrorBoundary";
+
 const CheckBox = ({
     label,
     ...props
@@ -13,7 +15,7 @@ const CheckBox = ({
     const [field, meta, helpers] = useField(props);
 
     return (
-        <>
+        <ErrorBoundary>
             <label
                 htmlFor={props.name}
                 className="text-slate-400 flex space-x-2 text-sm mb-1"
@@ -25,7 +27,7 @@ const CheckBox = ({
             {/* {meta.touched && meta.error ? (
                 <div className="text-pink-600">{meta.error}</div>
             ) : null} */}
-        </>
+        </ErrorBoundary>
     );
 };
 export default CheckBox;

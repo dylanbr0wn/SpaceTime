@@ -1,5 +1,6 @@
 import { extendType, nonNull, objectType, stringArg } from "nexus";
 import * as NexusPrisma from "nexus-prisma";
+
 import { Context } from "../context";
 
 export const OneTimeToken = objectType({
@@ -30,6 +31,24 @@ export const QueryOneTimeToken = extendType({
                     include: {
                         user: true,
                         tenant: true,
+                    },
+                });
+            },
+        });
+        t.nonNull.list.nonNull.field("getOneTimeTokens", {
+            type: OneTimeToken,
+            args: {
+                tenantId: nonNull(stringArg()),
+            },
+            resolve: (_parent, { tenantId }, context: Context) => {
+                return context.prisma.oneTimeToken.findMany({
+                    where: {
+                        tenant: {
+                            id: tenantId,
+                        },
+                    },
+                    include: {
+                        user: true,
                     },
                 });
             },

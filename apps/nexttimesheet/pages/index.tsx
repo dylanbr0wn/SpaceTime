@@ -1,7 +1,9 @@
-import { getSession, useUser, withPageAuthRequired } from "@auth0/nextjs-auth0";
 import type { GetServerSidePropsContext, NextPage } from "next";
 import Head from "next/head";
 import Image from "next/image";
+
+import { getSession, useUser, withPageAuthRequired } from "@auth0/nextjs-auth0";
+
 import EmployeeTimesheet from "../components/EmployeeTimesheet";
 import {
     client,
@@ -10,6 +12,7 @@ import {
     GetUserFromAuth0QueryVariables,
     User,
 } from "../lib/apollo";
+
 import styles from "../styles/Home.module.css";
 
 export const getServerSideProps = withPageAuthRequired({

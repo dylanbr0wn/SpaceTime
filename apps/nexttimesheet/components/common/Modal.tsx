@@ -1,6 +1,7 @@
 import * as React from "react";
 
 import { Dialog, Transition } from "@headlessui/react";
+import { XIcon } from "@heroicons/react/solid";
 
 import ErrorBoundary from "./ErrorBoundary";
 
@@ -49,6 +50,15 @@ const CustModal = ({
                             leaveTo="opacity-0 scale-95"
                         >
                             <Dialog.Panel className="w-full max-w-xl transform overflow-hidden rounded-2xl bg-slate-800 border border-slate-700 p-6 text-left align-middle shadow-xl transition-all">
+                                <div className="absolute p-4 top-0 right-0">
+                                    <button
+                                        title="close"
+                                        className="cursor-pointer"
+                                        onClick={onHide}
+                                    >
+                                        <XIcon className="h-5 w-5 text-slate-500 hover:text-pink-500 " />
+                                    </button>
+                                </div>
                                 <Dialog.Title
                                     as="h3"
                                     className="text-lg font-medium leading-6 text-slate-300"

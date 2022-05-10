@@ -1,8 +1,10 @@
-import { getSession, withPageAuthRequired } from "@auth0/nextjs-auth0";
-import { ChartSquareBarIcon, UserAddIcon } from "@heroicons/react/outline";
-import { PlusIcon } from "@heroicons/react/solid";
 import { GetServerSidePropsContext, NextPage } from "next";
+
+import { getSession, withPageAuthRequired } from "@auth0/nextjs-auth0";
+import { ChartSquareBarIcon } from "@heroicons/react/outline";
+
 import EmployeeForm from "../../components/admin/EmployeeForm";
+import TokenList from "../../components/admin/TokenList";
 import {
     client,
     GetUserFromAuth0Document,
@@ -66,8 +68,10 @@ const Manage: NextPage<{ userData: Partial<User> }> = ({ userData }) => {
                     </div>
                 </div>
             </div>
-            <div className="flex flex-col w-full px-3">
-                <div className="rounded bg-slate-800 border border-slate-700"></div>
+            <div className="flex flex-col w-full p-3">
+                <div className="rounded bg-slate-800 border border-slate-700 p-3">
+                    <TokenList currentUser={userData} />
+                </div>
             </div>
         </div>
     );
