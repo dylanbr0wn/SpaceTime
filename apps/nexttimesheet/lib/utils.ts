@@ -1,6 +1,7 @@
 import Holidays from "date-holidays";
 import { DateTime } from "luxon";
 import { Row } from "react-table";
+
 import { TimeEntryRow, WorkType } from "../lib/apollo";
 
 export const getTimesheetApprovalStatus = (
@@ -34,7 +35,7 @@ export const getTimesheetApprovalStatus = (
         if (ApprovalStatus === 1) {
             return {
                 status: "Manager Approved",
-                color: "text-success",
+                color: "text-accent",
                 info: "Timesheet is approved by your manager. Awaiting payroll approval",
             };
         }
@@ -88,12 +89,12 @@ export const submitSanityChecks = (
 const hd = new Holidays();
 
 hd.init("CA", "BC", {
-    timezone: "GMT", //all times in GMT
-    types: ["public", "bank", "school"], //all types of holidays
+    timezone: "GMT", // all times in GMT
+    types: ["public", "bank", "school"], // all types of holidays
 });
-hd.setHoliday("easter 1", { name: "Easter Monday", type: "public" }); //Add easter monday
+hd.setHoliday("easter 1", { name: "Easter Monday", type: "public" }); // Add easter monday
 
-//Add any other holidays here
+// Add any other holidays here
 
 export const getDayFeatures = (day: DateTime) => {
     const dateType = {
@@ -111,10 +112,10 @@ export const getDayFeatures = (day: DateTime) => {
     }${dateType.isToday ? `- Today` : ""}`;
 
     const style = dateType.isToday
-        ? "text-yellow-500"
+        ? "text-warning"
         : dateType.isHoliday || dateType.isWeekEnd
-        ? "text-slate-500"
-        : "text-sky-300";
+        ? "opacity-50"
+        : "text-primary";
 
     return { style, hoverText, dateType };
 };
@@ -201,27 +202,27 @@ export const checkValidProject = (
     WorkCodeID,
     type
 ) => {
-    if (!data.map((row) => row.ProjectID).includes(ProjectID)) return false; //If first time using project then there wont be an issue so skip rest
+    if (!data.map((row) => row.ProjectID).includes(ProjectID)) return false; // If first time using project then there wont be an issue so skip rest
 
     const usedWorkCodes = data
         .filter((row) => row.ProjectID === ProjectID)
         .map((row) => row.WorkCodeID)
         .filter((row) => row.WorkCodeID !== -1);
     if (type === "user") {
-        //admins should be able to add as many as they like
-        if (usedWorkCodes.length === workCodes.length) return true; //If we have use all workcodes for the project
+        // admins should be able to add as many as they like
+        if (usedWorkCodes.length === workCodes.length) return true; // If we have use all workcodes for the project
     }
 
-    if (WorkCodeID !== -1 && usedWorkCodes.includes(WorkCodeID)) return true; //IF remaining workcodes used for this project include the one we are currently have then stop it
+    if (WorkCodeID !== -1 && usedWorkCodes.includes(WorkCodeID)) return true; // IF remaining workcodes used for this project include the one we are currently have then stop it
 
     return false;
 };
 
 export const getPinnedRows = (rowsToPin, rows) => {
-    let pinnedRows = [];
-    let otherRows = [];
+    const pinnedRows = [];
+    const otherRows = [];
 
-    let parsedRowsToPin = rowsToPin.map((row) => ({
+    const parsedRowsToPin = rowsToPin.map((row) => ({
         ProjectID: row.ProjectID,
         DepartmentID: row.DepartmentID,
         WorkCodeID: row.WorkCodeID,
@@ -246,11 +247,11 @@ export const getPinnedRows = (rowsToPin, rows) => {
     return [pinnedRows, otherRows];
 };
 
-//From A Drip of JavaScript http://adripofjavascript.com/blog/drips/object-equality-in-javascript.html
+// From A Drip of JavaScript http://adripofjavascript.com/blog/drips/object-equality-in-javascript.html
 const isEquivalentObjects = (a, b) => {
     // Create arrays of property names
-    var aProps = Object.getOwnPropertyNames(a);
-    var bProps = Object.getOwnPropertyNames(b);
+    const aProps = Object.getOwnPropertyNames(a);
+    const bProps = Object.getOwnPropertyNames(b);
 
     // If number of properties is different,
     // objects are not equivalent
@@ -258,8 +259,8 @@ const isEquivalentObjects = (a, b) => {
         return false;
     }
 
-    for (var i = 0; i < aProps.length; i++) {
-        var propName = aProps[i];
+    for (let i = 0; i < aProps.length; i++) {
+        const propName = aProps[i];
 
         // If values of same property are not equal,
         // objects are not equivalent
@@ -287,7 +288,7 @@ const rowCompare = (row1, row2) => {
 export const getSortedRows = ({ rows, departments, projects, workCodes }) => {
     return rows
         .map((row) => {
-            let newRow = { ...row, DeptName: "", ProjName: "", WCName: "" };
+            const newRow = { ...row, DeptName: "", ProjName: "", WCName: "" };
             if (row.WorkCodeID !== -1) {
                 const code = workCodes.find(
                     (code) => code.WorkCodeID === row.WorkCodeID

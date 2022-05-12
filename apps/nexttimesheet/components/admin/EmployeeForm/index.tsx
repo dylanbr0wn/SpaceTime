@@ -22,19 +22,19 @@ const EmployeeForm = ({ currentUser }: { currentUser: Partial<User> }) => {
     return (
         <div className="max-w-3xl mx-auto">
             <div className="flex  content-middle">
-                <UserAddIcon className="w-7 h-7 mx-2 my-1 text-teal-500" />
-                <div className="text-teal-300 text-xl w-full my-auto">
+                <UserAddIcon className="w-7 h-7 mx-2 my-1 text-accent" />
+                <div className="text-accent text-xl w-full my-auto ">
                     Invite
                 </div>
             </div>
-            <div className="text-sky-200 p-2">
+            <div className="text-base-content p-2">
                 Add a user to your tenant so you can start using SpaceTime
                 together!
             </div>
             <div>
                 <button
                     onClick={() => setOpenForm(true)}
-                    className="border-2 flex border-teal-500 shadow-transparent shadow-lg hover:shadow-cyan-500/20 text-teal-300 transition-all hover:text-white  hover:bg-teal-500 rounded-md p-2 mx-auto group "
+                    className="flex btn btn-outline btn-accent mx-auto"
                 >
                     <PlusIcon className="h-6 w-6 mr-2" />
 

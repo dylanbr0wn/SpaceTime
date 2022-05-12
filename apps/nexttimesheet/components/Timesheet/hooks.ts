@@ -1,6 +1,5 @@
 import { DateTime } from "luxon";
 import * as React from "react";
-import { Row } from "react-table";
 
 import {
     GetTimeEntryRowsQuery,

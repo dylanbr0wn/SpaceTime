@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 
+// import Tooltip from "../../Tooltip";
 import { Listbox, Transition } from "@headlessui/react";
 import { CheckIcon, SelectorIcon } from "@heroicons/react/solid";
 
@@ -14,9 +15,6 @@ import {
 } from "../../../lib/apollo";
 import ErrorBoundary from "../../common/ErrorBoundary";
 
-// import Tooltip from "../../Tooltip";
-import { Column, Row } from "react-table";
-
 /**
  * @name TimesheetDepartmentInput
  * @component
@@ -28,13 +26,11 @@ import { Column, Row } from "react-table";
 const TimesheetDepartmentInput = ({
     value,
     row,
-    column: { id },
     userId,
     timesheetId,
 }: {
     value: string;
     row: Partial<TimeEntryRow> | undefined;
-    column: Column;
     userId: string;
     timesheetId: string;
 }) => {
@@ -136,85 +132,87 @@ const TimesheetDepartmentInput = ({
                         // onBlur={onBlur}
                         disabled={false}
                     >
-                        <div className="w-full relative">
-                            <Listbox.Button
-                                className={`relative w-full h-10 py-2 pl-3 pr-10  text-left rounded
-                                    border border-slate-700
-                                     focus:outline-none focus-visible:ring-2 bg-slate-800
-                                    focus-visible:ring-opacity-75 focus-visible:ring-white
-                                     focus-visible:ring-offset-cyan-300 focus-visible:ring-offset-2
-                                      focus-visible:border-cyan-500 sm:text-sm cursor-pointer `}
-                            >
-                                <span
-                                    className={`block truncate ${
-                                        department?.name
-                                            ? "text-sky-200"
-                                            : "text-slate-400"
-                                    }`}
+                        {({ open }) => (
+                            <div className="w-full relative">
+                                <Listbox.Button
+                                    className={`relative text-sm outline outline-offset-2 w-full text-base-content h-10 py-2 pl-3 pr-10 border border-base-content/20 text-left rounded-lg
+                                     focus:outline-none focus-visible:ring-2 bg-base-300
+                                   ${
+                                       open
+                                           ? "outline-base-content/20"
+                                           : "outline-transparent "
+                                   } sm:text-sm cursor-pointer `}
                                 >
-                                    {department?.name ??
-                                        "Choose a department..."}
-                                </span>
-                                <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
-                                    <SelectorIcon
-                                        className="w-5 h-5 text-slate-400"
-                                        aria-hidden="true"
-                                    />
-                                </span>
-                            </Listbox.Button>
-                            <Transition
-                                as={React.Fragment}
-                                leave="transition ease-in duration-100"
-                                leaveFrom="opacity-100"
-                                leaveTo="opacity-0"
-                            >
-                                <Listbox.Options className="absolute z-10 w-full divide-y divide-slate-700 py-1 mt-1 overflow-auto text-base bg-slate-800 border border-slate-700 rounded-md shadow-xl shadow-black/40 max-h-60 ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                                    {departmentsData?.departments.map(
-                                        (department) => {
-                                            return (
-                                                <Listbox.Option
-                                                    className={({ active }) =>
-                                                        `cursor-pointer select-none relative py-2 pl-10 pr-4 ${
-                                                            active
-                                                                ? "text-white bg-sky-500"
-                                                                : "text-sky-400"
-                                                        }`
-                                                    }
-                                                    value={department}
-                                                    key={department.id}
-                                                >
-                                                    {({ selected }) => (
-                                                        <>
-                                                            <span
-                                                                className={`block truncate ${
-                                                                    selected
-                                                                        ? "font-medium"
-                                                                        : "font-normal"
-                                                                }`}
-                                                            >
-                                                                {
-                                                                    department.name
-                                                                }
-                                                            </span>
-                                                            {selected ? (
-                                                                <span
-                                                                    className={`absolute inset-y-0 left-0 flex items-center pl-3`}
-                                                                >
-                                                                    <CheckIcon
-                                                                        className="w-5 h-5"
-                                                                        aria-hidden="true"
-                                                                    />
-                                                                </span>
-                                                            ) : null}
-                                                        </>
-                                                    )}
-                                                </Listbox.Option>
-                                            );
-                                        }
+                                    {department?.name ?? (
+                                        <span
+                                            className={`block truncate text-base-content/50`}
+                                        >
+                                            Choose a department...
+                                        </span>
                                     )}
-                                </Listbox.Options>
-                            </Transition>
-                        </div>
+                                    <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                                        <SelectorIcon
+                                            className="w-5 h-5 text-base-content"
+                                            aria-hidden="true"
+                                        />
+                                    </span>
+                                </Listbox.Button>
+                                <Transition
+                                    as={React.Fragment}
+                                    leave="transition ease-in duration-100"
+                                    leaveFrom="opacity-100"
+                                    leaveTo="opacity-0"
+                                >
+                                    <Listbox.Options className="absolute z-10 w-full p-1 mt-1.5 overflow-auto text-base bg-base-300 border border-base-content/20 rounded-lg shadow-xl shadow-black/40 max-h-60 focus:outline-none sm:text-sm">
+                                        {departmentsData?.departments.map(
+                                            (department) => {
+                                                return (
+                                                    <Listbox.Option
+                                                        className={({
+                                                            active,
+                                                        }) =>
+                                                            `cursor-pointer rounded-lg select-none relative py-2 pl-10 pr-4 ${
+                                                                active
+                                                                    ? "text-white bg-primary"
+                                                                    : "text-primary"
+                                                            }`
+                                                        }
+                                                        value={department}
+                                                        key={department.id}
+                                                    >
+                                                        {({ selected }) => (
+                                                            <>
+                                                                <span
+                                                                    className={`block truncate ${
+                                                                        selected
+                                                                            ? "font-medium"
+                                                                            : "font-normal"
+                                                                    }`}
+                                                                >
+                                                                    {
+                                                                        department.name
+                                                                    }
+                                                                </span>
+                                                                {selected ? (
+                                                                    <span
+                                                                        className={`absolute inset-y-0 left-0 flex items-center pl-3`}
+                                                                    >
+                                                                        <CheckIcon
+                                                                            className="w-5 h-5"
+                                                                            aria-hidden="true"
+                                                                        />
+                                                                    </span>
+                                                                ) : null}
+                                                            </>
+                                                        )}
+                                                    </Listbox.Option>
+                                                );
+                                            }
+                                        )}
+                                    </Listbox.Options>
+                                </Transition>
+                            </div>
+                        )}
                     </Listbox>
                 )}
 

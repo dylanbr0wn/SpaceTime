@@ -3,6 +3,8 @@
 import { DateTime } from "luxon";
 import * as React from "react";
 
+import { UserProfile } from "@auth0/nextjs-auth0";
+
 import { useGetTimesheetQuery, User } from "../../lib/apollo";
 import Loading from "../common/Loading";
 
@@ -31,7 +33,13 @@ import TimesheetTable from "./Table";
  * @description Root timesheet screen componenet.
  * @param {Object} props Props. See propTypes for details.
  */
-const Timesheet = ({ user }: { user: Partial<User> }) => {
+const Timesheet = ({
+    user,
+    auth0User,
+}: {
+    user: Partial<User>;
+    auth0User: UserProfile;
+}) => {
     // const [type, setType] = React.useState("user");
     // const { userId } = useParams();
 

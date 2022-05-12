@@ -6,6 +6,7 @@ import validator from "validator";
 
 import {
     Department,
+    GetOneTimeTokensDocument,
     useCreateOneTimeTokenMutation,
     useCreateUserMutation,
     useDepartmentsQuery,
@@ -140,6 +141,7 @@ const UserForm = ({ currentUser }: { currentUser: Partial<User> }) => {
                                     isPaymentManager:
                                         values?.isPaymentManager ?? false,
                                     avatar: "",
+                                    name: values?.name ?? "",
                                 },
                             },
                         });
@@ -150,6 +152,7 @@ const UserForm = ({ currentUser }: { currentUser: Partial<User> }) => {
                                 userId: newUserData?.createUser?.id,
                                 tenantId: currentUser?.tenant?.id,
                             },
+                            refetchQueries: [GetOneTimeTokensDocument],
                         });
                     setStatus("complete");
                     setSubmitting(false);
@@ -164,7 +167,7 @@ const UserForm = ({ currentUser }: { currentUser: Partial<User> }) => {
                         ) : (
                             <>
                                 <Section title="Details">
-                                    <div className="flex flex-col mx-1">
+                                    <div className="flex flex-col w-full">
                                         <TextInput
                                             label="Name"
                                             name="name"
@@ -173,7 +176,7 @@ const UserForm = ({ currentUser }: { currentUser: Partial<User> }) => {
                                             validate={validateName}
                                         />
                                     </div>
-                                    <div className="flex flex-col mx-1">
+                                    <div className="flex flex-col w-full">
                                         <TextInput
                                             validate={validateEmail}
                                             label="Email"
@@ -184,7 +187,7 @@ const UserForm = ({ currentUser }: { currentUser: Partial<User> }) => {
                                     </div>
                                 </Section>
                                 <Section>
-                                    <div className="flex flex-col mx-1">
+                                    <div className="flex flex-col w-full">
                                         <TextInput
                                             validate={validateCode}
                                             label="Code"
@@ -195,7 +198,7 @@ const UserForm = ({ currentUser }: { currentUser: Partial<User> }) => {
                                     </div>
                                 </Section>
                                 <Section>
-                                    <div className="flex flex-col mx-1">
+                                    <div className="flex flex-col w-full">
                                         <SelectInput
                                             validate={validateDepartment}
                                             placeholder="Sith Lord"
@@ -204,7 +207,7 @@ const UserForm = ({ currentUser }: { currentUser: Partial<User> }) => {
                                             elements={data?.departments ?? []}
                                         />
                                     </div>
-                                    <div className="flex flex-col mx-1">
+                                    <div className="flex flex-col w-full">
                                         <SelectInput
                                             validate={validateManager}
                                             placeholder="Darth Plagueis"
@@ -218,7 +221,7 @@ const UserForm = ({ currentUser }: { currentUser: Partial<User> }) => {
                                 </Section>
 
                                 <Section title="Status">
-                                    <div className="flex flex-col mx-1 mt-2">
+                                    <div className="flex flex-col w-full mt-2">
                                         <CheckBox
                                             name="isActive"
                                             id="isActive"
@@ -228,7 +231,7 @@ const UserForm = ({ currentUser }: { currentUser: Partial<User> }) => {
                                     </div>
                                 </Section>
                                 <Section title="Permissions">
-                                    <div className="flex flex-col mx-1 mt-2">
+                                    <div className="flex flex-col w-full mt-2">
                                         <CheckBox
                                             name="isAdmin"
                                             id="isAdmin"
@@ -237,7 +240,7 @@ const UserForm = ({ currentUser }: { currentUser: Partial<User> }) => {
                                         />
                                     </div>
 
-                                    <div className="flex flex-col mx-1 mt-2">
+                                    <div className="flex flex-col w-full mt-2">
                                         <CheckBox
                                             name="isManager"
                                             id="isManager"
@@ -245,7 +248,7 @@ const UserForm = ({ currentUser }: { currentUser: Partial<User> }) => {
                                             type="checkbox"
                                         />
                                     </div>
-                                    <div className="flex flex-col mx-1 mt-2">
+                                    <div className="flex flex-col w-full mt-2">
                                         <CheckBox
                                             name="isPaymentManager"
                                             id="isPaymentManager"
@@ -258,7 +261,7 @@ const UserForm = ({ currentUser }: { currentUser: Partial<User> }) => {
                                 <div className="flex mt-3">
                                     <button
                                         disabled={!isValid}
-                                        className="btn-outline"
+                                        className="btn btn-primary"
                                         type="submit"
                                     >
                                         Submit

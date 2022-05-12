@@ -18,10 +18,10 @@ const CheckBox = ({
         <ErrorBoundary>
             <label
                 htmlFor={props.name}
-                className="text-slate-400 flex space-x-2 text-sm mb-1"
+                className=" flex space-x-2 text-sm mb-1"
             >
-                <input className="checkBox" {...props} {...field} />
-                <div className="mt-2">{label}</div>
+                <input className="checkbox" {...props} {...field} />
+                <div className=" text-slate-400">{label}</div>
             </label>
 
             {/* {meta.touched && meta.error ? (

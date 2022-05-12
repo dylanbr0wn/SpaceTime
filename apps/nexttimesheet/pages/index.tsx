@@ -1,9 +1,13 @@
 import type { GetServerSidePropsContext, NextPage } from "next";
-import Head from "next/head";
-import Image from "next/image";
+import * as React from "react";
 
-import { getSession, useUser, withPageAuthRequired } from "@auth0/nextjs-auth0";
+import {
+    getSession,
+    UserProfile,
+    withPageAuthRequired,
+} from "@auth0/nextjs-auth0";
 
+import DashBoard from "../components/Dashboard";
 import EmployeeTimesheet from "../components/EmployeeTimesheet";
 import {
     client,
@@ -12,8 +16,6 @@ import {
     GetUserFromAuth0QueryVariables,
     User,
 } from "../lib/apollo";
-
-import styles from "../styles/Home.module.css";
 
 export const getServerSideProps = withPageAuthRequired({
     getServerSideProps: async (ctx: GetServerSidePropsContext) => {
@@ -39,11 +41,39 @@ export const getServerSideProps = withPageAuthRequired({
     },
 });
 
-const Home: NextPage<{ userData: Partial<User> }> = ({ userData }) => {
+// export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
+//     const session = getSession(ctx.req, ctx.res);
+
+//     const user = session?.user;
+
+//     const { data: userData } = await client.query<
+//         GetUserFromAuth0Query,
+//         GetUserFromAuth0QueryVariables
+//     >({
+//         query: GetUserFromAuth0Document,
+//         variables: {
+//             auth0Id: String(user?.sub),
+//         },
+//     });
+
+//     return {
+//         props: {
+//             userData: userData?.getUserFromAuth0,
+//             page: "Home",
+//         },
+//     };
+// };
+
+const Home: NextPage<{
+    userData: Partial<User>;
+    user: UserProfile;
+}> = ({ userData, user }) => {
     return (
-        <div className="h-full w-full " style={{ margin: 0, padding: 0 }}>
-            <EmployeeTimesheet user={userData} />
-        </div>
+        <DashBoard user={user}>
+            <div className="h-full w-full m-0 p-0">
+                <EmployeeTimesheet userData={userData} user={user} />
+            </div>
+        </DashBoard>
     );
 };
 

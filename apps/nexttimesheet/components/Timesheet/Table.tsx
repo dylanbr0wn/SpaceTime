@@ -165,7 +165,6 @@ const TimesheetTable = ({
                                     value={value}
                                     row={row.original}
                                     rows={instance.getRowModel().rows}
-                                    column={column}
                                     userId={String(user?.id)}
                                     timesheetId={
                                         instance.options.meta?.timesheetId ||
@@ -378,7 +377,6 @@ const TimesheetTable = ({
             meta: {
                 timesheetId: timesheetData?.id ?? "-1",
             },
-            debugAll: true,
             // use the skipPageReset option to disable page resetting temporarily
             // autoResetPage: !skipPageReset,
             // updateMyData isn't part of the API, but
@@ -406,7 +404,7 @@ const TimesheetTable = ({
         <>
             {!rowsLoading && (
                 <div className=" my-2 max-w-screen-2xl mx-auto flex flex-col space-y-2">
-                    <div className=" bg-slate-800 rounded-md border shadow border-slate-700 flex flex-col flex-shrink">
+                    <div className="flex flex-col flex-shrink">
                         {instance.getHeaderGroups().map((headerGroup) => (
                             <div
                                 className="flex space-x-1 flex-shrink"
@@ -414,14 +412,13 @@ const TimesheetTable = ({
                             >
                                 {headerGroup.headers.map((column) => {
                                     if (
-                                        column.id === "workType" ||
-                                        column.id === "project" ||
-                                        column.id === "department" ||
-                                        column.id === "hours"
+                                        column.column.id === "workType" ||
+                                        column.column.id === "project" ||
+                                        column.column.id === "department"
                                     ) {
                                         return (
                                             <div
-                                                className="text-slate-200 py-2 text-center text-lg w-48"
+                                                className="text-base-content py-2 text-center text-lg w-44"
                                                 key={column.id}
                                             >
                                                 {column.isPlaceholder ? null : (
@@ -431,12 +428,35 @@ const TimesheetTable = ({
                                                 )}
                                             </div>
                                         );
-                                    } else if (column.id === "deleter") {
+                                    } else if (column.column.id === "hours") {
+                                        return (
+                                            <div
+                                                className="text-base-content py-2 text-center text-lg w-full"
+                                                key={column.id}
+                                            >
+                                                {column.isPlaceholder ? null : (
+                                                    <div>
+                                                        {column.renderHeader()}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        );
+                                    } else if (column.column.id === "deleter") {
                                         return null;
+                                    } else if (
+                                        column.column.id === "workdescription"
+                                    ) {
+                                        return (
+                                            <div className="flex">
+                                                <div className="w-44" />
+                                                <div className="w-44" />
+                                                <div className="w-44" />
+                                            </div>
+                                        );
                                     } else {
                                         return (
                                             <div
-                                                className=" text-center py-1 text-lg text-slate-200 w-14"
+                                                className=" text-center py-1 text-lg text-base-content w-14"
                                                 key={column.id}
                                             >
                                                 {column.isPlaceholder ? null : (
@@ -457,7 +477,7 @@ const TimesheetTable = ({
                                 {instance.getRowModel().rows.map((row) => {
                                     return (
                                         <div
-                                            className="bg-slate-900 rounded-md flex "
+                                            className="rounded-md flex "
                                             key={row.id}
                                         >
                                             {row
@@ -471,7 +491,7 @@ const TimesheetTable = ({
                                                     ) {
                                                         return (
                                                             <div
-                                                                className="w-48 mx-0.5"
+                                                                className="w-44 mx-0.5"
                                                                 key={cell.id}
                                                             >
                                                                 {cell.renderCell()}
@@ -483,7 +503,7 @@ const TimesheetTable = ({
                                                     ) {
                                                         return (
                                                             <div
-                                                                className="w-0 ml-0"
+                                                                className="w-12 ml-0"
                                                                 key={cell.id}
                                                             >
                                                                 {cell.renderCell()}
@@ -495,7 +515,7 @@ const TimesheetTable = ({
                                                     ) {
                                                         return (
                                                             <div
-                                                                className="w-48 mr-0.5"
+                                                                className="w-44 mr-0.5"
                                                                 key={cell.id}
                                                             >
                                                                 {cell.renderCell()}
@@ -517,7 +537,7 @@ const TimesheetTable = ({
                                 })}
                             </div>
                         ) : (
-                            <div className="text-cyan-500 text-lg w-full text-center py-3">
+                            <div className="text-primary text-lg w-full text-center py-3">
                                 Looks like you have no rows... Click the button
                                 below to make one!
                             </div>
@@ -645,7 +665,7 @@ const TimesheetTable = ({
                     <div>
                         <div className="text-center mt-4">
                             <button
-                                className="border-2 flex border-teal-500 shadow-transparent shadow-lg hover:shadow-cyan-500/20 text-teal-300 transition-all hover:text-white  hover:bg-teal-500 rounded-md p-2 mx-auto group "
+                                className=" flex btn btn-outline btn-accent p-2 mx-auto group "
                                 onClick={createTimeEntryRow}
                             >
                                 <PlusIcon className="h-6 w-6 mr-2" />

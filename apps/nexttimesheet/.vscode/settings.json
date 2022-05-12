@@ -1,0 +1,11 @@
+{
+    "files.autoSave": "off",
+    "eslint.format.enable": false,
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": true
+    },
+    "editor.quickSuggestions": {
+        "strings": true
+    },
+}

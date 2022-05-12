@@ -1,20 +1,24 @@
-import Image from "next/image";
+import { DateTime } from "luxon";
 import * as React from "react";
 
 import { KeyIcon } from "@heroicons/react/outline";
-import { PlusIcon } from "@heroicons/react/solid";
 import {
     createTable,
     getCoreRowModelSync,
+    getSortedRowModelSync,
+    SortingState,
     useTableInstance,
 } from "@tanstack/react-table";
 
 import {
-    GetOneTimeTokensQuery,
     OneTimeToken,
     useGetOneTimeTokensQuery,
     User,
 } from "../../../lib/apollo";
+import Avatar from "../../common/Avatar";
+import CopyField from "../../common/CopyField";
+import DefaultTable from "../../common/Table";
+import Loading from "../../common/Loading";
 
 const table =
     createTable().setRowType<
@@ -22,44 +26,51 @@ const table =
     >();
 
 const TokenList = ({ currentUser }: { currentUser: Partial<User> }) => {
-    // const [page, setPage] = React.useState(1);
     const { data, error, loading } = useGetOneTimeTokensQuery({
         variables: {
             tenantId: currentUser.tenant?.id ?? "-1",
         },
     });
 
+    const [sorting, setSorting] = React.useState<SortingState>([]);
+
     const columns = React.useMemo(
         () => [
             table.createDataColumn("user", {
                 cell: (info) => (
-                    <div className="flex">
-                        <div className="px-2 my-auto">{info?.value?.name}</div>
-                        {info?.value?.avatar ? (
-                            <div className="avatar">
-                                <div className=" rounded-full w-12">
-                                    <Image
-                                        alt={info?.value?.name ?? ""}
-                                        src={info?.value?.avatar ?? ""}
-                                    />
-                                </div>
-                            </div>
-                        ) : (
-                            <div className="avatar placeholder">
-                                <div className="bg-slate-900 text-neutral-content rounded-full w-12">
-                                    <span className="text-xl">
-                                        {info?.value?.name?.charAt(0)}
-                                    </span>
-                                </div>
-                            </div>
-                        )}
+                    <div className="flex  justify-start py-2">
+                        <Avatar
+                            image={info?.value?.avatar}
+                            name={info?.value?.name}
+                        />
+                        <div className="ml-3 my-auto ">{info?.value?.name}</div>
                     </div>
+                ),
+                header: () => (
+                    <div className="text-left mr-3 font-bold ">User</div>
                 ),
             }),
             table.createDataColumn((row) => row.id, {
                 id: "id",
-                cell: (info) => info.value,
-                header: () => <span>Token</span>,
+                cell: (info) => <CopyField value={info.value} />,
+
+                header: () => (
+                    <div className="text-left mr-3 font-bold ">Token</div>
+                ),
+            }),
+            table.createDataColumn((row) => row.createdAt, {
+                id: "created",
+                cell: (info) => (
+                    <div className=" py-2 ">
+                        {DateTime.fromISO(info?.value ?? "").toFormat(
+                            "dd/LL/yyyy"
+                        )}
+                    </div>
+                ),
+
+                header: () => (
+                    <div className="text-left mr-3 font-bold ">Date Issued</div>
+                ),
             }),
         ],
         []
@@ -68,46 +79,33 @@ const TokenList = ({ currentUser }: { currentUser: Partial<User> }) => {
     const instance = useTableInstance(table, {
         data: (data?.getOneTimeTokens as OneTimeToken[]) ?? [],
         columns,
+        state: {
+            sorting,
+        },
+        onSortingChange: setSorting,
         getCoreRowModel: getCoreRowModelSync(),
+        getSortedRowModel: getSortedRowModelSync(),
     });
 
     return (
         <div className=" mx-auto max-w-screen-xl">
-            <div className="flex  content-middle text-yellow-500">
+            <div className="flex  content-middle text-warning my-3">
                 <KeyIcon className="w-7 h-7 mx-2 my-1  " />
                 <div className=" text-xl w-full my-auto">Tokens</div>
             </div>
-            <div className="p-2">
-                <table>
-                    <thead>
-                        {instance.getHeaderGroups().map((headerGroup) => (
-                            <tr key={headerGroup.id}>
-                                {headerGroup.headers.map((header) => (
-                                    <th
-                                        key={header.id}
-                                        colSpan={header.colSpan}
-                                    >
-                                        {header.isPlaceholder
-                                            ? null
-                                            : header.renderHeader()}
-                                    </th>
-                                ))}
-                            </tr>
-                        ))}
-                    </thead>
-                    <tbody>
-                        {instance.getRowModel().rows.map((row) => (
-                            <tr key={row.id}>
-                                {row.getVisibleCells().map((cell) => (
-                                    <td key={cell.id}>{cell.renderCell()}</td>
-                                ))}
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-                <div className="h-4" />
+            <div className="">
+                {loading ? (
+                    <div className="mt-5">
+                        <Loading />
+                    </div>
+                ) : error ? (
+                    <div>
+                        Oops, these really arnt the droids you are looking for 🫤
+                    </div>
+                ) : (
+                    <DefaultTable instance={instance} />
+                )}
             </div>
-            <div></div>
         </div>
     );
 };

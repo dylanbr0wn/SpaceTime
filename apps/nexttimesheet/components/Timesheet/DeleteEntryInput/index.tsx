@@ -5,6 +5,7 @@ import { BackspaceIcon } from "@heroicons/react/outline";
 import { useDeleteTimeEntryRowMutation } from "../../../lib/apollo";
 import ConfirmCloseModal from "../../common/ConfirmCloseModal";
 import ErrorBoundary from "../../common/ErrorBoundary";
+
 import { useRowHasHours } from "./hooks";
 
 /**
@@ -105,15 +106,13 @@ const TimesheetDeleteEntryInput = ({ row, userId }) => {
                     <button
                         title="Delete row"
                         aria-label="Delete row"
-                        className={`m-0 p-1 h-10 w-10 group ${
-                            false ? "bg-slate-800" : "bg-slate-900"
-                        }`}
+                        className="btn btn-square btn-ghost btn-sm mt-1 group"
                         type="button"
                         // title="Clear timesheet row"
                         disabled={false}
                         onClick={handleDeleteRow}
                     >
-                        <BackspaceIcon className="text-slate-500 h-6 w-6 m-auto group-hover:text-pink-600  transition-colors duration-200" />
+                        <BackspaceIcon className="text-base-content h-6 w-6 m-auto group-hover:text-error transition-colors duration-200" />
                     </button>
                     <React.Suspense fallback={renderLoader()}>
                         <ConfirmCloseModal

@@ -25,7 +25,12 @@ const CustModal = ({
 }) => {
     return (
         <Transition appear show={show} as={React.Fragment}>
-            <Dialog as="div" className="relative z-10" onClose={onHide}>
+            <Dialog
+                data-theme="dark"
+                as="div"
+                className="relative z-50"
+                onClose={onHide}
+            >
                 <Transition.Child
                     as={React.Fragment}
                     enter="ease-out duration-300"
@@ -35,7 +40,7 @@ const CustModal = ({
                     leaveFrom="opacity-100"
                     leaveTo="opacity-0"
                 >
-                    <div className="fixed inset-0 bg-black bg-opacity-25" />
+                    <div className="fixed inset-0 bg-gray-500 bg-opacity-25" />
                 </Transition.Child>
 
                 <div className="fixed inset-0 overflow-y-auto">
@@ -49,7 +54,7 @@ const CustModal = ({
                             leaveFrom="opacity-100 scale-100"
                             leaveTo="opacity-0 scale-95"
                         >
-                            <Dialog.Panel className="w-full max-w-xl transform overflow-hidden rounded-2xl bg-slate-800 border border-slate-700 p-6 text-left align-middle shadow-xl transition-all">
+                            <Dialog.Panel className="w-full max-w-xl transform overflow-hidden rounded-2xl bg-base-300 p-6 text-left align-middle shadow-xl transition-all">
                                 <div className="absolute p-4 top-0 right-0">
                                     <button
                                         title="close"

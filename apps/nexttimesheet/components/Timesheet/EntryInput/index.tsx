@@ -1,9 +1,6 @@
 import cuid from "cuid";
 import { DateTime } from "luxon";
 import * as React from "react";
-import { Row } from "react-table";
-
-import { Dialog, Transition } from "@headlessui/react";
 
 import {
     GetTimeEntryRowsDocument,
@@ -16,6 +13,8 @@ import {
     useUpdateTimeEntryhoursMutation,
 } from "../../../lib/apollo";
 import ErrorBoundary from "../../common/ErrorBoundary";
+import CustModal from "../../common/Modal";
+
 import Comments from "./Comments";
 
 /**
@@ -47,7 +46,6 @@ const TimesheetEntryInput = ({
     const [work, setWork] = React.useState<Partial<TimeEntry> | undefined>(
         value
     );
-    const [savingComment, setSavingComment] = React.useState(false);
     const [disableEntryInput, setDisableEntryInput] = React.useState(true);
 
     React.useEffect(() => {
@@ -246,11 +244,6 @@ const TimesheetEntryInput = ({
     }, [value, isEditing, isSaving]);
 
     // when comment change detected, will wait 0.75s to update. If updated before end of 0.75s, timer will restart.
-    const onCommentChange = ({ target }) => {
-        if (target.value.length > 255) {
-            setSavingComment(false);
-        }
-    };
 
     const [isOpen, setIsOpen] = React.useState(false);
 
@@ -267,7 +260,8 @@ const TimesheetEntryInput = ({
     const clickHandler = (event: React.MouseEvent) => {
         event.stopPropagation();
         if (!work) return;
-        if (event.ctrlKey) setIsOpen(true);
+
+        if (event.ctrlKey || event.metaKey) setIsOpen(true);
     };
 
     return (
@@ -278,7 +272,6 @@ const TimesheetEntryInput = ({
                         aria-label="timesheetEntryInput"
                         type="number"
                         onClick={clickHandler}
-                        // value={(hoursWorked === null) ? hoursWorked : ''}
                         value={
                             !work?.hours
                                 ? ""
@@ -289,68 +282,27 @@ const TimesheetEntryInput = ({
                         onChange={onHourChange}
                         onBlur={onBlur}
                         onFocus={() => setIsEditing(true)}
-                        className={`px-1 appearance-none text-sky-200 w-full h-full bg-slate-800 border rounded border-slate-700 focus:border-sky-500 focus:border ${
-                            false || disableEntryInput
-                                ? "opacity-50 cursor-not-allowed"
-                                : "opacity-100"
-                        }  caret-sky-500  ${
+                        className={`w-full h-full input input-bordered input-sm bg-base-300 px-2 text-sm ${
+                            false || disableEntryInput ? "input-disabled" : ""
+                        } ${
                             (value?.entryComments?.length ?? 0) > 0
-                                ? "border-2 border-green-500"
+                                ? "input-accent"
                                 : ""
                         }`}
                         disabled={false || disableEntryInput}
                         step="0.01"
                     />
                 </div>
-                <Transition appear show={isOpen} as={React.Fragment}>
-                    <Dialog
-                        as="div"
-                        className="fixed inset-0 z-10 overflow-y-auto"
-                        onClose={closeModal}
-                    >
-                        <div className="min-h-screen px-4 text-center">
-                            <Transition.Child
-                                as={React.Fragment}
-                                enter="ease-out duration-300"
-                                enterFrom="opacity-0"
-                                enterTo="opacity-100"
-                                leave="ease-in duration-200"
-                                leaveFrom="opacity-100"
-                                leaveTo="opacity-0"
-                            >
-                                <Dialog.Overlay className="fixed inset-0 bg-black opacity-30" />
-                            </Transition.Child>
-
-                            {/* This element is to trick the browser into centering the modal contents. */}
-                            <span
-                                className="inline-block h-screen align-middle"
-                                aria-hidden="true"
-                            >
-                                &#8203;
-                            </span>
-                            <Transition.Child
-                                as={React.Fragment}
-                                enter="ease-out duration-300"
-                                enterFrom="opacity-0 scale-95"
-                                enterTo="opacity-100 scale-100"
-                                leave="ease-in duration-200"
-                                leaveFrom="opacity-100 scale-100"
-                                leaveTo="opacity-0 scale-95"
-                            >
-                                <div className="inline-block w-full max-w-md p-6 my-8 overflow-hidden text-left align-middle transition-all transform bg-slate-900 shadow-xl rounded-2xl">
-                                    <Comments
-                                        timeEntryRowId={row?.id}
-                                        timeEntryId={work?.id ?? "-1"}
-                                        userId={userId}
-                                        closeModal={closeModal}
-                                        // onCommentChange={onCommentChange}
-                                        comments={work?.entryComments}
-                                    />
-                                </div>
-                            </Transition.Child>
-                        </div>
-                    </Dialog>
-                </Transition>
+                <CustModal onHide={closeModal} show={isOpen} title="Comments">
+                    <Comments
+                        timeEntryRowId={row?.id}
+                        timeEntryId={work?.id ?? "-1"}
+                        userId={userId}
+                        closeModal={closeModal}
+                        // onCommentChange={onCommentChange}
+                        comments={work?.entryComments}
+                    />
+                </CustModal>
             </ErrorBoundary>
         </>
     );

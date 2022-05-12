@@ -1,11 +1,11 @@
-import ErrorPage from "./login/Error";
+import * as React from "react";
+
+import TimesheetAuthProvider from "../auth/TimesheetAuthProvider";
+
+import Loading from "./common/Loading";
 import AuthRouter from "./AuthRouter";
 
 import "./style/reactDatesStyles.css";
-import { useAuth0 } from "@auth0/auth0-react";
-import * as React from "react";
-import Loading from "./common/Loading";
-import TimesheetAuthProvider from "../auth/TimesheetAuthProvider";
 
 /**
  * @name App

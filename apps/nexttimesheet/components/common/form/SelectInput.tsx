@@ -23,9 +23,13 @@ const SelectInput = ({
 
     return (
         <ErrorBoundary>
-            <div className="text-slate-400 text-sm w-full w-42">
-                <div className="mb-1 ">{label}</div>
+            <div className="text-slate-400 text-sm  form-control">
+                <label className="label">
+                    <div className="label-text ">{label}</div>
+                </label>
+
                 <Listbox
+                    as={"div"}
                     {...props}
                     {...field}
                     onChange={(dep) => {
@@ -35,17 +39,17 @@ const SelectInput = ({
                     {({ open }) => (
                         <div className="relative mt-1 w-full">
                             <Listbox.Button
-                                className={`relative w-full cursor-default text-base rounded bg-slate-700 text-sky-300 border flex p-2 h-10 justify-between ${
+                                className={`relative w-full cursor-default outline outline-offset-2 text-sm rounded-lg bg-base-100 text-base-content border border-base-content/20 px-4 flex h-12 justify-between ${
                                     open
-                                        ? "border-sky-500 outline-blue-500 outline outline-1"
+                                        ? "outline-base-content/20"
                                         : meta.touched && meta.error
-                                        ? "border-pink-500"
-                                        : "border-slate-600"
+                                        ? "outline-error"
+                                        : "outline-transparent "
                                 }`}
                             >
-                                <span className="block truncate">
+                                <span className="block truncate my-auto mr-3">
                                     {field?.value?.name ?? (
-                                        <span className="text-slate-500">
+                                        <span className="text-base-content">
                                             {placeholder}
                                         </span>
                                     )}
@@ -63,37 +67,37 @@ const SelectInput = ({
                                 leaveFrom="opacity-100"
                                 leaveTo="opacity-0"
                             >
-                                <Listbox.Options className="absolute mt-1 max-h-60 w-full overflow-auto list-none px-0 rounded-md bg-slate-700 border-slate-700 border py-1 text-base shadow-lg ring-1 ring-sky-500 ring-opacity-5 focus:outline-none sm:text-sm">
+                                <Listbox.Options className="absolute mt-2 max-h-60 w-full overflow-auto list-none px-0 rounded-md bg-base-100 border border-base-content/20 py-1 text-base shadow-lg focus:outline-none sm:text-sm">
                                     {elements.map((element, elementIdx) => (
                                         <Listbox.Option
                                             key={elementIdx}
                                             className={({ active }) =>
-                                                `cursor-default select-none py-2 px-2 flex justify-between ${
+                                                `cursor-default select-none py-2 px-4 flex justify-between ${
                                                     active
-                                                        ? "bg-slate-600 text-sky-300"
-                                                        : "text-sky-500"
+                                                        ? "bg-primary text-white"
+                                                        : "text-base-content"
                                                 }`
                                             }
                                             value={element}
                                         >
                                             {({ selected }) => (
                                                 <>
-                                                    <span
-                                                        className={`block flex-grow truncate ${
+                                                    <div
+                                                        className={` flex-grow truncate ${
                                                             selected
-                                                                ? "font-medium"
+                                                                ? "font-medium "
                                                                 : "font-normal"
                                                         }`}
                                                     >
                                                         {element.name}
-                                                    </span>
+                                                    </div>
                                                     {selected ? (
-                                                        <span className="flex items-center pl-3 ml-auto ">
+                                                        <div className="flex items-center pl-3 ml-auto ">
                                                             <CheckIcon
                                                                 className="h-5 w-5"
                                                                 aria-hidden="true"
                                                             />
-                                                        </span>
+                                                        </div>
                                                     ) : null}
                                                 </>
                                             )}

@@ -43,7 +43,7 @@ const SavingIcon = ({
                         <i className="far fa-check-circle text-success " />
                         <span
                             style={{ marginLeft: 5, marginRight: 15 }}
-                            className="text-success "
+                            className="text-accent"
                         >
                             Saved
                         </span>

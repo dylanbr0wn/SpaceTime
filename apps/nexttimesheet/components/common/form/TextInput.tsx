@@ -16,23 +16,27 @@ const TextInput = ({
 
     return (
         <ErrorBoundary>
-            <label htmlFor={props.name} className="text-slate-400 text-sm">
-                <div className="mb-1">{label}</div>
-
+            <div className="form-control">
+                <label htmlFor={props.name} className="label">
+                    <div className="label-text">{label}</div>
+                </label>
                 <input
                     type="text"
-                    className={`input ${
-                        meta.touched && meta.error ? "border-pink-500" : ""
+                    className={`input input-bordered input-md ${
+                        meta.touched && meta.error ? "input-error" : ""
                     }`}
                     id={props.id}
                     placeholder={props.placeholder}
                     {...field}
                 />
-            </label>
-
-            {meta.touched && meta.error ? (
-                <div className="text-pink-600">{meta.error}</div>
-            ) : null}
+                <label htmlFor={props.name} className="label">
+                    {meta.touched && meta.error ? (
+                        <div className="label-text text-error">
+                            {meta.error}
+                        </div>
+                    ) : null}
+                </label>
+            </div>
         </ErrorBoundary>
     );
 };

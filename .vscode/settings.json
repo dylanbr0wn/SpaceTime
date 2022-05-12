@@ -4,7 +4,12 @@
         "libs/types"
     ],
     "prettier.enable": false,
+    "format.autoSave": "off",
     "editor.codeActionsOnSave": {
         "source.fixAll.eslint": true
     },
+    "editor.quickSuggestions": {
+        "strings": true
+    },
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint",
 }

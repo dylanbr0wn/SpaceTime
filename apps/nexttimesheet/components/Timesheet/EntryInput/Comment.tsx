@@ -1,7 +1,15 @@
 import { useGetEntryCommentQuery } from "../../../lib/apollo";
+import Avatar from "../../common/Avatar";
+import Loading from "../../common/Loading";
 
-const Comment = ({ comment }) => {
-    const { data } = useGetEntryCommentQuery({
+const Comment = ({
+    comment,
+    userId,
+}: {
+    comment: { id: string };
+    userId: string;
+}) => {
+    const { data, loading, error } = useGetEntryCommentQuery({
         variables: {
             commentId: comment.id,
         },
@@ -9,20 +17,37 @@ const Comment = ({ comment }) => {
     });
 
     return (
-        <div className="flex my-2">
-            {data?.getEntryComment?.user.avatar ? (
-                <img
-                    src={data?.getEntryComment?.user.avatar}
-                    className="w-8 h-8 rounded-full mr-2 p-1"
-                />
+        <>
+            {loading ? (
+                <div className="mx-auto">
+                    <Loading />
+                </div>
+            ) : error ? (
+                <div>I have a bad feeling about this.</div>
             ) : (
-                <div className="rounded-full bg-sky-300 h-8 w-8 mr-2 p-1 font-medium text-center">
-                    {data?.getEntryComment?.user?.name?.charAt(0)}
+                <div
+                    className={`flex my-2 ${
+                        data?.getEntryComment?.user.id !== userId
+                            ? "flex-row-reverse text-right"
+                            : ""
+                    }`}
+                >
+                    <Avatar
+                        bg={
+                            data?.getEntryComment?.user.id !== userId
+                                ? "bg-secondary"
+                                : "bg-primary"
+                        }
+                        name={data?.getEntryComment?.user.name}
+                        image={data?.getEntryComment?.user.avatar}
+                    />
+
+                    <p className="text-base-content px-2">
+                        {data?.getEntryComment?.text}
+                    </p>
                 </div>
             )}
-
-            <p className="text-sky-300 p-1">{data?.getEntryComment?.text}</p>
-        </div>
+        </>
     );
 };
 

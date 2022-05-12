@@ -37,7 +37,7 @@
     },
     "version": "0.0.0",
     "workspaces": [
-        "apps/*",
-        "libs/*"
+        "apps/nexttimesheet",
+        "libs/types"
     ]
 }

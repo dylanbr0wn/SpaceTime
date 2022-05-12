@@ -1,10 +1,6 @@
 // import { Row, Col } from "react-bootstrap";
-import PropTypes from "prop-types";
 import React, { Suspense, useEffect } from "react";
-import { connect } from "react-redux";
-import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 
-import { useAuth0 } from "@auth0/auth0-react";
 import { animated, useTransition } from "@react-spring/web";
 
 import { useGetUserFromAuth0Query } from "../api";

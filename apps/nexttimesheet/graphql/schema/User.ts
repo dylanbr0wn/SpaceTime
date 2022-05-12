@@ -170,6 +170,7 @@ export const MutateUsers = extendType({
                         code: user.code,
                         isActive: user.isActive,
                         isAdmin: user.isAdmin,
+                        name: user.name,
                         department: {
                             connect: {
                                 id: user.departmentId,
