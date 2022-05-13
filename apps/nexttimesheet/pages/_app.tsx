@@ -1,5 +1,4 @@
 import type { AppProps } from "next/app";
-import { useRouter } from "next/router";
 import { Toaster } from "react-hot-toast";
 
 import { ApolloProvider } from "@apollo/client";

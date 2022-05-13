@@ -406,3 +406,40 @@ query GetOneTimeTokens($tenantId: String!) {
     createdAt
   }
 }
+
+query Users($tenantId: String!) {
+  users(tenantId: $tenantId) {
+    id
+    email
+    auth0Id
+    code
+    isActive
+    isAdmin
+    tenant {
+      id
+      name
+    }
+    name
+    avatar
+    createdAt
+    updatedAt
+    department {
+      id
+      name
+    }
+    managees {
+      id
+      email
+      name
+      avatar
+    }
+    manager {
+      id
+      email
+      name
+    }
+    isPaymentManager
+    isManager
+    isSetup
+  }
+}

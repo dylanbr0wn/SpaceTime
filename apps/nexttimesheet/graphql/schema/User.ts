@@ -31,16 +31,26 @@ export const User = objectType({
         t.field(NexusPrisma.User.manager);
         t.field(NexusPrisma.User.isPaymentManager);
         t.field(NexusPrisma.User.isManager);
+        t.field(NexusPrisma.User.isSetup);
     },
 });
 
 export const QueryUsers = extendType({
     type: "Query",
     definition(t) {
-        t.nonNull.list.nonNull.field("allUsers", {
+        t.nonNull.list.nonNull.field("users", {
             type: "User",
-            resolve: (_parent, _args, context: Context) => {
-                return context.prisma.user.findMany();
+            args: {
+                tenantId: nonNull(stringArg()),
+            },
+            resolve: (_parent, args, context: Context) => {
+                return context.prisma.user.findMany({
+                    where: {
+                        tenant: {
+                            id: args.tenantId,
+                        },
+                    },
+                });
             },
         });
         t.nonNull.list.nonNull.field("managers", {

@@ -114,7 +114,7 @@ export const getDayFeatures = (day: DateTime) => {
     const style = dateType.isToday
         ? "text-warning"
         : dateType.isHoliday || dateType.isWeekEnd
-        ? "opacity-50"
+        ? "text-base-content opacity-50"
         : "text-primary";
 
     return { style, hoverText, dateType };

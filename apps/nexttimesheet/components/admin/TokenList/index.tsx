@@ -5,7 +5,9 @@ import { KeyIcon } from "@heroicons/react/outline";
 import {
     createTable,
     getCoreRowModelSync,
+    getPaginationRowModel,
     getSortedRowModelSync,
+    PaginationState,
     SortingState,
     useTableInstance,
 } from "@tanstack/react-table";
@@ -17,8 +19,8 @@ import {
 } from "../../../lib/apollo";
 import Avatar from "../../common/Avatar";
 import CopyField from "../../common/CopyField";
-import DefaultTable from "../../common/Table";
 import Loading from "../../common/Loading";
+import DefaultTable from "../../common/Table";
 
 const table =
     createTable().setRowType<
@@ -30,6 +32,12 @@ const TokenList = ({ currentUser }: { currentUser: Partial<User> }) => {
         variables: {
             tenantId: currentUser.tenant?.id ?? "-1",
         },
+    });
+
+    const [pagination, setPagination] = React.useState<PaginationState>({
+        pageIndex: 0,
+        pageSize: 5,
+        pageCount: undefined,
     });
 
     const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -81,18 +89,21 @@ const TokenList = ({ currentUser }: { currentUser: Partial<User> }) => {
         columns,
         state: {
             sorting,
+            pagination,
         },
+        onPaginationChange: setPagination,
         onSortingChange: setSorting,
         getCoreRowModel: getCoreRowModelSync(),
         getSortedRowModel: getSortedRowModelSync(),
+        getPaginationRowModel: getPaginationRowModel(),
     });
 
     return (
-        <div className=" mx-auto max-w-screen-xl">
-            <div className="flex  content-middle text-warning my-3">
+        <div className=" mx-auto max-w-screen-xl mt-2">
+            {/* <div className="flex  content-middle text-warning my-3">
                 <KeyIcon className="w-7 h-7 mx-2 my-1  " />
                 <div className=" text-xl w-full my-auto">Tokens</div>
-            </div>
+            </div> */}
             <div className="">
                 {loading ? (
                     <div className="mt-5">

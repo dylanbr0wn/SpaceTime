@@ -142,7 +142,7 @@ const TimesheetDateInput = ({
                     >
                         <ChevronLeftIcon className="w-6 h-6 m-auto " />
                     </button>
-                    <div className="">
+                    <div className="z-50">
                         <DatePicker
                             onChange={onChange}
                             selected={startDate?.toJSDate()}

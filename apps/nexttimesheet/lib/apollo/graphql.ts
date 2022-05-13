@@ -175,7 +175,6 @@ export type Project = {
 
 export type Query = {
   __typename?: 'Query';
-  allUsers: Array<User>;
   departments: Array<Department>;
   getEntryComment?: Maybe<EntryComment>;
   getEntryComments?: Maybe<Array<EntryComment>>;
@@ -193,6 +192,7 @@ export type Query = {
   tenantFromId?: Maybe<Tenant>;
   timeEntry?: Maybe<TimeEntry>;
   timeEntryFromId?: Maybe<TimeEntry>;
+  users: Array<User>;
   workTypes: Array<WorkType>;
 };
 
@@ -270,6 +270,11 @@ export type QueryTimeEntryArgs = {
 
 export type QueryTimeEntryFromIdArgs = {
   TimeEntry: TimeEntryFromIdInput;
+};
+
+
+export type QueryUsersArgs = {
+  tenantId: Scalars['String'];
 };
 
 export type Tenant = {
@@ -364,6 +369,7 @@ export type User = {
   isAdmin: Scalars['Boolean'];
   isManager: Scalars['Boolean'];
   isPaymentManager: Scalars['Boolean'];
+  isSetup: Scalars['Boolean'];
   managees: Array<User>;
   manager?: Maybe<User>;
   name?: Maybe<Scalars['String']>;
@@ -591,6 +597,13 @@ export type GetOneTimeTokensQueryVariables = Exact<{
 
 
 export type GetOneTimeTokensQuery = { __typename?: 'Query', getOneTimeTokens: Array<{ __typename?: 'OneTimeToken', id: string, createdAt: any, user: { __typename?: 'User', id: string, name?: string | null, avatar?: string | null } }> };
+
+export type UsersQueryVariables = Exact<{
+  tenantId: Scalars['String'];
+}>;
+
+
+export type UsersQuery = { __typename?: 'Query', users: Array<{ __typename?: 'User', id: string, email: string, auth0Id?: string | null, code: string, isActive: boolean, isAdmin: boolean, name?: string | null, avatar?: string | null, createdAt: any, updatedAt: any, isPaymentManager: boolean, isManager: boolean, isSetup: boolean, tenant: { __typename?: 'Tenant', id: string, name: string }, department: { __typename?: 'Department', id: string, name: string }, managees: Array<{ __typename?: 'User', id: string, email: string, name?: string | null, avatar?: string | null }>, manager?: { __typename?: 'User', id: string, email: string, name?: string | null } | null }> };
 
 
 export const TenantFromIdDocument = gql`
@@ -1705,3 +1718,69 @@ export function useGetOneTimeTokensLazyQuery(baseOptions?: Apollo.LazyQueryHookO
 export type GetOneTimeTokensQueryHookResult = ReturnType<typeof useGetOneTimeTokensQuery>;
 export type GetOneTimeTokensLazyQueryHookResult = ReturnType<typeof useGetOneTimeTokensLazyQuery>;
 export type GetOneTimeTokensQueryResult = Apollo.QueryResult<GetOneTimeTokensQuery, GetOneTimeTokensQueryVariables>;
+export const UsersDocument = gql`
+    query Users($tenantId: String!) {
+  users(tenantId: $tenantId) {
+    id
+    email
+    auth0Id
+    code
+    isActive
+    isAdmin
+    tenant {
+      id
+      name
+    }
+    name
+    avatar
+    createdAt
+    updatedAt
+    department {
+      id
+      name
+    }
+    managees {
+      id
+      email
+      name
+      avatar
+    }
+    manager {
+      id
+      email
+      name
+    }
+    isPaymentManager
+    isManager
+    isSetup
+  }
+}
+    `;
+
+/**
+ * __useUsersQuery__
+ *
+ * To run a query within a React component, call `useUsersQuery` and pass it any options that fit your needs.
+ * When your component renders, `useUsersQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useUsersQuery({
+ *   variables: {
+ *      tenantId: // value for 'tenantId'
+ *   },
+ * });
+ */
+export function useUsersQuery(baseOptions: Apollo.QueryHookOptions<UsersQuery, UsersQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<UsersQuery, UsersQueryVariables>(UsersDocument, options);
+      }
+export function useUsersLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<UsersQuery, UsersQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<UsersQuery, UsersQueryVariables>(UsersDocument, options);
+        }
+export type UsersQueryHookResult = ReturnType<typeof useUsersQuery>;
+export type UsersLazyQueryHookResult = ReturnType<typeof useUsersLazyQuery>;
+export type UsersQueryResult = Apollo.QueryResult<UsersQuery, UsersQueryVariables>;

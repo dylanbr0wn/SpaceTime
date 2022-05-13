@@ -9,7 +9,7 @@ import CustTransition from "../../common/CustTransition";
 
 const DatePicker = ({ selected, onChange, filterDate }) => {
     return (
-        <Popover className="relative w-full">
+        <Popover className="relative w-full z-50">
             {({ open, close }) => (
                 <>
                     <Popover.Button
@@ -28,8 +28,11 @@ const DatePicker = ({ selected, onChange, filterDate }) => {
                         <CalendarIcon className="h-6 w-6 ml-3" />
                     </Popover.Button>
                     {/* <CustTransition open={open}> */}
-                    <Popover.Panel className="absolute z-50 mt-1 w-64 h-64 ">
-                        <div className="bg-base-200 rounded-lg shadow-lg shadow-black/30 p-2 h-full w-full">
+                    <Popover.Panel
+                        // static
+                        className="absolute z-50 mt-1 w-64 h-64 left-0 right-0"
+                    >
+                        <div className="bg-base-200 rounded-lg shadow-lg shadow-black/30 p-2 h-full w-full z-50">
                             <DayPicker
                                 mode="single"
                                 selected={selected}

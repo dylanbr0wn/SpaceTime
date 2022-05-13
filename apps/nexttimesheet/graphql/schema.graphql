@@ -84,7 +84,6 @@ type Project {
 }
 
 type Query {
-  allUsers: [User!]!
   departments: [Department!]!
   getEntryComment(commentId: String!): EntryComment
   getEntryComments(timeEntryId: String!): [EntryComment!]
@@ -102,6 +101,7 @@ type Query {
   tenantFromId(tenantId: String!): Tenant
   timeEntry(TimeEntry: TimeEntryFromRowDateInput!): TimeEntry
   timeEntryFromId(TimeEntry: TimeEntryFromIdInput!): TimeEntry
+  users(tenantId: String!): [User!]!
   workTypes: [WorkType!]!
 }
 
@@ -192,6 +192,7 @@ type User {
   isAdmin: Boolean!
   isManager: Boolean!
   isPaymentManager: Boolean!
+  isSetup: Boolean!
   managees: [User!]!
   manager: User
   name: String

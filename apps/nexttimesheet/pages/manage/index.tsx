@@ -5,10 +5,16 @@ import {
     UserProfile,
     withPageAuthRequired,
 } from "@auth0/nextjs-auth0";
-import { ChartSquareBarIcon } from "@heroicons/react/outline";
+import { Tab } from "@headlessui/react";
+import {
+    ChartSquareBarIcon,
+    KeyIcon,
+    UsersIcon,
+} from "@heroicons/react/outline";
 
 import EmployeeForm from "../../components/admin/EmployeeForm";
 import TokenList from "../../components/admin/TokenList";
+import UsersList from "../../components/admin/UsersList";
 import DashBoard from "../../components/Dashboard";
 import {
     client,
@@ -77,10 +83,54 @@ const Manage: NextPage<{
                         </div>
                     </div>
                 </div>
-                <div className="flex flex-col w-full p-3">
-                    <div className=" p-3">
-                        <TokenList currentUser={userData} />
-                    </div>
+                <div className="flex p-3 flex-col mt-4">
+                    <Tab.Group>
+                        <div className="flex justify-center">
+                            <Tab.List className="tabs tabs-boxed flex-shrink">
+                                <Tab
+                                    className={({ selected }) =>
+                                        `appearance-none tab tab-lg ${
+                                            selected && "tab-active"
+                                        }`
+                                    }
+                                >
+                                    <div className="flex  content-middle ">
+                                        <UsersIcon className="w-5 h-5 m-auto" />
+                                        <div className=" w-full my-auto">
+                                            Users
+                                        </div>
+                                    </div>
+                                </Tab>
+                                <Tab
+                                    className={({ selected }) =>
+                                        `appearance-none tab tab-lg ${
+                                            selected && "tab-active "
+                                        }`
+                                    }
+                                >
+                                    <div className="flex  content-middle">
+                                        <KeyIcon className="w-5 h-5 m-auto" />
+                                        <div className=" w-full my-auto">
+                                            Tokens
+                                        </div>
+                                    </div>
+                                </Tab>
+                            </Tab.List>
+                        </div>
+
+                        <Tab.Panels>
+                            <Tab.Panel>
+                                <div className="w-full px-3">
+                                    <UsersList user={userData} />
+                                </div>
+                            </Tab.Panel>
+                        </Tab.Panels>
+                        <Tab.Panel>
+                            <div className=" px-3 w-full">
+                                <TokenList currentUser={userData} />
+                            </div>
+                        </Tab.Panel>
+                    </Tab.Group>
                 </div>
             </div>
         </DashBoard>

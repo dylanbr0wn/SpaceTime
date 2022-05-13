@@ -1,3 +1,4 @@
+import Link from "next/link";
 import * as React from "react";
 
 import { UserProfile } from "@auth0/nextjs-auth0";
@@ -25,105 +26,115 @@ import NavMenuButton from "./NavMenuButton";
 const TimesheetMenu = ({ user }: { user: UserProfile }) => {
     // const { userMetadata, user } = useProfile();
 
+    const [menu] = React.useState([
+        {
+            icon: <CalendarIcon className="h-6 w-6" />,
+            title: "Timesheet",
+            href: "/",
+        },
+        {
+            icon: <UserGroupIcon className="h-6 w-6" />,
+            title: "Manage",
+            href: "/manage",
+        },
+    ]);
+
     return (
         <ErrorBoundary>
-            <div className="w-full h-16  ">
+            <div className="w-full h-16  z-50">
                 <div className=" max-w-screen-xl mx-auto h-full flex">
-                    <Popover className={"z-50 relative"}>
+                    <Menu as={"div"} className={"relative inline-block  z-50"}>
                         {({ open }) => (
                             <>
                                 <NavMenuButton open={open} />
                                 <Transition open={open}>
-                                    <Popover.Panel
+                                    <Menu.Items
                                         static
-                                        className="origin-top-left absolute"
+                                        className="origin-top-left absolute left-0"
                                     >
-                                        <div className=" flex flex-col mt-2 relative">
-                                            <ul className="bg-base-300 menu rounded-box shadow-lg shadow-black/30 text-base flex flex-col p-2 ">
-                                                <NavButton
-                                                    icon={
-                                                        <CalendarIcon className="h-6 w-6" />
-                                                    }
-                                                    title={"Timesheet"}
-                                                    url={`/`}
-                                                />
-                                                <NavButton
-                                                    icon={
-                                                        <UserGroupIcon className="h-6 w-6" />
-                                                    }
-                                                    title={"Manage"}
-                                                    url={`/manage`}
-                                                />
-                                            </ul>
-                                        </div>
-                                    </Popover.Panel>
+                                        <ul className="bg-base-300 menu rounded-box shadow-lg shadow-black/30 text-base w-64 p-2 space-y-1">
+                                            {menu.map((item, index) => (
+                                                <Menu.Item
+                                                    key={index}
+                                                    as={"li"}
+                                                >
+                                                    <Link
+                                                        href={item.href}
+                                                        title={item.title}
+                                                    >
+                                                        <a className="">
+                                                            {item.icon}
+                                                            <div>
+                                                                <p className="text-sm font-medium">
+                                                                    {item.title}
+                                                                </p>
+                                                                <p className="text-sm text-base-content group-hover:text-white transition-colors">
+                                                                    Some
+                                                                    Description
+                                                                </p>
+                                                            </div>
+                                                        </a>
+                                                    </Link>
+                                                </Menu.Item>
+                                            ))}
+                                        </ul>
+                                    </Menu.Items>
                                 </Transition>
                             </>
                         )}
-                    </Popover>
+                    </Menu>
 
                     <div className="flex-grow"></div>
-                    <div className="">
-                        <Menu
-                            as="div"
-                            className="relative inline-block text-left"
-                        >
-                            {({ open }) => (
-                                <>
-                                    <div className="h-16  py-2">
-                                        <Menu.Button className=" inline-flex justify-end h-full w-full  font-medium text-base-content btn btn-ghost  ">
-                                            <div className="h-full mr-3 flex flex-col text-right">
-                                                <div className="my-auto">
-                                                    {user?.nickname}
-                                                </div>
+                    <Menu
+                        as="div"
+                        className="relative inline-block text-left z-50"
+                    >
+                        {({ open }) => (
+                            <>
+                                <div className="h-16  py-2">
+                                    <Menu.Button className=" inline-flex justify-end h-full w-full  font-medium text-base-content btn btn-ghost  ">
+                                        <div className="h-full mr-3 flex flex-col text-right">
+                                            <div className="my-auto">
+                                                {user?.nickname}
                                             </div>
+                                        </div>
 
-                                            <div className="">
-                                                <Avatar
-                                                    name={user?.name}
-                                                    image={user?.picture}
-                                                />
-                                            </div>
-                                        </Menu.Button>
-                                    </div>
-                                    <Transition open={open}>
-                                        <Menu.Items className="  absolute right-0   origin-top-right  ">
-                                            <ul className="bg-base-300 menu rounded-box p-2 shadow-lg shadow-black/30 w-56 space-y-1">
-                                                <Menu.Item as={"li"}>
-                                                    {({ active }) => (
-                                                        <button
-                                                            className={`${
-                                                                active
-                                                                    ? "bg-primary text-white"
-                                                                    : "text-base-content"
-                                                            } group flex w-full items-center px-2 py-2 text-sm`}
-                                                        >
-                                                            <PencilAltIcon className="h-5 w-5 mr-2" />
-                                                            Edit
-                                                        </button>
-                                                    )}
-                                                </Menu.Item>
-                                                <Menu.Item as={"li"}>
-                                                    {({ active }) => (
-                                                        <button
-                                                            className={`${
-                                                                active
-                                                                    ? "bg-primary text-white"
-                                                                    : "text-base-content"
-                                                            } group flex w-full items-center px-2 py-2 text-sm`}
-                                                        >
-                                                            <PencilAltIcon className="h-5 w-5 mr-2" />
-                                                            Edit
-                                                        </button>
-                                                    )}
-                                                </Menu.Item>
-                                            </ul>
-                                        </Menu.Items>
-                                    </Transition>
-                                </>
-                            )}
-                        </Menu>
-                    </div>
+                                        <div className="">
+                                            <Avatar
+                                                name={user?.name}
+                                                image={user?.picture}
+                                            />
+                                        </div>
+                                    </Menu.Button>
+                                </div>
+                                <Transition open={open}>
+                                    <Menu.Items
+                                        static
+                                        className="  absolute right-0   origin-top-right  "
+                                    >
+                                        <ul className="bg-base-300  menu rounded-box p-2 shadow-lg shadow-black/30 w-56 space-y-1">
+                                            <Menu.Item as={"li"}>
+                                                <Link href={"/"}>
+                                                    <a>
+                                                        <PencilAltIcon className="h-5 w-5" />
+                                                        Edit
+                                                    </a>
+                                                </Link>
+                                            </Menu.Item>
+                                            <Menu.Item as={"li"}>
+                                                <Link href={"/"}>
+                                                    <a>
+                                                        <PencilAltIcon className="h-5 w-5" />
+                                                        Edit
+                                                    </a>
+                                                </Link>
+                                            </Menu.Item>
+                                        </ul>
+                                    </Menu.Items>
+                                </Transition>
+                            </>
+                        )}
+                    </Menu>
                 </div>
             </div>
         </ErrorBoundary>

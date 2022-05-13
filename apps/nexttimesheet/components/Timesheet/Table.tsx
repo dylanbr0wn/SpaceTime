@@ -205,16 +205,19 @@ const TimesheetTable = ({
                             header: () => {
                                 return (
                                     <div
-                                        className={`w-full box-border ${dayFeatures.style}`}
+                                        data-tip={dayFeatures.hoverText}
+                                        className={`w-full tooltip box-border `}
                                     >
-                                        <div className="text-center">
-                                            {date.toFormat("dd")}
-                                        </div>
-                                        <div
-                                            className="text-center"
-                                            style={{ fontWeight: 400 }}
-                                        >
-                                            {date.toFormat("L/d")}
+                                        <div className={`${dayFeatures.style}`}>
+                                            <div className="text-center">
+                                                {date.toFormat("ccc")}
+                                            </div>
+                                            <div
+                                                className="text-center"
+                                                style={{ fontWeight: 400 }}
+                                            >
+                                                {date.toFormat("L/d")}
+                                            </div>
                                         </div>
                                     </div>
                                 );

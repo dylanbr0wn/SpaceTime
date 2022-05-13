@@ -51,6 +51,7 @@ model User {
   timesheets       Timesheet[]
   tenant           Tenant         @relation(fields: [tenantId], references: [id])
   tenantId         String
+  isSetup          Boolean        @default(false)
   oneTimeToken     OneTimeToken[]
 
   @@index([departmentId, managerId, tenantId])
