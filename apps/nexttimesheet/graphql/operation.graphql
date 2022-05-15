@@ -86,8 +86,8 @@ query WorkTypes {
         isBillable
     }
 }
-query TimeEntry($timeEntry: TimeEntryFromRowDateInput!) {
-    timeEntry(TimeEntry: $timeEntry) {
+query TimeEntry($date: String! $timeEntryRowId: String!) {
+    timeEntry(date: $date, timeEntryRowId: $timeEntryRowId) {
         id
         createdAt
         updatedAt
@@ -105,26 +105,29 @@ query TimeEntry($timeEntry: TimeEntryFromRowDateInput!) {
     }
 }
 
-query TimeEntryFromId($timeEntry: TimeEntryFromIdInput!) {
-    timeEntryFromId(TimeEntry: $timeEntry) {
+query TimeEntryFromIndex($index: Int! $timeEntryRowId: String!) {
+    timeEntryFromIndex(index: $index, timeEntryRowId: $timeEntryRowId) {
         id
         createdAt
         updatedAt
         date
         hours
+        index
         entryComments {
             id
         }
     }
 }
+      
 
-mutation CreateTimeEntry($data: TimeEntryCreateInput!) {
-    createTimeEntry(data: $data) {
+mutation CreateTimeEntry($index: Int! $timeEntryRowId: String! $hours: Int! $date: String!) {
+    createTimeEntry(index: $index, hours: $hours, date: $date, timeEntryRowId: $timeEntryRowId) {
         id
         createdAt
         updatedAt
         date
         hours
+        index
         entryComments {
             id
         }
@@ -133,14 +136,15 @@ mutation CreateTimeEntry($data: TimeEntryCreateInput!) {
 
 mutation UpdateTimeEntryhours(
     $updateTimeEntryhoursId: String!
-    $data: TimeEntryUpdateInput!
+    $hours: Int!
 ) {
-    updateTimeEntryhours(id: $updateTimeEntryhoursId, data: $data) {
+    updateTimeEntryhours(id: $updateTimeEntryhoursId, hours: $hours) {
         id
         createdAt
         updatedAt
         date
         hours
+        index
         entryComments {
             id
         }
@@ -152,6 +156,7 @@ mutation DeleteTimeEntry($deleteTimeEntryId: String!) {
         id
         hours
         date
+        index
         updatedAt
         createdAt
     }
@@ -183,6 +188,15 @@ mutation UpdateTimeEntryRow(
     }
 }
 
+query GetTimeEntries($rowId: String!) {
+    getTimeEntryRow(id: $rowId) {
+       timeEntries{
+           id
+       }
+        
+    }
+}
+
 query GetTimeEntryRow($getTimeEntryRowId: String!) {
     getTimeEntryRow(id: $getTimeEntryRowId) {
         id
@@ -197,16 +211,7 @@ query GetTimeEntryRow($getTimeEntryRowId: String!) {
         department {
             id
         }
-        timeEntries {
-            id
-            createdAt
-            updatedAt
-            date
-            hours
-            entryComments {
-                id
-            }
-        }
+        
     }
 }
 
@@ -226,13 +231,7 @@ query GetTimeEntryRows($timesheetId: String!) {
         }
         timeEntries {
             id
-            createdAt
-            updatedAt
-            date
-            hours
-            entryComments {
-                id
-            }
+           
         }
     }
 }
@@ -253,13 +252,7 @@ mutation CreateTimeEntryRow($timesheetId: String!) {
         }
         timeEntries {
             id
-            createdAt
-            updatedAt
-            date
-            hours
-            entryComments {
-                id
-            }
+           
         }
     }
 }
@@ -442,4 +435,17 @@ query Users($tenantId: String!) {
     isManager
     isSetup
   }
+}
+
+query TimeEntryFromId($id: String!){
+    timeEntryFromId(id: $id) {
+        id
+        createdAt
+        updatedAt
+        date
+        hours
+        entryComments {
+            id
+        }
+    }
 }

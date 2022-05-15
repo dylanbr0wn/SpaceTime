@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Session } from "next-auth";
 import * as React from "react";
 
 import { UserProfile } from "@auth0/nextjs-auth0";
@@ -13,7 +14,6 @@ import Avatar from "../common/Avatar";
 import Transition from "../common/CustTransition";
 import ErrorBoundary from "../common/ErrorBoundary";
 
-import NavButton from "./NavLinkButton";
 import NavMenuButton from "./NavMenuButton";
 
 /**
@@ -23,7 +23,7 @@ import NavMenuButton from "./NavMenuButton";
  * @param {Object} props Props. See propTypes for details.
  * @description Sidebar navigation menu.
  */
-const TimesheetMenu = ({ user }: { user: UserProfile }) => {
+const TimesheetMenu = ({ user }: { user: Session["user"] }) => {
     // const { userMetadata, user } = useProfile();
 
     const [menu] = React.useState([
@@ -102,7 +102,7 @@ const TimesheetMenu = ({ user }: { user: UserProfile }) => {
                                         <div className="">
                                             <Avatar
                                                 name={user?.name}
-                                                image={user?.picture}
+                                                image={user?.image}
                                             />
                                         </div>
                                     </Menu.Button>

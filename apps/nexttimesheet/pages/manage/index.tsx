@@ -1,10 +1,7 @@
 import { GetServerSidePropsContext, NextPage } from "next";
+import { Session } from "next-auth";
+import { getSession, useSession } from "next-auth/react";
 
-import {
-    getSession,
-    UserProfile,
-    withPageAuthRequired,
-} from "@auth0/nextjs-auth0";
 import { Tab } from "@headlessui/react";
 import {
     ChartSquareBarIcon,
@@ -17,40 +14,40 @@ import TokenList from "../../components/admin/TokenList";
 import UsersList from "../../components/admin/UsersList";
 import DashBoard from "../../components/Dashboard";
 import {
-    client,
     GetUserFromAuth0Document,
     GetUserFromAuth0Query,
     GetUserFromAuth0QueryVariables,
+    initializeApollo,
     User,
 } from "../../lib/apollo";
 
-export const getServerSideProps = withPageAuthRequired({
-    getServerSideProps: async (ctx: GetServerSidePropsContext) => {
-        const session = getSession(ctx.req, ctx.res);
+export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
+    const client = initializeApollo({ headers: ctx?.req?.headers });
 
-        const user = session?.user;
+    const session = await getSession(ctx);
 
-        const { data: userData } = await client.query<
-            GetUserFromAuth0Query,
-            GetUserFromAuth0QueryVariables
-        >({
-            query: GetUserFromAuth0Document,
-            variables: {
-                auth0Id: String(user?.sub),
-            },
-        });
+    const user = session?.user;
 
-        return {
-            props: {
-                userData: userData?.getUserFromAuth0,
-            },
-        };
-    },
-});
+    const { data: userData } = await client.query<
+        GetUserFromAuth0Query,
+        GetUserFromAuth0QueryVariables
+    >({
+        query: GetUserFromAuth0Document,
+        variables: {
+            auth0Id: String(user?.sub),
+        },
+    });
+
+    return {
+        props: {
+            userData: userData?.getUserFromAuth0,
+            user,
+        },
+    };
+};
 
 const Manage: NextPage<{
     userData: Partial<User>;
-    user: UserProfile;
 }> = ({ userData, user }) => {
     return (
         <DashBoard user={user}>
@@ -136,5 +133,7 @@ const Manage: NextPage<{
         </DashBoard>
     );
 };
+
+Manage.auth = true;
 
 export default Manage;

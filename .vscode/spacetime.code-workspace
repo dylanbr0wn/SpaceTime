@@ -5,8 +5,8 @@
             "path": "../"
         },
         {
-            "name": "packages/nexttimesheet",
-            "path": "../packages/nexttimesheet"
+            "name": "apps/nexttimesheet",
+            "path": "../apps/nexttimesheet"
         },
     ],
     "settings": {}

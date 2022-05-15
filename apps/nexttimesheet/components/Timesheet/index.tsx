@@ -63,6 +63,11 @@ const Timesheet = ({
         String(user?.id)
     );
 
+    React.useEffect(() => {
+        console.log(!!timesheetData?.getTimesheet?.id);
+        console.log(!timesheetLoading);
+    }, [timesheetData, timesheetLoading]);
+
     // Updates the timesheet start date by subtracting or adding 14 days
 
     return (
@@ -80,7 +85,7 @@ const Timesheet = ({
                         userId={String(user?.id)}
                     />
                 </div>
-                {!timesheetLoading ? (
+                {!timesheetLoading && timesheetData?.getTimesheet ? (
                     <TimesheetTable
                         timesheetData={timesheetData?.getTimesheet}
                         timesheetDates={timesheetDates}

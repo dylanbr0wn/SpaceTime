@@ -24,7 +24,7 @@ export const useTimesheetDates = (
     // const [timesheetId, setTimesheetId] = React.useState();
 
     React.useEffect(() => {
-        if (timesheetData) {
+        if (timesheetData?.getTimesheet) {
             const dates: DateTime[] = [];
             const endDate = DateTime.fromISO(
                 timesheetData?.getTimesheet?.period.endDate,
@@ -115,23 +115,6 @@ export const useTimesheet = (
                         department: newRow.department ?? defaultRow.department,
                         createdAt: newRow.createdAt ?? defaultRow.createdAt,
                         updatedAt: newRow.updatedAt ?? defaultRow.updatedAt,
-                        timeEntries: timesheetDates.map((date) => {
-                            const timeEntry = row.timeEntries.find(
-                                (entry) => entry.date === date.toISO()
-                            );
-                            const newTimeEntry: TimeEntry = timeEntry
-                                ? {
-                                      ...timeEntry,
-                                      date,
-                                  }
-                                : {
-                                      entryComments: [],
-                                      date,
-                                      id: "-1",
-                                  };
-
-                            return newTimeEntry;
-                        }),
                     };
                 });
             setTimesheet(timeEntryRows);

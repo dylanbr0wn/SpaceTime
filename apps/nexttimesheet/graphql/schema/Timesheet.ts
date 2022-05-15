@@ -1,3 +1,4 @@
+import { isConstValueNode } from "graphql";
 import { DateTime, Interval } from "luxon";
 import { arg, extendType, inputObjectType, nonNull, objectType } from "nexus";
 import * as NexusPrisma from "nexus-prisma";
@@ -36,31 +37,38 @@ export const QueryTimesheet = extendType({
                         },
                     },
                 });
-
                 const user = await context.prisma.user.findUnique({
                     where: {
                         id: Timesheet.userId,
+                    },
+                    include: {
+                        tenant: {
+                            select: {
+                                startDate: true,
+                                periodLength: true,
+                            },
+                        },
                     },
                 });
                 if (!period) {
                     // if the period doesnt exist, create it
 
                     // find the period params
-                    const prefs = await context.prisma.tenant.findUnique({
-                        where: {
-                            id: user?.tenantId,
-                        },
-                        select: {
-                            startDate: true,
-                            periodLength: true,
-                        },
-                    });
-                    if (prefs) {
+                    // const prefs = await context.prisma.tenant.findUnique({
+                    //     where: {
+                    //         id: user?.tenantId,
+                    //     },
+                    //     select: {
+                    //         startDate: true,
+                    //         periodLength: true,
+                    //     },
+                    // });
+                    if (user) {
                         // got prefs, find the period params
                         const timesheetDate = DateTime.fromJSDate(
                             Timesheet.date
                         );
-                        const { startDate, periodLength } = prefs;
+                        const { startDate, periodLength } = user.tenant;
                         let interval = Interval.after(startDate, {
                             days: periodLength,
                         });

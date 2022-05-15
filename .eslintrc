@@ -6,9 +6,7 @@
         "node": true
     },
     "extends": [
-        "react-app",
         "plugin:react/recommended",
-        "plugin:react-hooks/recommended",
         "prettier-standard"
     ],
     "parserOptions": {
@@ -20,7 +18,6 @@
     },
     "plugins": [
         "react",
-        "react-hooks",
         "prettier",
         "simple-import-sort"
     ],

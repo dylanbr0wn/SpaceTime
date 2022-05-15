@@ -3,19 +3,30 @@ import { DateTime } from "luxon";
 import * as React from "react";
 
 import {
+    GetTimeEntriesDocument,
+    GetTimeEntriesQuery,
+    GetTimeEntriesQueryVariables,
     GetTimeEntryRowsDocument,
     GetTimeEntryRowsQuery,
     GetTimeEntryRowsQueryVariables,
     TimeEntry,
+    TimeEntryFromIdDocument,
+    TimeEntryFromIdQuery,
+    TimeEntryFromIdQueryVariables,
+    TimeEntryFromIndexDocument,
+    TimeEntryFromIndexQuery,
+    TimeEntryFromIndexQueryVariables,
     TimeEntryRow,
     useCreateTimeEntryMutation,
     useDeleteTimeEntryMutation,
+    User,
     useUpdateTimeEntryhoursMutation,
 } from "../../../lib/apollo";
 import ErrorBoundary from "../../common/ErrorBoundary";
 import CustModal from "../../common/Modal";
 
 import Comments from "./Comments";
+import { useTimeEntry } from "./hooks";
 
 /**
  * @name HourEntryInput
@@ -25,17 +36,17 @@ import Comments from "./Comments";
  * @param {Object} props Props. See propTypes for details.
  */
 const TimesheetEntryInput = ({
-    value,
     row,
     date,
-    userId,
+    user,
     timesheetId,
+    index,
 }: {
-    value: Partial<TimeEntry> | undefined;
     row: Partial<TimeEntryRow> | undefined;
     date: DateTime;
-    userId: string;
+    user: Partial<User>;
     timesheetId: string;
+    index: number;
 }) => {
     // We need to keep and update the state of the cell normally
 
@@ -43,9 +54,6 @@ const TimesheetEntryInput = ({
     const [createTimeEntryMutation] = useCreateTimeEntryMutation();
     const [deleteTimeEntryMutation] = useDeleteTimeEntryMutation();
 
-    const [work, setWork] = React.useState<Partial<TimeEntry> | undefined>(
-        value
-    );
     const [disableEntryInput, setDisableEntryInput] = React.useState(true);
 
     React.useEffect(() => {
@@ -63,29 +71,29 @@ const TimesheetEntryInput = ({
         }
     }, [row]);
 
-    const [isEditing, setIsEditing] = React.useState(false); // Is the input field active?
-    const [isSaving, setIsSaving] = React.useState(false); // Keep track of saving state
+    const { timeEntry, setTimeEntry, needsToSave, setIsSaving, setIsEditing } =
+        useTimeEntry(row?.id, index);
 
     const onHourChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const hours = parseFloat(e.target.value) ?? 0;
+        let hours = parseFloat(e.target.value);
+        if (isNaN(hours)) hours = 0;
         if (hours > 24 || hours < 0) return;
-        setWork({
-            ...work,
+        setTimeEntry({
+            ...timeEntry!,
             hours: hours,
         });
     };
 
     // We'll only update the external data when the input is blurred
     const onBlur = () => {
-        setIsSaving(true);
-        if (work?.id === "-1" && (work?.hours ?? 0) > 0) {
+        console.log(timeEntry);
+        if (timeEntry?.id === "-1" && (timeEntry?.hours ?? 0) > 0) {
             createTimeEntryMutation({
                 variables: {
-                    data: {
-                        date: date.toISO(),
-                        hours: work?.hours ?? 0,
-                        timeEntryRowId: row?.id ?? "-1",
-                    },
+                    date: date.toISO(),
+                    index,
+                    hours: timeEntry?.hours ?? 0,
+                    timeEntryRowId: row?.id ?? "-1",
                 },
                 optimisticResponse: {
                     createTimeEntry: {
@@ -94,154 +102,151 @@ const TimesheetEntryInput = ({
                         date: date.toISO(),
                         createdAt: DateTime.now().toISO(),
                         updatedAt: DateTime.now().toISO(),
-                        hours: work?.hours ?? 0,
+                        index,
+                        hours: timeEntry?.hours ?? 0,
                         entryComments: [],
                     },
                 },
                 update: (cache, { data: TimeEntryData }) => {
                     cache.updateQuery<
-                        GetTimeEntryRowsQuery,
-                        GetTimeEntryRowsQueryVariables
+                        TimeEntryFromIndexQuery,
+                        TimeEntryFromIndexQueryVariables
                     >(
                         {
-                            query: GetTimeEntryRowsDocument,
+                            query: TimeEntryFromIndexDocument,
                             variables: {
-                                timesheetId,
+                                timeEntryRowId: row?.id ?? "-1",
+                                index,
+                            },
+                            returnPartialData: true,
+                        },
+                        (data) => {
+                            return {
+                                timeEntryFromIndex:
+                                    TimeEntryData?.createTimeEntry,
+                            };
+                        }
+                    );
+
+                    cache.updateQuery<
+                        GetTimeEntriesQuery,
+                        GetTimeEntriesQueryVariables
+                    >(
+                        {
+                            query: GetTimeEntriesDocument,
+                            variables: {
+                                rowId: row?.id ?? "-1",
                             },
                         },
                         (data) => {
                             const TimeEntry = TimeEntryData?.createTimeEntry;
                             if (!TimeEntry) return data;
-                            const timeEntryRows = data?.getTimeEntryRows;
-                            if (!timeEntryRows) return data;
+                            const timeEntries =
+                                data?.getTimeEntryRow?.timeEntries;
+                            if (!timeEntries) return data;
 
                             return {
-                                getTimeEntryRows: timeEntryRows.map(
-                                    (timeEntryRow) => {
-                                        if (timeEntryRow.id === row?.id) {
-                                            return {
-                                                ...timeEntryRow,
-                                                timeEntries: [
-                                                    ...timeEntryRow.timeEntries,
-                                                    TimeEntry,
-                                                ],
-                                            };
-                                        }
-                                        return timeEntryRow;
-                                    }
-                                ),
+                                getTimeEntryRow: {
+                                    timeEntries: [
+                                        ...timeEntries,
+                                        {
+                                            id: timeEntry.id,
+                                        },
+                                    ],
+                                },
                             };
                         }
                     );
                 },
             });
-        } else if (work?.id !== "-1" && (work?.hours ?? 0) > 0) {
-            if (work?.hours !== value?.hours) {
+        } else if (timeEntry?.id !== "-1" && (timeEntry?.hours ?? 0) > 0) {
+            if (needsToSave) {
                 updateTimeEntryhoursMutation({
                     variables: {
-                        updateTimeEntryhoursId: work?.id ?? "-1",
-                        data: {
-                            hours: work?.hours ?? 0,
+                        updateTimeEntryhoursId: timeEntry?.id ?? "-1",
+                        hours: timeEntry?.hours ?? 0,
+                    },
+                    optimisticResponse: {
+                        updateTimeEntryhours: {
+                            __typename: "TimeEntry",
+                            id: timeEntry?.id ?? "-1",
+                            date: timeEntry?.date ?? "",
+                            createdAt: timeEntry?.createdAt ?? "",
+                            updatedAt: DateTime.now().toISO(),
+                            index,
+                            hours: timeEntry?.hours ?? 0,
+                            entryComments: timeEntry?.entryComments ?? [],
                         },
                     },
                     update: (cache, { data: TimeEntryData }) => {
                         cache.updateQuery<
-                            GetTimeEntryRowsQuery,
-                            GetTimeEntryRowsQueryVariables
+                            TimeEntryFromIdQuery,
+                            TimeEntryFromIdQueryVariables
                         >(
                             {
-                                query: GetTimeEntryRowsDocument,
+                                query: TimeEntryFromIdDocument,
                                 variables: {
-                                    timesheetId,
+                                    id:
+                                        TimeEntryData?.updateTimeEntryhours
+                                            ?.id ?? "-1",
                                 },
                             },
                             (data) => {
-                                if (!TimeEntryData) return data;
-                                const TimeEntry =
-                                    TimeEntryData.updateTimeEntryhours;
-                                if (!TimeEntry) return;
-                                const timeEntryRows = data?.getTimeEntryRows;
-                                if (!timeEntryRows) return data;
-
                                 return {
-                                    getTimeEntryRows: timeEntryRows.map(
-                                        (timeEntryRow) => {
-                                            if (timeEntryRow.id === row?.id) {
-                                                return {
-                                                    ...timeEntryRow,
-                                                    timeEntries: [
-                                                        ...timeEntryRow.timeEntries,
-                                                        TimeEntry,
-                                                    ],
-                                                };
-                                            }
-                                            return timeEntryRow;
-                                        }
-                                    ),
+                                    timeEntryFromId:
+                                        TimeEntryData?.updateTimeEntryhours,
                                 };
                             }
                         );
                     },
                 });
             }
-        } else if (work?.id !== "-1" && work?.hours === 0) {
+        } else if (timeEntry?.id !== "-1" && timeEntry?.hours === 0) {
             deleteTimeEntryMutation({
                 variables: {
-                    deleteTimeEntryId: work?.id ?? "-1",
+                    deleteTimeEntryId: timeEntry?.id ?? "-1",
+                },
+                optimisticResponse: {
+                    deleteTimeEntry: {
+                        __typename: "TimeEntry",
+                        id: timeEntry?.id ?? "-1",
+                        date: timeEntry?.date ?? "",
+                        createdAt: timeEntry?.createdAt ?? "",
+                        updatedAt: DateTime.now().toISO(),
+                        index,
+                        hours: 0,
+                    },
                 },
                 update: (cache, { data: TimeEntryData }) => {
-                    cache.updateQuery<
-                        GetTimeEntryRowsQuery,
-                        GetTimeEntryRowsQueryVariables
-                    >(
-                        {
-                            query: GetTimeEntryRowsDocument,
-                            variables: {
-                                timesheetId,
+                    cache.modify({
+                        id: cache.identify({
+                            __typename: "TimeEntry",
+                            id: timeEntry?.id ?? "-1",
+                        }),
+                        fields: {
+                            entryComments(_entryComments, { DELETE }) {
+                                return DELETE;
                             },
                         },
-                        (data) => {
-                            const timeEntryRows = data?.getTimeEntryRows ?? [];
-
-                            return {
-                                getTimeEntryRows: timeEntryRows.map(
-                                    (timeEntryRow) => {
-                                        if (timeEntryRow.id === row?.id) {
-                                            return {
-                                                ...timeEntryRow,
-                                                timeEntries:
-                                                    timeEntryRow.timeEntries.filter(
-                                                        (entry) =>
-                                                            entry.id !== work.id
-                                                    ),
-                                            };
-                                        }
-                                        return timeEntryRow;
-                                    }
-                                ),
-                            };
-                        }
-                    );
+                    });
+                    /**
+                     * This invalidates the cache for this query
+                     * https://danreynolds.ca/tech/2020/05/04/Apollo-3-Client-Cache/
+                     */
+                    cache.evict({
+                        id: cache.identify({
+                            __typename: "TimeEntry",
+                            id: timeEntry?.id ?? "-1",
+                        }),
+                    });
+                    cache.gc();
                 },
             });
-            work.id = "-1"; // set to -1 so we know it's deleted
+        } else {
+            setIsSaving(false);
         }
         setIsEditing(false);
     };
-
-    React.useEffect(() => {
-        setIsSaving(false);
-    }, [value]);
-
-    // If the initialValue is changed external, sync it up with our state
-    React.useEffect(() => {
-        if (!isEditing && !isSaving) {
-            if (value?.id !== "-1") {
-                // If it's not a new entry dont update the state
-                setWork(value ?? {});
-            }
-        }
-    }, [value, isEditing, isSaving]);
 
     // when comment change detected, will wait 0.75s to update. If updated before end of 0.75s, timer will restart.
 
@@ -259,7 +264,7 @@ const TimesheetEntryInput = ({
 
     const clickHandler = (event: React.MouseEvent) => {
         event.stopPropagation();
-        if (!work) return;
+        if (!timeEntry) return;
 
         if (event.ctrlKey || event.metaKey) setIsOpen(true);
     };
@@ -273,11 +278,11 @@ const TimesheetEntryInput = ({
                         type="number"
                         onClick={clickHandler}
                         value={
-                            !work?.hours
+                            !timeEntry?.hours
                                 ? ""
-                                : work.hours === 0
+                                : timeEntry.hours === 0
                                 ? ""
-                                : work.hours
+                                : timeEntry.hours
                         }
                         onChange={onHourChange}
                         onBlur={onBlur}
@@ -285,7 +290,7 @@ const TimesheetEntryInput = ({
                         className={`w-full h-full input input-bordered input-sm bg-base-300 px-2 text-sm ${
                             false || disableEntryInput ? "input-disabled" : ""
                         } ${
-                            (value?.entryComments?.length ?? 0) > 0
+                            (timeEntry?.entryComments?.length ?? 0) > 0
                                 ? "input-accent"
                                 : ""
                         }`}
@@ -295,12 +300,12 @@ const TimesheetEntryInput = ({
                 </div>
                 <CustModal onHide={closeModal} show={isOpen} title="Comments">
                     <Comments
-                        timeEntryRowId={row?.id}
-                        timeEntryId={work?.id ?? "-1"}
-                        userId={userId}
+                        timeEntryRowId={row?.id ?? "-1"}
+                        timeEntryId={timeEntry?.id ?? "-1"}
+                        user={user}
                         closeModal={closeModal}
                         // onCommentChange={onCommentChange}
-                        comments={work?.entryComments}
+                        comments={timeEntry?.entryComments ?? []}
                     />
                 </CustModal>
             </ErrorBoundary>

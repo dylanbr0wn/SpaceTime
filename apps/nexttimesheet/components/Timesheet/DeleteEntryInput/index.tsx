@@ -15,18 +15,18 @@ import { useRowHasHours } from "./hooks";
  * @description Delete button for rows. Provides an icon which can be clicked to delete a row.
  * @param {Object} props Props. See propTypes for details.
  */
-const TimesheetDeleteEntryInput = ({ row, userId }) => {
+const TimesheetDeleteEntryInput = ({ rowId }: { rowId: string }) => {
     const [showDeleteConfirmModal, setShowDeleteConfirmModal] =
         React.useState(false);
 
-    const { hasHours } = useRowHasHours(row.original);
+    const { hasHours } = useRowHasHours(rowId);
 
-    React.useEffect(() => {
-        setShowDeleteConfirmModal(false);
-        return () => {
-            setShowDeleteConfirmModal(false);
-        };
-    }, [row]);
+    // React.useEffect(() => {
+    //     setShowDeleteConfirmModal(false);
+    //     return () => {
+    //         setShowDeleteConfirmModal(false);
+    //     };
+    // }, [rowId]);
 
     const [deleteTimeEntryRowMutation] = useDeleteTimeEntryRowMutation();
 
@@ -37,13 +37,13 @@ const TimesheetDeleteEntryInput = ({ row, userId }) => {
         deleteTimeEntryRowMutation({
             variables: {
                 timeEntryRow: {
-                    id: row.original.id,
+                    id: rowId,
                 },
             },
             optimisticResponse: {
                 deleteTimeEntryRow: {
                     __typename: "TimeEntryRow",
-                    id: row.original.id,
+                    id: rowId,
                 },
             },
             // refetchQueries: [GetTimeEntryRowsDocument],
@@ -51,7 +51,7 @@ const TimesheetDeleteEntryInput = ({ row, userId }) => {
                 cache.modify({
                     id: cache.identify({
                         __typename: "TimeEntryRow",
-                        id: row.original.id,
+                        id: rowId,
                     }),
                     fields: {
                         timeEntries(_existingTimeEntries, { DELETE }) {
@@ -62,7 +62,7 @@ const TimesheetDeleteEntryInput = ({ row, userId }) => {
                 cache.evict({
                     id: cache.identify({
                         __typename: "TimeEntryRow",
-                        id: row.original.id,
+                        id: rowId,
                     }),
                 });
                 cache.gc();
@@ -122,7 +122,7 @@ const TimesheetDeleteEntryInput = ({ row, userId }) => {
                             onConfirm={deleteRow}
                             modalShow={showDeleteConfirmModal}
                             body="Are you sure you want to delete this row?"
-                            title={`Delete Timesheet Row (${row.index + 1})`}
+                            title={`Delete Timesheet Row?`}
                             confirmButtonText="Delete"
                         />
                     </React.Suspense>

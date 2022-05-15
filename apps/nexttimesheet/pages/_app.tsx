@@ -1,23 +1,72 @@
 import type { AppProps } from "next/app";
+import { getSession, SessionProvider, useSession } from "next-auth/react";
+import * as React from "react";
 import { Toaster } from "react-hot-toast";
 
 import { ApolloProvider } from "@apollo/client";
-import { UserProvider } from "@auth0/nextjs-auth0";
 
-import { client } from "../lib/apollo";
+import { useApollo } from "../lib/apollo";
 
 import "../styles/globals.css";
 
-function MyApp({ Component, pageProps }: AppProps) {
+// export const getInitialProps = async (ctx) => {
+//     const session = await getSession(ctx);
+
+//     const user = session?.user;
+
+//     const { data: userData } = await client.query<
+//         GetUserFromAuth0Query,
+//         GetUserFromAuth0QueryVariables
+//     >({
+//         query: GetUserFromAuth0Document,
+//         variables: {
+//             auth0Id: String(user?.sub),
+//         },
+//     });
+
+//     return {
+//         props: {
+//             userData: userData?.getUserFromAuth0,
+//             user,
+//         },
+//     };
+// };
+
+function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
+    const apolloClient = useApollo(pageProps);
+
     return (
-        <ApolloProvider client={client}>
-            <UserProvider>
-                <Component {...pageProps} />
+        <SessionProvider session={session}>
+            <ApolloProvider client={apolloClient}>
+                {Component.auth ? (
+                    <Auth>
+                        <Component {...pageProps} />
+                    </Auth>
+                ) : (
+                    <Component {...pageProps} />
+                )}
 
                 <Toaster />
-            </UserProvider>
-        </ApolloProvider>
+            </ApolloProvider>
+        </SessionProvider>
     );
 }
 
+const Auth = ({ children }) => {
+    // if `{ required: true }` is supplied, `status` can only be "loading" or "authenticated"
+    const { status, data } = useSession({ required: true });
+
+    if (status === "loading") {
+        return <div>Loading...</div>;
+    }
+
+    return React.Children.map(children, (child) => {
+        // Checking isValidElement is the safe way and avoids a typescript
+        // error too.
+        if (React.isValidElement(child)) {
+            return React.cloneElement(child, { user: data.user });
+        }
+        return child;
+    });
+};
 export default MyApp;

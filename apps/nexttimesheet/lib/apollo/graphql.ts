@@ -89,7 +89,10 @@ export type MutationCreateOneTimeTokenArgs = {
 
 
 export type MutationCreateTimeEntryArgs = {
-  data: TimeEntryCreateInput;
+  date: Scalars['String'];
+  hours: Scalars['Int'];
+  index: Scalars['Int'];
+  timeEntryRowId: Scalars['String'];
 };
 
 
@@ -135,7 +138,7 @@ export type MutationUpdateTimeEntryRowArgs = {
 
 
 export type MutationUpdateTimeEntryhoursArgs = {
-  data: TimeEntryUpdateInput;
+  hours: Scalars['Int'];
   id: Scalars['String'];
 };
 
@@ -192,6 +195,7 @@ export type Query = {
   tenantFromId?: Maybe<Tenant>;
   timeEntry?: Maybe<TimeEntry>;
   timeEntryFromId?: Maybe<TimeEntry>;
+  timeEntryFromIndex?: Maybe<TimeEntry>;
   users: Array<User>;
   workTypes: Array<WorkType>;
 };
@@ -264,12 +268,19 @@ export type QueryTenantFromIdArgs = {
 
 
 export type QueryTimeEntryArgs = {
-  TimeEntry: TimeEntryFromRowDateInput;
+  date: Scalars['String'];
+  timeEntryRowId: Scalars['String'];
 };
 
 
 export type QueryTimeEntryFromIdArgs = {
-  TimeEntry: TimeEntryFromIdInput;
+  id: Scalars['String'];
+};
+
+
+export type QueryTimeEntryFromIndexArgs = {
+  index: Scalars['Int'];
+  timeEntryRowId: Scalars['String'];
 };
 
 
@@ -297,22 +308,8 @@ export type TimeEntry = {
   entryComments: Array<EntryComment>;
   hours: Scalars['Float'];
   id: Scalars['ID'];
+  index: Scalars['Int'];
   updatedAt: Scalars['DateTime'];
-};
-
-export type TimeEntryCreateInput = {
-  date: Scalars['DateTime'];
-  hours: Scalars['Float'];
-  timeEntryRowId: Scalars['String'];
-};
-
-export type TimeEntryFromIdInput = {
-  id: Scalars['ID'];
-};
-
-export type TimeEntryFromRowDateInput = {
-  date: Scalars['DateTime'];
-  timeEntryRowId: Scalars['String'];
 };
 
 export type TimeEntryRow = {
@@ -335,10 +332,6 @@ export type TimeEntryRowUpdateInput = {
   id: Scalars['ID'];
   projectId?: InputMaybe<Scalars['String']>;
   workTypeId?: InputMaybe<Scalars['String']>;
-};
-
-export type TimeEntryUpdateInput = {
-  hours: Scalars['Float'];
 };
 
 export type Timesheet = {
@@ -459,40 +452,45 @@ export type WorkTypesQueryVariables = Exact<{ [key: string]: never; }>;
 export type WorkTypesQuery = { __typename?: 'Query', workTypes: Array<{ __typename?: 'WorkType', id: string, name: string, createdAt: any, updatedAt: any, isActive: boolean, description?: string | null, code: string, isSystem: boolean, isDefault: boolean, multiplier: number, isBillable: boolean }> };
 
 export type TimeEntryQueryVariables = Exact<{
-  timeEntry: TimeEntryFromRowDateInput;
+  date: Scalars['String'];
+  timeEntryRowId: Scalars['String'];
 }>;
 
 
 export type TimeEntryQuery = { __typename?: 'Query', timeEntry?: { __typename?: 'TimeEntry', id: string, createdAt: any, updatedAt: any, date: any, hours: number, entryComments: Array<{ __typename?: 'EntryComment', id: string, createdAt: any, updatedAt: any, text: string, user: { __typename?: 'User', id: string } }> } | null };
 
-export type TimeEntryFromIdQueryVariables = Exact<{
-  timeEntry: TimeEntryFromIdInput;
+export type TimeEntryFromIndexQueryVariables = Exact<{
+  index: Scalars['Int'];
+  timeEntryRowId: Scalars['String'];
 }>;
 
 
-export type TimeEntryFromIdQuery = { __typename?: 'Query', timeEntryFromId?: { __typename?: 'TimeEntry', id: string, createdAt: any, updatedAt: any, date: any, hours: number, entryComments: Array<{ __typename?: 'EntryComment', id: string }> } | null };
+export type TimeEntryFromIndexQuery = { __typename?: 'Query', timeEntryFromIndex?: { __typename?: 'TimeEntry', id: string, createdAt: any, updatedAt: any, date: any, hours: number, index: number, entryComments: Array<{ __typename?: 'EntryComment', id: string }> } | null };
 
 export type CreateTimeEntryMutationVariables = Exact<{
-  data: TimeEntryCreateInput;
+  index: Scalars['Int'];
+  timeEntryRowId: Scalars['String'];
+  hours: Scalars['Int'];
+  date: Scalars['String'];
 }>;
 
 
-export type CreateTimeEntryMutation = { __typename?: 'Mutation', createTimeEntry?: { __typename?: 'TimeEntry', id: string, createdAt: any, updatedAt: any, date: any, hours: number, entryComments: Array<{ __typename?: 'EntryComment', id: string }> } | null };
+export type CreateTimeEntryMutation = { __typename?: 'Mutation', createTimeEntry?: { __typename?: 'TimeEntry', id: string, createdAt: any, updatedAt: any, date: any, hours: number, index: number, entryComments: Array<{ __typename?: 'EntryComment', id: string }> } | null };
 
 export type UpdateTimeEntryhoursMutationVariables = Exact<{
   updateTimeEntryhoursId: Scalars['String'];
-  data: TimeEntryUpdateInput;
+  hours: Scalars['Int'];
 }>;
 
 
-export type UpdateTimeEntryhoursMutation = { __typename?: 'Mutation', updateTimeEntryhours?: { __typename?: 'TimeEntry', id: string, createdAt: any, updatedAt: any, date: any, hours: number, entryComments: Array<{ __typename?: 'EntryComment', id: string }> } | null };
+export type UpdateTimeEntryhoursMutation = { __typename?: 'Mutation', updateTimeEntryhours?: { __typename?: 'TimeEntry', id: string, createdAt: any, updatedAt: any, date: any, hours: number, index: number, entryComments: Array<{ __typename?: 'EntryComment', id: string }> } | null };
 
 export type DeleteTimeEntryMutationVariables = Exact<{
   deleteTimeEntryId: Scalars['String'];
 }>;
 
 
-export type DeleteTimeEntryMutation = { __typename?: 'Mutation', deleteTimeEntry?: { __typename?: 'TimeEntry', id: string, hours: number, date: any, updatedAt: any, createdAt: any } | null };
+export type DeleteTimeEntryMutation = { __typename?: 'Mutation', deleteTimeEntry?: { __typename?: 'TimeEntry', id: string, hours: number, date: any, index: number, updatedAt: any, createdAt: any } | null };
 
 export type UpdateTimeEntryRowMutationVariables = Exact<{
   updateTimeEntryRowId: Scalars['String'];
@@ -504,26 +502,33 @@ export type UpdateTimeEntryRowMutationVariables = Exact<{
 
 export type UpdateTimeEntryRowMutation = { __typename?: 'Mutation', updateTimeEntryRow?: { __typename?: 'TimeEntryRow', id: string, createdAt: any, updatedAt: any, workType?: { __typename?: 'WorkType', id: string } | null, project?: { __typename?: 'Project', id: string } | null, department?: { __typename?: 'Department', id: string } | null } | null };
 
+export type GetTimeEntriesQueryVariables = Exact<{
+  rowId: Scalars['String'];
+}>;
+
+
+export type GetTimeEntriesQuery = { __typename?: 'Query', getTimeEntryRow?: { __typename?: 'TimeEntryRow', timeEntries: Array<{ __typename?: 'TimeEntry', id: string }> } | null };
+
 export type GetTimeEntryRowQueryVariables = Exact<{
   getTimeEntryRowId: Scalars['String'];
 }>;
 
 
-export type GetTimeEntryRowQuery = { __typename?: 'Query', getTimeEntryRow?: { __typename?: 'TimeEntryRow', id: string, createdAt: any, updatedAt: any, workType?: { __typename?: 'WorkType', id: string } | null, project?: { __typename?: 'Project', id: string } | null, department?: { __typename?: 'Department', id: string } | null, timeEntries: Array<{ __typename?: 'TimeEntry', id: string, createdAt: any, updatedAt: any, date: any, hours: number, entryComments: Array<{ __typename?: 'EntryComment', id: string }> }> } | null };
+export type GetTimeEntryRowQuery = { __typename?: 'Query', getTimeEntryRow?: { __typename?: 'TimeEntryRow', id: string, createdAt: any, updatedAt: any, workType?: { __typename?: 'WorkType', id: string } | null, project?: { __typename?: 'Project', id: string } | null, department?: { __typename?: 'Department', id: string } | null } | null };
 
 export type GetTimeEntryRowsQueryVariables = Exact<{
   timesheetId: Scalars['String'];
 }>;
 
 
-export type GetTimeEntryRowsQuery = { __typename?: 'Query', getTimeEntryRows: Array<{ __typename?: 'TimeEntryRow', id: string, createdAt: any, updatedAt: any, workType?: { __typename?: 'WorkType', id: string } | null, project?: { __typename?: 'Project', id: string } | null, department?: { __typename?: 'Department', id: string } | null, timeEntries: Array<{ __typename?: 'TimeEntry', id: string, createdAt: any, updatedAt: any, date: any, hours: number, entryComments: Array<{ __typename?: 'EntryComment', id: string }> }> }> };
+export type GetTimeEntryRowsQuery = { __typename?: 'Query', getTimeEntryRows: Array<{ __typename?: 'TimeEntryRow', id: string, createdAt: any, updatedAt: any, workType?: { __typename?: 'WorkType', id: string } | null, project?: { __typename?: 'Project', id: string } | null, department?: { __typename?: 'Department', id: string } | null, timeEntries: Array<{ __typename?: 'TimeEntry', id: string }> }> };
 
 export type CreateTimeEntryRowMutationVariables = Exact<{
   timesheetId: Scalars['String'];
 }>;
 
 
-export type CreateTimeEntryRowMutation = { __typename?: 'Mutation', createTimeEntryRow?: { __typename?: 'TimeEntryRow', id: string, createdAt: any, updatedAt: any, workType?: { __typename?: 'WorkType', id: string } | null, project?: { __typename?: 'Project', id: string } | null, department?: { __typename?: 'Department', id: string } | null, timeEntries: Array<{ __typename?: 'TimeEntry', id: string, createdAt: any, updatedAt: any, date: any, hours: number, entryComments: Array<{ __typename?: 'EntryComment', id: string }> }> } | null };
+export type CreateTimeEntryRowMutation = { __typename?: 'Mutation', createTimeEntryRow?: { __typename?: 'TimeEntryRow', id: string, createdAt: any, updatedAt: any, workType?: { __typename?: 'WorkType', id: string } | null, project?: { __typename?: 'Project', id: string } | null, department?: { __typename?: 'Department', id: string } | null, timeEntries: Array<{ __typename?: 'TimeEntry', id: string }> } | null };
 
 export type DeleteTimeEntryRowMutationVariables = Exact<{
   timeEntryRow: TimeEntryRowDeleteInput;
@@ -604,6 +609,13 @@ export type UsersQueryVariables = Exact<{
 
 
 export type UsersQuery = { __typename?: 'Query', users: Array<{ __typename?: 'User', id: string, email: string, auth0Id?: string | null, code: string, isActive: boolean, isAdmin: boolean, name?: string | null, avatar?: string | null, createdAt: any, updatedAt: any, isPaymentManager: boolean, isManager: boolean, isSetup: boolean, tenant: { __typename?: 'Tenant', id: string, name: string }, department: { __typename?: 'Department', id: string, name: string }, managees: Array<{ __typename?: 'User', id: string, email: string, name?: string | null, avatar?: string | null }>, manager?: { __typename?: 'User', id: string, email: string, name?: string | null } | null }> };
+
+export type TimeEntryFromIdQueryVariables = Exact<{
+  id: Scalars['String'];
+}>;
+
+
+export type TimeEntryFromIdQuery = { __typename?: 'Query', timeEntryFromId?: { __typename?: 'TimeEntry', id: string, createdAt: any, updatedAt: any, date: any, hours: number, entryComments: Array<{ __typename?: 'EntryComment', id: string }> } | null };
 
 
 export const TenantFromIdDocument = gql`
@@ -867,8 +879,8 @@ export type WorkTypesQueryHookResult = ReturnType<typeof useWorkTypesQuery>;
 export type WorkTypesLazyQueryHookResult = ReturnType<typeof useWorkTypesLazyQuery>;
 export type WorkTypesQueryResult = Apollo.QueryResult<WorkTypesQuery, WorkTypesQueryVariables>;
 export const TimeEntryDocument = gql`
-    query TimeEntry($timeEntry: TimeEntryFromRowDateInput!) {
-  timeEntry(TimeEntry: $timeEntry) {
+    query TimeEntry($date: String!, $timeEntryRowId: String!) {
+  timeEntry(date: $date, timeEntryRowId: $timeEntryRowId) {
     id
     createdAt
     updatedAt
@@ -899,7 +911,8 @@ export const TimeEntryDocument = gql`
  * @example
  * const { data, loading, error } = useTimeEntryQuery({
  *   variables: {
- *      timeEntry: // value for 'timeEntry'
+ *      date: // value for 'date'
+ *      timeEntryRowId: // value for 'timeEntryRowId'
  *   },
  * });
  */
@@ -914,14 +927,15 @@ export function useTimeEntryLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<
 export type TimeEntryQueryHookResult = ReturnType<typeof useTimeEntryQuery>;
 export type TimeEntryLazyQueryHookResult = ReturnType<typeof useTimeEntryLazyQuery>;
 export type TimeEntryQueryResult = Apollo.QueryResult<TimeEntryQuery, TimeEntryQueryVariables>;
-export const TimeEntryFromIdDocument = gql`
-    query TimeEntryFromId($timeEntry: TimeEntryFromIdInput!) {
-  timeEntryFromId(TimeEntry: $timeEntry) {
+export const TimeEntryFromIndexDocument = gql`
+    query TimeEntryFromIndex($index: Int!, $timeEntryRowId: String!) {
+  timeEntryFromIndex(index: $index, timeEntryRowId: $timeEntryRowId) {
     id
     createdAt
     updatedAt
     date
     hours
+    index
     entryComments {
       id
     }
@@ -930,40 +944,47 @@ export const TimeEntryFromIdDocument = gql`
     `;
 
 /**
- * __useTimeEntryFromIdQuery__
+ * __useTimeEntryFromIndexQuery__
  *
- * To run a query within a React component, call `useTimeEntryFromIdQuery` and pass it any options that fit your needs.
- * When your component renders, `useTimeEntryFromIdQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * To run a query within a React component, call `useTimeEntryFromIndexQuery` and pass it any options that fit your needs.
+ * When your component renders, `useTimeEntryFromIndexQuery` returns an object from Apollo Client that contains loading, error, and data properties
  * you can use to render your UI.
  *
  * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
  *
  * @example
- * const { data, loading, error } = useTimeEntryFromIdQuery({
+ * const { data, loading, error } = useTimeEntryFromIndexQuery({
  *   variables: {
- *      timeEntry: // value for 'timeEntry'
+ *      index: // value for 'index'
+ *      timeEntryRowId: // value for 'timeEntryRowId'
  *   },
  * });
  */
-export function useTimeEntryFromIdQuery(baseOptions: Apollo.QueryHookOptions<TimeEntryFromIdQuery, TimeEntryFromIdQueryVariables>) {
+export function useTimeEntryFromIndexQuery(baseOptions: Apollo.QueryHookOptions<TimeEntryFromIndexQuery, TimeEntryFromIndexQueryVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<TimeEntryFromIdQuery, TimeEntryFromIdQueryVariables>(TimeEntryFromIdDocument, options);
+        return Apollo.useQuery<TimeEntryFromIndexQuery, TimeEntryFromIndexQueryVariables>(TimeEntryFromIndexDocument, options);
       }
-export function useTimeEntryFromIdLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<TimeEntryFromIdQuery, TimeEntryFromIdQueryVariables>) {
+export function useTimeEntryFromIndexLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<TimeEntryFromIndexQuery, TimeEntryFromIndexQueryVariables>) {
           const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<TimeEntryFromIdQuery, TimeEntryFromIdQueryVariables>(TimeEntryFromIdDocument, options);
+          return Apollo.useLazyQuery<TimeEntryFromIndexQuery, TimeEntryFromIndexQueryVariables>(TimeEntryFromIndexDocument, options);
         }
-export type TimeEntryFromIdQueryHookResult = ReturnType<typeof useTimeEntryFromIdQuery>;
-export type TimeEntryFromIdLazyQueryHookResult = ReturnType<typeof useTimeEntryFromIdLazyQuery>;
-export type TimeEntryFromIdQueryResult = Apollo.QueryResult<TimeEntryFromIdQuery, TimeEntryFromIdQueryVariables>;
+export type TimeEntryFromIndexQueryHookResult = ReturnType<typeof useTimeEntryFromIndexQuery>;
+export type TimeEntryFromIndexLazyQueryHookResult = ReturnType<typeof useTimeEntryFromIndexLazyQuery>;
+export type TimeEntryFromIndexQueryResult = Apollo.QueryResult<TimeEntryFromIndexQuery, TimeEntryFromIndexQueryVariables>;
 export const CreateTimeEntryDocument = gql`
-    mutation CreateTimeEntry($data: TimeEntryCreateInput!) {
-  createTimeEntry(data: $data) {
+    mutation CreateTimeEntry($index: Int!, $timeEntryRowId: String!, $hours: Int!, $date: String!) {
+  createTimeEntry(
+    index: $index
+    hours: $hours
+    date: $date
+    timeEntryRowId: $timeEntryRowId
+  ) {
     id
     createdAt
     updatedAt
     date
     hours
+    index
     entryComments {
       id
     }
@@ -985,7 +1006,10 @@ export type CreateTimeEntryMutationFn = Apollo.MutationFunction<CreateTimeEntryM
  * @example
  * const [createTimeEntryMutation, { data, loading, error }] = useCreateTimeEntryMutation({
  *   variables: {
- *      data: // value for 'data'
+ *      index: // value for 'index'
+ *      timeEntryRowId: // value for 'timeEntryRowId'
+ *      hours: // value for 'hours'
+ *      date: // value for 'date'
  *   },
  * });
  */
@@ -997,13 +1021,14 @@ export type CreateTimeEntryMutationHookResult = ReturnType<typeof useCreateTimeE
 export type CreateTimeEntryMutationResult = Apollo.MutationResult<CreateTimeEntryMutation>;
 export type CreateTimeEntryMutationOptions = Apollo.BaseMutationOptions<CreateTimeEntryMutation, CreateTimeEntryMutationVariables>;
 export const UpdateTimeEntryhoursDocument = gql`
-    mutation UpdateTimeEntryhours($updateTimeEntryhoursId: String!, $data: TimeEntryUpdateInput!) {
-  updateTimeEntryhours(id: $updateTimeEntryhoursId, data: $data) {
+    mutation UpdateTimeEntryhours($updateTimeEntryhoursId: String!, $hours: Int!) {
+  updateTimeEntryhours(id: $updateTimeEntryhoursId, hours: $hours) {
     id
     createdAt
     updatedAt
     date
     hours
+    index
     entryComments {
       id
     }
@@ -1026,7 +1051,7 @@ export type UpdateTimeEntryhoursMutationFn = Apollo.MutationFunction<UpdateTimeE
  * const [updateTimeEntryhoursMutation, { data, loading, error }] = useUpdateTimeEntryhoursMutation({
  *   variables: {
  *      updateTimeEntryhoursId: // value for 'updateTimeEntryhoursId'
- *      data: // value for 'data'
+ *      hours: // value for 'hours'
  *   },
  * });
  */
@@ -1043,6 +1068,7 @@ export const DeleteTimeEntryDocument = gql`
     id
     hours
     date
+    index
     updatedAt
     createdAt
   }
@@ -1126,6 +1152,43 @@ export function useUpdateTimeEntryRowMutation(baseOptions?: Apollo.MutationHookO
 export type UpdateTimeEntryRowMutationHookResult = ReturnType<typeof useUpdateTimeEntryRowMutation>;
 export type UpdateTimeEntryRowMutationResult = Apollo.MutationResult<UpdateTimeEntryRowMutation>;
 export type UpdateTimeEntryRowMutationOptions = Apollo.BaseMutationOptions<UpdateTimeEntryRowMutation, UpdateTimeEntryRowMutationVariables>;
+export const GetTimeEntriesDocument = gql`
+    query GetTimeEntries($rowId: String!) {
+  getTimeEntryRow(id: $rowId) {
+    timeEntries {
+      id
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetTimeEntriesQuery__
+ *
+ * To run a query within a React component, call `useGetTimeEntriesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetTimeEntriesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetTimeEntriesQuery({
+ *   variables: {
+ *      rowId: // value for 'rowId'
+ *   },
+ * });
+ */
+export function useGetTimeEntriesQuery(baseOptions: Apollo.QueryHookOptions<GetTimeEntriesQuery, GetTimeEntriesQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetTimeEntriesQuery, GetTimeEntriesQueryVariables>(GetTimeEntriesDocument, options);
+      }
+export function useGetTimeEntriesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetTimeEntriesQuery, GetTimeEntriesQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetTimeEntriesQuery, GetTimeEntriesQueryVariables>(GetTimeEntriesDocument, options);
+        }
+export type GetTimeEntriesQueryHookResult = ReturnType<typeof useGetTimeEntriesQuery>;
+export type GetTimeEntriesLazyQueryHookResult = ReturnType<typeof useGetTimeEntriesLazyQuery>;
+export type GetTimeEntriesQueryResult = Apollo.QueryResult<GetTimeEntriesQuery, GetTimeEntriesQueryVariables>;
 export const GetTimeEntryRowDocument = gql`
     query GetTimeEntryRow($getTimeEntryRowId: String!) {
   getTimeEntryRow(id: $getTimeEntryRowId) {
@@ -1140,16 +1203,6 @@ export const GetTimeEntryRowDocument = gql`
     }
     department {
       id
-    }
-    timeEntries {
-      id
-      createdAt
-      updatedAt
-      date
-      hours
-      entryComments {
-        id
-      }
     }
   }
 }
@@ -1199,13 +1252,6 @@ export const GetTimeEntryRowsDocument = gql`
     }
     timeEntries {
       id
-      createdAt
-      updatedAt
-      date
-      hours
-      entryComments {
-        id
-      }
     }
   }
 }
@@ -1255,13 +1301,6 @@ export const CreateTimeEntryRowDocument = gql`
     }
     timeEntries {
       id
-      createdAt
-      updatedAt
-      date
-      hours
-      entryComments {
-        id
-      }
     }
   }
 }
@@ -1784,3 +1823,45 @@ export function useUsersLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<User
 export type UsersQueryHookResult = ReturnType<typeof useUsersQuery>;
 export type UsersLazyQueryHookResult = ReturnType<typeof useUsersLazyQuery>;
 export type UsersQueryResult = Apollo.QueryResult<UsersQuery, UsersQueryVariables>;
+export const TimeEntryFromIdDocument = gql`
+    query TimeEntryFromId($id: String!) {
+  timeEntryFromId(id: $id) {
+    id
+    createdAt
+    updatedAt
+    date
+    hours
+    entryComments {
+      id
+    }
+  }
+}
+    `;
+
+/**
+ * __useTimeEntryFromIdQuery__
+ *
+ * To run a query within a React component, call `useTimeEntryFromIdQuery` and pass it any options that fit your needs.
+ * When your component renders, `useTimeEntryFromIdQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useTimeEntryFromIdQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useTimeEntryFromIdQuery(baseOptions: Apollo.QueryHookOptions<TimeEntryFromIdQuery, TimeEntryFromIdQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<TimeEntryFromIdQuery, TimeEntryFromIdQueryVariables>(TimeEntryFromIdDocument, options);
+      }
+export function useTimeEntryFromIdLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<TimeEntryFromIdQuery, TimeEntryFromIdQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<TimeEntryFromIdQuery, TimeEntryFromIdQueryVariables>(TimeEntryFromIdDocument, options);
+        }
+export type TimeEntryFromIdQueryHookResult = ReturnType<typeof useTimeEntryFromIdQuery>;
+export type TimeEntryFromIdLazyQueryHookResult = ReturnType<typeof useTimeEntryFromIdLazyQuery>;
+export type TimeEntryFromIdQueryResult = Apollo.QueryResult<TimeEntryFromIdQuery, TimeEntryFromIdQueryVariables>;

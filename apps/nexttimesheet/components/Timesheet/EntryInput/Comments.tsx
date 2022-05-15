@@ -3,10 +3,13 @@ import { DateTime } from "luxon";
 import * as React from "react";
 
 import { gql } from "@apollo/client";
-import { useUser } from "@auth0/nextjs-auth0";
 import { PaperAirplaneIcon } from "@heroicons/react/outline";
 
-import { useCreateEntryCommentMutation } from "../../../lib/apollo";
+import {
+    EntryComment,
+    useCreateEntryCommentMutation,
+    User,
+} from "../../../lib/apollo";
 import Avatar from "../../common/Avatar";
 
 import Comment from "./Comment";
@@ -14,17 +17,21 @@ import Comment from "./Comment";
 const Comments = ({
     closeModal,
     comments,
-    userId,
+    user,
     timeEntryId,
     timeEntryRowId,
+}: {
+    closeModal: () => void;
+    comments: Pick<EntryComment, "id">[];
+    user: Partial<User>;
+    timeEntryId: string;
+    timeEntryRowId: string;
 }) => {
     const [comment, setComment] = React.useState("");
 
     const onCommentChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setComment(event.target.value);
     };
-
-    const { user } = useUser();
 
     const [createEntryCommentMutation] = useCreateEntryCommentMutation();
 
@@ -34,7 +41,7 @@ const Comments = ({
                 entryComment: {
                     timeEntryId,
                     text: comment,
-                    userId,
+                    userId: user?.id ?? "-1",
                 },
             },
             optimisticResponse: {
@@ -46,7 +53,7 @@ const Comments = ({
                     updatedAt: DateTime.now().toISO(),
                     user: {
                         __typename: "User",
-                        id: userId,
+                        id: user?.id ?? "-1",
                         name: user?.name,
                         avatar: "",
                     },
@@ -93,7 +100,10 @@ const Comments = ({
                     <>
                         {comments?.map((comment, i) => (
                             <div key={i}>
-                                <Comment comment={comment} userId={userId} />
+                                <Comment
+                                    comment={comment}
+                                    userId={user?.id ?? "-1"}
+                                />
                             </div>
                         ))}
                     </>
@@ -106,7 +116,7 @@ const Comments = ({
 
             <div className="mt-4 flex space-x-2 justify-center">
                 <div className="my-auto">
-                    <Avatar image={user?.picture} name={user?.name} />
+                    <Avatar image={user?.avatar} name={user?.name} />
                 </div>
 
                 <input

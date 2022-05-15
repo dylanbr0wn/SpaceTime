@@ -199,7 +199,7 @@ const TimesheetTable = ({
                 columns: timesheetDates.map((date, i) => {
                     const dayFeatures = getDayFeatures(date);
                     return table.createDataColumn(
-                        (row) => row?.timeEntries?.at(i),
+                        (row) => row?.timeEntries?.at(i)?.id,
                         {
                             // eslint-disable-next-line react/display-name
                             header: () => {
@@ -223,16 +223,16 @@ const TimesheetTable = ({
                                 );
                             },
                             id: `timeEntryCol${i}`,
-                            cell: ({ value, row, instance }) => (
+                            cell: ({ value, row, instance, column }) => (
                                 <TimesheetEntryInput
-                                    value={value}
                                     timesheetId={
                                         instance.options.meta?.timesheetId ||
                                         "-1"
                                     }
+                                    index={i}
                                     row={row.original}
                                     date={date}
-                                    userId={String(user?.id)}
+                                    user={user}
                                 />
                             ),
                         }
@@ -244,11 +244,8 @@ const TimesheetTable = ({
                 header: () => null, // No header
                 id: "deleter",
                 // eslint-disable-next-line react/display-name, react/prop-types
-                cell: (props) => (
-                    <TimesheetDeleteEntryInput
-                        {...props}
-                        userId={String(user?.id)}
-                    />
+                cell: ({ row }) => (
+                    <TimesheetDeleteEntryInput rowId={row.original} />
                 ),
             }),
         ],
