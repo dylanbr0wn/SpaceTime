@@ -106,6 +106,14 @@ type Query {
   workTypes: [WorkType!]!
 }
 
+enum Status {
+  ManagerApproved
+  PaymentApproved
+  Rejected
+  Submitted
+  Unsubmitted
+}
+
 type Tenant {
   createdAt: DateTime!
   description: String
@@ -153,6 +161,7 @@ type Timesheet {
   createdAt: DateTime!
   id: ID!
   period: Period!
+  status: Status!
   timeEntryRows: [TimeEntryRow!]!
   updatedAt: DateTime!
   user: User!

@@ -1,4 +1,3 @@
-import { isConstValueNode } from "graphql";
 import { DateTime, Interval } from "luxon";
 import { arg, extendType, inputObjectType, nonNull, objectType } from "nexus";
 import * as NexusPrisma from "nexus-prisma";
@@ -12,6 +11,7 @@ export const Timesheet = objectType({
         t.field(NexusPrisma.Timesheet.createdAt);
         t.field(NexusPrisma.Timesheet.updatedAt);
         t.field(NexusPrisma.Timesheet.period);
+        t.field(NexusPrisma.Timesheet.status);
         t.field(NexusPrisma.Timesheet.user);
         t.field(NexusPrisma.Timesheet.timeEntryRows);
     },

@@ -13,6 +13,8 @@ query GetUserFromAuth0($auth0Id: String!) {
         email
         auth0Id
         code
+        avatar
+        name
         isActive
         isAdmin
         createdAt
@@ -37,6 +39,7 @@ query GetUserFromAuth0($auth0Id: String!) {
 query GetTimesheet($timesheet: TimesheetGetInput!) {
     getTimesheet(Timesheet: $timesheet) {
         id
+        status
         period {
             id
             startDate

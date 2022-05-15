@@ -5,15 +5,16 @@ import { asNexusMethod, makeSchema } from "nexus";
 
 import * as Department from "./schema/Department";
 import * as EntryComment from "./schema/EntryComment";
+import * as OneTimeToken from "./schema/OneTimeToken";
 import * as Period from "./schema/Period";
 import * as Project from "./schema/Project";
+import * as Status from "./schema/Status";
 import * as Tenant from "./schema/Tenant";
 import * as TimeEntry from "./schema/TimeEntry";
 import * as TimeEntryRow from "./schema/TimeEntryRow";
 import * as Timesheet from "./schema/Timesheet";
 import * as User from "./schema/User";
 import * as Worktype from "./schema/WorkType";
-import * as OneTimeToken from "./schema/OneTimeToken";
 
 export const DateTime = asNexusMethod(DateTimeResolver, "date"); // it will break without this....b
 export const schema = makeSchema({
@@ -23,6 +24,7 @@ export const schema = makeSchema({
         EntryComment,
         Period,
         OneTimeToken,
+        Status,
         // Profile,
         Project,
         TimeEntry,

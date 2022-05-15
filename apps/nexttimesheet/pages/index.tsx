@@ -65,11 +65,27 @@ const Home: NextPage<{
     user: Session["user"];
 }> = ({ userData, user }) => {
     return (
-        <DashBoard user={user}>
-            <div className="h-full w-full m-0 p-0">
-                <EmployeeTimesheet userData={userData} user={user} />
+        <div className="drawer drawer-end">
+            <input id="my-drawer-4" type="checkbox" className="drawer-toggle" />
+            <div className="drawer-content">
+                <DashBoard user={user}>
+                    <div className="h-full w-full m-0 p-0">
+                        <EmployeeTimesheet userData={userData} user={user} />
+                    </div>
+                </DashBoard>
             </div>
-        </DashBoard>
+            <div className="drawer-side">
+                <label htmlFor="my-drawer-4" className="drawer-overlay"></label>
+                <ul className="menu p-4 overflow-y-auto w-80 bg-base-100 text-base-content">
+                    <li>
+                        <a>Sidebar Item 1</a>
+                    </li>
+                    <li>
+                        <a>Sidebar Item 2</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
     );
 };
 

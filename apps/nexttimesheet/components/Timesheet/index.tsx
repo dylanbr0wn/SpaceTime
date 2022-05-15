@@ -6,6 +6,7 @@ import * as React from "react";
 import { UserProfile } from "@auth0/nextjs-auth0";
 
 import { useGetTimesheetQuery, User } from "../../lib/apollo";
+import ApprovalTree from "../ApprovalTree";
 import Loading from "../common/Loading";
 
 import TimesheetDateInput from "./DateInput";
@@ -73,17 +74,45 @@ const Timesheet = ({
     return (
         <>
             <div className="w-full flex flex-col">
-                <div className="text-center w-full">
-                    <TimesheetDateInput
-                        timesheetQueryDate={timesheetQueryDate}
-                        setTimesheetQueryDate={setTimesheetQueryDate}
-                        // getorCreateTimesheetMutation={
-                        //     getorCreateTimesheetMutation
-                        // }
-                        periodLength={periodLength}
-                        startDate={startDate}
-                        userId={String(user?.id)}
-                    />
+                <div className="w-full flex ">
+                    <div className="w-full text-center">
+                        <div className="dropdown dropdown-hover">
+                            <label tabIndex={0} className="btn m-1">
+                                Hover
+                            </label>
+                            <ul
+                                tabIndex={0}
+                                className="dropdown-content menu p-2 shadow bg-base-300 rounded-box w-52"
+                            >
+                                <li>
+                                    <a>Item 1</a>
+                                </li>
+                                <li>
+                                    <a>Item 2</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div className="w-full text-center">
+                        <TimesheetDateInput
+                            timesheetQueryDate={timesheetQueryDate}
+                            setTimesheetQueryDate={setTimesheetQueryDate}
+                            // getorCreateTimesheetMutation={
+                            //     getorCreateTimesheetMutation
+                            // }
+                            periodLength={periodLength}
+                            startDate={startDate}
+                            userId={String(user?.id)}
+                        />
+                    </div>
+                    <div className="w-full">
+                        <label
+                            htmlFor="my-drawer-4"
+                            className="drawer-button btn btn-primary"
+                        >
+                            Open drawer
+                        </label>
+                    </div>
                 </div>
                 {!timesheetLoading && timesheetData?.getTimesheet ? (
                     <TimesheetTable
@@ -96,6 +125,7 @@ const Timesheet = ({
                         <Loading />
                     </div>
                 )}
+                <ApprovalTree user={user} />
             </div>
         </>
     );
