@@ -1,6 +1,5 @@
 import { IncomingHttpHeaders } from "http";
 
-import { createUploadLink } from "apollo-upload-client";
 import merge from "deepmerge";
 import fetch from "isomorphic-unfetch";
 import isEqual from "lodash/isEqual";

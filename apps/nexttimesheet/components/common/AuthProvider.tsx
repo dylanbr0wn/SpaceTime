@@ -6,7 +6,6 @@ export const Navigate: React.FC<NavigateProps> = ({ to, replace, state }) => {
     const navigate = useNavigate();
 
     React.useEffect(() => {
-        console.log("here");
         navigate(to, { replace, state });
     }, [navigate, to, replace, state]);
 

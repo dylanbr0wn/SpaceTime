@@ -6,10 +6,6 @@ import {
     GetTimeEntriesDocument,
     GetTimeEntriesQuery,
     GetTimeEntriesQueryVariables,
-    GetTimeEntryRowsDocument,
-    GetTimeEntryRowsQuery,
-    GetTimeEntryRowsQueryVariables,
-    TimeEntry,
     TimeEntryFromIdDocument,
     TimeEntryFromIdQuery,
     TimeEntryFromIdQueryVariables,
@@ -86,7 +82,6 @@ const TimesheetEntryInput = ({
 
     // We'll only update the external data when the input is blurred
     const onBlur = () => {
-        console.log(timeEntry);
         if (timeEntry?.id === "-1" && (timeEntry?.hours ?? 0) > 0) {
             createTimeEntryMutation({
                 variables: {
@@ -152,8 +147,9 @@ const TimesheetEntryInput = ({
                                         ...timeEntries,
                                         {
                                             __typename: "TimeEntry",
-                                            id: TimeEntryData.createTimeEntry
-                                                ?.id,
+                                            id:
+                                                TimeEntryData.createTimeEntry
+                                                    ?.id ?? "-1",
                                         },
                                     ],
                                 },

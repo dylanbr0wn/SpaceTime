@@ -4,13 +4,7 @@ import * as React from "react";
 import {
     GetTimeEntryRowsQuery,
     GetTimesheetQuery,
-    Maybe,
-    Project,
-    TimeEntry,
     TimeEntryRow,
-    useProjectsQuery,
-    useWorkTypesQuery,
-    WorkType,
 } from "../../lib/apollo";
 
 export const useTimesheetDates = (
@@ -47,35 +41,6 @@ export const useTimesheetDates = (
     }, [timesheetData, userId]);
 
     return { timesheetDates, startDate, periodLength };
-};
-
-type TimeEntryRowPartial = {
-    __typename?: "TimeEntryRow";
-    id: string;
-    project?: {
-        id: string;
-    };
-    department?: {
-        id: string;
-    };
-    workType?: {
-        id: string;
-    };
-    createdAt?: string;
-    updatedAt?: string;
-    timeEntries: TimeEntryPartial[];
-};
-
-type TimeEntryPartial = {
-    __typename?: "TimeEntry";
-    id: string;
-    date: DateTime;
-    createdAt?: string;
-    updatedAt?: string;
-    hours?: number;
-    entryComments: {
-        id: string;
-    }[];
 };
 
 export const useTimesheet = (

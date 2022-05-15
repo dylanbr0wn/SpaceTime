@@ -6,7 +6,7 @@ export const useRowHasHours = (rowId: string | undefined) => {
     const [hasHours, setHasHours] = React.useState(false);
     const { data } = useGetTimeEntriesQuery({
         variables: {
-            rowId,
+            rowId: rowId ?? "-1",
         },
         skip: !rowId,
     });

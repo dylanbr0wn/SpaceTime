@@ -1,10 +1,16 @@
-import { gql } from '@apollo/client';
-import * as Apollo from '@apollo/client';
+import { gql } from "@apollo/client";
+import * as Apollo from "@apollo/client";
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
-export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
-export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
-export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
+export type Exact<T extends { [key: string]: unknown }> = {
+  [K in keyof T]: T[K];
+};
+export type MakeOptional<T, K extends keyof T> = Omit<T, K> & {
+  [SubKey in K]?: Maybe<T[SubKey]>;
+};
+export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & {
+  [SubKey in K]: Maybe<T[SubKey]>;
+};
 const defaultOptions = {} as const;
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
@@ -18,43 +24,43 @@ export type Scalars = {
 };
 
 export type Department = {
-  __typename?: 'Department';
-  createdAt: Scalars['DateTime'];
-  description?: Maybe<Scalars['String']>;
-  id: Scalars['ID'];
-  isActive: Scalars['Boolean'];
-  name: Scalars['String'];
+  __typename?: "Department";
+  createdAt: Scalars["DateTime"];
+  description?: Maybe<Scalars["String"]>;
+  id: Scalars["ID"];
+  isActive: Scalars["Boolean"];
+  name: Scalars["String"];
   projects: Array<Project>;
-  updatedAt: Scalars['DateTime'];
+  updatedAt: Scalars["DateTime"];
   users: Array<User>;
 };
 
 export type EntryComment = {
-  __typename?: 'EntryComment';
-  createdAt: Scalars['DateTime'];
-  id: Scalars['ID'];
-  text: Scalars['String'];
-  updatedAt: Scalars['DateTime'];
+  __typename?: "EntryComment";
+  createdAt: Scalars["DateTime"];
+  id: Scalars["ID"];
+  text: Scalars["String"];
+  updatedAt: Scalars["DateTime"];
   user: User;
 };
 
 export type EntryCommentCreateInput = {
-  text: Scalars['String'];
-  timeEntryId: Scalars['String'];
-  userId: Scalars['String'];
+  text: Scalars["String"];
+  timeEntryId: Scalars["String"];
+  userId: Scalars["String"];
 };
 
 export type EntryCommentDeleteInput = {
-  id: Scalars['ID'];
+  id: Scalars["ID"];
 };
 
 export type EntryCommentUpdateInput = {
-  id: Scalars['ID'];
-  text: Scalars['String'];
+  id: Scalars["ID"];
+  text: Scalars["String"];
 };
 
 export type Mutation = {
-  __typename?: 'Mutation';
+  __typename?: "Mutation";
   attachAuth0Id?: Maybe<User>;
   createEntryComment?: Maybe<EntryComment>;
   createOneTimeToken?: Maybe<OneTimeToken>;
@@ -70,114 +76,101 @@ export type Mutation = {
   updateUser?: Maybe<User>;
 };
 
-
 export type MutationAttachAuth0IdArgs = {
-  auth0Id: Scalars['String'];
-  userId: Scalars['ID'];
+  auth0Id: Scalars["String"];
+  userId: Scalars["ID"];
 };
-
 
 export type MutationCreateEntryCommentArgs = {
   entryComment: EntryCommentCreateInput;
 };
 
-
 export type MutationCreateOneTimeTokenArgs = {
-  tenantId: Scalars['String'];
-  userId: Scalars['String'];
+  tenantId: Scalars["String"];
+  userId: Scalars["String"];
 };
-
 
 export type MutationCreateTimeEntryArgs = {
-  date: Scalars['String'];
-  hours: Scalars['Int'];
-  index: Scalars['Int'];
-  timeEntryRowId: Scalars['String'];
+  date: Scalars["String"];
+  hours: Scalars["Int"];
+  index: Scalars["Int"];
+  timeEntryRowId: Scalars["String"];
 };
-
 
 export type MutationCreateTimeEntryRowArgs = {
-  departmentId?: InputMaybe<Scalars['String']>;
-  projectId?: InputMaybe<Scalars['String']>;
-  timesheetId: Scalars['String'];
-  workTypeId?: InputMaybe<Scalars['String']>;
+  departmentId?: InputMaybe<Scalars["String"]>;
+  projectId?: InputMaybe<Scalars["String"]>;
+  timesheetId: Scalars["String"];
+  workTypeId?: InputMaybe<Scalars["String"]>;
 };
-
 
 export type MutationCreateUserArgs = {
   user: UserCreateInput;
 };
 
-
 export type MutationDeleteEntryCommentArgs = {
   EntryComment: EntryCommentDeleteInput;
 };
 
-
 export type MutationDeleteTimeEntryArgs = {
-  id: Scalars['String'];
+  id: Scalars["String"];
 };
-
 
 export type MutationDeleteTimeEntryRowArgs = {
   TimeEntryRow: TimeEntryRowDeleteInput;
 };
 
-
 export type MutationUpdateEntryCommentArgs = {
   entryComment: EntryCommentUpdateInput;
 };
 
-
 export type MutationUpdateTimeEntryRowArgs = {
-  departmentId?: InputMaybe<Scalars['String']>;
-  id: Scalars['String'];
-  projectId?: InputMaybe<Scalars['String']>;
-  workTypeId?: InputMaybe<Scalars['String']>;
+  departmentId?: InputMaybe<Scalars["String"]>;
+  id: Scalars["String"];
+  projectId?: InputMaybe<Scalars["String"]>;
+  workTypeId?: InputMaybe<Scalars["String"]>;
 };
-
 
 export type MutationUpdateTimeEntryhoursArgs = {
-  hours: Scalars['Int'];
-  id: Scalars['String'];
+  hours: Scalars["Int"];
+  id: Scalars["String"];
 };
-
 
 export type MutationUpdateUserArgs = {
   user: UserUpdateInput;
 };
 
 export type OneTimeToken = {
-  __typename?: 'OneTimeToken';
-  createdAt: Scalars['DateTime'];
-  id: Scalars['ID'];
+  __typename?: "OneTimeToken";
+  createdAt: Scalars["DateTime"];
+  id: Scalars["ID"];
   tenant: Tenant;
-  updatedAt: Scalars['DateTime'];
+  updatedAt: Scalars["DateTime"];
   user: User;
 };
 
 export type Period = {
-  __typename?: 'Period';
-  createdAt: Scalars['DateTime'];
-  endDate: Scalars['DateTime'];
-  id: Scalars['ID'];
-  startDate: Scalars['DateTime'];
+  __typename?: "Period";
+  createdAt: Scalars["DateTime"];
+  endDate: Scalars["DateTime"];
+  id: Scalars["ID"];
+  startDate: Scalars["DateTime"];
 };
 
 export type Project = {
-  __typename?: 'Project';
-  code: Scalars['String'];
-  createdAt: Scalars['DateTime'];
+  __typename?: "Project";
+  code: Scalars["String"];
+  createdAt: Scalars["DateTime"];
   department: Department;
-  description?: Maybe<Scalars['String']>;
-  id: Scalars['ID'];
-  isActive: Scalars['Boolean'];
-  name: Scalars['String'];
-  updatedAt: Scalars['DateTime'];
+  description?: Maybe<Scalars["String"]>;
+  id: Scalars["ID"];
+  isActive: Scalars["Boolean"];
+  name: Scalars["String"];
+  updatedAt: Scalars["DateTime"];
 };
 
 export type Query = {
-  __typename?: 'Query';
+  __typename?: "Query";
   departments: Array<Department>;
   getEntryComment?: Maybe<EntryComment>;
   getEntryComments?: Maybe<Array<EntryComment>>;
@@ -200,434 +193,746 @@ export type Query = {
   workTypes: Array<WorkType>;
 };
 
-
 export type QueryGetEntryCommentArgs = {
-  commentId: Scalars['String'];
+  commentId: Scalars["String"];
 };
-
 
 export type QueryGetEntryCommentsArgs = {
-  timeEntryId: Scalars['String'];
+  timeEntryId: Scalars["String"];
 };
-
 
 export type QueryGetEntryCommentsByTimesheetArgs = {
-  timesheetId: Scalars['String'];
+  timesheetId: Scalars["String"];
 };
-
 
 export type QueryGetOneTimeTokenArgs = {
-  id: Scalars['String'];
+  id: Scalars["String"];
 };
-
 
 export type QueryGetOneTimeTokensArgs = {
-  tenantId: Scalars['String'];
+  tenantId: Scalars["String"];
 };
-
 
 export type QueryGetTimeEntryRowArgs = {
-  id: Scalars['String'];
+  id: Scalars["String"];
 };
-
 
 export type QueryGetTimeEntryRowsArgs = {
-  timesheetId: Scalars['String'];
+  timesheetId: Scalars["String"];
 };
-
 
 export type QueryGetTimesheetArgs = {
   Timesheet: TimesheetGetInput;
 };
 
-
 export type QueryGetUserFromAuth0Args = {
-  auth0Id: Scalars['String'];
+  auth0Id: Scalars["String"];
 };
-
 
 export type QueryGetUserFromCodeArgs = {
-  code: Scalars['String'];
-  tenantId: Scalars['String'];
+  code: Scalars["String"];
+  tenantId: Scalars["String"];
 };
-
 
 export type QueryGetUserFromTokenArgs = {
-  token: Scalars['ID'];
+  token: Scalars["ID"];
 };
-
 
 export type QueryManagersArgs = {
-  tenantId: Scalars['String'];
+  tenantId: Scalars["String"];
 };
-
 
 export type QueryTenantFromIdArgs = {
-  tenantId: Scalars['String'];
+  tenantId: Scalars["String"];
 };
-
 
 export type QueryTimeEntryArgs = {
-  date: Scalars['String'];
-  timeEntryRowId: Scalars['String'];
+  date: Scalars["String"];
+  timeEntryRowId: Scalars["String"];
 };
-
 
 export type QueryTimeEntryFromIdArgs = {
-  id: Scalars['String'];
+  id: Scalars["String"];
 };
-
 
 export type QueryTimeEntryFromIndexArgs = {
-  index: Scalars['Int'];
-  timeEntryRowId: Scalars['String'];
+  index: Scalars["Int"];
+  timeEntryRowId: Scalars["String"];
 };
 
-
 export type QueryUsersArgs = {
-  tenantId: Scalars['String'];
+  tenantId: Scalars["String"];
 };
 
 export type Tenant = {
-  __typename?: 'Tenant';
-  createdAt: Scalars['DateTime'];
-  description?: Maybe<Scalars['String']>;
-  id: Scalars['ID'];
-  isActive: Scalars['Boolean'];
-  logo?: Maybe<Scalars['String']>;
-  name: Scalars['String'];
-  periodLength: Scalars['Int'];
-  startDate: Scalars['DateTime'];
-  updatedAt: Scalars['DateTime'];
+  __typename?: "Tenant";
+  createdAt: Scalars["DateTime"];
+  description?: Maybe<Scalars["String"]>;
+  id: Scalars["ID"];
+  isActive: Scalars["Boolean"];
+  logo?: Maybe<Scalars["String"]>;
+  name: Scalars["String"];
+  periodLength: Scalars["Int"];
+  startDate: Scalars["DateTime"];
+  updatedAt: Scalars["DateTime"];
 };
 
 export type TimeEntry = {
-  __typename?: 'TimeEntry';
-  createdAt: Scalars['DateTime'];
-  date: Scalars['DateTime'];
+  __typename?: "TimeEntry";
+  createdAt: Scalars["DateTime"];
+  date: Scalars["DateTime"];
   entryComments: Array<EntryComment>;
-  hours: Scalars['Float'];
-  id: Scalars['ID'];
-  index: Scalars['Int'];
-  updatedAt: Scalars['DateTime'];
+  hours: Scalars["Float"];
+  id: Scalars["ID"];
+  index: Scalars["Int"];
+  updatedAt: Scalars["DateTime"];
 };
 
 export type TimeEntryRow = {
-  __typename?: 'TimeEntryRow';
-  createdAt: Scalars['DateTime'];
+  __typename?: "TimeEntryRow";
+  createdAt: Scalars["DateTime"];
   department?: Maybe<Department>;
-  id: Scalars['ID'];
+  id: Scalars["ID"];
   project?: Maybe<Project>;
   timeEntries: Array<TimeEntry>;
-  updatedAt: Scalars['DateTime'];
+  updatedAt: Scalars["DateTime"];
   workType?: Maybe<WorkType>;
 };
 
 export type TimeEntryRowDeleteInput = {
-  id: Scalars['ID'];
+  id: Scalars["ID"];
 };
 
 export type TimeEntryRowUpdateInput = {
-  departmentId?: InputMaybe<Scalars['String']>;
-  id: Scalars['ID'];
-  projectId?: InputMaybe<Scalars['String']>;
-  workTypeId?: InputMaybe<Scalars['String']>;
+  departmentId?: InputMaybe<Scalars["String"]>;
+  id: Scalars["ID"];
+  projectId?: InputMaybe<Scalars["String"]>;
+  workTypeId?: InputMaybe<Scalars["String"]>;
 };
 
 export type Timesheet = {
-  __typename?: 'Timesheet';
-  createdAt: Scalars['DateTime'];
-  id: Scalars['ID'];
+  __typename?: "Timesheet";
+  createdAt: Scalars["DateTime"];
+  id: Scalars["ID"];
   period: Period;
   timeEntryRows: Array<TimeEntryRow>;
-  updatedAt: Scalars['DateTime'];
+  updatedAt: Scalars["DateTime"];
   user: User;
 };
 
 export type TimesheetGetInput = {
-  date: Scalars['DateTime'];
-  userId: Scalars['String'];
+  date: Scalars["DateTime"];
+  userId: Scalars["String"];
 };
 
 export type User = {
-  __typename?: 'User';
-  auth0Id?: Maybe<Scalars['String']>;
-  avatar?: Maybe<Scalars['String']>;
-  code: Scalars['String'];
-  createdAt: Scalars['DateTime'];
+  __typename?: "User";
+  auth0Id?: Maybe<Scalars["String"]>;
+  avatar?: Maybe<Scalars["String"]>;
+  code: Scalars["String"];
+  createdAt: Scalars["DateTime"];
   department: Department;
-  email: Scalars['String'];
-  id: Scalars['ID'];
-  isActive: Scalars['Boolean'];
-  isAdmin: Scalars['Boolean'];
-  isManager: Scalars['Boolean'];
-  isPaymentManager: Scalars['Boolean'];
-  isSetup: Scalars['Boolean'];
+  email: Scalars["String"];
+  id: Scalars["ID"];
+  isActive: Scalars["Boolean"];
+  isAdmin: Scalars["Boolean"];
+  isManager: Scalars["Boolean"];
+  isPaymentManager: Scalars["Boolean"];
+  isSetup: Scalars["Boolean"];
   managees: Array<User>;
   manager?: Maybe<User>;
-  name?: Maybe<Scalars['String']>;
+  name?: Maybe<Scalars["String"]>;
   tenant: Tenant;
-  updatedAt: Scalars['DateTime'];
+  updatedAt: Scalars["DateTime"];
 };
 
 /** User Create Input */
 export type UserCreateInput = {
-  auth0Id: Scalars['String'];
-  avatar?: InputMaybe<Scalars['String']>;
-  code: Scalars['String'];
-  departmentId: Scalars['String'];
-  email: Scalars['String'];
-  isActive: Scalars['Boolean'];
-  isAdmin: Scalars['Boolean'];
-  isManager: Scalars['Boolean'];
-  isPaymentManager: Scalars['Boolean'];
-  managerId: Scalars['String'];
-  name?: InputMaybe<Scalars['String']>;
-  tenantId: Scalars['String'];
+  auth0Id: Scalars["String"];
+  avatar?: InputMaybe<Scalars["String"]>;
+  code: Scalars["String"];
+  departmentId: Scalars["String"];
+  email: Scalars["String"];
+  isActive: Scalars["Boolean"];
+  isAdmin: Scalars["Boolean"];
+  isManager: Scalars["Boolean"];
+  isPaymentManager: Scalars["Boolean"];
+  managerId: Scalars["String"];
+  name?: InputMaybe<Scalars["String"]>;
+  tenantId: Scalars["String"];
 };
 
 /** User Update Input */
 export type UserUpdateInput = {
-  auth0Id: Scalars['String'];
-  code: Scalars['String'];
-  departmentId: Scalars['String'];
-  email: Scalars['String'];
-  id: Scalars['ID'];
-  isActive: Scalars['Boolean'];
-  isAdmin: Scalars['Boolean'];
-  isManager: Scalars['Boolean'];
-  isPaymentManager: Scalars['Boolean'];
-  managerId: Scalars['String'];
+  auth0Id: Scalars["String"];
+  code: Scalars["String"];
+  departmentId: Scalars["String"];
+  email: Scalars["String"];
+  id: Scalars["ID"];
+  isActive: Scalars["Boolean"];
+  isAdmin: Scalars["Boolean"];
+  isManager: Scalars["Boolean"];
+  isPaymentManager: Scalars["Boolean"];
+  managerId: Scalars["String"];
 };
 
 export type WorkType = {
-  __typename?: 'WorkType';
-  code: Scalars['String'];
-  createdAt: Scalars['DateTime'];
-  description?: Maybe<Scalars['String']>;
-  id: Scalars['ID'];
-  isActive: Scalars['Boolean'];
-  isBillable: Scalars['Boolean'];
-  isDefault: Scalars['Boolean'];
-  isSystem: Scalars['Boolean'];
-  multiplier: Scalars['Float'];
-  name: Scalars['String'];
-  updatedAt: Scalars['DateTime'];
+  __typename?: "WorkType";
+  code: Scalars["String"];
+  createdAt: Scalars["DateTime"];
+  description?: Maybe<Scalars["String"]>;
+  id: Scalars["ID"];
+  isActive: Scalars["Boolean"];
+  isBillable: Scalars["Boolean"];
+  isDefault: Scalars["Boolean"];
+  isSystem: Scalars["Boolean"];
+  multiplier: Scalars["Float"];
+  name: Scalars["String"];
+  updatedAt: Scalars["DateTime"];
 };
 
 export type TenantFromIdQueryVariables = Exact<{
-  tenantId: Scalars['String'];
+  tenantId: Scalars["String"];
 }>;
 
-
-export type TenantFromIdQuery = { __typename?: 'Query', tenantFromId?: { __typename?: 'Tenant', id: string, isActive: boolean, name: string, description?: string | null } | null };
+export type TenantFromIdQuery = {
+  __typename?: "Query";
+  tenantFromId?: {
+    __typename?: "Tenant";
+    id: string;
+    isActive: boolean;
+    name: string;
+    description?: string | null;
+  } | null;
+};
 
 export type GetUserFromAuth0QueryVariables = Exact<{
-  auth0Id: Scalars['String'];
+  auth0Id: Scalars["String"];
 }>;
 
-
-export type GetUserFromAuth0Query = { __typename?: 'Query', getUserFromAuth0?: { __typename?: 'User', id: string, email: string, auth0Id?: string | null, code: string, isActive: boolean, isAdmin: boolean, createdAt: any, updatedAt: any, isPaymentManager: boolean, isManager: boolean, department: { __typename?: 'Department', id: string }, managees: Array<{ __typename?: 'User', id: string }>, manager?: { __typename?: 'User', id: string } | null, tenant: { __typename?: 'Tenant', id: string } } | null };
+export type GetUserFromAuth0Query = {
+  __typename?: "Query";
+  getUserFromAuth0?: {
+    __typename?: "User";
+    id: string;
+    email: string;
+    auth0Id?: string | null;
+    code: string;
+    isActive: boolean;
+    isAdmin: boolean;
+    createdAt: any;
+    updatedAt: any;
+    isPaymentManager: boolean;
+    isManager: boolean;
+    department: { __typename?: "Department"; id: string };
+    managees: Array<{ __typename?: "User"; id: string }>;
+    manager?: { __typename?: "User"; id: string } | null;
+    tenant: { __typename?: "Tenant"; id: string };
+  } | null;
+};
 
 export type GetTimesheetQueryVariables = Exact<{
   timesheet: TimesheetGetInput;
 }>;
 
+export type GetTimesheetQuery = {
+  __typename?: "Query";
+  getTimesheet?: {
+    __typename?: "Timesheet";
+    id: string;
+    period: {
+      __typename?: "Period";
+      id: string;
+      startDate: any;
+      endDate: any;
+    };
+  } | null;
+};
 
-export type GetTimesheetQuery = { __typename?: 'Query', getTimesheet?: { __typename?: 'Timesheet', id: string, period: { __typename?: 'Period', id: string, startDate: any, endDate: any } } | null };
+export type DepartmentsQueryVariables = Exact<{ [key: string]: never }>;
 
-export type DepartmentsQueryVariables = Exact<{ [key: string]: never; }>;
+export type DepartmentsQuery = {
+  __typename?: "Query";
+  departments: Array<{
+    __typename?: "Department";
+    id: string;
+    name: string;
+    createdAt: any;
+    updatedAt: any;
+    isActive: boolean;
+    description?: string | null;
+  }>;
+};
 
+export type ProjectsQueryVariables = Exact<{ [key: string]: never }>;
 
-export type DepartmentsQuery = { __typename?: 'Query', departments: Array<{ __typename?: 'Department', id: string, name: string, createdAt: any, updatedAt: any, isActive: boolean, description?: string | null }> };
+export type ProjectsQuery = {
+  __typename?: "Query";
+  projects: Array<{
+    __typename?: "Project";
+    id: string;
+    name: string;
+    createdAt: any;
+    updatedAt: any;
+    isActive: boolean;
+    description?: string | null;
+    code: string;
+    department: { __typename?: "Department"; id: string };
+  }>;
+};
 
-export type ProjectsQueryVariables = Exact<{ [key: string]: never; }>;
+export type WorkTypesQueryVariables = Exact<{ [key: string]: never }>;
 
-
-export type ProjectsQuery = { __typename?: 'Query', projects: Array<{ __typename?: 'Project', id: string, name: string, createdAt: any, updatedAt: any, isActive: boolean, description?: string | null, code: string, department: { __typename?: 'Department', id: string } }> };
-
-export type WorkTypesQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type WorkTypesQuery = { __typename?: 'Query', workTypes: Array<{ __typename?: 'WorkType', id: string, name: string, createdAt: any, updatedAt: any, isActive: boolean, description?: string | null, code: string, isSystem: boolean, isDefault: boolean, multiplier: number, isBillable: boolean }> };
+export type WorkTypesQuery = {
+  __typename?: "Query";
+  workTypes: Array<{
+    __typename?: "WorkType";
+    id: string;
+    name: string;
+    createdAt: any;
+    updatedAt: any;
+    isActive: boolean;
+    description?: string | null;
+    code: string;
+    isSystem: boolean;
+    isDefault: boolean;
+    multiplier: number;
+    isBillable: boolean;
+  }>;
+};
 
 export type TimeEntryQueryVariables = Exact<{
-  date: Scalars['String'];
-  timeEntryRowId: Scalars['String'];
+  date: Scalars["String"];
+  timeEntryRowId: Scalars["String"];
 }>;
 
-
-export type TimeEntryQuery = { __typename?: 'Query', timeEntry?: { __typename?: 'TimeEntry', id: string, createdAt: any, updatedAt: any, date: any, hours: number, entryComments: Array<{ __typename?: 'EntryComment', id: string, createdAt: any, updatedAt: any, text: string, user: { __typename?: 'User', id: string } }> } | null };
+export type TimeEntryQuery = {
+  __typename?: "Query";
+  timeEntry?: {
+    __typename?: "TimeEntry";
+    id: string;
+    createdAt: any;
+    updatedAt: any;
+    date: any;
+    hours: number;
+    entryComments: Array<{
+      __typename?: "EntryComment";
+      id: string;
+      createdAt: any;
+      updatedAt: any;
+      text: string;
+      user: { __typename?: "User"; id: string };
+    }>;
+  } | null;
+};
 
 export type TimeEntryFromIndexQueryVariables = Exact<{
-  index: Scalars['Int'];
-  timeEntryRowId: Scalars['String'];
+  index: Scalars["Int"];
+  timeEntryRowId: Scalars["String"];
 }>;
 
-
-export type TimeEntryFromIndexQuery = { __typename?: 'Query', timeEntryFromIndex?: { __typename?: 'TimeEntry', id: string, createdAt: any, updatedAt: any, date: any, hours: number, index: number, entryComments: Array<{ __typename?: 'EntryComment', id: string }> } | null };
+export type TimeEntryFromIndexQuery = {
+  __typename?: "Query";
+  timeEntryFromIndex?: {
+    __typename?: "TimeEntry";
+    id: string;
+    createdAt: any;
+    updatedAt: any;
+    date: any;
+    hours: number;
+    index: number;
+    entryComments: Array<{ __typename?: "EntryComment"; id: string }>;
+  } | null;
+};
 
 export type CreateTimeEntryMutationVariables = Exact<{
-  index: Scalars['Int'];
-  timeEntryRowId: Scalars['String'];
-  hours: Scalars['Int'];
-  date: Scalars['String'];
+  index: Scalars["Int"];
+  timeEntryRowId: Scalars["String"];
+  hours: Scalars["Int"];
+  date: Scalars["String"];
 }>;
 
-
-export type CreateTimeEntryMutation = { __typename?: 'Mutation', createTimeEntry?: { __typename?: 'TimeEntry', id: string, createdAt: any, updatedAt: any, date: any, hours: number, index: number, entryComments: Array<{ __typename?: 'EntryComment', id: string }> } | null };
+export type CreateTimeEntryMutation = {
+  __typename?: "Mutation";
+  createTimeEntry?: {
+    __typename?: "TimeEntry";
+    id: string;
+    createdAt: any;
+    updatedAt: any;
+    date: any;
+    hours: number;
+    index: number;
+    entryComments: Array<{ __typename?: "EntryComment"; id: string }>;
+  } | null;
+};
 
 export type UpdateTimeEntryhoursMutationVariables = Exact<{
-  updateTimeEntryhoursId: Scalars['String'];
-  hours: Scalars['Int'];
+  updateTimeEntryhoursId: Scalars["String"];
+  hours: Scalars["Int"];
 }>;
 
-
-export type UpdateTimeEntryhoursMutation = { __typename?: 'Mutation', updateTimeEntryhours?: { __typename?: 'TimeEntry', id: string, createdAt: any, updatedAt: any, date: any, hours: number, index: number, entryComments: Array<{ __typename?: 'EntryComment', id: string }> } | null };
+export type UpdateTimeEntryhoursMutation = {
+  __typename?: "Mutation";
+  updateTimeEntryhours?: {
+    __typename?: "TimeEntry";
+    id: string;
+    createdAt: any;
+    updatedAt: any;
+    date: any;
+    hours: number;
+    index: number;
+    entryComments: Array<{ __typename?: "EntryComment"; id: string }>;
+  } | null;
+};
 
 export type DeleteTimeEntryMutationVariables = Exact<{
-  deleteTimeEntryId: Scalars['String'];
+  deleteTimeEntryId: Scalars["String"];
 }>;
 
-
-export type DeleteTimeEntryMutation = { __typename?: 'Mutation', deleteTimeEntry?: { __typename?: 'TimeEntry', id: string, hours: number, date: any, index: number, updatedAt: any, createdAt: any } | null };
+export type DeleteTimeEntryMutation = {
+  __typename?: "Mutation";
+  deleteTimeEntry?: {
+    __typename?: "TimeEntry";
+    id: string;
+    hours: number;
+    date: any;
+    index: number;
+    updatedAt: any;
+    createdAt: any;
+  } | null;
+};
 
 export type UpdateTimeEntryRowMutationVariables = Exact<{
-  updateTimeEntryRowId: Scalars['String'];
-  departmentId?: InputMaybe<Scalars['String']>;
-  projectId?: InputMaybe<Scalars['String']>;
-  workTypeId?: InputMaybe<Scalars['String']>;
+  updateTimeEntryRowId: Scalars["String"];
+  departmentId?: InputMaybe<Scalars["String"]>;
+  projectId?: InputMaybe<Scalars["String"]>;
+  workTypeId?: InputMaybe<Scalars["String"]>;
 }>;
 
-
-export type UpdateTimeEntryRowMutation = { __typename?: 'Mutation', updateTimeEntryRow?: { __typename?: 'TimeEntryRow', id: string, createdAt: any, updatedAt: any, workType?: { __typename?: 'WorkType', id: string } | null, project?: { __typename?: 'Project', id: string } | null, department?: { __typename?: 'Department', id: string } | null } | null };
+export type UpdateTimeEntryRowMutation = {
+  __typename?: "Mutation";
+  updateTimeEntryRow?: {
+    __typename?: "TimeEntryRow";
+    id: string;
+    createdAt: any;
+    updatedAt: any;
+    workType?: { __typename?: "WorkType"; id: string } | null;
+    project?: { __typename?: "Project"; id: string } | null;
+    department?: { __typename?: "Department"; id: string } | null;
+  } | null;
+};
 
 export type GetTimeEntriesQueryVariables = Exact<{
-  rowId: Scalars['String'];
+  rowId: Scalars["String"];
 }>;
 
-
-export type GetTimeEntriesQuery = { __typename?: 'Query', getTimeEntryRow?: { __typename?: 'TimeEntryRow', timeEntries: Array<{ __typename?: 'TimeEntry', id: string }> } | null };
+export type GetTimeEntriesQuery = {
+  __typename?: "Query";
+  getTimeEntryRow?: {
+    __typename?: "TimeEntryRow";
+    timeEntries: Array<{ __typename?: "TimeEntry"; id: string }>;
+  } | null;
+};
 
 export type GetTimeEntryRowQueryVariables = Exact<{
-  getTimeEntryRowId: Scalars['String'];
+  getTimeEntryRowId: Scalars["String"];
 }>;
 
-
-export type GetTimeEntryRowQuery = { __typename?: 'Query', getTimeEntryRow?: { __typename?: 'TimeEntryRow', id: string, createdAt: any, updatedAt: any, workType?: { __typename?: 'WorkType', id: string } | null, project?: { __typename?: 'Project', id: string } | null, department?: { __typename?: 'Department', id: string } | null } | null };
+export type GetTimeEntryRowQuery = {
+  __typename?: "Query";
+  getTimeEntryRow?: {
+    __typename?: "TimeEntryRow";
+    id: string;
+    createdAt: any;
+    updatedAt: any;
+    workType?: { __typename?: "WorkType"; id: string } | null;
+    project?: { __typename?: "Project"; id: string } | null;
+    department?: { __typename?: "Department"; id: string } | null;
+  } | null;
+};
 
 export type GetTimeEntryRowsQueryVariables = Exact<{
-  timesheetId: Scalars['String'];
+  timesheetId: Scalars["String"];
 }>;
 
-
-export type GetTimeEntryRowsQuery = { __typename?: 'Query', getTimeEntryRows: Array<{ __typename?: 'TimeEntryRow', id: string, createdAt: any, updatedAt: any, workType?: { __typename?: 'WorkType', id: string } | null, project?: { __typename?: 'Project', id: string } | null, department?: { __typename?: 'Department', id: string } | null, timeEntries: Array<{ __typename?: 'TimeEntry', id: string }> }> };
+export type GetTimeEntryRowsQuery = {
+  __typename?: "Query";
+  getTimeEntryRows: Array<{
+    __typename?: "TimeEntryRow";
+    id: string;
+    createdAt: any;
+    updatedAt: any;
+    workType?: { __typename?: "WorkType"; id: string } | null;
+    project?: { __typename?: "Project"; id: string } | null;
+    department?: { __typename?: "Department"; id: string } | null;
+    timeEntries: Array<{ __typename?: "TimeEntry"; id: string }>;
+  }>;
+};
 
 export type CreateTimeEntryRowMutationVariables = Exact<{
-  timesheetId: Scalars['String'];
+  timesheetId: Scalars["String"];
 }>;
 
-
-export type CreateTimeEntryRowMutation = { __typename?: 'Mutation', createTimeEntryRow?: { __typename?: 'TimeEntryRow', id: string, createdAt: any, updatedAt: any, workType?: { __typename?: 'WorkType', id: string } | null, project?: { __typename?: 'Project', id: string } | null, department?: { __typename?: 'Department', id: string } | null, timeEntries: Array<{ __typename?: 'TimeEntry', id: string }> } | null };
+export type CreateTimeEntryRowMutation = {
+  __typename?: "Mutation";
+  createTimeEntryRow?: {
+    __typename?: "TimeEntryRow";
+    id: string;
+    createdAt: any;
+    updatedAt: any;
+    workType?: { __typename?: "WorkType"; id: string } | null;
+    project?: { __typename?: "Project"; id: string } | null;
+    department?: { __typename?: "Department"; id: string } | null;
+    timeEntries: Array<{ __typename?: "TimeEntry"; id: string }>;
+  } | null;
+};
 
 export type DeleteTimeEntryRowMutationVariables = Exact<{
   timeEntryRow: TimeEntryRowDeleteInput;
 }>;
 
-
-export type DeleteTimeEntryRowMutation = { __typename?: 'Mutation', deleteTimeEntryRow?: { __typename?: 'TimeEntryRow', id: string } | null };
+export type DeleteTimeEntryRowMutation = {
+  __typename?: "Mutation";
+  deleteTimeEntryRow?: { __typename?: "TimeEntryRow"; id: string } | null;
+};
 
 export type GetUserFromTokenQueryVariables = Exact<{
-  token: Scalars['ID'];
+  token: Scalars["ID"];
 }>;
 
-
-export type GetUserFromTokenQuery = { __typename?: 'Query', getUserFromToken?: { __typename?: 'User', id: string, tenant: { __typename?: 'Tenant', name: string, description?: string | null, logo?: string | null, isActive: boolean, updatedAt: any, createdAt: any } } | null };
+export type GetUserFromTokenQuery = {
+  __typename?: "Query";
+  getUserFromToken?: {
+    __typename?: "User";
+    id: string;
+    tenant: {
+      __typename?: "Tenant";
+      name: string;
+      description?: string | null;
+      logo?: string | null;
+      isActive: boolean;
+      updatedAt: any;
+      createdAt: any;
+    };
+  } | null;
+};
 
 export type AttachAuth0IdMutationVariables = Exact<{
-  auth0Id: Scalars['String'];
-  userId: Scalars['ID'];
+  auth0Id: Scalars["String"];
+  userId: Scalars["ID"];
 }>;
 
-
-export type AttachAuth0IdMutation = { __typename?: 'Mutation', attachAuth0Id?: { __typename?: 'User', id: string, email: string, auth0Id?: string | null, code: string, isActive: boolean, isAdmin: boolean, createdAt: any, updatedAt: any, isPaymentManager: boolean, isManager: boolean, department: { __typename?: 'Department', id: string }, tenant: { __typename?: 'Tenant', id: string }, managees: Array<{ __typename?: 'User', id: string }>, manager?: { __typename?: 'User', id: string } | null } | null };
+export type AttachAuth0IdMutation = {
+  __typename?: "Mutation";
+  attachAuth0Id?: {
+    __typename?: "User";
+    id: string;
+    email: string;
+    auth0Id?: string | null;
+    code: string;
+    isActive: boolean;
+    isAdmin: boolean;
+    createdAt: any;
+    updatedAt: any;
+    isPaymentManager: boolean;
+    isManager: boolean;
+    department: { __typename?: "Department"; id: string };
+    tenant: { __typename?: "Tenant"; id: string };
+    managees: Array<{ __typename?: "User"; id: string }>;
+    manager?: { __typename?: "User"; id: string } | null;
+  } | null;
+};
 
 export type GetEntryCommentQueryVariables = Exact<{
-  commentId: Scalars['String'];
+  commentId: Scalars["String"];
 }>;
 
-
-export type GetEntryCommentQuery = { __typename?: 'Query', getEntryComment?: { __typename?: 'EntryComment', id: string, createdAt: any, updatedAt: any, text: string, user: { __typename?: 'User', id: string, name?: string | null, avatar?: string | null } } | null };
+export type GetEntryCommentQuery = {
+  __typename?: "Query";
+  getEntryComment?: {
+    __typename?: "EntryComment";
+    id: string;
+    createdAt: any;
+    updatedAt: any;
+    text: string;
+    user: {
+      __typename?: "User";
+      id: string;
+      name?: string | null;
+      avatar?: string | null;
+    };
+  } | null;
+};
 
 export type CreateEntryCommentMutationVariables = Exact<{
   entryComment: EntryCommentCreateInput;
 }>;
 
-
-export type CreateEntryCommentMutation = { __typename?: 'Mutation', createEntryComment?: { __typename?: 'EntryComment', id: string, createdAt: any, updatedAt: any, text: string, user: { __typename?: 'User', id: string, name?: string | null, avatar?: string | null } } | null };
+export type CreateEntryCommentMutation = {
+  __typename?: "Mutation";
+  createEntryComment?: {
+    __typename?: "EntryComment";
+    id: string;
+    createdAt: any;
+    updatedAt: any;
+    text: string;
+    user: {
+      __typename?: "User";
+      id: string;
+      name?: string | null;
+      avatar?: string | null;
+    };
+  } | null;
+};
 
 export type CreateOneTimeTokenMutationVariables = Exact<{
-  userId: Scalars['String'];
-  tenantId: Scalars['String'];
+  userId: Scalars["String"];
+  tenantId: Scalars["String"];
 }>;
 
-
-export type CreateOneTimeTokenMutation = { __typename?: 'Mutation', createOneTimeToken?: { __typename?: 'OneTimeToken', id: string, createdAt: any, updatedAt: any, user: { __typename?: 'User', id: string }, tenant: { __typename?: 'Tenant', id: string } } | null };
+export type CreateOneTimeTokenMutation = {
+  __typename?: "Mutation";
+  createOneTimeToken?: {
+    __typename?: "OneTimeToken";
+    id: string;
+    createdAt: any;
+    updatedAt: any;
+    user: { __typename?: "User"; id: string };
+    tenant: { __typename?: "Tenant"; id: string };
+  } | null;
+};
 
 export type CreateUserMutationVariables = Exact<{
   user: UserCreateInput;
 }>;
 
-
-export type CreateUserMutation = { __typename?: 'Mutation', createUser?: { __typename?: 'User', id: string, email: string, auth0Id?: string | null, isActive: boolean, code: string, isAdmin: boolean, name?: string | null, avatar?: string | null, createdAt: any, updatedAt: any, isPaymentManager: boolean, isManager: boolean, tenant: { __typename?: 'Tenant', id: string }, department: { __typename?: 'Department', id: string }, manager?: { __typename?: 'User', id: string } | null, managees: Array<{ __typename?: 'User', id: string }> } | null };
+export type CreateUserMutation = {
+  __typename?: "Mutation";
+  createUser?: {
+    __typename?: "User";
+    id: string;
+    email: string;
+    auth0Id?: string | null;
+    isActive: boolean;
+    code: string;
+    isAdmin: boolean;
+    name?: string | null;
+    avatar?: string | null;
+    createdAt: any;
+    updatedAt: any;
+    isPaymentManager: boolean;
+    isManager: boolean;
+    tenant: { __typename?: "Tenant"; id: string };
+    department: { __typename?: "Department"; id: string };
+    manager?: { __typename?: "User"; id: string } | null;
+    managees: Array<{ __typename?: "User"; id: string }>;
+  } | null;
+};
 
 export type ManagersQueryVariables = Exact<{
-  tenantId: Scalars['String'];
+  tenantId: Scalars["String"];
 }>;
 
-
-export type ManagersQuery = { __typename?: 'Query', managers: Array<{ __typename?: 'User', id: string, name?: string | null }> };
+export type ManagersQuery = {
+  __typename?: "Query";
+  managers: Array<{ __typename?: "User"; id: string; name?: string | null }>;
+};
 
 export type GetUserFromCodeQueryVariables = Exact<{
-  code: Scalars['String'];
-  tenantId: Scalars['String'];
+  code: Scalars["String"];
+  tenantId: Scalars["String"];
 }>;
 
-
-export type GetUserFromCodeQuery = { __typename?: 'Query', getUserFromCode?: { __typename?: 'User', id: string } | null };
+export type GetUserFromCodeQuery = {
+  __typename?: "Query";
+  getUserFromCode?: { __typename?: "User"; id: string } | null;
+};
 
 export type GetOneTimeTokensQueryVariables = Exact<{
-  tenantId: Scalars['String'];
+  tenantId: Scalars["String"];
 }>;
 
-
-export type GetOneTimeTokensQuery = { __typename?: 'Query', getOneTimeTokens: Array<{ __typename?: 'OneTimeToken', id: string, createdAt: any, user: { __typename?: 'User', id: string, name?: string | null, avatar?: string | null } }> };
+export type GetOneTimeTokensQuery = {
+  __typename?: "Query";
+  getOneTimeTokens: Array<{
+    __typename?: "OneTimeToken";
+    id: string;
+    createdAt: any;
+    user: {
+      __typename?: "User";
+      id: string;
+      name?: string | null;
+      avatar?: string | null;
+    };
+  }>;
+};
 
 export type UsersQueryVariables = Exact<{
-  tenantId: Scalars['String'];
+  tenantId: Scalars["String"];
 }>;
 
-
-export type UsersQuery = { __typename?: 'Query', users: Array<{ __typename?: 'User', id: string, email: string, auth0Id?: string | null, code: string, isActive: boolean, isAdmin: boolean, name?: string | null, avatar?: string | null, createdAt: any, updatedAt: any, isPaymentManager: boolean, isManager: boolean, isSetup: boolean, tenant: { __typename?: 'Tenant', id: string, name: string }, department: { __typename?: 'Department', id: string, name: string }, managees: Array<{ __typename?: 'User', id: string, email: string, name?: string | null, avatar?: string | null }>, manager?: { __typename?: 'User', id: string, email: string, name?: string | null } | null }> };
+export type UsersQuery = {
+  __typename?: "Query";
+  users: Array<{
+    __typename?: "User";
+    id: string;
+    email: string;
+    auth0Id?: string | null;
+    code: string;
+    isActive: boolean;
+    isAdmin: boolean;
+    name?: string | null;
+    avatar?: string | null;
+    createdAt: any;
+    updatedAt: any;
+    isPaymentManager: boolean;
+    isManager: boolean;
+    isSetup: boolean;
+    tenant: { __typename?: "Tenant"; id: string; name: string };
+    department: { __typename?: "Department"; id: string; name: string };
+    managees: Array<{
+      __typename?: "User";
+      id: string;
+      email: string;
+      name?: string | null;
+      avatar?: string | null;
+    }>;
+    manager?: {
+      __typename?: "User";
+      id: string;
+      email: string;
+      name?: string | null;
+    } | null;
+  }>;
+};
 
 export type TimeEntryFromIdQueryVariables = Exact<{
-  id: Scalars['String'];
+  id: Scalars["String"];
 }>;
 
-
-export type TimeEntryFromIdQuery = { __typename?: 'Query', timeEntryFromId?: { __typename?: 'TimeEntry', id: string, createdAt: any, updatedAt: any, date: any, hours: number, entryComments: Array<{ __typename?: 'EntryComment', id: string }> } | null };
-
+export type TimeEntryFromIdQuery = {
+  __typename?: "Query";
+  timeEntryFromId?: {
+    __typename?: "TimeEntry";
+    id: string;
+    createdAt: any;
+    updatedAt: any;
+    date: any;
+    hours: number;
+    entryComments: Array<{ __typename?: "EntryComment"; id: string }>;
+  } | null;
+};
 
 export const TenantFromIdDocument = gql`
     query TenantFromId($tenantId: String!) {
-  tenantFromId(tenantId: $tenantId) {
-    id
-    isActive
-    name
-    description
-  }
-}
-    `;
+        tenantFromId(tenantId: $tenantId) {
+            id
+            isActive
+            name
+            description
+        }
+    }
+`;
 
 /**
  * __useTenantFromIdQuery__
@@ -645,45 +950,68 @@ export const TenantFromIdDocument = gql`
  *   },
  * });
  */
-export function useTenantFromIdQuery(baseOptions: Apollo.QueryHookOptions<TenantFromIdQuery, TenantFromIdQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<TenantFromIdQuery, TenantFromIdQueryVariables>(TenantFromIdDocument, options);
-      }
-export function useTenantFromIdLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<TenantFromIdQuery, TenantFromIdQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<TenantFromIdQuery, TenantFromIdQueryVariables>(TenantFromIdDocument, options);
-        }
-export type TenantFromIdQueryHookResult = ReturnType<typeof useTenantFromIdQuery>;
-export type TenantFromIdLazyQueryHookResult = ReturnType<typeof useTenantFromIdLazyQuery>;
-export type TenantFromIdQueryResult = Apollo.QueryResult<TenantFromIdQuery, TenantFromIdQueryVariables>;
+export function useTenantFromIdQuery(
+  baseOptions: Apollo.QueryHookOptions<
+    TenantFromIdQuery,
+    TenantFromIdQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<TenantFromIdQuery, TenantFromIdQueryVariables>(
+    TenantFromIdDocument,
+    options
+  );
+}
+export function useTenantFromIdLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    TenantFromIdQuery,
+    TenantFromIdQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<TenantFromIdQuery, TenantFromIdQueryVariables>(
+    TenantFromIdDocument,
+    options
+  );
+}
+export type TenantFromIdQueryHookResult = ReturnType<
+  typeof useTenantFromIdQuery
+>;
+export type TenantFromIdLazyQueryHookResult = ReturnType<
+  typeof useTenantFromIdLazyQuery
+>;
+export type TenantFromIdQueryResult = Apollo.QueryResult<
+  TenantFromIdQuery,
+  TenantFromIdQueryVariables
+>;
 export const GetUserFromAuth0Document = gql`
     query GetUserFromAuth0($auth0Id: String!) {
-  getUserFromAuth0(auth0Id: $auth0Id) {
-    id
-    email
-    auth0Id
-    code
-    isActive
-    isAdmin
-    createdAt
-    updatedAt
-    department {
-      id
+        getUserFromAuth0(auth0Id: $auth0Id) {
+            id
+            email
+            auth0Id
+            code
+            isActive
+            isAdmin
+            createdAt
+            updatedAt
+            department {
+                id
+            }
+            managees {
+                id
+            }
+            manager {
+                id
+            }
+            isPaymentManager
+            isManager
+            tenant {
+                id
+            }
+        }
     }
-    managees {
-      id
-    }
-    manager {
-      id
-    }
-    isPaymentManager
-    isManager
-    tenant {
-      id
-    }
-  }
-}
-    `;
+`;
 
 /**
  * __useGetUserFromAuth0Query__
@@ -701,29 +1029,52 @@ export const GetUserFromAuth0Document = gql`
  *   },
  * });
  */
-export function useGetUserFromAuth0Query(baseOptions: Apollo.QueryHookOptions<GetUserFromAuth0Query, GetUserFromAuth0QueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetUserFromAuth0Query, GetUserFromAuth0QueryVariables>(GetUserFromAuth0Document, options);
-      }
-export function useGetUserFromAuth0LazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetUserFromAuth0Query, GetUserFromAuth0QueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetUserFromAuth0Query, GetUserFromAuth0QueryVariables>(GetUserFromAuth0Document, options);
-        }
-export type GetUserFromAuth0QueryHookResult = ReturnType<typeof useGetUserFromAuth0Query>;
-export type GetUserFromAuth0LazyQueryHookResult = ReturnType<typeof useGetUserFromAuth0LazyQuery>;
-export type GetUserFromAuth0QueryResult = Apollo.QueryResult<GetUserFromAuth0Query, GetUserFromAuth0QueryVariables>;
+export function useGetUserFromAuth0Query(
+  baseOptions: Apollo.QueryHookOptions<
+    GetUserFromAuth0Query,
+    GetUserFromAuth0QueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<
+    GetUserFromAuth0Query,
+    GetUserFromAuth0QueryVariables
+  >(GetUserFromAuth0Document, options);
+}
+export function useGetUserFromAuth0LazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetUserFromAuth0Query,
+    GetUserFromAuth0QueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<
+    GetUserFromAuth0Query,
+    GetUserFromAuth0QueryVariables
+  >(GetUserFromAuth0Document, options);
+}
+export type GetUserFromAuth0QueryHookResult = ReturnType<
+  typeof useGetUserFromAuth0Query
+>;
+export type GetUserFromAuth0LazyQueryHookResult = ReturnType<
+  typeof useGetUserFromAuth0LazyQuery
+>;
+export type GetUserFromAuth0QueryResult = Apollo.QueryResult<
+  GetUserFromAuth0Query,
+  GetUserFromAuth0QueryVariables
+>;
 export const GetTimesheetDocument = gql`
     query GetTimesheet($timesheet: TimesheetGetInput!) {
-  getTimesheet(Timesheet: $timesheet) {
-    id
-    period {
-      id
-      startDate
-      endDate
+        getTimesheet(Timesheet: $timesheet) {
+            id
+            period {
+                id
+                startDate
+                endDate
+            }
+        }
     }
-  }
-}
-    `;
+`;
 
 /**
  * __useGetTimesheetQuery__
@@ -741,29 +1092,52 @@ export const GetTimesheetDocument = gql`
  *   },
  * });
  */
-export function useGetTimesheetQuery(baseOptions: Apollo.QueryHookOptions<GetTimesheetQuery, GetTimesheetQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetTimesheetQuery, GetTimesheetQueryVariables>(GetTimesheetDocument, options);
-      }
-export function useGetTimesheetLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetTimesheetQuery, GetTimesheetQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetTimesheetQuery, GetTimesheetQueryVariables>(GetTimesheetDocument, options);
-        }
-export type GetTimesheetQueryHookResult = ReturnType<typeof useGetTimesheetQuery>;
-export type GetTimesheetLazyQueryHookResult = ReturnType<typeof useGetTimesheetLazyQuery>;
-export type GetTimesheetQueryResult = Apollo.QueryResult<GetTimesheetQuery, GetTimesheetQueryVariables>;
+export function useGetTimesheetQuery(
+  baseOptions: Apollo.QueryHookOptions<
+    GetTimesheetQuery,
+    GetTimesheetQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<GetTimesheetQuery, GetTimesheetQueryVariables>(
+    GetTimesheetDocument,
+    options
+  );
+}
+export function useGetTimesheetLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetTimesheetQuery,
+    GetTimesheetQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<GetTimesheetQuery, GetTimesheetQueryVariables>(
+    GetTimesheetDocument,
+    options
+  );
+}
+export type GetTimesheetQueryHookResult = ReturnType<
+  typeof useGetTimesheetQuery
+>;
+export type GetTimesheetLazyQueryHookResult = ReturnType<
+  typeof useGetTimesheetLazyQuery
+>;
+export type GetTimesheetQueryResult = Apollo.QueryResult<
+  GetTimesheetQuery,
+  GetTimesheetQueryVariables
+>;
 export const DepartmentsDocument = gql`
     query Departments {
-  departments {
-    id
-    name
-    createdAt
-    updatedAt
-    isActive
-    description
-  }
-}
-    `;
+        departments {
+            id
+            name
+            createdAt
+            updatedAt
+            isActive
+            description
+        }
+    }
+`;
 
 /**
  * __useDepartmentsQuery__
@@ -780,33 +1154,54 @@ export const DepartmentsDocument = gql`
  *   },
  * });
  */
-export function useDepartmentsQuery(baseOptions?: Apollo.QueryHookOptions<DepartmentsQuery, DepartmentsQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<DepartmentsQuery, DepartmentsQueryVariables>(DepartmentsDocument, options);
-      }
-export function useDepartmentsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<DepartmentsQuery, DepartmentsQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<DepartmentsQuery, DepartmentsQueryVariables>(DepartmentsDocument, options);
-        }
+export function useDepartmentsQuery(
+  baseOptions?: Apollo.QueryHookOptions<
+    DepartmentsQuery,
+    DepartmentsQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<DepartmentsQuery, DepartmentsQueryVariables>(
+    DepartmentsDocument,
+    options
+  );
+}
+export function useDepartmentsLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    DepartmentsQuery,
+    DepartmentsQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<DepartmentsQuery, DepartmentsQueryVariables>(
+    DepartmentsDocument,
+    options
+  );
+}
 export type DepartmentsQueryHookResult = ReturnType<typeof useDepartmentsQuery>;
-export type DepartmentsLazyQueryHookResult = ReturnType<typeof useDepartmentsLazyQuery>;
-export type DepartmentsQueryResult = Apollo.QueryResult<DepartmentsQuery, DepartmentsQueryVariables>;
+export type DepartmentsLazyQueryHookResult = ReturnType<
+  typeof useDepartmentsLazyQuery
+>;
+export type DepartmentsQueryResult = Apollo.QueryResult<
+  DepartmentsQuery,
+  DepartmentsQueryVariables
+>;
 export const ProjectsDocument = gql`
     query Projects {
-  projects {
-    id
-    name
-    createdAt
-    updatedAt
-    isActive
-    description
-    code
-    department {
-      id
+        projects {
+            id
+            name
+            createdAt
+            updatedAt
+            isActive
+            description
+            code
+            department {
+                id
+            }
+        }
     }
-  }
-}
-    `;
+`;
 
 /**
  * __useProjectsQuery__
@@ -823,34 +1218,52 @@ export const ProjectsDocument = gql`
  *   },
  * });
  */
-export function useProjectsQuery(baseOptions?: Apollo.QueryHookOptions<ProjectsQuery, ProjectsQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<ProjectsQuery, ProjectsQueryVariables>(ProjectsDocument, options);
-      }
-export function useProjectsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ProjectsQuery, ProjectsQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<ProjectsQuery, ProjectsQueryVariables>(ProjectsDocument, options);
-        }
+export function useProjectsQuery(
+  baseOptions?: Apollo.QueryHookOptions<ProjectsQuery, ProjectsQueryVariables>
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<ProjectsQuery, ProjectsQueryVariables>(
+    ProjectsDocument,
+    options
+  );
+}
+export function useProjectsLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    ProjectsQuery,
+    ProjectsQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<ProjectsQuery, ProjectsQueryVariables>(
+    ProjectsDocument,
+    options
+  );
+}
 export type ProjectsQueryHookResult = ReturnType<typeof useProjectsQuery>;
-export type ProjectsLazyQueryHookResult = ReturnType<typeof useProjectsLazyQuery>;
-export type ProjectsQueryResult = Apollo.QueryResult<ProjectsQuery, ProjectsQueryVariables>;
+export type ProjectsLazyQueryHookResult = ReturnType<
+  typeof useProjectsLazyQuery
+>;
+export type ProjectsQueryResult = Apollo.QueryResult<
+  ProjectsQuery,
+  ProjectsQueryVariables
+>;
 export const WorkTypesDocument = gql`
     query WorkTypes {
-  workTypes {
-    id
-    name
-    createdAt
-    updatedAt
-    isActive
-    description
-    code
-    isSystem
-    isDefault
-    multiplier
-    isBillable
-  }
-}
-    `;
+        workTypes {
+            id
+            name
+            createdAt
+            updatedAt
+            isActive
+            description
+            code
+            isSystem
+            isDefault
+            multiplier
+            isBillable
+        }
+    }
+`;
 
 /**
  * __useWorkTypesQuery__
@@ -867,37 +1280,58 @@ export const WorkTypesDocument = gql`
  *   },
  * });
  */
-export function useWorkTypesQuery(baseOptions?: Apollo.QueryHookOptions<WorkTypesQuery, WorkTypesQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<WorkTypesQuery, WorkTypesQueryVariables>(WorkTypesDocument, options);
-      }
-export function useWorkTypesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<WorkTypesQuery, WorkTypesQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<WorkTypesQuery, WorkTypesQueryVariables>(WorkTypesDocument, options);
-        }
+export function useWorkTypesQuery(
+  baseOptions?: Apollo.QueryHookOptions<
+    WorkTypesQuery,
+    WorkTypesQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<WorkTypesQuery, WorkTypesQueryVariables>(
+    WorkTypesDocument,
+    options
+  );
+}
+export function useWorkTypesLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    WorkTypesQuery,
+    WorkTypesQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<WorkTypesQuery, WorkTypesQueryVariables>(
+    WorkTypesDocument,
+    options
+  );
+}
 export type WorkTypesQueryHookResult = ReturnType<typeof useWorkTypesQuery>;
-export type WorkTypesLazyQueryHookResult = ReturnType<typeof useWorkTypesLazyQuery>;
-export type WorkTypesQueryResult = Apollo.QueryResult<WorkTypesQuery, WorkTypesQueryVariables>;
+export type WorkTypesLazyQueryHookResult = ReturnType<
+  typeof useWorkTypesLazyQuery
+>;
+export type WorkTypesQueryResult = Apollo.QueryResult<
+  WorkTypesQuery,
+  WorkTypesQueryVariables
+>;
 export const TimeEntryDocument = gql`
     query TimeEntry($date: String!, $timeEntryRowId: String!) {
-  timeEntry(date: $date, timeEntryRowId: $timeEntryRowId) {
-    id
-    createdAt
-    updatedAt
-    date
-    hours
-    entryComments {
-      id
-      createdAt
-      updatedAt
-      text
-      user {
-        id
-      }
+        timeEntry(date: $date, timeEntryRowId: $timeEntryRowId) {
+            id
+            createdAt
+            updatedAt
+            date
+            hours
+            entryComments {
+                id
+                createdAt
+                updatedAt
+                text
+                user {
+                    id
+                }
+            }
+        }
     }
-  }
-}
-    `;
+`;
 
 /**
  * __useTimeEntryQuery__
@@ -916,32 +1350,53 @@ export const TimeEntryDocument = gql`
  *   },
  * });
  */
-export function useTimeEntryQuery(baseOptions: Apollo.QueryHookOptions<TimeEntryQuery, TimeEntryQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<TimeEntryQuery, TimeEntryQueryVariables>(TimeEntryDocument, options);
-      }
-export function useTimeEntryLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<TimeEntryQuery, TimeEntryQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<TimeEntryQuery, TimeEntryQueryVariables>(TimeEntryDocument, options);
-        }
+export function useTimeEntryQuery(
+  baseOptions: Apollo.QueryHookOptions<
+    TimeEntryQuery,
+    TimeEntryQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<TimeEntryQuery, TimeEntryQueryVariables>(
+    TimeEntryDocument,
+    options
+  );
+}
+export function useTimeEntryLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    TimeEntryQuery,
+    TimeEntryQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<TimeEntryQuery, TimeEntryQueryVariables>(
+    TimeEntryDocument,
+    options
+  );
+}
 export type TimeEntryQueryHookResult = ReturnType<typeof useTimeEntryQuery>;
-export type TimeEntryLazyQueryHookResult = ReturnType<typeof useTimeEntryLazyQuery>;
-export type TimeEntryQueryResult = Apollo.QueryResult<TimeEntryQuery, TimeEntryQueryVariables>;
+export type TimeEntryLazyQueryHookResult = ReturnType<
+  typeof useTimeEntryLazyQuery
+>;
+export type TimeEntryQueryResult = Apollo.QueryResult<
+  TimeEntryQuery,
+  TimeEntryQueryVariables
+>;
 export const TimeEntryFromIndexDocument = gql`
     query TimeEntryFromIndex($index: Int!, $timeEntryRowId: String!) {
-  timeEntryFromIndex(index: $index, timeEntryRowId: $timeEntryRowId) {
-    id
-    createdAt
-    updatedAt
-    date
-    hours
-    index
-    entryComments {
-      id
+        timeEntryFromIndex(index: $index, timeEntryRowId: $timeEntryRowId) {
+            id
+            createdAt
+            updatedAt
+            date
+            hours
+            index
+            entryComments {
+                id
+            }
+        }
     }
-  }
-}
-    `;
+`;
 
 /**
  * __useTimeEntryFromIndexQuery__
@@ -960,38 +1415,69 @@ export const TimeEntryFromIndexDocument = gql`
  *   },
  * });
  */
-export function useTimeEntryFromIndexQuery(baseOptions: Apollo.QueryHookOptions<TimeEntryFromIndexQuery, TimeEntryFromIndexQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<TimeEntryFromIndexQuery, TimeEntryFromIndexQueryVariables>(TimeEntryFromIndexDocument, options);
-      }
-export function useTimeEntryFromIndexLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<TimeEntryFromIndexQuery, TimeEntryFromIndexQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<TimeEntryFromIndexQuery, TimeEntryFromIndexQueryVariables>(TimeEntryFromIndexDocument, options);
-        }
-export type TimeEntryFromIndexQueryHookResult = ReturnType<typeof useTimeEntryFromIndexQuery>;
-export type TimeEntryFromIndexLazyQueryHookResult = ReturnType<typeof useTimeEntryFromIndexLazyQuery>;
-export type TimeEntryFromIndexQueryResult = Apollo.QueryResult<TimeEntryFromIndexQuery, TimeEntryFromIndexQueryVariables>;
-export const CreateTimeEntryDocument = gql`
-    mutation CreateTimeEntry($index: Int!, $timeEntryRowId: String!, $hours: Int!, $date: String!) {
-  createTimeEntry(
-    index: $index
-    hours: $hours
-    date: $date
-    timeEntryRowId: $timeEntryRowId
-  ) {
-    id
-    createdAt
-    updatedAt
-    date
-    hours
-    index
-    entryComments {
-      id
-    }
-  }
+export function useTimeEntryFromIndexQuery(
+  baseOptions: Apollo.QueryHookOptions<
+    TimeEntryFromIndexQuery,
+    TimeEntryFromIndexQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<
+    TimeEntryFromIndexQuery,
+    TimeEntryFromIndexQueryVariables
+  >(TimeEntryFromIndexDocument, options);
 }
-    `;
-export type CreateTimeEntryMutationFn = Apollo.MutationFunction<CreateTimeEntryMutation, CreateTimeEntryMutationVariables>;
+export function useTimeEntryFromIndexLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    TimeEntryFromIndexQuery,
+    TimeEntryFromIndexQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<
+    TimeEntryFromIndexQuery,
+    TimeEntryFromIndexQueryVariables
+  >(TimeEntryFromIndexDocument, options);
+}
+export type TimeEntryFromIndexQueryHookResult = ReturnType<
+  typeof useTimeEntryFromIndexQuery
+>;
+export type TimeEntryFromIndexLazyQueryHookResult = ReturnType<
+  typeof useTimeEntryFromIndexLazyQuery
+>;
+export type TimeEntryFromIndexQueryResult = Apollo.QueryResult<
+  TimeEntryFromIndexQuery,
+  TimeEntryFromIndexQueryVariables
+>;
+export const CreateTimeEntryDocument = gql`
+    mutation CreateTimeEntry(
+        $index: Int!
+        $timeEntryRowId: String!
+        $hours: Int!
+        $date: String!
+    ) {
+        createTimeEntry(
+            index: $index
+            hours: $hours
+            date: $date
+            timeEntryRowId: $timeEntryRowId
+        ) {
+            id
+            createdAt
+            updatedAt
+            date
+            hours
+            index
+            entryComments {
+                id
+            }
+        }
+    }
+`;
+export type CreateTimeEntryMutationFn = Apollo.MutationFunction<
+  CreateTimeEntryMutation,
+  CreateTimeEntryMutationVariables
+>;
 
 /**
  * __useCreateTimeEntryMutation__
@@ -1013,29 +1499,49 @@ export type CreateTimeEntryMutationFn = Apollo.MutationFunction<CreateTimeEntryM
  *   },
  * });
  */
-export function useCreateTimeEntryMutation(baseOptions?: Apollo.MutationHookOptions<CreateTimeEntryMutation, CreateTimeEntryMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<CreateTimeEntryMutation, CreateTimeEntryMutationVariables>(CreateTimeEntryDocument, options);
-      }
-export type CreateTimeEntryMutationHookResult = ReturnType<typeof useCreateTimeEntryMutation>;
-export type CreateTimeEntryMutationResult = Apollo.MutationResult<CreateTimeEntryMutation>;
-export type CreateTimeEntryMutationOptions = Apollo.BaseMutationOptions<CreateTimeEntryMutation, CreateTimeEntryMutationVariables>;
-export const UpdateTimeEntryhoursDocument = gql`
-    mutation UpdateTimeEntryhours($updateTimeEntryhoursId: String!, $hours: Int!) {
-  updateTimeEntryhours(id: $updateTimeEntryhoursId, hours: $hours) {
-    id
-    createdAt
-    updatedAt
-    date
-    hours
-    index
-    entryComments {
-      id
-    }
-  }
+export function useCreateTimeEntryMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    CreateTimeEntryMutation,
+    CreateTimeEntryMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    CreateTimeEntryMutation,
+    CreateTimeEntryMutationVariables
+  >(CreateTimeEntryDocument, options);
 }
-    `;
-export type UpdateTimeEntryhoursMutationFn = Apollo.MutationFunction<UpdateTimeEntryhoursMutation, UpdateTimeEntryhoursMutationVariables>;
+export type CreateTimeEntryMutationHookResult = ReturnType<
+  typeof useCreateTimeEntryMutation
+>;
+export type CreateTimeEntryMutationResult =
+  Apollo.MutationResult<CreateTimeEntryMutation>;
+export type CreateTimeEntryMutationOptions = Apollo.BaseMutationOptions<
+  CreateTimeEntryMutation,
+  CreateTimeEntryMutationVariables
+>;
+export const UpdateTimeEntryhoursDocument = gql`
+    mutation UpdateTimeEntryhours(
+        $updateTimeEntryhoursId: String!
+        $hours: Int!
+    ) {
+        updateTimeEntryhours(id: $updateTimeEntryhoursId, hours: $hours) {
+            id
+            createdAt
+            updatedAt
+            date
+            hours
+            index
+            entryComments {
+                id
+            }
+        }
+    }
+`;
+export type UpdateTimeEntryhoursMutationFn = Apollo.MutationFunction<
+  UpdateTimeEntryhoursMutation,
+  UpdateTimeEntryhoursMutationVariables
+>;
 
 /**
  * __useUpdateTimeEntryhoursMutation__
@@ -1055,26 +1561,43 @@ export type UpdateTimeEntryhoursMutationFn = Apollo.MutationFunction<UpdateTimeE
  *   },
  * });
  */
-export function useUpdateTimeEntryhoursMutation(baseOptions?: Apollo.MutationHookOptions<UpdateTimeEntryhoursMutation, UpdateTimeEntryhoursMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<UpdateTimeEntryhoursMutation, UpdateTimeEntryhoursMutationVariables>(UpdateTimeEntryhoursDocument, options);
-      }
-export type UpdateTimeEntryhoursMutationHookResult = ReturnType<typeof useUpdateTimeEntryhoursMutation>;
-export type UpdateTimeEntryhoursMutationResult = Apollo.MutationResult<UpdateTimeEntryhoursMutation>;
-export type UpdateTimeEntryhoursMutationOptions = Apollo.BaseMutationOptions<UpdateTimeEntryhoursMutation, UpdateTimeEntryhoursMutationVariables>;
+export function useUpdateTimeEntryhoursMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    UpdateTimeEntryhoursMutation,
+    UpdateTimeEntryhoursMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    UpdateTimeEntryhoursMutation,
+    UpdateTimeEntryhoursMutationVariables
+  >(UpdateTimeEntryhoursDocument, options);
+}
+export type UpdateTimeEntryhoursMutationHookResult = ReturnType<
+  typeof useUpdateTimeEntryhoursMutation
+>;
+export type UpdateTimeEntryhoursMutationResult =
+  Apollo.MutationResult<UpdateTimeEntryhoursMutation>;
+export type UpdateTimeEntryhoursMutationOptions = Apollo.BaseMutationOptions<
+  UpdateTimeEntryhoursMutation,
+  UpdateTimeEntryhoursMutationVariables
+>;
 export const DeleteTimeEntryDocument = gql`
     mutation DeleteTimeEntry($deleteTimeEntryId: String!) {
-  deleteTimeEntry(id: $deleteTimeEntryId) {
-    id
-    hours
-    date
-    index
-    updatedAt
-    createdAt
-  }
-}
-    `;
-export type DeleteTimeEntryMutationFn = Apollo.MutationFunction<DeleteTimeEntryMutation, DeleteTimeEntryMutationVariables>;
+        deleteTimeEntry(id: $deleteTimeEntryId) {
+            id
+            hours
+            date
+            index
+            updatedAt
+            createdAt
+        }
+    }
+`;
+export type DeleteTimeEntryMutationFn = Apollo.MutationFunction<
+  DeleteTimeEntryMutation,
+  DeleteTimeEntryMutationVariables
+>;
 
 /**
  * __useDeleteTimeEntryMutation__
@@ -1093,37 +1616,59 @@ export type DeleteTimeEntryMutationFn = Apollo.MutationFunction<DeleteTimeEntryM
  *   },
  * });
  */
-export function useDeleteTimeEntryMutation(baseOptions?: Apollo.MutationHookOptions<DeleteTimeEntryMutation, DeleteTimeEntryMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<DeleteTimeEntryMutation, DeleteTimeEntryMutationVariables>(DeleteTimeEntryDocument, options);
-      }
-export type DeleteTimeEntryMutationHookResult = ReturnType<typeof useDeleteTimeEntryMutation>;
-export type DeleteTimeEntryMutationResult = Apollo.MutationResult<DeleteTimeEntryMutation>;
-export type DeleteTimeEntryMutationOptions = Apollo.BaseMutationOptions<DeleteTimeEntryMutation, DeleteTimeEntryMutationVariables>;
-export const UpdateTimeEntryRowDocument = gql`
-    mutation UpdateTimeEntryRow($updateTimeEntryRowId: String!, $departmentId: String, $projectId: String, $workTypeId: String) {
-  updateTimeEntryRow(
-    id: $updateTimeEntryRowId
-    departmentId: $departmentId
-    projectId: $projectId
-    workTypeId: $workTypeId
-  ) {
-    id
-    createdAt
-    updatedAt
-    workType {
-      id
-    }
-    project {
-      id
-    }
-    department {
-      id
-    }
-  }
+export function useDeleteTimeEntryMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    DeleteTimeEntryMutation,
+    DeleteTimeEntryMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    DeleteTimeEntryMutation,
+    DeleteTimeEntryMutationVariables
+  >(DeleteTimeEntryDocument, options);
 }
-    `;
-export type UpdateTimeEntryRowMutationFn = Apollo.MutationFunction<UpdateTimeEntryRowMutation, UpdateTimeEntryRowMutationVariables>;
+export type DeleteTimeEntryMutationHookResult = ReturnType<
+  typeof useDeleteTimeEntryMutation
+>;
+export type DeleteTimeEntryMutationResult =
+  Apollo.MutationResult<DeleteTimeEntryMutation>;
+export type DeleteTimeEntryMutationOptions = Apollo.BaseMutationOptions<
+  DeleteTimeEntryMutation,
+  DeleteTimeEntryMutationVariables
+>;
+export const UpdateTimeEntryRowDocument = gql`
+    mutation UpdateTimeEntryRow(
+        $updateTimeEntryRowId: String!
+        $departmentId: String
+        $projectId: String
+        $workTypeId: String
+    ) {
+        updateTimeEntryRow(
+            id: $updateTimeEntryRowId
+            departmentId: $departmentId
+            projectId: $projectId
+            workTypeId: $workTypeId
+        ) {
+            id
+            createdAt
+            updatedAt
+            workType {
+                id
+            }
+            project {
+                id
+            }
+            department {
+                id
+            }
+        }
+    }
+`;
+export type UpdateTimeEntryRowMutationFn = Apollo.MutationFunction<
+  UpdateTimeEntryRowMutation,
+  UpdateTimeEntryRowMutationVariables
+>;
 
 /**
  * __useUpdateTimeEntryRowMutation__
@@ -1145,22 +1690,36 @@ export type UpdateTimeEntryRowMutationFn = Apollo.MutationFunction<UpdateTimeEnt
  *   },
  * });
  */
-export function useUpdateTimeEntryRowMutation(baseOptions?: Apollo.MutationHookOptions<UpdateTimeEntryRowMutation, UpdateTimeEntryRowMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<UpdateTimeEntryRowMutation, UpdateTimeEntryRowMutationVariables>(UpdateTimeEntryRowDocument, options);
-      }
-export type UpdateTimeEntryRowMutationHookResult = ReturnType<typeof useUpdateTimeEntryRowMutation>;
-export type UpdateTimeEntryRowMutationResult = Apollo.MutationResult<UpdateTimeEntryRowMutation>;
-export type UpdateTimeEntryRowMutationOptions = Apollo.BaseMutationOptions<UpdateTimeEntryRowMutation, UpdateTimeEntryRowMutationVariables>;
+export function useUpdateTimeEntryRowMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    UpdateTimeEntryRowMutation,
+    UpdateTimeEntryRowMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    UpdateTimeEntryRowMutation,
+    UpdateTimeEntryRowMutationVariables
+  >(UpdateTimeEntryRowDocument, options);
+}
+export type UpdateTimeEntryRowMutationHookResult = ReturnType<
+  typeof useUpdateTimeEntryRowMutation
+>;
+export type UpdateTimeEntryRowMutationResult =
+  Apollo.MutationResult<UpdateTimeEntryRowMutation>;
+export type UpdateTimeEntryRowMutationOptions = Apollo.BaseMutationOptions<
+  UpdateTimeEntryRowMutation,
+  UpdateTimeEntryRowMutationVariables
+>;
 export const GetTimeEntriesDocument = gql`
     query GetTimeEntries($rowId: String!) {
-  getTimeEntryRow(id: $rowId) {
-    timeEntries {
-      id
+        getTimeEntryRow(id: $rowId) {
+            timeEntries {
+                id
+            }
+        }
     }
-  }
-}
-    `;
+`;
 
 /**
  * __useGetTimeEntriesQuery__
@@ -1178,35 +1737,58 @@ export const GetTimeEntriesDocument = gql`
  *   },
  * });
  */
-export function useGetTimeEntriesQuery(baseOptions: Apollo.QueryHookOptions<GetTimeEntriesQuery, GetTimeEntriesQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetTimeEntriesQuery, GetTimeEntriesQueryVariables>(GetTimeEntriesDocument, options);
-      }
-export function useGetTimeEntriesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetTimeEntriesQuery, GetTimeEntriesQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetTimeEntriesQuery, GetTimeEntriesQueryVariables>(GetTimeEntriesDocument, options);
-        }
-export type GetTimeEntriesQueryHookResult = ReturnType<typeof useGetTimeEntriesQuery>;
-export type GetTimeEntriesLazyQueryHookResult = ReturnType<typeof useGetTimeEntriesLazyQuery>;
-export type GetTimeEntriesQueryResult = Apollo.QueryResult<GetTimeEntriesQuery, GetTimeEntriesQueryVariables>;
+export function useGetTimeEntriesQuery(
+  baseOptions: Apollo.QueryHookOptions<
+    GetTimeEntriesQuery,
+    GetTimeEntriesQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<GetTimeEntriesQuery, GetTimeEntriesQueryVariables>(
+    GetTimeEntriesDocument,
+    options
+  );
+}
+export function useGetTimeEntriesLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetTimeEntriesQuery,
+    GetTimeEntriesQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<
+    GetTimeEntriesQuery,
+    GetTimeEntriesQueryVariables
+  >(GetTimeEntriesDocument, options);
+}
+export type GetTimeEntriesQueryHookResult = ReturnType<
+  typeof useGetTimeEntriesQuery
+>;
+export type GetTimeEntriesLazyQueryHookResult = ReturnType<
+  typeof useGetTimeEntriesLazyQuery
+>;
+export type GetTimeEntriesQueryResult = Apollo.QueryResult<
+  GetTimeEntriesQuery,
+  GetTimeEntriesQueryVariables
+>;
 export const GetTimeEntryRowDocument = gql`
     query GetTimeEntryRow($getTimeEntryRowId: String!) {
-  getTimeEntryRow(id: $getTimeEntryRowId) {
-    id
-    createdAt
-    updatedAt
-    workType {
-      id
+        getTimeEntryRow(id: $getTimeEntryRowId) {
+            id
+            createdAt
+            updatedAt
+            workType {
+                id
+            }
+            project {
+                id
+            }
+            department {
+                id
+            }
+        }
     }
-    project {
-      id
-    }
-    department {
-      id
-    }
-  }
-}
-    `;
+`;
 
 /**
  * __useGetTimeEntryRowQuery__
@@ -1224,38 +1806,61 @@ export const GetTimeEntryRowDocument = gql`
  *   },
  * });
  */
-export function useGetTimeEntryRowQuery(baseOptions: Apollo.QueryHookOptions<GetTimeEntryRowQuery, GetTimeEntryRowQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetTimeEntryRowQuery, GetTimeEntryRowQueryVariables>(GetTimeEntryRowDocument, options);
-      }
-export function useGetTimeEntryRowLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetTimeEntryRowQuery, GetTimeEntryRowQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetTimeEntryRowQuery, GetTimeEntryRowQueryVariables>(GetTimeEntryRowDocument, options);
-        }
-export type GetTimeEntryRowQueryHookResult = ReturnType<typeof useGetTimeEntryRowQuery>;
-export type GetTimeEntryRowLazyQueryHookResult = ReturnType<typeof useGetTimeEntryRowLazyQuery>;
-export type GetTimeEntryRowQueryResult = Apollo.QueryResult<GetTimeEntryRowQuery, GetTimeEntryRowQueryVariables>;
+export function useGetTimeEntryRowQuery(
+  baseOptions: Apollo.QueryHookOptions<
+    GetTimeEntryRowQuery,
+    GetTimeEntryRowQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<GetTimeEntryRowQuery, GetTimeEntryRowQueryVariables>(
+    GetTimeEntryRowDocument,
+    options
+  );
+}
+export function useGetTimeEntryRowLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetTimeEntryRowQuery,
+    GetTimeEntryRowQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<
+    GetTimeEntryRowQuery,
+    GetTimeEntryRowQueryVariables
+  >(GetTimeEntryRowDocument, options);
+}
+export type GetTimeEntryRowQueryHookResult = ReturnType<
+  typeof useGetTimeEntryRowQuery
+>;
+export type GetTimeEntryRowLazyQueryHookResult = ReturnType<
+  typeof useGetTimeEntryRowLazyQuery
+>;
+export type GetTimeEntryRowQueryResult = Apollo.QueryResult<
+  GetTimeEntryRowQuery,
+  GetTimeEntryRowQueryVariables
+>;
 export const GetTimeEntryRowsDocument = gql`
     query GetTimeEntryRows($timesheetId: String!) {
-  getTimeEntryRows(timesheetId: $timesheetId) {
-    id
-    createdAt
-    updatedAt
-    workType {
-      id
+        getTimeEntryRows(timesheetId: $timesheetId) {
+            id
+            createdAt
+            updatedAt
+            workType {
+                id
+            }
+            project {
+                id
+            }
+            department {
+                id
+            }
+            timeEntries {
+                id
+            }
+        }
     }
-    project {
-      id
-    }
-    department {
-      id
-    }
-    timeEntries {
-      id
-    }
-  }
-}
-    `;
+`;
 
 /**
  * __useGetTimeEntryRowsQuery__
@@ -1273,39 +1878,65 @@ export const GetTimeEntryRowsDocument = gql`
  *   },
  * });
  */
-export function useGetTimeEntryRowsQuery(baseOptions: Apollo.QueryHookOptions<GetTimeEntryRowsQuery, GetTimeEntryRowsQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetTimeEntryRowsQuery, GetTimeEntryRowsQueryVariables>(GetTimeEntryRowsDocument, options);
-      }
-export function useGetTimeEntryRowsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetTimeEntryRowsQuery, GetTimeEntryRowsQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetTimeEntryRowsQuery, GetTimeEntryRowsQueryVariables>(GetTimeEntryRowsDocument, options);
-        }
-export type GetTimeEntryRowsQueryHookResult = ReturnType<typeof useGetTimeEntryRowsQuery>;
-export type GetTimeEntryRowsLazyQueryHookResult = ReturnType<typeof useGetTimeEntryRowsLazyQuery>;
-export type GetTimeEntryRowsQueryResult = Apollo.QueryResult<GetTimeEntryRowsQuery, GetTimeEntryRowsQueryVariables>;
+export function useGetTimeEntryRowsQuery(
+  baseOptions: Apollo.QueryHookOptions<
+    GetTimeEntryRowsQuery,
+    GetTimeEntryRowsQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<
+    GetTimeEntryRowsQuery,
+    GetTimeEntryRowsQueryVariables
+  >(GetTimeEntryRowsDocument, options);
+}
+export function useGetTimeEntryRowsLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetTimeEntryRowsQuery,
+    GetTimeEntryRowsQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<
+    GetTimeEntryRowsQuery,
+    GetTimeEntryRowsQueryVariables
+  >(GetTimeEntryRowsDocument, options);
+}
+export type GetTimeEntryRowsQueryHookResult = ReturnType<
+  typeof useGetTimeEntryRowsQuery
+>;
+export type GetTimeEntryRowsLazyQueryHookResult = ReturnType<
+  typeof useGetTimeEntryRowsLazyQuery
+>;
+export type GetTimeEntryRowsQueryResult = Apollo.QueryResult<
+  GetTimeEntryRowsQuery,
+  GetTimeEntryRowsQueryVariables
+>;
 export const CreateTimeEntryRowDocument = gql`
     mutation CreateTimeEntryRow($timesheetId: String!) {
-  createTimeEntryRow(timesheetId: $timesheetId) {
-    id
-    createdAt
-    updatedAt
-    workType {
-      id
+        createTimeEntryRow(timesheetId: $timesheetId) {
+            id
+            createdAt
+            updatedAt
+            workType {
+                id
+            }
+            project {
+                id
+            }
+            department {
+                id
+            }
+            timeEntries {
+                id
+            }
+        }
     }
-    project {
-      id
-    }
-    department {
-      id
-    }
-    timeEntries {
-      id
-    }
-  }
-}
-    `;
-export type CreateTimeEntryRowMutationFn = Apollo.MutationFunction<CreateTimeEntryRowMutation, CreateTimeEntryRowMutationVariables>;
+`;
+export type CreateTimeEntryRowMutationFn = Apollo.MutationFunction<
+  CreateTimeEntryRowMutation,
+  CreateTimeEntryRowMutationVariables
+>;
 
 /**
  * __useCreateTimeEntryRowMutation__
@@ -1324,21 +1955,38 @@ export type CreateTimeEntryRowMutationFn = Apollo.MutationFunction<CreateTimeEnt
  *   },
  * });
  */
-export function useCreateTimeEntryRowMutation(baseOptions?: Apollo.MutationHookOptions<CreateTimeEntryRowMutation, CreateTimeEntryRowMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<CreateTimeEntryRowMutation, CreateTimeEntryRowMutationVariables>(CreateTimeEntryRowDocument, options);
-      }
-export type CreateTimeEntryRowMutationHookResult = ReturnType<typeof useCreateTimeEntryRowMutation>;
-export type CreateTimeEntryRowMutationResult = Apollo.MutationResult<CreateTimeEntryRowMutation>;
-export type CreateTimeEntryRowMutationOptions = Apollo.BaseMutationOptions<CreateTimeEntryRowMutation, CreateTimeEntryRowMutationVariables>;
+export function useCreateTimeEntryRowMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    CreateTimeEntryRowMutation,
+    CreateTimeEntryRowMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    CreateTimeEntryRowMutation,
+    CreateTimeEntryRowMutationVariables
+  >(CreateTimeEntryRowDocument, options);
+}
+export type CreateTimeEntryRowMutationHookResult = ReturnType<
+  typeof useCreateTimeEntryRowMutation
+>;
+export type CreateTimeEntryRowMutationResult =
+  Apollo.MutationResult<CreateTimeEntryRowMutation>;
+export type CreateTimeEntryRowMutationOptions = Apollo.BaseMutationOptions<
+  CreateTimeEntryRowMutation,
+  CreateTimeEntryRowMutationVariables
+>;
 export const DeleteTimeEntryRowDocument = gql`
     mutation DeleteTimeEntryRow($timeEntryRow: TimeEntryRowDeleteInput!) {
-  deleteTimeEntryRow(TimeEntryRow: $timeEntryRow) {
-    id
-  }
-}
-    `;
-export type DeleteTimeEntryRowMutationFn = Apollo.MutationFunction<DeleteTimeEntryRowMutation, DeleteTimeEntryRowMutationVariables>;
+        deleteTimeEntryRow(TimeEntryRow: $timeEntryRow) {
+            id
+        }
+    }
+`;
+export type DeleteTimeEntryRowMutationFn = Apollo.MutationFunction<
+  DeleteTimeEntryRowMutation,
+  DeleteTimeEntryRowMutationVariables
+>;
 
 /**
  * __useDeleteTimeEntryRowMutation__
@@ -1357,28 +2005,42 @@ export type DeleteTimeEntryRowMutationFn = Apollo.MutationFunction<DeleteTimeEnt
  *   },
  * });
  */
-export function useDeleteTimeEntryRowMutation(baseOptions?: Apollo.MutationHookOptions<DeleteTimeEntryRowMutation, DeleteTimeEntryRowMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<DeleteTimeEntryRowMutation, DeleteTimeEntryRowMutationVariables>(DeleteTimeEntryRowDocument, options);
-      }
-export type DeleteTimeEntryRowMutationHookResult = ReturnType<typeof useDeleteTimeEntryRowMutation>;
-export type DeleteTimeEntryRowMutationResult = Apollo.MutationResult<DeleteTimeEntryRowMutation>;
-export type DeleteTimeEntryRowMutationOptions = Apollo.BaseMutationOptions<DeleteTimeEntryRowMutation, DeleteTimeEntryRowMutationVariables>;
+export function useDeleteTimeEntryRowMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    DeleteTimeEntryRowMutation,
+    DeleteTimeEntryRowMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    DeleteTimeEntryRowMutation,
+    DeleteTimeEntryRowMutationVariables
+  >(DeleteTimeEntryRowDocument, options);
+}
+export type DeleteTimeEntryRowMutationHookResult = ReturnType<
+  typeof useDeleteTimeEntryRowMutation
+>;
+export type DeleteTimeEntryRowMutationResult =
+  Apollo.MutationResult<DeleteTimeEntryRowMutation>;
+export type DeleteTimeEntryRowMutationOptions = Apollo.BaseMutationOptions<
+  DeleteTimeEntryRowMutation,
+  DeleteTimeEntryRowMutationVariables
+>;
 export const GetUserFromTokenDocument = gql`
     query getUserFromToken($token: ID!) {
-  getUserFromToken(token: $token) {
-    id
-    tenant {
-      name
-      description
-      logo
-      isActive
-      updatedAt
-      createdAt
+        getUserFromToken(token: $token) {
+            id
+            tenant {
+                name
+                description
+                logo
+                isActive
+                updatedAt
+                createdAt
+            }
+        }
     }
-  }
-}
-    `;
+`;
 
 /**
  * __useGetUserFromTokenQuery__
@@ -1396,46 +2058,72 @@ export const GetUserFromTokenDocument = gql`
  *   },
  * });
  */
-export function useGetUserFromTokenQuery(baseOptions: Apollo.QueryHookOptions<GetUserFromTokenQuery, GetUserFromTokenQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetUserFromTokenQuery, GetUserFromTokenQueryVariables>(GetUserFromTokenDocument, options);
-      }
-export function useGetUserFromTokenLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetUserFromTokenQuery, GetUserFromTokenQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetUserFromTokenQuery, GetUserFromTokenQueryVariables>(GetUserFromTokenDocument, options);
-        }
-export type GetUserFromTokenQueryHookResult = ReturnType<typeof useGetUserFromTokenQuery>;
-export type GetUserFromTokenLazyQueryHookResult = ReturnType<typeof useGetUserFromTokenLazyQuery>;
-export type GetUserFromTokenQueryResult = Apollo.QueryResult<GetUserFromTokenQuery, GetUserFromTokenQueryVariables>;
+export function useGetUserFromTokenQuery(
+  baseOptions: Apollo.QueryHookOptions<
+    GetUserFromTokenQuery,
+    GetUserFromTokenQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<
+    GetUserFromTokenQuery,
+    GetUserFromTokenQueryVariables
+  >(GetUserFromTokenDocument, options);
+}
+export function useGetUserFromTokenLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetUserFromTokenQuery,
+    GetUserFromTokenQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<
+    GetUserFromTokenQuery,
+    GetUserFromTokenQueryVariables
+  >(GetUserFromTokenDocument, options);
+}
+export type GetUserFromTokenQueryHookResult = ReturnType<
+  typeof useGetUserFromTokenQuery
+>;
+export type GetUserFromTokenLazyQueryHookResult = ReturnType<
+  typeof useGetUserFromTokenLazyQuery
+>;
+export type GetUserFromTokenQueryResult = Apollo.QueryResult<
+  GetUserFromTokenQuery,
+  GetUserFromTokenQueryVariables
+>;
 export const AttachAuth0IdDocument = gql`
     mutation AttachAuth0Id($auth0Id: String!, $userId: ID!) {
-  attachAuth0Id(auth0Id: $auth0Id, userId: $userId) {
-    id
-    email
-    auth0Id
-    code
-    isActive
-    isAdmin
-    createdAt
-    updatedAt
-    department {
-      id
+        attachAuth0Id(auth0Id: $auth0Id, userId: $userId) {
+            id
+            email
+            auth0Id
+            code
+            isActive
+            isAdmin
+            createdAt
+            updatedAt
+            department {
+                id
+            }
+            tenant {
+                id
+            }
+            managees {
+                id
+            }
+            manager {
+                id
+            }
+            isPaymentManager
+            isManager
+        }
     }
-    tenant {
-      id
-    }
-    managees {
-      id
-    }
-    manager {
-      id
-    }
-    isPaymentManager
-    isManager
-  }
-}
-    `;
-export type AttachAuth0IdMutationFn = Apollo.MutationFunction<AttachAuth0IdMutation, AttachAuth0IdMutationVariables>;
+`;
+export type AttachAuth0IdMutationFn = Apollo.MutationFunction<
+  AttachAuth0IdMutation,
+  AttachAuth0IdMutationVariables
+>;
 
 /**
  * __useAttachAuth0IdMutation__
@@ -1455,28 +2143,42 @@ export type AttachAuth0IdMutationFn = Apollo.MutationFunction<AttachAuth0IdMutat
  *   },
  * });
  */
-export function useAttachAuth0IdMutation(baseOptions?: Apollo.MutationHookOptions<AttachAuth0IdMutation, AttachAuth0IdMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<AttachAuth0IdMutation, AttachAuth0IdMutationVariables>(AttachAuth0IdDocument, options);
-      }
-export type AttachAuth0IdMutationHookResult = ReturnType<typeof useAttachAuth0IdMutation>;
-export type AttachAuth0IdMutationResult = Apollo.MutationResult<AttachAuth0IdMutation>;
-export type AttachAuth0IdMutationOptions = Apollo.BaseMutationOptions<AttachAuth0IdMutation, AttachAuth0IdMutationVariables>;
+export function useAttachAuth0IdMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    AttachAuth0IdMutation,
+    AttachAuth0IdMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    AttachAuth0IdMutation,
+    AttachAuth0IdMutationVariables
+  >(AttachAuth0IdDocument, options);
+}
+export type AttachAuth0IdMutationHookResult = ReturnType<
+  typeof useAttachAuth0IdMutation
+>;
+export type AttachAuth0IdMutationResult =
+  Apollo.MutationResult<AttachAuth0IdMutation>;
+export type AttachAuth0IdMutationOptions = Apollo.BaseMutationOptions<
+  AttachAuth0IdMutation,
+  AttachAuth0IdMutationVariables
+>;
 export const GetEntryCommentDocument = gql`
     query GetEntryComment($commentId: String!) {
-  getEntryComment(commentId: $commentId) {
-    id
-    createdAt
-    updatedAt
-    text
-    user {
-      id
-      name
-      avatar
+        getEntryComment(commentId: $commentId) {
+            id
+            createdAt
+            updatedAt
+            text
+            user {
+                id
+                name
+                avatar
+            }
+        }
     }
-  }
-}
-    `;
+`;
 
 /**
  * __useGetEntryCommentQuery__
@@ -1494,33 +2196,59 @@ export const GetEntryCommentDocument = gql`
  *   },
  * });
  */
-export function useGetEntryCommentQuery(baseOptions: Apollo.QueryHookOptions<GetEntryCommentQuery, GetEntryCommentQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetEntryCommentQuery, GetEntryCommentQueryVariables>(GetEntryCommentDocument, options);
-      }
-export function useGetEntryCommentLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetEntryCommentQuery, GetEntryCommentQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetEntryCommentQuery, GetEntryCommentQueryVariables>(GetEntryCommentDocument, options);
-        }
-export type GetEntryCommentQueryHookResult = ReturnType<typeof useGetEntryCommentQuery>;
-export type GetEntryCommentLazyQueryHookResult = ReturnType<typeof useGetEntryCommentLazyQuery>;
-export type GetEntryCommentQueryResult = Apollo.QueryResult<GetEntryCommentQuery, GetEntryCommentQueryVariables>;
+export function useGetEntryCommentQuery(
+  baseOptions: Apollo.QueryHookOptions<
+    GetEntryCommentQuery,
+    GetEntryCommentQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<GetEntryCommentQuery, GetEntryCommentQueryVariables>(
+    GetEntryCommentDocument,
+    options
+  );
+}
+export function useGetEntryCommentLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetEntryCommentQuery,
+    GetEntryCommentQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<
+    GetEntryCommentQuery,
+    GetEntryCommentQueryVariables
+  >(GetEntryCommentDocument, options);
+}
+export type GetEntryCommentQueryHookResult = ReturnType<
+  typeof useGetEntryCommentQuery
+>;
+export type GetEntryCommentLazyQueryHookResult = ReturnType<
+  typeof useGetEntryCommentLazyQuery
+>;
+export type GetEntryCommentQueryResult = Apollo.QueryResult<
+  GetEntryCommentQuery,
+  GetEntryCommentQueryVariables
+>;
 export const CreateEntryCommentDocument = gql`
     mutation createEntryComment($entryComment: EntryCommentCreateInput!) {
-  createEntryComment(entryComment: $entryComment) {
-    id
-    createdAt
-    updatedAt
-    text
-    user {
-      id
-      name
-      avatar
+        createEntryComment(entryComment: $entryComment) {
+            id
+            createdAt
+            updatedAt
+            text
+            user {
+                id
+                name
+                avatar
+            }
+        }
     }
-  }
-}
-    `;
-export type CreateEntryCommentMutationFn = Apollo.MutationFunction<CreateEntryCommentMutation, CreateEntryCommentMutationVariables>;
+`;
+export type CreateEntryCommentMutationFn = Apollo.MutationFunction<
+  CreateEntryCommentMutation,
+  CreateEntryCommentMutationVariables
+>;
 
 /**
  * __useCreateEntryCommentMutation__
@@ -1539,29 +2267,46 @@ export type CreateEntryCommentMutationFn = Apollo.MutationFunction<CreateEntryCo
  *   },
  * });
  */
-export function useCreateEntryCommentMutation(baseOptions?: Apollo.MutationHookOptions<CreateEntryCommentMutation, CreateEntryCommentMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<CreateEntryCommentMutation, CreateEntryCommentMutationVariables>(CreateEntryCommentDocument, options);
-      }
-export type CreateEntryCommentMutationHookResult = ReturnType<typeof useCreateEntryCommentMutation>;
-export type CreateEntryCommentMutationResult = Apollo.MutationResult<CreateEntryCommentMutation>;
-export type CreateEntryCommentMutationOptions = Apollo.BaseMutationOptions<CreateEntryCommentMutation, CreateEntryCommentMutationVariables>;
+export function useCreateEntryCommentMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    CreateEntryCommentMutation,
+    CreateEntryCommentMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    CreateEntryCommentMutation,
+    CreateEntryCommentMutationVariables
+  >(CreateEntryCommentDocument, options);
+}
+export type CreateEntryCommentMutationHookResult = ReturnType<
+  typeof useCreateEntryCommentMutation
+>;
+export type CreateEntryCommentMutationResult =
+  Apollo.MutationResult<CreateEntryCommentMutation>;
+export type CreateEntryCommentMutationOptions = Apollo.BaseMutationOptions<
+  CreateEntryCommentMutation,
+  CreateEntryCommentMutationVariables
+>;
 export const CreateOneTimeTokenDocument = gql`
     mutation CreateOneTimeToken($userId: String!, $tenantId: String!) {
-  createOneTimeToken(userId: $userId, tenantId: $tenantId) {
-    id
-    user {
-      id
+        createOneTimeToken(userId: $userId, tenantId: $tenantId) {
+            id
+            user {
+                id
+            }
+            tenant {
+                id
+            }
+            createdAt
+            updatedAt
+        }
     }
-    tenant {
-      id
-    }
-    createdAt
-    updatedAt
-  }
-}
-    `;
-export type CreateOneTimeTokenMutationFn = Apollo.MutationFunction<CreateOneTimeTokenMutation, CreateOneTimeTokenMutationVariables>;
+`;
+export type CreateOneTimeTokenMutationFn = Apollo.MutationFunction<
+  CreateOneTimeTokenMutation,
+  CreateOneTimeTokenMutationVariables
+>;
 
 /**
  * __useCreateOneTimeTokenMutation__
@@ -1581,44 +2326,61 @@ export type CreateOneTimeTokenMutationFn = Apollo.MutationFunction<CreateOneTime
  *   },
  * });
  */
-export function useCreateOneTimeTokenMutation(baseOptions?: Apollo.MutationHookOptions<CreateOneTimeTokenMutation, CreateOneTimeTokenMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<CreateOneTimeTokenMutation, CreateOneTimeTokenMutationVariables>(CreateOneTimeTokenDocument, options);
-      }
-export type CreateOneTimeTokenMutationHookResult = ReturnType<typeof useCreateOneTimeTokenMutation>;
-export type CreateOneTimeTokenMutationResult = Apollo.MutationResult<CreateOneTimeTokenMutation>;
-export type CreateOneTimeTokenMutationOptions = Apollo.BaseMutationOptions<CreateOneTimeTokenMutation, CreateOneTimeTokenMutationVariables>;
+export function useCreateOneTimeTokenMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    CreateOneTimeTokenMutation,
+    CreateOneTimeTokenMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    CreateOneTimeTokenMutation,
+    CreateOneTimeTokenMutationVariables
+  >(CreateOneTimeTokenDocument, options);
+}
+export type CreateOneTimeTokenMutationHookResult = ReturnType<
+  typeof useCreateOneTimeTokenMutation
+>;
+export type CreateOneTimeTokenMutationResult =
+  Apollo.MutationResult<CreateOneTimeTokenMutation>;
+export type CreateOneTimeTokenMutationOptions = Apollo.BaseMutationOptions<
+  CreateOneTimeTokenMutation,
+  CreateOneTimeTokenMutationVariables
+>;
 export const CreateUserDocument = gql`
     mutation CreateUser($user: UserCreateInput!) {
-  createUser(user: $user) {
-    id
-    email
-    auth0Id
-    isActive
-    code
-    isAdmin
-    tenant {
-      id
+        createUser(user: $user) {
+            id
+            email
+            auth0Id
+            isActive
+            code
+            isAdmin
+            tenant {
+                id
+            }
+            name
+            avatar
+            createdAt
+            updatedAt
+            department {
+                id
+            }
+            manager {
+                id
+            }
+            isPaymentManager
+            isManager
+            managees {
+                id
+            }
+        }
     }
-    name
-    avatar
-    createdAt
-    updatedAt
-    department {
-      id
-    }
-    manager {
-      id
-    }
-    isPaymentManager
-    isManager
-    managees {
-      id
-    }
-  }
-}
-    `;
-export type CreateUserMutationFn = Apollo.MutationFunction<CreateUserMutation, CreateUserMutationVariables>;
+`;
+export type CreateUserMutationFn = Apollo.MutationFunction<
+  CreateUserMutation,
+  CreateUserMutationVariables
+>;
 
 /**
  * __useCreateUserMutation__
@@ -1637,21 +2399,35 @@ export type CreateUserMutationFn = Apollo.MutationFunction<CreateUserMutation, C
  *   },
  * });
  */
-export function useCreateUserMutation(baseOptions?: Apollo.MutationHookOptions<CreateUserMutation, CreateUserMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<CreateUserMutation, CreateUserMutationVariables>(CreateUserDocument, options);
-      }
-export type CreateUserMutationHookResult = ReturnType<typeof useCreateUserMutation>;
-export type CreateUserMutationResult = Apollo.MutationResult<CreateUserMutation>;
-export type CreateUserMutationOptions = Apollo.BaseMutationOptions<CreateUserMutation, CreateUserMutationVariables>;
+export function useCreateUserMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    CreateUserMutation,
+    CreateUserMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<CreateUserMutation, CreateUserMutationVariables>(
+    CreateUserDocument,
+    options
+  );
+}
+export type CreateUserMutationHookResult = ReturnType<
+  typeof useCreateUserMutation
+>;
+export type CreateUserMutationResult =
+  Apollo.MutationResult<CreateUserMutation>;
+export type CreateUserMutationOptions = Apollo.BaseMutationOptions<
+  CreateUserMutation,
+  CreateUserMutationVariables
+>;
 export const ManagersDocument = gql`
     query Managers($tenantId: String!) {
-  managers(tenantId: $tenantId) {
-    id
-    name
-  }
-}
-    `;
+        managers(tenantId: $tenantId) {
+            id
+            name
+        }
+    }
+`;
 
 /**
  * __useManagersQuery__
@@ -1669,24 +2445,42 @@ export const ManagersDocument = gql`
  *   },
  * });
  */
-export function useManagersQuery(baseOptions: Apollo.QueryHookOptions<ManagersQuery, ManagersQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<ManagersQuery, ManagersQueryVariables>(ManagersDocument, options);
-      }
-export function useManagersLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ManagersQuery, ManagersQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<ManagersQuery, ManagersQueryVariables>(ManagersDocument, options);
-        }
+export function useManagersQuery(
+  baseOptions: Apollo.QueryHookOptions<ManagersQuery, ManagersQueryVariables>
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<ManagersQuery, ManagersQueryVariables>(
+    ManagersDocument,
+    options
+  );
+}
+export function useManagersLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    ManagersQuery,
+    ManagersQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<ManagersQuery, ManagersQueryVariables>(
+    ManagersDocument,
+    options
+  );
+}
 export type ManagersQueryHookResult = ReturnType<typeof useManagersQuery>;
-export type ManagersLazyQueryHookResult = ReturnType<typeof useManagersLazyQuery>;
-export type ManagersQueryResult = Apollo.QueryResult<ManagersQuery, ManagersQueryVariables>;
+export type ManagersLazyQueryHookResult = ReturnType<
+  typeof useManagersLazyQuery
+>;
+export type ManagersQueryResult = Apollo.QueryResult<
+  ManagersQuery,
+  ManagersQueryVariables
+>;
 export const GetUserFromCodeDocument = gql`
     query GetUserFromCode($code: String!, $tenantId: String!) {
-  getUserFromCode(code: $code, tenantId: $tenantId) {
-    id
-  }
-}
-    `;
+        getUserFromCode(code: $code, tenantId: $tenantId) {
+            id
+        }
+    }
+`;
 
 /**
  * __useGetUserFromCodeQuery__
@@ -1705,30 +2499,53 @@ export const GetUserFromCodeDocument = gql`
  *   },
  * });
  */
-export function useGetUserFromCodeQuery(baseOptions: Apollo.QueryHookOptions<GetUserFromCodeQuery, GetUserFromCodeQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetUserFromCodeQuery, GetUserFromCodeQueryVariables>(GetUserFromCodeDocument, options);
-      }
-export function useGetUserFromCodeLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetUserFromCodeQuery, GetUserFromCodeQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetUserFromCodeQuery, GetUserFromCodeQueryVariables>(GetUserFromCodeDocument, options);
-        }
-export type GetUserFromCodeQueryHookResult = ReturnType<typeof useGetUserFromCodeQuery>;
-export type GetUserFromCodeLazyQueryHookResult = ReturnType<typeof useGetUserFromCodeLazyQuery>;
-export type GetUserFromCodeQueryResult = Apollo.QueryResult<GetUserFromCodeQuery, GetUserFromCodeQueryVariables>;
+export function useGetUserFromCodeQuery(
+  baseOptions: Apollo.QueryHookOptions<
+    GetUserFromCodeQuery,
+    GetUserFromCodeQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<GetUserFromCodeQuery, GetUserFromCodeQueryVariables>(
+    GetUserFromCodeDocument,
+    options
+  );
+}
+export function useGetUserFromCodeLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetUserFromCodeQuery,
+    GetUserFromCodeQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<
+    GetUserFromCodeQuery,
+    GetUserFromCodeQueryVariables
+  >(GetUserFromCodeDocument, options);
+}
+export type GetUserFromCodeQueryHookResult = ReturnType<
+  typeof useGetUserFromCodeQuery
+>;
+export type GetUserFromCodeLazyQueryHookResult = ReturnType<
+  typeof useGetUserFromCodeLazyQuery
+>;
+export type GetUserFromCodeQueryResult = Apollo.QueryResult<
+  GetUserFromCodeQuery,
+  GetUserFromCodeQueryVariables
+>;
 export const GetOneTimeTokensDocument = gql`
     query GetOneTimeTokens($tenantId: String!) {
-  getOneTimeTokens(tenantId: $tenantId) {
-    id
-    user {
-      id
-      name
-      avatar
+        getOneTimeTokens(tenantId: $tenantId) {
+            id
+            user {
+                id
+                name
+                avatar
+            }
+            createdAt
+        }
     }
-    createdAt
-  }
-}
-    `;
+`;
 
 /**
  * __useGetOneTimeTokensQuery__
@@ -1746,55 +2563,78 @@ export const GetOneTimeTokensDocument = gql`
  *   },
  * });
  */
-export function useGetOneTimeTokensQuery(baseOptions: Apollo.QueryHookOptions<GetOneTimeTokensQuery, GetOneTimeTokensQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetOneTimeTokensQuery, GetOneTimeTokensQueryVariables>(GetOneTimeTokensDocument, options);
-      }
-export function useGetOneTimeTokensLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetOneTimeTokensQuery, GetOneTimeTokensQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetOneTimeTokensQuery, GetOneTimeTokensQueryVariables>(GetOneTimeTokensDocument, options);
-        }
-export type GetOneTimeTokensQueryHookResult = ReturnType<typeof useGetOneTimeTokensQuery>;
-export type GetOneTimeTokensLazyQueryHookResult = ReturnType<typeof useGetOneTimeTokensLazyQuery>;
-export type GetOneTimeTokensQueryResult = Apollo.QueryResult<GetOneTimeTokensQuery, GetOneTimeTokensQueryVariables>;
+export function useGetOneTimeTokensQuery(
+  baseOptions: Apollo.QueryHookOptions<
+    GetOneTimeTokensQuery,
+    GetOneTimeTokensQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<
+    GetOneTimeTokensQuery,
+    GetOneTimeTokensQueryVariables
+  >(GetOneTimeTokensDocument, options);
+}
+export function useGetOneTimeTokensLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetOneTimeTokensQuery,
+    GetOneTimeTokensQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<
+    GetOneTimeTokensQuery,
+    GetOneTimeTokensQueryVariables
+  >(GetOneTimeTokensDocument, options);
+}
+export type GetOneTimeTokensQueryHookResult = ReturnType<
+  typeof useGetOneTimeTokensQuery
+>;
+export type GetOneTimeTokensLazyQueryHookResult = ReturnType<
+  typeof useGetOneTimeTokensLazyQuery
+>;
+export type GetOneTimeTokensQueryResult = Apollo.QueryResult<
+  GetOneTimeTokensQuery,
+  GetOneTimeTokensQueryVariables
+>;
 export const UsersDocument = gql`
     query Users($tenantId: String!) {
-  users(tenantId: $tenantId) {
-    id
-    email
-    auth0Id
-    code
-    isActive
-    isAdmin
-    tenant {
-      id
-      name
+        users(tenantId: $tenantId) {
+            id
+            email
+            auth0Id
+            code
+            isActive
+            isAdmin
+            tenant {
+                id
+                name
+            }
+            name
+            avatar
+            createdAt
+            updatedAt
+            department {
+                id
+                name
+            }
+            managees {
+                id
+                email
+                name
+                avatar
+            }
+            manager {
+                id
+                email
+                name
+            }
+            isPaymentManager
+            isManager
+            isSetup
+        }
     }
-    name
-    avatar
-    createdAt
-    updatedAt
-    department {
-      id
-      name
-    }
-    managees {
-      id
-      email
-      name
-      avatar
-    }
-    manager {
-      id
-      email
-      name
-    }
-    isPaymentManager
-    isManager
-    isSetup
-  }
-}
-    `;
+`;
 
 /**
  * __useUsersQuery__
@@ -1812,31 +2652,44 @@ export const UsersDocument = gql`
  *   },
  * });
  */
-export function useUsersQuery(baseOptions: Apollo.QueryHookOptions<UsersQuery, UsersQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<UsersQuery, UsersQueryVariables>(UsersDocument, options);
-      }
-export function useUsersLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<UsersQuery, UsersQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<UsersQuery, UsersQueryVariables>(UsersDocument, options);
-        }
+export function useUsersQuery(
+  baseOptions: Apollo.QueryHookOptions<UsersQuery, UsersQueryVariables>
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<UsersQuery, UsersQueryVariables>(
+    UsersDocument,
+    options
+  );
+}
+export function useUsersLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<UsersQuery, UsersQueryVariables>
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<UsersQuery, UsersQueryVariables>(
+    UsersDocument,
+    options
+  );
+}
 export type UsersQueryHookResult = ReturnType<typeof useUsersQuery>;
 export type UsersLazyQueryHookResult = ReturnType<typeof useUsersLazyQuery>;
-export type UsersQueryResult = Apollo.QueryResult<UsersQuery, UsersQueryVariables>;
+export type UsersQueryResult = Apollo.QueryResult<
+  UsersQuery,
+  UsersQueryVariables
+>;
 export const TimeEntryFromIdDocument = gql`
     query TimeEntryFromId($id: String!) {
-  timeEntryFromId(id: $id) {
-    id
-    createdAt
-    updatedAt
-    date
-    hours
-    entryComments {
-      id
+        timeEntryFromId(id: $id) {
+            id
+            createdAt
+            updatedAt
+            date
+            hours
+            entryComments {
+                id
+            }
+        }
     }
-  }
-}
-    `;
+`;
 
 /**
  * __useTimeEntryFromIdQuery__
@@ -1854,14 +2707,37 @@ export const TimeEntryFromIdDocument = gql`
  *   },
  * });
  */
-export function useTimeEntryFromIdQuery(baseOptions: Apollo.QueryHookOptions<TimeEntryFromIdQuery, TimeEntryFromIdQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<TimeEntryFromIdQuery, TimeEntryFromIdQueryVariables>(TimeEntryFromIdDocument, options);
-      }
-export function useTimeEntryFromIdLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<TimeEntryFromIdQuery, TimeEntryFromIdQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<TimeEntryFromIdQuery, TimeEntryFromIdQueryVariables>(TimeEntryFromIdDocument, options);
-        }
-export type TimeEntryFromIdQueryHookResult = ReturnType<typeof useTimeEntryFromIdQuery>;
-export type TimeEntryFromIdLazyQueryHookResult = ReturnType<typeof useTimeEntryFromIdLazyQuery>;
-export type TimeEntryFromIdQueryResult = Apollo.QueryResult<TimeEntryFromIdQuery, TimeEntryFromIdQueryVariables>;
+export function useTimeEntryFromIdQuery(
+  baseOptions: Apollo.QueryHookOptions<
+    TimeEntryFromIdQuery,
+    TimeEntryFromIdQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<TimeEntryFromIdQuery, TimeEntryFromIdQueryVariables>(
+    TimeEntryFromIdDocument,
+    options
+  );
+}
+export function useTimeEntryFromIdLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    TimeEntryFromIdQuery,
+    TimeEntryFromIdQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<
+    TimeEntryFromIdQuery,
+    TimeEntryFromIdQueryVariables
+  >(TimeEntryFromIdDocument, options);
+}
+export type TimeEntryFromIdQueryHookResult = ReturnType<
+  typeof useTimeEntryFromIdQuery
+>;
+export type TimeEntryFromIdLazyQueryHookResult = ReturnType<
+  typeof useTimeEntryFromIdLazyQuery
+>;
+export type TimeEntryFromIdQueryResult = Apollo.QueryResult<
+  TimeEntryFromIdQuery,
+  TimeEntryFromIdQueryVariables
+>;

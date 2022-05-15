@@ -29,7 +29,6 @@ export const useWorkTypes = (
             )
 
             .map((row) => row?.original?.workType?.id ?? "");
-        // console.log(currentWorkTypes);
         const workTypes = data?.workTypes ?? [];
 
         const filteredWorkTypes = workTypes.filter(

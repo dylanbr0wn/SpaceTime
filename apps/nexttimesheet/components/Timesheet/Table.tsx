@@ -142,11 +142,10 @@ const TimesheetTable = ({
                         {
                             header: "Department",
                             id: "department",
-                            cell: ({ value, row, column, instance }) => (
+                            cell: ({ value, row, instance }) => (
                                 <TimesheetDepartmentInput
                                     value={value}
                                     row={row.original}
-                                    column={column}
                                     userId={String(user?.id)}
                                     timesheetId={
                                         instance.options.meta?.timesheetId ||
@@ -159,7 +158,7 @@ const TimesheetTable = ({
                     table.createDataColumn((row) => row?.project?.id ?? "-1", {
                         header: "Project",
                         id: "project",
-                        cell: ({ value, row, column, instance }) => {
+                        cell: ({ value, row, instance }) => {
                             return (
                                 <TimesheetProjectInput
                                     value={value}
