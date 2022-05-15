@@ -15,7 +15,11 @@ import { useRowHasHours } from "./hooks";
  * @description Delete button for rows. Provides an icon which can be clicked to delete a row.
  * @param {Object} props Props. See propTypes for details.
  */
-const TimesheetDeleteEntryInput = ({ rowId }: { rowId: string }) => {
+const TimesheetDeleteEntryInput = ({
+    rowId,
+}: {
+    rowId: string | undefined;
+}) => {
     const [showDeleteConfirmModal, setShowDeleteConfirmModal] =
         React.useState(false);
 
@@ -37,13 +41,13 @@ const TimesheetDeleteEntryInput = ({ rowId }: { rowId: string }) => {
         deleteTimeEntryRowMutation({
             variables: {
                 timeEntryRow: {
-                    id: rowId,
+                    id: rowId ?? "-1",
                 },
             },
             optimisticResponse: {
                 deleteTimeEntryRow: {
                     __typename: "TimeEntryRow",
-                    id: rowId,
+                    id: rowId ?? "-1",
                 },
             },
             // refetchQueries: [GetTimeEntryRowsDocument],

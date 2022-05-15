@@ -74,7 +74,7 @@ function createApolloClient(headers: IncomingHttpHeaders | null = null) {
             typePolicies: {
                 Query: {
                     fields: {
-                        timeEntryFromIndex(entry, { canRead, isReference }) {
+                        timeEntryFromIndex(entry, { canRead }) {
                             if (!entry) return entry;
                             return canRead(entry) ? entry : null;
                         },

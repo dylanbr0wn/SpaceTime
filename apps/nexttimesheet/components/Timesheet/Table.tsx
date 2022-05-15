@@ -245,7 +245,9 @@ const TimesheetTable = ({
                 id: "deleter",
                 // eslint-disable-next-line react/display-name, react/prop-types
                 cell: ({ row }) => (
-                    <TimesheetDeleteEntryInput rowId={row.original} />
+                    <TimesheetDeleteEntryInput
+                        rowId={row.original?.id}
+                    />
                 ),
             }),
         ],

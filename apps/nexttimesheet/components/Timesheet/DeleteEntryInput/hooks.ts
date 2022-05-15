@@ -2,12 +2,13 @@ import * as React from "react";
 
 import { useGetTimeEntriesQuery } from "../../../lib/apollo";
 
-export const useRowHasHours = (rowId: string) => {
+export const useRowHasHours = (rowId: string | undefined) => {
     const [hasHours, setHasHours] = React.useState(false);
     const { data } = useGetTimeEntriesQuery({
         variables: {
             rowId,
         },
+        skip: !rowId,
     });
 
     React.useEffect(() => {
