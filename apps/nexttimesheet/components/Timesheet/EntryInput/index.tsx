@@ -147,10 +147,13 @@ const TimesheetEntryInput = ({
 
                             return {
                                 getTimeEntryRow: {
+                                    __typename: "TimeEntryRow",
                                     timeEntries: [
                                         ...timeEntries,
                                         {
-                                            id: timeEntry.id,
+                                            __typename: "TimeEntry",
+                                            id: TimeEntryData.createTimeEntry
+                                                ?.id,
                                         },
                                     ],
                                 },

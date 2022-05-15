@@ -245,9 +245,7 @@ const TimesheetTable = ({
                 id: "deleter",
                 // eslint-disable-next-line react/display-name, react/prop-types
                 cell: ({ row }) => (
-                    <TimesheetDeleteEntryInput
-                        rowId={row.original?.id}
-                    />
+                    <TimesheetDeleteEntryInput rowId={row.original?.id} />
                 ),
             }),
         ],
@@ -444,12 +442,17 @@ const TimesheetTable = ({
                                             </div>
                                         );
                                     } else if (column.column.id === "deleter") {
-                                        return null;
+                                        return (
+                                            <span key={column.id}>{null}</span>
+                                        );
                                     } else if (
                                         column.column.id === "workdescription"
                                     ) {
                                         return (
-                                            <div className="flex">
+                                            <div
+                                                key={column.id}
+                                                className="flex"
+                                            >
                                                 <div className="w-44" />
                                                 <div className="w-44" />
                                                 <div className="w-44" />
@@ -544,125 +547,6 @@ const TimesheetTable = ({
                                 below to make one!
                             </div>
                         )}
-
-                        {/* {pinRows.length > 0 && (
-                        <tr className="h-1 bg-slate-800">
-                            <td colSpan={19} />
-                        </tr>
-                    )}
-                    {pinRows.length > 0 && (
-                        <tr className="h-1 bg-slate-800">
-                            <td colSpan={19} />
-                        </tr>
-                    )}
-
-                    {otherRows.map((row, i) => {
-                        prepareRow(row);
-                        return (
-                            <tr className="" {...row.getRowProps()} key={i}>
-                                {row.cells.map((cell, j) => {
-                                    return (
-                                        <td
-                                            className="border border-sky-500 p-0 m-0 box-border"
-                                            {...cell.getCellProps()}
-                                            key={j}
-                                            //style={getStyle(j - 4)}
-                                        >
-                                            {cell.render("Cell", {
-                                                columnIndex: j,
-                                                disableModification,
-                                                loading,
-                                            })}
-                                        </td>
-                                    );
-                                })}
-                            </tr>
-                        );
-                    })} */}
-
-                        {/* new entry button row */}
-
-                        {/* alternative transport entry row */}
-                        {/* {alternateData && (
-                        <tr>
-                            <td
-                                colSpan={4}
-                                className="text-right px-1 text-cyan-500"
-                            >
-                                <Tippy content="Check the days where you used an alternative form of transport to get to work (Bike, Bus)">
-                                    <span>Alternative Transport </span>
-                                </Tippy>
-                            </td>
-                            {alternateData.map((work, i) => {
-                                return (
-                                    <td
-                                        key={i}
-                                        className="text-center"
-                                        style={getStyle(i)}
-                                    >
-                                        <TimesheetAlternativeEntryInput
-                                            setIsLocked={setIsLocked}
-                                            loading={loading}
-                                            work={work}
-                                            disableModification={
-                                                disableModification
-                                            }
-                                            EmployeeID={EmployeeID}
-                                            timeEntryPeriodStartDate={
-                                                timeEntryPeriodStartDate
-                                            }
-                                        />
-                                    </td>
-                                );
-                            })}
-                        </tr>
-                    )} */}
-                        {/* Day comments entry row */}
-                        {/* <tr>
-                        <td colSpan={4} className="text-right">
-                            Day Comments
-                        </td>
-                        {dayComments.map((dayComment, i) => (
-                            <td
-                                key={i}
-                                className="text-center"
-                                style={getStyle(i)}
-                            >
-                                <TimesheetDayCommentInput
-                                    setIsLocked={setIsLocked}
-                                    dayComment={dayComment}
-                                    disableModification={disableModification}
-                                    EmployeeID={EmployeeID}
-                                    timeEntryPeriodStartDate={
-                                        timeEntryPeriodStartDate
-                                    }
-                                />
-                            </td>
-                        ))}
-                    </tr> */}
-                        {/* <tr>
-                        <td colSpan="18" />
-                    </tr> */}
-                        {/* Daily hour totals row */}
-                        {/* <tr>
-                        <td colSpan="4" className="text-right">
-                            Daily Totals (hours)
-                        </td>
-                        {dailyTotals.map((total, i) => {
-                            return (
-                                <td
-                                    key={i}
-                                    className="text-center"
-                                    style={{
-                                        ...getStyle(i),
-                                        fontSize: isTablet ? "0.75rem" : "1rem",
-                                    }}
-                                >
-                                    {total}
-                                </td>
-                            );
-                        })}
-                    </tr> */}
                     </>
                     <div>
                         <div className="text-center mt-4">
