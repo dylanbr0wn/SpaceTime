@@ -109,6 +109,7 @@ type Query {
   timeEntry(date: String!, timeEntryRowId: String!): TimeEntry
   timeEntryFromId(id: String!): TimeEntry
   timeEntryFromIndex(index: Int!, timeEntryRowId: String!): TimeEntry
+  timesheet(id: String!): Timesheet
   users(tenantId: String!): [User!]!
   workTypes: [WorkType!]!
 }

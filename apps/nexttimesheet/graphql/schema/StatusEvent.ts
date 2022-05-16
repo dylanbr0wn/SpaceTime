@@ -48,8 +48,8 @@ export const MutationStatusEvent = extendType({
                 userId: nonNull(stringArg()),
                 type: nonNull(arg({ type: EventType })),
             },
-            resolve: (_parent, args, ctx) => {
-                ctx.prisma.timesheet.update({
+            resolve: async (_parent, args, ctx) => {
+                await ctx.prisma.timesheet.update({
                     where: {
                         id: args.timesheetId,
                     },
@@ -58,7 +58,7 @@ export const MutationStatusEvent = extendType({
                     },
                 });
 
-                return ctx.prisma.statusEvent.create({
+                return await ctx.prisma.statusEvent.create({
                     data: {
                         timesheetId: args.timesheetId,
                         status: args.status,

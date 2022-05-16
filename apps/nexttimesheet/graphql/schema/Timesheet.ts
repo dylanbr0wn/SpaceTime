@@ -1,5 +1,12 @@
 import { DateTime, Interval } from "luxon";
-import { arg, extendType, inputObjectType, nonNull, objectType } from "nexus";
+import {
+    arg,
+    extendType,
+    inputObjectType,
+    nonNull,
+    objectType,
+    stringArg,
+} from "nexus";
 import * as NexusPrisma from "nexus-prisma";
 
 import { Context } from "../context";
@@ -20,6 +27,19 @@ export const Timesheet = objectType({
 export const QueryTimesheet = extendType({
     type: "Query",
     definition(t) {
+        t.field("timesheet", {
+            type: "Timesheet",
+            args: {
+                id: nonNull(stringArg()),
+            },
+            resolve: async (_, args, ctx: Context) => {
+                return await ctx.prisma.timesheet.findUnique({
+                    where: {
+                        id: args.id,
+                    },
+                });
+            },
+        });
         t.field("getTimesheet", {
             type: Timesheet,
             args: {

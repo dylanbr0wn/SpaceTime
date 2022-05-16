@@ -102,6 +102,7 @@ const TimesheetEntryInput = ({
                         entryComments: [],
                     },
                 },
+                refetchQueries: ["TimesheetUpdated"],
                 update: (cache, { data: TimeEntryData }) => {
                     cache.updateQuery<
                         TimeEntryFromIndexQuery,
@@ -177,6 +178,7 @@ const TimesheetEntryInput = ({
                             entryComments: timeEntry?.entryComments ?? [],
                         },
                     },
+                    refetchQueries: ["TimesheetUpdated"],
                     update: (cache, { data: TimeEntryData }) => {
                         cache.updateQuery<
                             TimeEntryFromIdQuery,
@@ -216,6 +218,7 @@ const TimesheetEntryInput = ({
                         hours: 0,
                     },
                 },
+                refetchQueries: ["TimesheetUpdated"],
                 update: (cache, { data: TimeEntryData }) => {
                     cache.modify({
                         id: cache.identify({

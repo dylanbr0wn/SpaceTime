@@ -212,6 +212,7 @@ export type Query = {
   timeEntry?: Maybe<TimeEntry>;
   timeEntryFromId?: Maybe<TimeEntry>;
   timeEntryFromIndex?: Maybe<TimeEntry>;
+  timesheet?: Maybe<Timesheet>;
   users: Array<User>;
   workTypes: Array<WorkType>;
 };
@@ -302,6 +303,11 @@ export type QueryTimeEntryFromIdArgs = {
 export type QueryTimeEntryFromIndexArgs = {
   index: Scalars['Int'];
   timeEntryRowId: Scalars['String'];
+};
+
+
+export type QueryTimesheetArgs = {
+  id: Scalars['String'];
 };
 
 
@@ -674,6 +680,13 @@ export type CreateStatusEventMutationVariables = Exact<{
 
 
 export type CreateStatusEventMutation = { __typename?: 'Mutation', createStatusEvent?: { __typename?: 'StatusEvent', id: string, createdAt: any, type: EventType, status: Status, message: string, user: { __typename?: 'User', name?: string | null, avatar?: string | null } } | null };
+
+export type TimesheetUpdatedQueryVariables = Exact<{
+  timesheetId: Scalars['String'];
+}>;
+
+
+export type TimesheetUpdatedQuery = { __typename?: 'Query', timesheet?: { __typename?: 'Timesheet', updatedAt: any, timeEntryRows: Array<{ __typename?: 'TimeEntryRow', updatedAt: any, timeEntries: Array<{ __typename?: 'TimeEntry', updatedAt: any }> }> } | null };
 
 
 export const TenantFromIdDocument = gql`
@@ -2020,3 +2033,44 @@ export function useCreateStatusEventMutation(baseOptions?: Apollo.MutationHookOp
 export type CreateStatusEventMutationHookResult = ReturnType<typeof useCreateStatusEventMutation>;
 export type CreateStatusEventMutationResult = Apollo.MutationResult<CreateStatusEventMutation>;
 export type CreateStatusEventMutationOptions = Apollo.BaseMutationOptions<CreateStatusEventMutation, CreateStatusEventMutationVariables>;
+export const TimesheetUpdatedDocument = gql`
+    query TimesheetUpdated($timesheetId: String!) {
+  timesheet(id: $timesheetId) {
+    updatedAt
+    timeEntryRows {
+      updatedAt
+      timeEntries {
+        updatedAt
+      }
+    }
+  }
+}
+    `;
+
+/**
+ * __useTimesheetUpdatedQuery__
+ *
+ * To run a query within a React component, call `useTimesheetUpdatedQuery` and pass it any options that fit your needs.
+ * When your component renders, `useTimesheetUpdatedQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useTimesheetUpdatedQuery({
+ *   variables: {
+ *      timesheetId: // value for 'timesheetId'
+ *   },
+ * });
+ */
+export function useTimesheetUpdatedQuery(baseOptions: Apollo.QueryHookOptions<TimesheetUpdatedQuery, TimesheetUpdatedQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<TimesheetUpdatedQuery, TimesheetUpdatedQueryVariables>(TimesheetUpdatedDocument, options);
+      }
+export function useTimesheetUpdatedLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<TimesheetUpdatedQuery, TimesheetUpdatedQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<TimesheetUpdatedQuery, TimesheetUpdatedQueryVariables>(TimesheetUpdatedDocument, options);
+        }
+export type TimesheetUpdatedQueryHookResult = ReturnType<typeof useTimesheetUpdatedQuery>;
+export type TimesheetUpdatedLazyQueryHookResult = ReturnType<typeof useTimesheetUpdatedLazyQuery>;
+export type TimesheetUpdatedQueryResult = Apollo.QueryResult<TimesheetUpdatedQuery, TimesheetUpdatedQueryVariables>;

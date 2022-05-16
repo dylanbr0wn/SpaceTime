@@ -2,13 +2,17 @@ import cuid from "cuid";
 import { DateTime } from "luxon";
 import * as React from "react";
 
+import { useApolloClient } from "@apollo/client";
+
 import {
     EventType,
     GetTimesheetDocument,
     Status,
     StatusEventsDocument,
+    useApollo,
     useCreateStatusEventMutation,
     User,
+    useTimesheetUpdatedQuery,
 } from "../../../lib/apollo";
 import ErrorBoundary from "../../common/ErrorBoundary";
 import CustModal from "../../common/Modal";
@@ -30,14 +34,65 @@ const StatusBlock = ({
     timesheetId: string;
 }) => {
     const [showModal, setShowModal] = React.useState(false);
-    const [nextStatus, setNextStatus] = React.useState<Status>(status);
+    const [nextStatus, setNextStatus] = React.useState<Status>(
+        Status.Submitted
+    );
+    const [hasChanged, setHasChanged] = React.useState(false);
+
+    const { data } = useTimesheetUpdatedQuery({
+        variables: {
+            timesheetId,
+        },
+        fetchPolicy: "network-only", // Used for first execution
+        nextFetchPolicy: "cache-first", // Used for subsequent executions
+    });
 
     React.useEffect(() => {
-        if (status === Status.Unsubmitted) {
-            setNextStatus(Status.Submitted);
-        } else if (status === Status.Submitted) {
-            setNextStatus(Status.Submitted);
+        if (data?.timesheet) {
+            const { updatedAt: timesheetUpdated } = data.timesheet;
+            let hasChanged = false;
+
+            for (const row of data.timesheet.timeEntryRows) {
+                if (
+                    DateTime.fromISO(row.updatedAt) >
+                    DateTime.fromISO(timesheetUpdated)
+                ) {
+                    setHasChanged(true);
+                    hasChanged = true;
+                    break;
+                } else {
+                    for (const entry of row.timeEntries) {
+                        if (
+                            DateTime.fromISO(entry.updatedAt) >
+                            DateTime.fromISO(timesheetUpdated)
+                        ) {
+                            setHasChanged(true);
+                            hasChanged = true;
+                            break;
+                        }
+                    }
+                }
+                if (hasChanged) {
+                    break;
+                }
+            }
         }
+    }, [data]);
+
+    //  const { data } = useGetTimeEntriesQuery({
+    //     variables: {
+    //         rowId: rowId ?? "-1",
+    //     },
+    //     skip: !rowId,
+    // });
+
+    React.useEffect(() => {
+        // if (status === Status.Unsubmitted) {
+        //     setNextStatus(Status.Submitted);
+        // } else if (status === Status.Submitted) {
+        //     setNextStatus(Status.Submitted);
+        // }
+        setNextStatus(Status.Submitted);
     }, [status]);
 
     const [comment, setComment] = React.useState("");
@@ -123,9 +178,17 @@ const StatusBlock = ({
                             {status}
                         </h2>
                     </div>
-                    <button onClick={() => setShowModal(true)} className="btn">
-                        {status === Status.Unsubmitted ? "Submit" : "Update"}
-                    </button>
+                    <div className="flex">
+                        <div>{hasChanged && "alert"}</div>
+                        <button
+                            onClick={() => setShowModal(true)}
+                            className="btn"
+                        >
+                            {status === Status.Unsubmitted
+                                ? "Submit"
+                                : "Update"}
+                        </button>
+                    </div>
                 </div>
                 <CustModal
                     title={`${

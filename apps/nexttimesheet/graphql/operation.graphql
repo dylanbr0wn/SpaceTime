@@ -480,3 +480,15 @@ mutation CreateStatusEvent($timesheetId: String!, $type: EventType!, $status: St
         }
     }
 }
+
+query TimesheetUpdated($timesheetId: String!){
+    timesheet(id: $timesheetId) {
+        updatedAt
+        timeEntryRows {
+            updatedAt
+            timeEntries {
+                updatedAt
+            }
+        }
+    }
+}
