@@ -41,10 +41,16 @@ input EntryCommentUpdateInput {
   text: String!
 }
 
+enum EventType {
+  Comment
+  StatusChange
+}
+
 type Mutation {
   attachAuth0Id(auth0Id: String!, userId: ID!): User
   createEntryComment(entryComment: EntryCommentCreateInput!): EntryComment
   createOneTimeToken(tenantId: String!, userId: String!): OneTimeToken
+  createStatusEvent(message: String!, status: Status!, timesheetId: String!, type: EventType!, userId: String!): StatusEvent
   createTimeEntry(date: String!, hours: Int!, index: Int!, timeEntryRowId: String!): TimeEntry
   createTimeEntryRow(departmentId: String, projectId: String, timesheetId: String!, workTypeId: String): TimeEntryRow
   createUser(user: UserCreateInput!): User
@@ -98,6 +104,7 @@ type Query {
   getUserFromToken(token: ID!): User
   managers(tenantId: String!): [User!]!
   projects: [Project!]!
+  statusEvents(timesheetId: String!): [StatusEvent!]!
   tenantFromId(tenantId: String!): Tenant
   timeEntry(date: String!, timeEntryRowId: String!): TimeEntry
   timeEntryFromId(id: String!): TimeEntry
@@ -112,6 +119,15 @@ enum Status {
   Rejected
   Submitted
   Unsubmitted
+}
+
+type StatusEvent {
+  createdAt: DateTime!
+  id: ID!
+  message: String!
+  status: Status!
+  type: EventType!
+  user: User!
 }
 
 type Tenant {

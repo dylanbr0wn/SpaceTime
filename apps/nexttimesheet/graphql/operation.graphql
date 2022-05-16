@@ -452,3 +452,31 @@ query TimeEntryFromId($id: String!){
         }
     }
 }
+
+query StatusEvents($timesheetId: String!){
+    statusEvents(timesheetId: $timesheetId) {
+        id
+        createdAt
+        type
+        status
+        message
+        user{
+            name
+            avatar
+        }
+    }
+}
+
+mutation CreateStatusEvent($timesheetId: String!, $type: EventType!, $status: Status!, $message: String!, $userId: String!){
+    createStatusEvent(timesheetId: $timesheetId, type: $type, status: $status, message: $message, userId: $userId) {
+        id
+        createdAt
+        type
+        status
+        message
+        user{
+            name
+            avatar
+        }
+    }
+}

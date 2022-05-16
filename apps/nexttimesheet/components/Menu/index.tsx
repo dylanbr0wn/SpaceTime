@@ -2,14 +2,16 @@ import Link from "next/link";
 import { Session } from "next-auth";
 import * as React from "react";
 
-import { UserProfile } from "@auth0/nextjs-auth0";
+import { FeedbackFish } from "@feedback-fish/react";
 import { Menu, Popover } from "@headlessui/react";
 import {
     CalendarIcon,
     PencilAltIcon,
+    SupportIcon,
     UserGroupIcon,
 } from "@heroicons/react/outline";
 
+import { User } from "../../lib/apollo";
 import Avatar from "../common/Avatar";
 import Transition from "../common/CustTransition";
 import ErrorBoundary from "../common/ErrorBoundary";
@@ -85,6 +87,18 @@ const TimesheetMenu = ({ user }: { user: Session["user"] }) => {
                     </Menu>
 
                     <div className="flex-grow"></div>
+                    <FeedbackFish
+                        projectId="98bcbfde97c737"
+                        userId={user.email ?? ""}
+                    >
+                        <button
+                            title="feedback"
+                            className="btn btn-ghost btn-square text-sm my-auto"
+                        >
+                            <SupportIcon className="h-5 w-5" />
+                        </button>
+                    </FeedbackFish>
+
                     <Menu
                         as="div"
                         className="relative inline-block text-left z-50"

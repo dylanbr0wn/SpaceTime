@@ -5,7 +5,7 @@ import MediaQuery from "react-responsive";
 
 import ErrorBoundary from "../../common/ErrorBoundary";
 import TimesheetApprovalInput from "../components/TimesheetApprovalInput";
-import TimesheetApprovalStatus from "../components/TimesheetApprovalStatus";
+import TimesheetApprovalStatus from "../Status";
 import TimesheetDateInput from "../DateInput";
 import TimesheetDeleteUnused from "../components/TimesheetDeleteUnused";
 import TimesheetPrintSummary from "../components/TimesheetPrintSummary";

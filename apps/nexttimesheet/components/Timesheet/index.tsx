@@ -5,12 +5,17 @@ import * as React from "react";
 
 import { UserProfile } from "@auth0/nextjs-auth0";
 
-import { useGetTimesheetQuery, User } from "../../lib/apollo";
+import {
+    Status as TimesheetStatus,
+    useGetTimesheetQuery,
+    User,
+} from "../../lib/apollo";
 import ApprovalTree from "../ApprovalTree";
 import Loading from "../common/Loading";
 
 import TimesheetDateInput from "./DateInput";
 import { useTimesheetDates } from "./hooks";
+import Status from "./Status";
 import TimesheetTable from "./Table";
 
 /**
@@ -74,26 +79,28 @@ const Timesheet = ({
     return (
         <>
             <div className="w-full flex flex-col">
-                <div className="w-full flex ">
-                    <div className="w-full text-center">
-                        <div className="dropdown dropdown-hover">
-                            <label tabIndex={0} className="btn m-1">
-                                Hover
-                            </label>
-                            <ul
-                                tabIndex={0}
-                                className="dropdown-content menu p-2 shadow bg-base-300 rounded-box w-52"
-                            >
-                                <li>
-                                    <a>Item 1</a>
-                                </li>
-                                <li>
-                                    <a>Item 2</a>
-                                </li>
-                            </ul>
+                <div className="w-full flex max-w-screen-xl mx-auto">
+                    <div className="w-full flex flex-col">
+                        <div className="my-auto">
+                            <div className="dropdown dropdown-hover ">
+                                <label tabIndex={0} className="btn m-1">
+                                    Hover
+                                </label>
+                                <ul
+                                    tabIndex={0}
+                                    className="dropdown-content menu p-2 shadow bg-base-300 rounded-box w-52"
+                                >
+                                    <li>
+                                        <a>Item 1</a>
+                                    </li>
+                                    <li>
+                                        <a>Item 2</a>
+                                    </li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
-                    <div className="w-full text-center">
+                    <div className="w-full flex flex-col ">
                         <TimesheetDateInput
                             timesheetQueryDate={timesheetQueryDate}
                             setTimesheetQueryDate={setTimesheetQueryDate}
@@ -105,13 +112,23 @@ const Timesheet = ({
                             userId={String(user?.id)}
                         />
                     </div>
-                    <div className="w-full">
-                        <label
+                    <div className="w-full flex justify-end">
+                        {/* <label
                             htmlFor="my-drawer-4"
                             className="drawer-button btn btn-primary"
                         >
                             Open drawer
-                        </label>
+                        </label> */}
+                        <Status
+                            status={
+                                timesheetData?.getTimesheet?.status ??
+                                TimesheetStatus.Unsubmitted
+                            }
+                            timesheetId={
+                                timesheetData?.getTimesheet?.id ?? "-1"
+                            }
+                            user={user}
+                        />
                     </div>
                 </div>
                 {!timesheetLoading && timesheetData?.getTimesheet ? (
@@ -125,7 +142,10 @@ const Timesheet = ({
                         <Loading />
                     </div>
                 )}
-                <ApprovalTree user={user} />
+                <ApprovalTree
+                    user={user}
+                    timesheetId={timesheetData?.getTimesheet?.id ?? "-1"}
+                />
             </div>
         </>
     );

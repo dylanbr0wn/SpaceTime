@@ -230,7 +230,7 @@ model OneTimeToken {
   @@index([userId, tenantId])
 }
 
-enum Type {
+enum EventType {
   Comment
   StatusChange
 }
@@ -239,13 +239,13 @@ model StatusEvent {
   id          String    @id @default(cuid())
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
-  type        Type      @default(Comment)
+  type        EventType @default(Comment)
   status      Status    @default(Unsubmitted)
   timesheet   Timesheet @relation(fields: [timesheetId], references: [id])
   timesheetId String
   user        User      @relation(fields: [userId], references: [id])
   userId      String
-  message     String    @db.Text
+  message     String?   @db.Text
 
   @@index([timesheetId, userId])
 }

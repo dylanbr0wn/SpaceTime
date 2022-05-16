@@ -30,7 +30,7 @@ const DatePicker = ({ selected, onChange, filterDate }) => {
                     {/* <CustTransition open={open}> */}
                     <Popover.Panel
                         // static
-                        className="absolute z-50 mt-1 w-64 h-64 left-0 right-0"
+                        className="absolute z-50 mt-1 w-64 left-0 right-0"
                     >
                         <div className="bg-base-200 rounded-lg shadow-lg shadow-black/30 p-2 h-full w-full z-50">
                             <DayPicker
@@ -46,7 +46,8 @@ const DatePicker = ({ selected, onChange, filterDate }) => {
                                     cell: "w-8 h-8 m-1",
                                     day_hidden: "hidden",
                                     vhidden: "hidden",
-                                    day: "w-8 h-8 justify-center font-medium  text-sm leading-loose transition-colors duration-75 text-base-content rounded hover:bg-primary disabled:cursor-not-allowed disabled:opacity-30 disabled:font-base disabled:hover:bg-base-content/30 hover:text-white disabled:hover:text-slate-400",
+                                    day_disabled: "btn-disabled",
+                                    day: "w-8 h-8 btn btn-square btn-primary btn-sm",
                                     head: "text-primary font-medium text-center text-xs pb-2",
                                     caption: "flex justify-between p-2",
                                     nav: "flex space-x-2",

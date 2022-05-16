@@ -1,3 +1,4 @@
+import { CountryCodeResolver } from "graphql-scalars";
 import { DateTime } from "luxon";
 import * as React from "react";
 
@@ -27,18 +28,6 @@ const TimesheetDateInput = ({
     timesheetQueryDate: string;
     setTimesheetQueryDate: (date: string) => void;
 }) => {
-    // Gets the last 20 years.
-    // const getYears = React.useCallback(() => {
-    //     const years: number[] = [];
-    //     if (startDate) {
-    //         for (let i = 0; i < 20; i++) {
-    //             years.push(startDate.plus({ years: i }).year);
-    //         }
-    //     }
-
-    //     return years;
-    // }, [startDate]);
-
     const onChange = (date: Date) => {
         if (!userId) return;
         setTimesheetQueryDate(
@@ -48,18 +37,6 @@ const TimesheetDateInput = ({
                 .startOf("day")
                 .toISO()
         );
-        // getorCreateTimesheetMutation({
-        //     variables: {
-        //         timesheet: {
-        //             userId: userId,
-        //             date: DateTime.fromJSDate(date)
-        //                 .startOf("day")
-        //                 .toUTC()
-        //                 .startOf("day")
-        //                 .toISO(),
-        //         },
-        //     },
-        // });
     };
 
     const nextPeriod = () => {
@@ -73,19 +50,6 @@ const TimesheetDateInput = ({
                 .startOf("day")
                 .toISO()
         );
-        // getorCreateTimesheetMutation({
-        //     variables: {
-        //         timesheet: {
-        //             userId: userId,
-        //             date: startDate
-        //                 .plus({ days: periodLength })
-        //                 .startOf("day")
-        //                 .toUTC()
-        //                 .startOf("day")
-        //                 .toISO(),
-        //         },
-        //     },
-        // });
     };
 
     const lastPeriod = () => {
@@ -99,19 +63,6 @@ const TimesheetDateInput = ({
                 .startOf("day")
                 .toISO()
         );
-        // getorCreateTimesheetMutation({
-        //     variables: {
-        //         timesheet: {
-        //             userId: userId,
-        //             date: startDate
-        //                 .minus({ days: periodLength })
-        //                 .startOf("day")
-        //                 .toUTC()
-        //                 .startOf("day")
-        //                 .toISO(),
-        //         },
-        //     },
-        // });
     };
 
     const filterDate = React.useCallback(
@@ -119,7 +70,14 @@ const TimesheetDateInput = ({
             const dateTime = DateTime.fromJSDate(date, {
                 zone: "utc",
             }).startOf("day");
-
+            console.log("will disable");
+            console.log(
+                Math.abs(
+                    dateTime.diff(startDate ?? DateTime.now(), "days").days
+                ) %
+                    (periodLength ?? 14) !==
+                    0
+            );
             return !!(
                 Math.abs(
                     dateTime.diff(startDate ?? DateTime.now(), "days").days
@@ -133,8 +91,11 @@ const TimesheetDateInput = ({
 
     return (
         <ErrorBoundary>
-            <span>
-                <div className="flex justify-center">
+            <div className="my-auto flex flex-col">
+                <div className="w-full text-center mb-3 font-semibold text-lg">
+                    Period
+                </div>
+                <div className="flex justify-center ">
                     <button
                         onClick={lastPeriod}
                         className="mr-2 btn btn-square bg-base-300 border-base-300"
@@ -157,7 +118,7 @@ const TimesheetDateInput = ({
                         <ChevronRightIcon className="w-6 h-6 m-auto" />
                     </button>
                 </div>
-            </span>
+            </div>
         </ErrorBoundary>
     );
 };

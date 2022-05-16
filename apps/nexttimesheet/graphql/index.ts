@@ -5,10 +5,12 @@ import { asNexusMethod, makeSchema } from "nexus";
 
 import * as Department from "./schema/Department";
 import * as EntryComment from "./schema/EntryComment";
+import * as EventType from "./schema/EventType";
 import * as OneTimeToken from "./schema/OneTimeToken";
 import * as Period from "./schema/Period";
 import * as Project from "./schema/Project";
 import * as Status from "./schema/Status";
+import * as StatusEvent from "./schema/StatusEvent";
 import * as Tenant from "./schema/Tenant";
 import * as TimeEntry from "./schema/TimeEntry";
 import * as TimeEntryRow from "./schema/TimeEntryRow";
@@ -33,6 +35,8 @@ export const schema = makeSchema({
         User,
         Worktype,
         DateTime,
+        EventType,
+        StatusEvent,
     },
     outputs: {
         schema: path.join(process.cwd(), "graphql/schema.graphql"),

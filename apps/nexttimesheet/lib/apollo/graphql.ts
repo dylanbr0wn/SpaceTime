@@ -53,11 +53,17 @@ export type EntryCommentUpdateInput = {
   text: Scalars['String'];
 };
 
+export enum EventType {
+  Comment = 'Comment',
+  StatusChange = 'StatusChange'
+}
+
 export type Mutation = {
   __typename?: 'Mutation';
   attachAuth0Id?: Maybe<User>;
   createEntryComment?: Maybe<EntryComment>;
   createOneTimeToken?: Maybe<OneTimeToken>;
+  createStatusEvent?: Maybe<StatusEvent>;
   createTimeEntry?: Maybe<TimeEntry>;
   createTimeEntryRow?: Maybe<TimeEntryRow>;
   createUser?: Maybe<User>;
@@ -84,6 +90,15 @@ export type MutationCreateEntryCommentArgs = {
 
 export type MutationCreateOneTimeTokenArgs = {
   tenantId: Scalars['String'];
+  userId: Scalars['String'];
+};
+
+
+export type MutationCreateStatusEventArgs = {
+  message: Scalars['String'];
+  status: Status;
+  timesheetId: Scalars['String'];
+  type: EventType;
   userId: Scalars['String'];
 };
 
@@ -192,6 +207,7 @@ export type Query = {
   getUserFromToken?: Maybe<User>;
   managers: Array<User>;
   projects: Array<Project>;
+  statusEvents: Array<StatusEvent>;
   tenantFromId?: Maybe<Tenant>;
   timeEntry?: Maybe<TimeEntry>;
   timeEntryFromId?: Maybe<TimeEntry>;
@@ -262,6 +278,11 @@ export type QueryManagersArgs = {
 };
 
 
+export type QueryStatusEventsArgs = {
+  timesheetId: Scalars['String'];
+};
+
+
 export type QueryTenantFromIdArgs = {
   tenantId: Scalars['String'];
 };
@@ -295,6 +316,16 @@ export enum Status {
   Submitted = 'Submitted',
   Unsubmitted = 'Unsubmitted'
 }
+
+export type StatusEvent = {
+  __typename?: 'StatusEvent';
+  createdAt: Scalars['DateTime'];
+  id: Scalars['ID'];
+  message: Scalars['String'];
+  status: Status;
+  type: EventType;
+  user: User;
+};
 
 export type Tenant = {
   __typename?: 'Tenant';
@@ -625,6 +656,24 @@ export type TimeEntryFromIdQueryVariables = Exact<{
 
 
 export type TimeEntryFromIdQuery = { __typename?: 'Query', timeEntryFromId?: { __typename?: 'TimeEntry', id: string, createdAt: any, updatedAt: any, date: any, hours: number, entryComments: Array<{ __typename?: 'EntryComment', id: string }> } | null };
+
+export type StatusEventsQueryVariables = Exact<{
+  timesheetId: Scalars['String'];
+}>;
+
+
+export type StatusEventsQuery = { __typename?: 'Query', statusEvents: Array<{ __typename?: 'StatusEvent', id: string, createdAt: any, type: EventType, status: Status, message: string, user: { __typename?: 'User', name?: string | null, avatar?: string | null } }> };
+
+export type CreateStatusEventMutationVariables = Exact<{
+  timesheetId: Scalars['String'];
+  type: EventType;
+  status: Status;
+  message: Scalars['String'];
+  userId: Scalars['String'];
+}>;
+
+
+export type CreateStatusEventMutation = { __typename?: 'Mutation', createStatusEvent?: { __typename?: 'StatusEvent', id: string, createdAt: any, type: EventType, status: Status, message: string, user: { __typename?: 'User', name?: string | null, avatar?: string | null } } | null };
 
 
 export const TenantFromIdDocument = gql`
@@ -1877,3 +1926,97 @@ export function useTimeEntryFromIdLazyQuery(baseOptions?: Apollo.LazyQueryHookOp
 export type TimeEntryFromIdQueryHookResult = ReturnType<typeof useTimeEntryFromIdQuery>;
 export type TimeEntryFromIdLazyQueryHookResult = ReturnType<typeof useTimeEntryFromIdLazyQuery>;
 export type TimeEntryFromIdQueryResult = Apollo.QueryResult<TimeEntryFromIdQuery, TimeEntryFromIdQueryVariables>;
+export const StatusEventsDocument = gql`
+    query StatusEvents($timesheetId: String!) {
+  statusEvents(timesheetId: $timesheetId) {
+    id
+    createdAt
+    type
+    status
+    message
+    user {
+      name
+      avatar
+    }
+  }
+}
+    `;
+
+/**
+ * __useStatusEventsQuery__
+ *
+ * To run a query within a React component, call `useStatusEventsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useStatusEventsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useStatusEventsQuery({
+ *   variables: {
+ *      timesheetId: // value for 'timesheetId'
+ *   },
+ * });
+ */
+export function useStatusEventsQuery(baseOptions: Apollo.QueryHookOptions<StatusEventsQuery, StatusEventsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<StatusEventsQuery, StatusEventsQueryVariables>(StatusEventsDocument, options);
+      }
+export function useStatusEventsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<StatusEventsQuery, StatusEventsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<StatusEventsQuery, StatusEventsQueryVariables>(StatusEventsDocument, options);
+        }
+export type StatusEventsQueryHookResult = ReturnType<typeof useStatusEventsQuery>;
+export type StatusEventsLazyQueryHookResult = ReturnType<typeof useStatusEventsLazyQuery>;
+export type StatusEventsQueryResult = Apollo.QueryResult<StatusEventsQuery, StatusEventsQueryVariables>;
+export const CreateStatusEventDocument = gql`
+    mutation CreateStatusEvent($timesheetId: String!, $type: EventType!, $status: Status!, $message: String!, $userId: String!) {
+  createStatusEvent(
+    timesheetId: $timesheetId
+    type: $type
+    status: $status
+    message: $message
+    userId: $userId
+  ) {
+    id
+    createdAt
+    type
+    status
+    message
+    user {
+      name
+      avatar
+    }
+  }
+}
+    `;
+export type CreateStatusEventMutationFn = Apollo.MutationFunction<CreateStatusEventMutation, CreateStatusEventMutationVariables>;
+
+/**
+ * __useCreateStatusEventMutation__
+ *
+ * To run a mutation, you first call `useCreateStatusEventMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateStatusEventMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createStatusEventMutation, { data, loading, error }] = useCreateStatusEventMutation({
+ *   variables: {
+ *      timesheetId: // value for 'timesheetId'
+ *      type: // value for 'type'
+ *      status: // value for 'status'
+ *      message: // value for 'message'
+ *      userId: // value for 'userId'
+ *   },
+ * });
+ */
+export function useCreateStatusEventMutation(baseOptions?: Apollo.MutationHookOptions<CreateStatusEventMutation, CreateStatusEventMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateStatusEventMutation, CreateStatusEventMutationVariables>(CreateStatusEventDocument, options);
+      }
+export type CreateStatusEventMutationHookResult = ReturnType<typeof useCreateStatusEventMutation>;
+export type CreateStatusEventMutationResult = Apollo.MutationResult<CreateStatusEventMutation>;
+export type CreateStatusEventMutationOptions = Apollo.BaseMutationOptions<CreateStatusEventMutation, CreateStatusEventMutationVariables>;
