@@ -19,6 +19,7 @@ export const Timesheet = objectType({
         t.field(NexusPrisma.Timesheet.updatedAt);
         t.field(NexusPrisma.Timesheet.period);
         t.field(NexusPrisma.Timesheet.status);
+        t.field(NexusPrisma.Timesheet.isChanged);
         t.field(NexusPrisma.Timesheet.user);
         t.field(NexusPrisma.Timesheet.timeEntryRows);
     },

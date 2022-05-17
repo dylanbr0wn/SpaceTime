@@ -2,17 +2,15 @@ import cuid from "cuid";
 import { DateTime } from "luxon";
 import * as React from "react";
 
-import { useApolloClient } from "@apollo/client";
+import { useApolloClient, useReactiveVar } from "@apollo/client";
 
 import {
     EventType,
-    GetTimesheetDocument,
+    IsChanged as isChangedVar,
     Status,
     StatusEventsDocument,
-    useApollo,
     useCreateStatusEventMutation,
     User,
-    useTimesheetUpdatedQuery,
 } from "../../../lib/apollo";
 import ErrorBoundary from "../../common/ErrorBoundary";
 import CustModal from "../../common/Modal";
@@ -37,47 +35,49 @@ const StatusBlock = ({
     const [nextStatus, setNextStatus] = React.useState<Status>(
         Status.Submitted
     );
-    const [hasChanged, setHasChanged] = React.useState(false);
+    // const [hasChanged, setHasChanged] = React.useState(false);
 
-    const { data } = useTimesheetUpdatedQuery({
-        variables: {
-            timesheetId,
-        },
-        fetchPolicy: "network-only", // Used for first execution
-        nextFetchPolicy: "cache-first", // Used for subsequent executions
-    });
+    const isChanged = useReactiveVar(isChangedVar);
 
-    React.useEffect(() => {
-        if (data?.timesheet) {
-            const { updatedAt: timesheetUpdated } = data.timesheet;
-            let hasChanged = false;
+    // const { data } = useTimesheetUpdatedQuery({
+    //     variables: {
+    //         timesheetId,
+    //     },
+    //     // fetchPolicy: "network-only", // Used for first execution
+    //     // nextFetchPolicy: "cache-first", // Used for subsequent executions
+    // });
 
-            for (const row of data.timesheet.timeEntryRows) {
-                if (
-                    DateTime.fromISO(row.updatedAt) >
-                    DateTime.fromISO(timesheetUpdated)
-                ) {
-                    setHasChanged(true);
-                    hasChanged = true;
-                    break;
-                } else {
-                    for (const entry of row.timeEntries) {
-                        if (
-                            DateTime.fromISO(entry.updatedAt) >
-                            DateTime.fromISO(timesheetUpdated)
-                        ) {
-                            setHasChanged(true);
-                            hasChanged = true;
-                            break;
-                        }
-                    }
-                }
-                if (hasChanged) {
-                    break;
-                }
-            }
-        }
-    }, [data]);
+    // React.useEffect(() => {
+    //     if (data?.timesheet) {
+    //         const { updatedAt: timesheetUpdated } = data.timesheet;
+    //         let hasChanged = false;
+
+    //         for (const row of data.timesheet.timeEntryRows) {
+    //             if (
+    //                 DateTime.fromISO(row.updatedAt) >
+    //                 DateTime.fromISO(timesheetUpdated)
+    //             ) {
+    //                 setHasChanged(true);
+    //                 hasChanged = true;
+    //                 break;
+    //             } else {
+    //                 for (const entry of row.timeEntries) {
+    //                     if (
+    //                         DateTime.fromISO(entry.updatedAt) >
+    //                         DateTime.fromISO(timesheetUpdated)
+    //                     ) {
+    //                         setHasChanged(true);
+    //                         hasChanged = true;
+    //                         break;
+    //                     }
+    //                 }
+    //             }
+    //             if (hasChanged) {
+    //                 break;
+    //             }
+    //         }
+    //     }
+    // }, [data]);
 
     //  const { data } = useGetTimeEntriesQuery({
     //     variables: {
@@ -123,7 +123,7 @@ const StatusBlock = ({
                     status: nextStatus,
                 },
             },
-            refetchQueries: [GetTimesheetDocument, StatusEventsDocument],
+            refetchQueries: ["TimesheetUpdated"],
             update: (cache, { data }) => {
                 cache.updateQuery(
                     {
@@ -152,6 +152,7 @@ const StatusBlock = ({
                 });
             },
         });
+        isChangedVar(false);
 
         setShowModal(false);
     };
@@ -179,7 +180,7 @@ const StatusBlock = ({
                         </h2>
                     </div>
                     <div className="flex">
-                        <div>{hasChanged && "alert"}</div>
+                        <div>{isChanged && "alert"}</div>
                         <button
                             onClick={() => setShowModal(true)}
                             className="btn"

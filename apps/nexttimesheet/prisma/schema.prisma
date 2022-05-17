@@ -196,6 +196,7 @@ model Timesheet {
   period        Period         @relation(fields: [periodId], references: [id])
   periodId      String
   status        Status         @default(Unsubmitted)
+  isChanged     Boolean        @default(false)
   timeEntryRows TimeEntryRow[]
   statusEvents  StatusEvent[]
 

@@ -37,29 +37,6 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
     };
 };
 
-// export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
-//     const session = getSession(ctx.req, ctx.res);
-
-//     const user = session?.user;
-
-//     const { data: userData } = await client.query<
-//         GetUserFromAuth0Query,
-//         GetUserFromAuth0QueryVariables
-//     >({
-//         query: GetUserFromAuth0Document,
-//         variables: {
-//             auth0Id: String(user?.sub),
-//         },
-//     });
-
-//     return {
-//         props: {
-//             userData: userData?.getUserFromAuth0,
-//             page: "Home",
-//         },
-//     };
-// };
-
 const Home: NextPage<{
     userData: Partial<User>;
     user: Session["user"];

@@ -13,6 +13,7 @@ import {
     TimeEntryFromIndexQuery,
     TimeEntryFromIndexQueryVariables,
     TimeEntryRow,
+    TimesheetUpdatedDocument,
     useCreateTimeEntryMutation,
     useDeleteTimeEntryMutation,
     User,
@@ -102,8 +103,10 @@ const TimesheetEntryInput = ({
                         entryComments: [],
                     },
                 },
-                refetchQueries: ["TimesheetUpdated"],
                 update: (cache, { data: TimeEntryData }) => {
+                    // cache.modify({
+                    //     id: cache.identify({
+                    // })
                     cache.updateQuery<
                         TimeEntryFromIndexQuery,
                         TimeEntryFromIndexQueryVariables
@@ -178,7 +181,7 @@ const TimesheetEntryInput = ({
                             entryComments: timeEntry?.entryComments ?? [],
                         },
                     },
-                    refetchQueries: ["TimesheetUpdated"],
+                    refetchQueries: ["timesheet"],
                     update: (cache, { data: TimeEntryData }) => {
                         cache.updateQuery<
                             TimeEntryFromIdQuery,
@@ -218,7 +221,7 @@ const TimesheetEntryInput = ({
                         hours: 0,
                     },
                 },
-                refetchQueries: ["TimesheetUpdated"],
+                refetchQueries: ["timesheet"],
                 update: (cache, { data: TimeEntryData }) => {
                     cache.modify({
                         id: cache.identify({

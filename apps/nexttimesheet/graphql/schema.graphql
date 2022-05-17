@@ -125,7 +125,7 @@ enum Status {
 type StatusEvent {
   createdAt: DateTime!
   id: ID!
-  message: String!
+  message: String
   status: Status!
   type: EventType!
   user: User!
@@ -177,6 +177,7 @@ input TimeEntryRowUpdateInput {
 type Timesheet {
   createdAt: DateTime!
   id: ID!
+  isChanged: Boolean!
   period: Period!
   status: Status!
   timeEntryRows: [TimeEntryRow!]!

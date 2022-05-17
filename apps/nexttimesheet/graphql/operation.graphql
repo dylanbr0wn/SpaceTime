@@ -40,6 +40,7 @@ query GetTimesheet($timesheet: TimesheetGetInput!) {
     getTimesheet(Timesheet: $timesheet) {
         id
         status
+        isChanged
         period {
             id
             startDate
@@ -484,9 +485,12 @@ mutation CreateStatusEvent($timesheetId: String!, $type: EventType!, $status: St
 query TimesheetUpdated($timesheetId: String!){
     timesheet(id: $timesheetId) {
         updatedAt
+        id
         timeEntryRows {
+            id
             updatedAt
             timeEntries {
+                id
                 updatedAt
             }
         }

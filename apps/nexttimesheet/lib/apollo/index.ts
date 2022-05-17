@@ -10,11 +10,14 @@ import {
     ApolloClient,
     from,
     InMemoryCache,
+    makeVar,
     NormalizedCacheObject,
 } from "@apollo/client";
 import { BatchHttpLink } from "@apollo/client/link/batch-http";
 import { onError } from "@apollo/client/link/error";
 export * from "./graphql";
+
+export const IsChanged = makeVar(false);
 
 export const APOLLO_STATE_PROP_NAME = "__APOLLO_STATE__";
 

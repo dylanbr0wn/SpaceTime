@@ -327,7 +327,7 @@ export type StatusEvent = {
   __typename?: 'StatusEvent';
   createdAt: Scalars['DateTime'];
   id: Scalars['ID'];
-  message: Scalars['String'];
+  message?: Maybe<Scalars['String']>;
   status: Status;
   type: EventType;
   user: User;
@@ -383,6 +383,7 @@ export type Timesheet = {
   __typename?: 'Timesheet';
   createdAt: Scalars['DateTime'];
   id: Scalars['ID'];
+  isChanged: Scalars['Boolean'];
   period: Period;
   status: Status;
   timeEntryRows: Array<TimeEntryRow>;
@@ -480,7 +481,7 @@ export type GetTimesheetQueryVariables = Exact<{
 }>;
 
 
-export type GetTimesheetQuery = { __typename?: 'Query', getTimesheet?: { __typename?: 'Timesheet', id: string, status: Status, period: { __typename?: 'Period', id: string, startDate: any, endDate: any } } | null };
+export type GetTimesheetQuery = { __typename?: 'Query', getTimesheet?: { __typename?: 'Timesheet', id: string, status: Status, isChanged: boolean, period: { __typename?: 'Period', id: string, startDate: any, endDate: any } } | null };
 
 export type DepartmentsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -668,7 +669,7 @@ export type StatusEventsQueryVariables = Exact<{
 }>;
 
 
-export type StatusEventsQuery = { __typename?: 'Query', statusEvents: Array<{ __typename?: 'StatusEvent', id: string, createdAt: any, type: EventType, status: Status, message: string, user: { __typename?: 'User', name?: string | null, avatar?: string | null } }> };
+export type StatusEventsQuery = { __typename?: 'Query', statusEvents: Array<{ __typename?: 'StatusEvent', id: string, createdAt: any, type: EventType, status: Status, message?: string | null, user: { __typename?: 'User', name?: string | null, avatar?: string | null } }> };
 
 export type CreateStatusEventMutationVariables = Exact<{
   timesheetId: Scalars['String'];
@@ -679,14 +680,14 @@ export type CreateStatusEventMutationVariables = Exact<{
 }>;
 
 
-export type CreateStatusEventMutation = { __typename?: 'Mutation', createStatusEvent?: { __typename?: 'StatusEvent', id: string, createdAt: any, type: EventType, status: Status, message: string, user: { __typename?: 'User', name?: string | null, avatar?: string | null } } | null };
+export type CreateStatusEventMutation = { __typename?: 'Mutation', createStatusEvent?: { __typename?: 'StatusEvent', id: string, createdAt: any, type: EventType, status: Status, message?: string | null, user: { __typename?: 'User', name?: string | null, avatar?: string | null } } | null };
 
 export type TimesheetUpdatedQueryVariables = Exact<{
   timesheetId: Scalars['String'];
 }>;
 
 
-export type TimesheetUpdatedQuery = { __typename?: 'Query', timesheet?: { __typename?: 'Timesheet', updatedAt: any, timeEntryRows: Array<{ __typename?: 'TimeEntryRow', updatedAt: any, timeEntries: Array<{ __typename?: 'TimeEntry', updatedAt: any }> }> } | null };
+export type TimesheetUpdatedQuery = { __typename?: 'Query', timesheet?: { __typename?: 'Timesheet', updatedAt: any, id: string, timeEntryRows: Array<{ __typename?: 'TimeEntryRow', id: string, updatedAt: any, timeEntries: Array<{ __typename?: 'TimeEntry', id: string, updatedAt: any }> }> } | null };
 
 
 export const TenantFromIdDocument = gql`
@@ -790,6 +791,7 @@ export const GetTimesheetDocument = gql`
   getTimesheet(Timesheet: $timesheet) {
     id
     status
+    isChanged
     period {
       id
       startDate
@@ -2037,9 +2039,12 @@ export const TimesheetUpdatedDocument = gql`
     query TimesheetUpdated($timesheetId: String!) {
   timesheet(id: $timesheetId) {
     updatedAt
+    id
     timeEntryRows {
+      id
       updatedAt
       timeEntries {
+        id
         updatedAt
       }
     }
