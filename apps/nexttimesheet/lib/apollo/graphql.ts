@@ -73,6 +73,7 @@ export type Mutation = {
   updateEntryComment?: Maybe<EntryComment>;
   updateTimeEntryRow?: Maybe<TimeEntryRow>;
   updateTimeEntryhours?: Maybe<TimeEntry>;
+  updateTimesheet?: Maybe<Timesheet>;
   updateUser?: Maybe<User>;
 };
 
@@ -155,6 +156,12 @@ export type MutationUpdateTimeEntryRowArgs = {
 export type MutationUpdateTimeEntryhoursArgs = {
   hours: Scalars['Int'];
   id: Scalars['String'];
+};
+
+
+export type MutationUpdateTimesheetArgs = {
+  id: Scalars['String'];
+  isChanged: Scalars['Boolean'];
 };
 
 
@@ -688,6 +695,14 @@ export type TimesheetUpdatedQueryVariables = Exact<{
 
 
 export type TimesheetUpdatedQuery = { __typename?: 'Query', timesheet?: { __typename?: 'Timesheet', updatedAt: any, id: string, timeEntryRows: Array<{ __typename?: 'TimeEntryRow', id: string, updatedAt: any, timeEntries: Array<{ __typename?: 'TimeEntry', id: string, updatedAt: any }> }> } | null };
+
+export type UpdateTimesheetChangedMutationVariables = Exact<{
+  timesheetId: Scalars['String'];
+  changed: Scalars['Boolean'];
+}>;
+
+
+export type UpdateTimesheetChangedMutation = { __typename?: 'Mutation', updateTimesheet?: { __typename?: 'Timesheet', id: string, updatedAt: any, isChanged: boolean } | null };
 
 
 export const TenantFromIdDocument = gql`
@@ -2079,3 +2094,39 @@ export function useTimesheetUpdatedLazyQuery(baseOptions?: Apollo.LazyQueryHookO
 export type TimesheetUpdatedQueryHookResult = ReturnType<typeof useTimesheetUpdatedQuery>;
 export type TimesheetUpdatedLazyQueryHookResult = ReturnType<typeof useTimesheetUpdatedLazyQuery>;
 export type TimesheetUpdatedQueryResult = Apollo.QueryResult<TimesheetUpdatedQuery, TimesheetUpdatedQueryVariables>;
+export const UpdateTimesheetChangedDocument = gql`
+    mutation UpdateTimesheetChanged($timesheetId: String!, $changed: Boolean!) {
+  updateTimesheet(id: $timesheetId, isChanged: $changed) {
+    id
+    updatedAt
+    isChanged
+  }
+}
+    `;
+export type UpdateTimesheetChangedMutationFn = Apollo.MutationFunction<UpdateTimesheetChangedMutation, UpdateTimesheetChangedMutationVariables>;
+
+/**
+ * __useUpdateTimesheetChangedMutation__
+ *
+ * To run a mutation, you first call `useUpdateTimesheetChangedMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateTimesheetChangedMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateTimesheetChangedMutation, { data, loading, error }] = useUpdateTimesheetChangedMutation({
+ *   variables: {
+ *      timesheetId: // value for 'timesheetId'
+ *      changed: // value for 'changed'
+ *   },
+ * });
+ */
+export function useUpdateTimesheetChangedMutation(baseOptions?: Apollo.MutationHookOptions<UpdateTimesheetChangedMutation, UpdateTimesheetChangedMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateTimesheetChangedMutation, UpdateTimesheetChangedMutationVariables>(UpdateTimesheetChangedDocument, options);
+      }
+export type UpdateTimesheetChangedMutationHookResult = ReturnType<typeof useUpdateTimesheetChangedMutation>;
+export type UpdateTimesheetChangedMutationResult = Apollo.MutationResult<UpdateTimesheetChangedMutation>;
+export type UpdateTimesheetChangedMutationOptions = Apollo.BaseMutationOptions<UpdateTimesheetChangedMutation, UpdateTimesheetChangedMutationVariables>;

@@ -4,6 +4,7 @@ import * as React from "react";
 import {
     GetTimeEntryRowsQuery,
     GetTimesheetQuery,
+    IsChanged,
     TimeEntryRow,
 } from "../../lib/apollo";
 
@@ -19,6 +20,7 @@ export const useTimesheetDates = (
 
     React.useEffect(() => {
         if (timesheetData?.getTimesheet) {
+            IsChanged(timesheetData?.getTimesheet.isChanged);
             const dates: DateTime[] = [];
             const endDate = DateTime.fromISO(
                 timesheetData?.getTimesheet?.period.endDate,

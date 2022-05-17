@@ -120,6 +120,9 @@ const Timesheet = ({
                             Open drawer
                         </label> */}
                         <Status
+                            timesheetChanged={
+                                !!timesheetData?.getTimesheet?.isChanged
+                            }
                             status={
                                 timesheetData?.getTimesheet?.status ??
                                 TimesheetStatus.Unsubmitted

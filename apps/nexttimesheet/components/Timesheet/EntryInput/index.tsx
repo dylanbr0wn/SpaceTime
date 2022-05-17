@@ -6,6 +6,7 @@ import {
     GetTimeEntriesDocument,
     GetTimeEntriesQuery,
     GetTimeEntriesQueryVariables,
+    IsChanged,
     TimeEntryFromIdDocument,
     TimeEntryFromIdQuery,
     TimeEntryFromIdQueryVariables,
@@ -162,6 +163,7 @@ const TimesheetEntryInput = ({
                     );
                 },
             });
+            IsChanged(true);
         } else if (timeEntry?.id !== "-1" && (timeEntry?.hours ?? 0) > 0) {
             if (needsToSave) {
                 updateTimeEntryhoursMutation({
@@ -181,7 +183,6 @@ const TimesheetEntryInput = ({
                             entryComments: timeEntry?.entryComments ?? [],
                         },
                     },
-                    refetchQueries: ["timesheet"],
                     update: (cache, { data: TimeEntryData }) => {
                         cache.updateQuery<
                             TimeEntryFromIdQuery,
@@ -205,6 +206,7 @@ const TimesheetEntryInput = ({
                     },
                 });
             }
+            IsChanged(true);
         } else if (timeEntry?.id !== "-1" && timeEntry?.hours === 0) {
             deleteTimeEntryMutation({
                 variables: {
@@ -221,7 +223,6 @@ const TimesheetEntryInput = ({
                         hours: 0,
                     },
                 },
-                refetchQueries: ["timesheet"],
                 update: (cache, { data: TimeEntryData }) => {
                     cache.modify({
                         id: cache.identify({
@@ -247,6 +248,7 @@ const TimesheetEntryInput = ({
                     cache.gc();
                 },
             });
+            IsChanged(true);
         } else {
             setIsSaving(false);
         }

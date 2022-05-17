@@ -55,6 +55,7 @@ export const MutationStatusEvent = extendType({
                     },
                     data: {
                         status: args.status,
+                        isChanged: false,
                     },
                 });
 

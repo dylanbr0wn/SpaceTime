@@ -496,3 +496,11 @@ query TimesheetUpdated($timesheetId: String!){
         }
     }
 }
+
+mutation UpdateTimesheetChanged($timesheetId: String!, $changed: Boolean!){
+    updateTimesheet(id: $timesheetId, isChanged: $changed) {
+        id
+        updatedAt
+        isChanged
+    }
+}

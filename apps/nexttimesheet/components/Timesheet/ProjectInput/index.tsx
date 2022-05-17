@@ -8,6 +8,7 @@ import {
     GetTimeEntryRowsDocument,
     GetTimeEntryRowsQuery,
     GetTimeEntryRowsQueryVariables,
+    IsChanged,
     Project,
     TimeEntryRow,
     useUpdateTimeEntryRowMutation,
@@ -124,6 +125,7 @@ const TimesheetProjectInput = ({
                 });
             },
         });
+        IsChanged(true);
     };
 
     return (

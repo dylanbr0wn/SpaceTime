@@ -11,6 +11,7 @@ import {
     StatusEventsDocument,
     useCreateStatusEventMutation,
     User,
+    useUpdateTimesheetChangedMutation,
 } from "../../../lib/apollo";
 import ErrorBoundary from "../../common/ErrorBoundary";
 import CustModal from "../../common/Modal";
@@ -26,10 +27,12 @@ const StatusBlock = ({
     status,
     user,
     timesheetId,
+    timesheetChanged,
 }: {
     status: Status;
     user: Partial<User>;
     timesheetId: string;
+    timesheetChanged: boolean;
 }) => {
     const [showModal, setShowModal] = React.useState(false);
     const [nextStatus, setNextStatus] = React.useState<Status>(
@@ -86,20 +89,31 @@ const StatusBlock = ({
     //     skip: !rowId,
     // });
 
+    const [updateTimesheetChangedMutation] =
+        useUpdateTimesheetChangedMutation();
+
     React.useEffect(() => {
-        // if (status === Status.Unsubmitted) {
-        //     setNextStatus(Status.Submitted);
-        // } else if (status === Status.Submitted) {
-        //     setNextStatus(Status.Submitted);
-        // }
-        setNextStatus(Status.Submitted);
-    }, [status]);
+        if (!timesheetChanged && isChanged) {
+            updateTimesheetChangedMutation({
+                variables: {
+                    timesheetId,
+                    changed: isChanged,
+                },
+            });
+        }
+    }, [
+        isChanged,
+        timesheetChanged,
+        timesheetId,
+        updateTimesheetChangedMutation,
+    ]);
 
     const [comment, setComment] = React.useState("");
 
     const [createStatusEventMutation] = useCreateStatusEventMutation();
 
     const submit = () => {
+        isChangedVar(false);
         createStatusEventMutation({
             variables: {
                 status: nextStatus,
@@ -123,7 +137,6 @@ const StatusBlock = ({
                     status: nextStatus,
                 },
             },
-            refetchQueries: ["TimesheetUpdated"],
             update: (cache, { data }) => {
                 cache.updateQuery(
                     {
@@ -152,7 +165,6 @@ const StatusBlock = ({
                 });
             },
         });
-        isChangedVar(false);
 
         setShowModal(false);
     };

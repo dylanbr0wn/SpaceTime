@@ -9,6 +9,7 @@ import {
     GetTimeEntryRowsDocument,
     GetTimeEntryRowsQuery,
     GetTimeEntryRowsQueryVariables,
+    IsChanged,
     TimeEntryRow,
     useDepartmentsQuery,
     useUpdateTimeEntryRowMutation,
@@ -45,6 +46,7 @@ const TimesheetDepartmentInput = ({
     // When changed, dispatch api call and redux action.
     const onChange = async (department: Department) => {
         // setDepartment(department);
+
         updateTimeEntryRow({
             variables: {
                 updateTimeEntryRowId: row?.id ?? "-1",
@@ -110,6 +112,7 @@ const TimesheetDepartmentInput = ({
                 });
             },
         });
+        IsChanged(true);
     };
 
     // If the initialValue is changed external, sync it up with our state

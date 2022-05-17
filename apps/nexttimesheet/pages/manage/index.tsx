@@ -22,11 +22,18 @@ import {
 } from "../../lib/apollo";
 
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
-    const client = initializeApollo({ headers: ctx?.req?.headers });
-
     const session = await getSession(ctx);
-
+    
+    if (!session) {
+        return {
+            redirect: {
+                destination: "/api/auth/signin",
+                permanent: false,
+            },
+        };
+    }
     const user = session?.user;
+    const client = initializeApollo({ headers: ctx?.req?.headers });
 
     const { data: userData } = await client.query<
         GetUserFromAuth0Query,
@@ -49,6 +56,7 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
 const Manage: NextPage<{
     userData: Partial<User>;
 }> = ({ userData, user }) => {
+    if (typeof window === "undefined") return null;
     return (
         <DashBoard user={user}>
             <div

@@ -1,6 +1,7 @@
 import { DateTime, Interval } from "luxon";
 import {
     arg,
+    booleanArg,
     extendType,
     inputObjectType,
     nonNull,
@@ -144,12 +145,28 @@ export const QueryTimesheet = extendType({
     },
 });
 
-// export const MutateTimesheet = extendType({
-//     type: "Mutation",
-//     definition(t) {
-
-//     },
-// });
+export const MutateTimesheet = extendType({
+    type: "Mutation",
+    definition(t) {
+        t.field("updateTimesheet", {
+            type: "Timesheet",
+            args: {
+                id: nonNull(stringArg()),
+                isChanged: nonNull(booleanArg()),
+            },
+            resolve: async (_parent, { isChanged, id }, context: Context) => {
+                return await context.prisma.timesheet.update({
+                    where: {
+                        id,
+                    },
+                    data: {
+                        isChanged,
+                    },
+                });
+            },
+        });
+    },
+});
 
 export const TimesheetGetInput = inputObjectType({
     name: "TimesheetGetInput",

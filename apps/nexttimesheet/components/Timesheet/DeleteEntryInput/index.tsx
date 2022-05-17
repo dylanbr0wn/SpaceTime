@@ -2,7 +2,7 @@ import * as React from "react";
 
 import { BackspaceIcon } from "@heroicons/react/outline";
 
-import { useDeleteTimeEntryRowMutation } from "../../../lib/apollo";
+import { IsChanged, useDeleteTimeEntryRowMutation } from "../../../lib/apollo";
 import ConfirmCloseModal from "../../common/ConfirmCloseModal";
 import ErrorBoundary from "../../common/ErrorBoundary";
 
@@ -72,6 +72,7 @@ const TimesheetDeleteEntryInput = ({
                 cache.gc();
             },
         });
+        IsChanged(true);
 
         setShowDeleteConfirmModal(false);
 

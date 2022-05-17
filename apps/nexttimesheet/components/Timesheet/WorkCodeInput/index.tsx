@@ -8,6 +8,7 @@ import {
     GetTimeEntryRowsDocument,
     GetTimeEntryRowsQuery,
     GetTimeEntryRowsQueryVariables,
+    IsChanged,
     TimeEntryRow,
     useUpdateTimeEntryRowMutation,
     WorkType,
@@ -133,6 +134,7 @@ const TimesheetWorkCodeInput = ({
                 });
             },
         });
+        IsChanged(true);
     };
 
     // Set info field for workcode

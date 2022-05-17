@@ -60,6 +60,7 @@ type Mutation {
   updateEntryComment(entryComment: EntryCommentUpdateInput!): EntryComment
   updateTimeEntryRow(departmentId: String, id: String!, projectId: String, workTypeId: String): TimeEntryRow
   updateTimeEntryhours(hours: Int!, id: String!): TimeEntry
+  updateTimesheet(id: String!, isChanged: Boolean!): Timesheet
   updateUser(user: UserUpdateInput!): User
 }
 
