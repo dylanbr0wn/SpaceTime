@@ -3,6 +3,7 @@ import { DateTime } from "luxon";
 import * as React from "react";
 
 import { useApolloClient, useReactiveVar } from "@apollo/client";
+import { ExclamationIcon } from "@heroicons/react/solid";
 
 import {
     EventType,
@@ -41,53 +42,6 @@ const StatusBlock = ({
     // const [hasChanged, setHasChanged] = React.useState(false);
 
     const isChanged = useReactiveVar(isChangedVar);
-
-    // const { data } = useTimesheetUpdatedQuery({
-    //     variables: {
-    //         timesheetId,
-    //     },
-    //     // fetchPolicy: "network-only", // Used for first execution
-    //     // nextFetchPolicy: "cache-first", // Used for subsequent executions
-    // });
-
-    // React.useEffect(() => {
-    //     if (data?.timesheet) {
-    //         const { updatedAt: timesheetUpdated } = data.timesheet;
-    //         let hasChanged = false;
-
-    //         for (const row of data.timesheet.timeEntryRows) {
-    //             if (
-    //                 DateTime.fromISO(row.updatedAt) >
-    //                 DateTime.fromISO(timesheetUpdated)
-    //             ) {
-    //                 setHasChanged(true);
-    //                 hasChanged = true;
-    //                 break;
-    //             } else {
-    //                 for (const entry of row.timeEntries) {
-    //                     if (
-    //                         DateTime.fromISO(entry.updatedAt) >
-    //                         DateTime.fromISO(timesheetUpdated)
-    //                     ) {
-    //                         setHasChanged(true);
-    //                         hasChanged = true;
-    //                         break;
-    //                     }
-    //                 }
-    //             }
-    //             if (hasChanged) {
-    //                 break;
-    //             }
-    //         }
-    //     }
-    // }, [data]);
-
-    //  const { data } = useGetTimeEntriesQuery({
-    //     variables: {
-    //         rowId: rowId ?? "-1",
-    //     },
-    //     skip: !rowId,
-    // });
 
     const [updateTimesheetChangedMutation] =
         useUpdateTimesheetChangedMutation();
@@ -165,7 +119,7 @@ const StatusBlock = ({
                 });
             },
         });
-
+        setComment("");
         setShowModal(false);
     };
 
@@ -191,11 +145,24 @@ const StatusBlock = ({
                             {status}
                         </h2>
                     </div>
-                    <div className="flex">
-                        <div>{isChanged && "alert"}</div>
+                    <div className="flex relative">
+                        {isChanged && (
+                            <div className="absolute right-full mr-3 my-3 h-full">
+                                <div
+                                    className="tooltip"
+                                    data-tip="Submit to save your changes"
+                                >
+                                    <div className="flex text-warning animate-pulse">
+                                        <div>Unsaved</div>
+                                        <ExclamationIcon className="h-6 w-6 ml-2 " />{" "}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
                         <button
                             onClick={() => setShowModal(true)}
-                            className="btn"
+                            className="btn w-full"
                         >
                             {status === Status.Unsubmitted
                                 ? "Submit"
