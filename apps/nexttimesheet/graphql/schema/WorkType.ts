@@ -1,32 +1,67 @@
-import { extendType, objectType } from "nexus";
-import * as NexusPrisma from "nexus-prisma";
+import prisma from "../../prisma";
+import { builder } from "../builder";
 
-export const WorkType = objectType({
-    name: NexusPrisma.WorkType.$name,
-    description: NexusPrisma.WorkType.$description,
-    definition(t) {
-        t.field(NexusPrisma.WorkType.id);
-        t.field(NexusPrisma.WorkType.name);
-        t.field(NexusPrisma.WorkType.createdAt);
-        t.field(NexusPrisma.WorkType.updatedAt);
-        t.field(NexusPrisma.WorkType.isActive);
-        t.field(NexusPrisma.WorkType.description);
-        t.field(NexusPrisma.WorkType.code);
-        t.field(NexusPrisma.WorkType.isSystem);
-        t.field(NexusPrisma.WorkType.isDefault);
-        t.field(NexusPrisma.WorkType.multiplier);
-        t.field(NexusPrisma.WorkType.isBillable);
-    },
+builder.prismaObject("WorkType", {
+    findUnique: (workType) => ({ id: workType.id }),
+    fields: (t) => ({
+        id: t.exposeID("id"),
+        createdAt: t.field({
+            type: "Date",
+            resolve: (workType) => workType.createdAt,
+        }),
+        updatedAt: t.field({
+            type: "Date",
+            resolve: (workType) => workType.updatedAt,
+        }),
+        name: t.field({
+            type: "String",
+            resolve: (workType) => workType.name,
+        }),
+        description: t.field({
+            type: "String",
+            nullable: true,
+            resolve: (workType) => workType.description,
+        }),
+        isActive: t.exposeBoolean("isActive"),
+        tenant: t.relation("tenant"),
+        code: t.exposeString("code"),
+        isSystem: t.exposeBoolean("isSystem"),
+        isDefault: t.exposeBoolean("isDefault"),
+        isBillable: t.exposeBoolean("isBillable"),
+        multiplier: t.exposeFloat("multiplier"),
+    }),
 });
 
-export const QueryWorkType = extendType({
-    type: "Query",
-    definition(t) {
-        t.nonNull.list.nonNull.field("workTypes", {
-            type: WorkType,
-            resolve: (_parent, _args, ctx) => {
-                return ctx.prisma.workType.findMany();
-            },
-        });
-    },
-});
+builder.queryFields((t) => ({
+    workTypes: t.prismaField({
+        type: ["WorkType"],
+        args: {
+            tenantId: t.arg.string({ required: true }),
+        },
+        resolve: async (query, root, args, ctx, info) => {
+            return await prisma.workType.findMany({
+                ...query,
+                where: {
+                    tenant: {
+                        id: args.tenantId,
+                    },
+                },
+            });
+        },
+    }),
+    workType: t.prismaField({
+        type: "WorkType",
+        args: {
+            id: t.arg.string({ required: true }),
+        },
+        resolve: async (query, root, args, ctx, info) => {
+            return await prisma.workType.findUnique({
+                ...query,
+                rejectOnNotFound: true,
+                where: {
+                    id: args.id,
+                },
+            });
+        },
+    }),
+}));

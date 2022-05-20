@@ -1,177 +1,155 @@
 import { DateTime, Interval } from "luxon";
-import {
-    arg,
-    booleanArg,
-    extendType,
-    inputObjectType,
-    nonNull,
-    objectType,
-    stringArg,
-} from "nexus";
-import * as NexusPrisma from "nexus-prisma";
 
-import { Context } from "../context";
+import { Status } from "@prisma/client";
 
-export const Timesheet = objectType({
-    name: NexusPrisma.Timesheet.$name,
-    definition(t) {
-        t.field(NexusPrisma.Timesheet.id);
-        t.field(NexusPrisma.Timesheet.createdAt);
-        t.field(NexusPrisma.Timesheet.updatedAt);
-        t.field(NexusPrisma.Timesheet.period);
-        t.field(NexusPrisma.Timesheet.status);
-        t.field(NexusPrisma.Timesheet.isChanged);
-        t.field(NexusPrisma.Timesheet.user);
-        t.field(NexusPrisma.Timesheet.timeEntryRows);
-    },
+import prisma from "../../prisma";
+import { builder } from "../builder";
+
+builder.prismaObject("Timesheet", {
+    findUnique: (timesheet) => ({ id: timesheet.id }),
+    fields: (t) => ({
+        id: t.exposeID("id"),
+        createdAt: t.field({
+            type: "Date",
+            resolve: (timesheet) => timesheet.createdAt,
+        }),
+        updatedAt: t.field({
+            type: "Date",
+            resolve: (timesheet) => timesheet.updatedAt,
+        }),
+        user: t.relation("user"),
+        period: t.relation("period"),
+        timeEntryRows: t.relation("timeEntryRows"),
+        isChanged: t.exposeBoolean("isChanged"),
+        status: t.field({
+            type: Status,
+            resolve: (timesheet) => timesheet.status,
+        }),
+    }),
 });
 
-export const QueryTimesheet = extendType({
-    type: "Query",
-    definition(t) {
-        t.field("timesheet", {
-            type: "Timesheet",
-            args: {
-                id: nonNull(stringArg()),
-            },
-            resolve: async (_, args, ctx: Context) => {
-                return await ctx.prisma.timesheet.findUnique({
-                    where: {
-                        id: args.id,
+builder.queryFields((t) => ({
+    timesheet: t.prismaField({
+        type: "Timesheet",
+        args: {
+            id: t.arg.string({ required: true }),
+        },
+        resolve: async (query, root, args, ctx, info) => {
+            return await prisma.timesheet.findUnique({
+                ...query,
+                rejectOnNotFound: true,
+                where: {
+                    id: args.id,
+                },
+            });
+        },
+    }),
+    timesheetFromDate: t.prismaField({
+        type: "Timesheet",
+        args: {
+            userId: t.arg.string({ required: true }),
+            date: t.arg({
+                type: "Date",
+                required: true,
+            }),
+        },
+        resolve: async (query, root, args, ctx, info) => {
+            let period = await prisma.period.findFirst({
+                where: {
+                    startDate: {
+                        lte: args.date,
                     },
-                });
-            },
-        });
-        t.field("getTimesheet", {
-            type: Timesheet,
-            args: {
-                Timesheet: nonNull(arg({ type: TimesheetGetInput })),
-            },
-            resolve: async (_parent, { Timesheet }, context: Context) => {
-                // find the period if it exists given a date
-                let period = await context.prisma.period.findFirst({
-                    where: {
-                        startDate: {
-                            lte: Timesheet.date,
+                    endDate: {
+                        gt: args.date,
+                    },
+                },
+            });
+            const user = await prisma.user.findUnique({
+                where: {
+                    id: args.userId,
+                },
+                include: {
+                    tenant: {
+                        select: {
+                            startDate: true,
+                            periodLength: true,
                         },
-                        endDate: {
-                            gt: Timesheet.date,
-                        },
                     },
-                });
-                const user = await context.prisma.user.findUnique({
-                    where: {
-                        id: Timesheet.userId,
-                    },
-                    include: {
-                        tenant: {
-                            select: {
-                                startDate: true,
-                                periodLength: true,
-                            },
-                        },
-                    },
-                });
-                if (!period) {
-                    // if the period doesnt exist, create it
+                },
+            });
 
-                    // find the period params
-                    // const prefs = await context.prisma.tenant.findUnique({
-                    //     where: {
-                    //         id: user?.tenantId,
-                    //     },
-                    //     select: {
-                    //         startDate: true,
-                    //         periodLength: true,
-                    //     },
-                    // });
-                    if (user) {
-                        // got prefs, find the period params
-                        const timesheetDate = DateTime.fromJSDate(
-                            Timesheet.date
-                        );
-                        const { startDate, periodLength } = user.tenant;
-                        let interval = Interval.after(startDate, {
-                            days: periodLength,
-                        });
-                        while (!interval.contains(timesheetDate)) {
-                            interval = interval.mapEndpoints((endpoints) =>
-                                endpoints.plus({ days: periodLength })
-                            );
-                            if (
-                                interval.start.year >
-                                timesheetDate.plus({
-                                    years: 5,
-                                }).year
-                            ) {
-                                throw new Error("Cant find date interval");
-                            }
-                        }
-                        // now have period interval, create period
-
-                        period = await context.prisma.period.create({
-                            data: {
-                                startDate: interval.start.toJSDate(),
-                                endDate: interval.end.toJSDate(),
-                                tenant: {
-                                    connect: {
-                                        id: user?.tenantId,
-                                    },
-                                },
-                            },
-                        });
-                    } else {
-                        throw new Error("No period params found");
+            if (!period && user?.tenant && user?.tenantId) {
+                // got prefs, find the period params
+                const timesheetDate = DateTime.fromJSDate(args.date);
+                const { startDate, periodLength } = user.tenant;
+                let interval = Interval.after(startDate, {
+                    days: periodLength,
+                });
+                while (!interval.contains(timesheetDate)) {
+                    interval = interval.mapEndpoints((endpoints) =>
+                        endpoints.plus({ days: periodLength })
+                    );
+                    if (
+                        interval.start.year >
+                        timesheetDate.plus({
+                            years: 5,
+                        }).year
+                    ) {
+                        throw new Error("Cant find date interval");
                     }
                 }
-                // now have period, find or create timesheet
-                if (!period) throw new Error("Could not find or create period");
+                // now have period interval, create period
 
-                return await context.prisma.timesheet.upsert({
-                    where: {
-                        userId_periodId: {
-                            userId: Timesheet.userId,
-                            periodId: period.id,
+                period = await prisma.period.create({
+                    data: {
+                        startDate: interval.start.toJSDate(),
+                        endDate: interval.end.toJSDate(),
+                        tenant: {
+                            connect: {
+                                id: user?.tenantId,
+                            },
                         },
                     },
-                    update: {},
-                    create: {
-                        userId: Timesheet.userId,
+                });
+            } else {
+                throw new Error("No period params found");
+            }
+            if (!period) throw new Error("Could not find or create period");
+            // now have period, find or create timesheet
+
+            return await prisma.timesheet.upsert({
+                where: {
+                    userId_periodId: {
+                        userId: args.userId,
                         periodId: period.id,
                     },
-                });
-            },
-        });
-    },
-});
+                },
+                update: {},
+                create: {
+                    userId: args.userId,
+                    periodId: period.id,
+                },
+            });
+        },
+    }),
+}));
 
-export const MutateTimesheet = extendType({
-    type: "Mutation",
-    definition(t) {
-        t.field("updateTimesheet", {
-            type: "Timesheet",
-            args: {
-                id: nonNull(stringArg()),
-                isChanged: nonNull(booleanArg()),
-            },
-            resolve: async (_parent, { isChanged, id }, context: Context) => {
-                return await context.prisma.timesheet.update({
-                    where: {
-                        id,
-                    },
-                    data: {
-                        isChanged,
-                    },
-                });
-            },
-        });
-    },
-});
-
-export const TimesheetGetInput = inputObjectType({
-    name: "TimesheetGetInput",
-    definition(t) {
-        t.nonNull.field("date", { type: "DateTime" });
-        t.nonNull.field(NexusPrisma.Timesheet.userId);
-    },
-});
+builder.mutationFields((t) => ({
+    updateTimesheet: t.prismaField({
+        type: "Timesheet",
+        args: {
+            id: t.arg.string({ required: true }),
+            isChanged: t.arg.boolean({ required: true }),
+        },
+        resolve: async (query, root, args, ctx, info) => {
+            return await prisma.timesheet.update({
+                where: {
+                    id: args.id,
+                },
+                data: {
+                    isChanged: args.isChanged,
+                },
+            });
+        },
+    }),
+}));

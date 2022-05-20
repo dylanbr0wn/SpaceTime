@@ -1,173 +1,114 @@
-import {
-    arg,
-    extendType,
-    inputObjectType,
-    nonNull,
-    objectType,
-    stringArg,
-} from "nexus";
-import * as NexusPrisma from "nexus-prisma";
+import prisma from "../../prisma";
+import { builder } from "../builder";
 
-import { Context } from "../context";
-
-export const EntryComment = objectType({
-    name: NexusPrisma.EntryComment.$name,
-    description: NexusPrisma.EntryComment.$description,
-    definition(t) {
-        t.field(NexusPrisma.EntryComment.id);
-        t.field(NexusPrisma.EntryComment.createdAt);
-        t.field(NexusPrisma.EntryComment.updatedAt);
-        t.field(NexusPrisma.EntryComment.text);
-        t.field(NexusPrisma.EntryComment.user);
-    },
+builder.prismaObject("EntryComment", {
+    findUnique: (entry) => ({ id: entry.id }),
+    fields: (t) => ({
+        id: t.exposeID("id"),
+        createdAt: t.field({
+            type: "Date",
+            resolve: (department) => department.createdAt,
+        }),
+        updatedAt: t.field({
+            type: "Date",
+            resolve: (department) => department.updatedAt,
+        }),
+        user: t.relation("user"),
+        text: t.exposeString("text"),
+    }),
 });
 
-export const QueryEntryComment = extendType({
-    type: "Query",
-    definition(t) {
-        t.field("getEntryComment", {
-            type: "EntryComment",
-            args: {
-                commentId: nonNull(stringArg()),
-            },
-            resolve: (_parent, args, context: Context) => {
-                return context.prisma.entryComment.findUnique({
-                    where: {
-                        id: args.commentId,
+builder.queryFields((t) => ({
+    entryComments: t.prismaField({
+        type: ["EntryComment"],
+        args: {
+            entryId: t.arg.string({ required: true }),
+        },
+        resolve: async (query, root, args, ctx, info) => {
+            return await prisma.entryComment.findMany({
+                ...query,
+                where: {
+                    timeEntry: {
+                        id: args.entryId,
                     },
-                    include: {
-                        user: true,
-                    },
-                });
-            },
-        });
-        t.list.nonNull.field("getEntryComments", {
-            type: "EntryComment",
-            args: {
-                timeEntryId: nonNull(stringArg()),
-            },
-            resolve: (_parent, args, context: Context) => {
-                return context.prisma.entryComment.findMany({
-                    where: {
-                        timeEntryId: args.timeEntryId,
-                    },
-                    orderBy: {
-                        createdAt: "desc",
-                    },
+                },
+            });
+        },
+    }),
+    entryComment: t.prismaField({
+        type: "EntryComment",
+        args: {
+            id: t.arg.string({ required: true }),
+        },
+        resolve: async (query, root, args, ctx, info) => {
+            return await prisma.entryComment.findUnique({
+                ...query,
+                rejectOnNotFound: true,
+                where: {
+                    id: args.id,
+                },
+            });
+        },
+    }),
+}));
 
-                    include: {
-                        user: true,
-                    },
-                });
-            },
-        });
-        t.nonNull.list.nonNull.field("getEntryCommentsByTimesheet", {
-            type: "EntryComment",
-            args: {
-                timesheetId: nonNull(stringArg()),
-            },
-            resolve: (_parent, args, context: Context) => {
-                return context.prisma.entryComment.findMany({
-                    where: {
-                        timeEntry: {
-                            timeEntryRow: {
-                                timesheet: {
-                                    id: args.timesheetId,
-                                },
-                            },
+builder.mutationFields((t) => ({
+    createEntryComment: t.prismaField({
+        type: "EntryComment",
+        args: {
+            text: t.arg.string({ required: true }),
+            userId: t.arg.string({ required: true }),
+            entryId: t.arg.string({ required: true }),
+        },
+        resolve: async (query, root, args, ctx, info) => {
+            return await prisma.entryComment.create({
+                ...query,
+                data: {
+                    text: args.text,
+                    user: {
+                        connect: {
+                            id: args.userId,
                         },
                     },
-                    orderBy: {
-                        createdAt: "desc",
-                    },
-
-                    include: {
-                        user: true,
-                    },
-                });
-            },
-        });
-    },
-});
-
-export const MutateEntryComment = extendType({
-    type: "Mutation",
-    definition(t) {
-        t.field("createEntryComment", {
-            type: "EntryComment",
-            args: {
-                entryComment: nonNull(arg({ type: EntryCommentCreateInput })),
-            },
-            resolve: (_parent, { entryComment }, context: Context) => {
-                return context.prisma.entryComment.create({
-                    data: {
-                        text: entryComment.text,
-                        timeEntry: {
-                            connect: {
-                                id: entryComment.timeEntryId,
-                            },
-                        },
-                        user: {
-                            connect: {
-                                id: entryComment.userId,
-                            },
+                    timeEntry: {
+                        connect: {
+                            id: args.entryId,
                         },
                     },
-                });
-            },
-        });
-        t.field("updateEntryComment", {
-            type: "EntryComment",
-            args: {
-                entryComment: nonNull(arg({ type: EntryCommentUpdateInput })),
-            },
-            resolve: (_parent, { entryComment }, context: Context) => {
-                return context.prisma.entryComment.update({
-                    where: {
-                        id: entryComment.id,
-                    },
-                    data: {
-                        text: entryComment.text,
-                    },
-                });
-            },
-        });
-        t.field("deleteEntryComment", {
-            type: "EntryComment",
-            args: {
-                EntryComment: nonNull(arg({ type: EntryCommentDeleteInput })),
-            },
-            resolve: (_parent, { EntryComment }, context: Context) => {
-                return context.prisma.entryComment.delete({
-                    where: {
-                        id: EntryComment.id,
-                    },
-                });
-            },
-        });
-    },
-});
-
-export const EntryCommentCreateInput = inputObjectType({
-    name: "EntryCommentCreateInput",
-    definition(t) {
-        t.nonNull.field(NexusPrisma.EntryComment.timeEntryId);
-        t.nonNull.field(NexusPrisma.EntryComment.text);
-        t.nonNull.field(NexusPrisma.EntryComment.userId);
-    },
-});
-
-export const EntryCommentUpdateInput = inputObjectType({
-    name: "EntryCommentUpdateInput",
-    definition(t) {
-        t.field(NexusPrisma.EntryComment.text);
-        t.field(NexusPrisma.EntryComment.id);
-    },
-});
-
-export const EntryCommentDeleteInput = inputObjectType({
-    name: "EntryCommentDeleteInput",
-    definition(t) {
-        t.field(NexusPrisma.EntryComment.id);
-    },
-});
+                },
+            });
+        },
+    }),
+    updateEntryComment: t.prismaField({
+        type: "EntryComment",
+        args: {
+            id: t.arg.string({ required: true }),
+            text: t.arg.string({ required: true }),
+        },
+        resolve: async (query, root, args, ctx, info) => {
+            return await prisma.entryComment.update({
+                ...query,
+                where: {
+                    id: args.id,
+                },
+                data: {
+                    text: args.text,
+                },
+            });
+        },
+    }),
+    deleteEntryComment: t.prismaField({
+        type: "EntryComment",
+        args: {
+            id: t.arg.string({ required: true }),
+        },
+        resolve: async (query, root, args, ctx, info) => {
+            return await prisma.entryComment.delete({
+                ...query,
+                where: {
+                    id: args.id,
+                },
+            });
+        },
+    }),
+}));

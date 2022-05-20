@@ -1,263 +1,251 @@
-import {
-    arg,
-    extendType,
-    inputObjectType,
-    nonNull,
-    objectType,
-    stringArg,
-} from "nexus";
-import * as NexusPrisma from "nexus-prisma";
+import prisma from "../../prisma";
+import { builder } from "../builder";
 
-import { Context } from "../context";
-
-export const User = objectType({
-    name: NexusPrisma.User.$name,
-    description: NexusPrisma.User.$description,
-    definition(t) {
-        t.field(NexusPrisma.User.id);
-        t.field(NexusPrisma.User.email);
-        t.field(NexusPrisma.User.auth0Id);
-        t.field(NexusPrisma.User.code);
-        t.field(NexusPrisma.User.isActive);
-        t.field(NexusPrisma.User.isAdmin);
-        t.field(NexusPrisma.User.tenant);
-        t.field(NexusPrisma.User.name);
-        t.field(NexusPrisma.User.avatar);
-        // t.field(NexusPrisma.User.profile);
-        t.field(NexusPrisma.User.createdAt);
-        t.field(NexusPrisma.User.updatedAt);
-        t.field(NexusPrisma.User.department);
-        t.field(NexusPrisma.User.managees);
-        t.field(NexusPrisma.User.manager);
-        t.field(NexusPrisma.User.isPaymentManager);
-        t.field(NexusPrisma.User.isManager);
-        t.field(NexusPrisma.User.isSetup);
-    },
+builder.prismaObject("User", {
+    findUnique: (user) => ({ id: user.id }),
+    fields: (t) => ({
+        id: t.exposeID("id"),
+        createdAt: t.field({
+            type: "Date",
+            resolve: (user) => user.createdAt,
+        }),
+        updatedAt: t.field({
+            type: "Date",
+            resolve: (user) => user.updatedAt,
+        }),
+        name: t.string({
+            nullable: true,
+            resolve: (user) => user.name,
+        }),
+        email: t.string({
+            nullable: true,
+            resolve: (user) => user.email,
+        }),
+        authId: t.string({
+            nullable: true,
+            resolve: (user) => user.authId,
+        }),
+        tenant: t.relation("tenant"),
+        avatar: t.string({
+            nullable: true,
+            resolve: (user) => user.avatar,
+        }),
+        department: t.relation("department"),
+        isActive: t.exposeBoolean("isActive"),
+        isAdmin: t.exposeBoolean("isAdmin"),
+        isManager: t.exposeBoolean("isManager"),
+        isPaymentManager: t.exposeBoolean("isPaymentManager"),
+        isSetup: t.exposeBoolean("isSetup"),
+        manager: t.relation("manager"),
+        managees: t.relation("managees"),
+        code: t.string({
+            nullable: true,
+            resolve: (user) => user.code,
+        }),
+    }),
 });
 
-export const QueryUsers = extendType({
-    type: "Query",
-    definition(t) {
-        t.nonNull.list.nonNull.field("users", {
-            type: "User",
-            args: {
-                tenantId: nonNull(stringArg()),
-            },
-            resolve: (_parent, args, context: Context) => {
-                return context.prisma.user.findMany({
-                    where: {
-                        tenant: {
+builder.queryFields((t) => ({
+    users: t.prismaField({
+        type: ["User"],
+        args: {
+            tenantId: t.arg.string({ required: true }),
+        },
+        resolve: async (query, root, args, ctx, info) => {
+            return await prisma.user.findMany({
+                ...query,
+                where: {
+                    tenant: {
+                        id: args.tenantId,
+                    },
+                },
+            });
+        },
+    }),
+    user: t.prismaField({
+        type: "User",
+        args: {
+            id: t.arg.string({ required: true }),
+        },
+        resolve: async (query, root, args, ctx, info) => {
+            return await prisma.user.findUnique({
+                ...query,
+                rejectOnNotFound: true,
+                where: {
+                    id: args.id,
+                },
+            });
+        },
+    }),
+    userFromToken: t.prismaField({
+        type: "User",
+        args: {
+            token: t.arg.string({ required: true }),
+        },
+        resolve: async (query, root, args, ctx, info) => {
+            const user = await prisma.oneTimeToken.findUnique({
+                where: {
+                    id: args.token,
+                },
+                select: {
+                    user: true,
+                },
+            });
+            if (!user) {
+                throw new Error("Invalid token");
+            }
+            return user?.user;
+        },
+    }),
+    managers: t.prismaField({
+        type: ["User"],
+        args: {
+            tenantId: t.arg.string({ required: true }),
+        },
+        resolve: async (query, root, args, ctx, info) => {
+            return await prisma.user.findMany({
+                ...query,
+                where: {
+                    tenant: {
+                        id: args.tenantId,
+                    },
+                    isManager: true,
+                },
+            });
+        },
+    }),
+    userFromAuthId: t.prismaField({
+        type: "User",
+        args: {
+            authId: t.arg.string({ required: true }),
+        },
+        resolve: async (query, root, args, ctx, info) => {
+            return await prisma.user.findUnique({
+                ...query,
+                rejectOnNotFound: true,
+                where: {
+                    authId: args.authId,
+                },
+            });
+        },
+    }),
+}));
+
+builder.mutationFields((t) => ({
+    createUser: t.prismaField({
+        type: "User",
+        args: {
+            name: t.arg.string({ required: true }),
+            email: t.arg.string({ required: true }),
+            authId: t.arg.string({ required: true }),
+            tenantId: t.arg.string({ required: true }),
+            avatar: t.arg.string({ required: false }),
+            isActive: t.arg.boolean({ required: false }),
+            isAdmin: t.arg.boolean({ required: false }),
+            isManager: t.arg.boolean({ required: false }),
+            isPaymentManager: t.arg.boolean({ required: false }),
+            isSetup: t.arg.boolean({ required: false }),
+            managerId: t.arg.string({ required: false }),
+            departmentId: t.arg.string({ required: false }),
+            code: t.arg.string({ required: false }),
+        },
+        resolve: async (query, root, args, ctx, info) => {
+            const user = await prisma.user.create({
+                data: {
+                    isActive: args.isActive ?? undefined,
+                    isAdmin: args.isAdmin ?? undefined,
+                    isManager: args.isManager ?? undefined,
+                    isPaymentManager: args.isPaymentManager ?? undefined,
+                    isSetup: args.isSetup ?? undefined,
+                    name: args.name,
+                    email: args.email,
+                    authId: args.authId,
+                    avatar: args.avatar,
+                    department: {
+                        connect: { id: args.departmentId ?? undefined },
+                    },
+                    code: args.code,
+                    tenant: {
+                        connect: {
                             id: args.tenantId,
                         },
                     },
-                });
-            },
-        });
-        t.nonNull.list.nonNull.field("managers", {
-            type: "User",
-            args: {
-                tenantId: nonNull(stringArg()),
-            },
-            resolve: (_parent, args, context: Context) => {
-                return context.prisma.user.findMany({
-                    where: {
-                        isManager: true,
-                        tenant: {
+                },
+            });
+            return user;
+        },
+    }),
+    createUserBasic: t.prismaField({
+        type: "User",
+        args: {
+            name: t.arg.string({ required: true }),
+            email: t.arg.string({ required: true }),
+            authId: t.arg.string({ required: true }),
+            tenantId: t.arg.string({ required: true }),
+            avatar: t.arg.string({ required: false }),
+        },
+        resolve: async (query, root, args, ctx, info) => {
+            const user = await prisma.user.create({
+                data: {
+                    name: args.name,
+                    email: args.email,
+                    authId: args.authId,
+                    avatar: args.avatar,
+                    tenant: {
+                        connect: {
                             id: args.tenantId,
                         },
                     },
-                });
-            },
-        });
-        t.field("getUserFromToken", {
-            type: "User",
-            args: {
-                token: nonNull(arg(NexusPrisma.OneTimeToken.id)),
-            },
-            resolve: async (_parent, args, context: Context) => {
-                const user = await context.prisma.oneTimeToken.findUnique({
-                    where: {
-                        id: args.token,
-                    },
-                    select: {
-                        user: true,
-                    },
-                });
-                if (!user) {
-                    throw new Error("Invalid token");
-                }
-                return user?.user;
-            },
-        });
-        t.field("getUserFromAuth0", {
-            type: "User",
-            args: {
-                auth0Id: nonNull(arg(NexusPrisma.User.auth0Id)),
-            },
-            resolve: (_parent, args, context: Context) => {
-                return context.prisma.user.findUnique({
-                    where: {
-                        auth0Id: args.auth0Id,
-                    },
-                });
-            },
-        });
-        // t.field("getUserFromCode", {
-        //     type: "User",
-        //     args: {
-        //         code: nonNull(arg(NexusPrisma.User.code)),
-        //         tenantId: nonNull(stringArg()),
-        //     },
-        //     resolve: (_parent, args, context: Context) => {
-        //         return context.prisma.user.findUnique({
-        //             where: {
-        //                 code_tenantId: {
-        //                     code: args.code,
-        //                     tenantId: args.tenantId,
-        //                 },
-        //             },
-        //         });
-        //     },
-        // });
-    },
-});
+                },
+            });
+            return user;
+        },
+    }),
 
-export const MutateUsers = extendType({
-    type: "Mutation",
-    definition(t) {
-        t.field("attachAuth0Id", {
-            type: "User",
-            args: {
-                auth0Id: nonNull(arg(NexusPrisma.User.auth0Id)),
-                userId: nonNull(arg(NexusPrisma.User.id)),
-            },
-            resolve: async (_parent, args, context: Context) => {
-                await context.prisma.oneTimeToken.deleteMany({
-                    where: {
-                        user: {
-                            id: args.userId,
+    updateUser: t.prismaField({
+        type: "User",
+        args: {
+            id: t.arg.string({ required: true }),
+            name: t.arg.string({ required: false }),
+            email: t.arg.string({ required: false }),
+            authId: t.arg.string({ required: false }),
+            avatar: t.arg.string({ required: false }),
+            isActive: t.arg.boolean({ required: false }),
+            isAdmin: t.arg.boolean({ required: false }),
+            isManager: t.arg.boolean({ required: false }),
+            isPaymentManager: t.arg.boolean({ required: false }),
+            isSetup: t.arg.boolean({ required: false }),
+            managerId: t.arg.string({ required: false }),
+            departmentId: t.arg.string({ required: false }),
+            code: t.arg.string({ required: false }),
+        },
+        resolve: async (query, root, args, ctx, info) => {
+            const user = await prisma.user.update({
+                where: {
+                    id: args.id,
+                },
+                data: {
+                    isActive: args.isActive ?? undefined,
+                    isAdmin: args.isAdmin ?? undefined,
+                    isManager: args.isManager ?? undefined,
+                    isPaymentManager: args.isPaymentManager ?? undefined,
+                    isSetup: args.isSetup ?? undefined,
+                    name: args.name,
+                    email: args.email ?? undefined,
+                    authId: args.authId,
+                    avatar: args.avatar,
+                    department: {
+                        connect: { id: args.departmentId ?? undefined },
+                    },
+                    code: args.code,
+                    manager: {
+                        connect: {
+                            id: args.managerId ?? undefined,
                         },
                     },
-                });
-
-                return await context.prisma.user.update({
-                    where: {
-                        id: args.userId,
-                    },
-                    data: {
-                        auth0Id: args.auth0Id,
-                    },
-                });
-            },
-        });
-
-        t.field("createUserNew", {
-            type: "User",
-            args: {
-                // user: nonNull(arg({ type: UserCreateInput })),
-                tenantId: nonNull(stringArg()),
-                email: nonNull(stringArg()),
-                name: nonNull(stringArg()),
-                avatar: stringArg(),
-                auth0Id: nonNull(stringArg()),
-            },
-            resolve: async (
-                _parent,
-                { tenantId, name, email, auth0Id },
-                context: Context
-            ) => {
-                // const userExists = await context.prisma.user.findUnique({
-                //     where: {
-                //         code_tenantId: {
-                //             code: user.code,
-                //             tenantId: user.tenantId,
-                //         },
-                //     },
-                // });
-
-                // if (userExists) throw Error("Code already exists");
-
-                return context.prisma.user.create({
-                    data: {
-                        email,
-                        auth0Id,
-                        tenantId,
-                        isActive: true,
-                        isAdmin: true,
-                        name,
-                        isPaymentManager: true,
-                        isManager: true,
-                    },
-                });
-            },
-        });
-
-        t.field("updateUser", {
-            type: "User",
-            args: {
-                user: nonNull(arg({ type: UserUpdateInput })),
-            },
-            resolve: (_parent, { user }, context: Context) => {
-                return context.prisma.user.update({
-                    where: {
-                        id: user.id,
-                    },
-                    data: {
-                        email: user.email,
-                        code: user.code,
-                        isActive: user.isActive,
-                        isAdmin: user.isAdmin,
-                        department: {
-                            connect: {
-                                id: user.departmentId,
-                            },
-                        },
-                        manager: {
-                            connect: {
-                                id: user.managerId,
-                            },
-                        },
-                        isPaymentManager: user.isPaymentManager,
-                        isManager: user.isManager,
-                    },
-                });
-            },
-        });
-    },
-});
-
-export const UserCreateInput = inputObjectType({
-    name: "UserCreateInput",
-    description: "User Create Input",
-    definition(t) {
-        t.nonNull.field(NexusPrisma.User.code);
-        t.field(NexusPrisma.User.email);
-        t.nonNull.field(NexusPrisma.User.tenantId);
-        t.nonNull.field(NexusPrisma.User.auth0Id);
-        t.nonNull.field(NexusPrisma.User.isActive);
-        t.nonNull.field(NexusPrisma.User.isAdmin);
-        t.nonNull.field(NexusPrisma.User.departmentId);
-        t.nonNull.field(NexusPrisma.User.managerId);
-        t.nonNull.field(NexusPrisma.User.isPaymentManager);
-        t.nonNull.field(NexusPrisma.User.isManager);
-        t.field(NexusPrisma.User.name);
-        t.field(NexusPrisma.User.avatar);
-    },
-});
-
-export const UserUpdateInput = inputObjectType({
-    name: "UserUpdateInput",
-    description: "User Update Input",
-    definition(t) {
-        t.nonNull.field(NexusPrisma.User.id);
-        t.nonNull.field(NexusPrisma.User.code);
-        t.nonNull.field(NexusPrisma.User.auth0Id);
-        t.nonNull.field(NexusPrisma.User.email);
-        t.nonNull.field(NexusPrisma.User.isActive);
-        t.nonNull.field(NexusPrisma.User.isAdmin);
-        t.nonNull.field(NexusPrisma.User.departmentId);
-        t.nonNull.field(NexusPrisma.User.managerId);
-        t.nonNull.field(NexusPrisma.User.isPaymentManager);
-        t.nonNull.field(NexusPrisma.User.isManager);
-    },
-});
+                },
+            });
+            return user;
+        },
+    }),
+}));

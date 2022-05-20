@@ -1,29 +1,60 @@
-import { extendType, objectType } from "nexus";
-import * as NexusPrisma from "nexus-prisma";
+import prisma from "../../prisma";
+import { builder } from "../builder";
 
-export const Project = objectType({
-    name: NexusPrisma.Project.$name,
-    description: NexusPrisma.Project.$description,
-    definition(t) {
-        t.field(NexusPrisma.Project.id);
-        t.field(NexusPrisma.Project.name);
-        t.field(NexusPrisma.Project.createdAt);
-        t.field(NexusPrisma.Project.updatedAt);
-        t.field(NexusPrisma.Project.isActive);
-        t.field(NexusPrisma.Project.description);
-        t.field(NexusPrisma.Project.code);
-        t.field(NexusPrisma.Project.department);
-    },
+builder.prismaObject("Project", {
+    findUnique: (project) => ({ id: project.id }),
+    fields: (t) => ({
+        id: t.exposeID("id"),
+        createdAt: t.field({
+            type: "Date",
+            resolve: (project) => project.createdAt,
+        }),
+        updatedAt: t.field({
+            type: "Date",
+            resolve: (project) => project.updatedAt,
+        }),
+        name: t.exposeString("name"),
+        description: t.string({
+            nullable: true,
+            resolve: (project) => project.description,
+        }),
+        tenant: t.relation("tenant"),
+        code: t.exposeString("code"),
+        department: t.relation("department"),
+        isActive: t.exposeBoolean("isActive"),
+    }),
 });
 
-export const QueryProject = extendType({
-    type: "Query",
-    definition(t) {
-        t.nonNull.list.nonNull.field("projects", {
-            type: Project,
-            resolve: (_parent, _args, ctx) => {
-                return ctx.prisma.project.findMany();
-            },
-        });
-    },
-});
+builder.queryFields((t) => ({
+    projects: t.prismaField({
+        type: ["Project"],
+        args: {
+            tenantId: t.arg.string({ required: true }),
+        },
+        resolve: async (query, root, args, ctx, info) => {
+            return await prisma.project.findMany({
+                ...query,
+                where: {
+                    tenant: {
+                        id: args.tenantId,
+                    },
+                },
+            });
+        },
+    }),
+    project: t.prismaField({
+        type: "Project",
+        args: {
+            id: t.arg.string({ required: true }),
+        },
+        resolve: async (query, root, args, ctx, info) => {
+            return await prisma.project.findUnique({
+                ...query,
+                rejectOnNotFound: true,
+                where: {
+                    id: args.id,
+                },
+            });
+        },
+    }),
+}));

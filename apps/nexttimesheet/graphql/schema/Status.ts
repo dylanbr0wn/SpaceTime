@@ -1,4 +1,7 @@
-import { enumType } from "nexus";
-import * as NexusPrisma from "nexus-prisma";
+import { Status } from "@prisma/client";
 
-export const Status = enumType(NexusPrisma.Status);
+import { builder } from "../builder";
+
+builder.enumType(Status, {
+    name: "Status",
+});

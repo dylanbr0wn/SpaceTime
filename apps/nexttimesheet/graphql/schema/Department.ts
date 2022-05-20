@@ -1,29 +1,44 @@
-import { extendType, objectType } from "nexus";
-import * as NexusPrisma from "nexus-prisma";
+import prisma from "../../prisma";
+import { builder } from "../builder";
 
-export const Department = objectType({
-    name: NexusPrisma.Department.$name,
-    description: NexusPrisma.Department.$description,
-    definition(t) {
-        t.field(NexusPrisma.Department.id);
-        t.field(NexusPrisma.Department.name);
-        t.field(NexusPrisma.Department.createdAt);
-        t.field(NexusPrisma.Department.updatedAt);
-        t.field(NexusPrisma.Department.users);
-        t.field(NexusPrisma.Department.isActive);
-        t.field(NexusPrisma.Department.description);
-        t.field(NexusPrisma.Department.projects);
-    },
+builder.prismaObject("Department", {
+    findUnique: (department) => ({ id: department.id }),
+    fields: (t) => ({
+        id: t.exposeID("id"),
+        name: t.exposeString("name"),
+        createdAt: t.field({
+            type: "Date",
+            resolve: (department) => department.createdAt,
+        }),
+        tenant: t.relation("tenant"),
+        updatedAt: t.field({
+            type: "Date",
+            resolve: (department) => department.updatedAt,
+        }),
+        users: t.relation("users"),
+        description: t.string({
+            nullable: true,
+            resolve: (department) => department.description,
+        }),
+        projects: t.relation("projects"),
+    }),
 });
 
-export const QueryDepartment = extendType({
-    type: "Query",
-    definition(t) {
-        t.nonNull.list.nonNull.field("departments", {
-            type: Department,
-            resolve: (_parent, _args, ctx) => {
-                return ctx.prisma.department.findMany();
-            },
-        });
-    },
-});
+builder.queryFields((t) => ({
+    departments: t.prismaField({
+        type: ["Department"],
+        args: {
+            tenantId: t.arg.string({ required: true }),
+        },
+        resolve: async (query, root, args, ctx, info) => {
+            return await prisma.department.findMany({
+                ...query,
+                where: {
+                    tenant: {
+                        id: args.tenantId,
+                    },
+                },
+            });
+        },
+    }),
+}));

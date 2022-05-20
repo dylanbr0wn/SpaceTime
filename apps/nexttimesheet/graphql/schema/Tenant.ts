@@ -1,100 +1,116 @@
-import {
-    booleanArg,
-    extendType,
-    intArg,
-    nonNull,
-    objectType,
-    stringArg,
-} from "nexus";
-import * as NexusPrisma from "nexus-prisma";
+import prisma from "../../prisma";
+import { builder } from "../builder";
 
-export const Tenant = objectType({
-    name: NexusPrisma.Tenant.$name,
-    description: NexusPrisma.Tenant.$description,
-    definition(t) {
-        t.field(NexusPrisma.Tenant.id);
-        t.field(NexusPrisma.Tenant.createdAt);
-        t.field(NexusPrisma.Tenant.updatedAt);
-        t.field(NexusPrisma.Tenant.isActive);
-        t.field(NexusPrisma.Tenant.startDate);
-        t.field(NexusPrisma.Tenant.periodLength);
-        t.field(NexusPrisma.Tenant.name);
-        t.field(NexusPrisma.Tenant.description);
-        t.field(NexusPrisma.Tenant.logo);
-    },
+builder.prismaObject("Tenant", {
+    findUnique: (tenant) => ({ id: tenant.id }),
+    fields: (t) => ({
+        id: t.exposeID("id"),
+        createdAt: t.field({
+            type: "Date",
+            resolve: (tenant) => tenant.createdAt,
+        }),
+        updatedAt: t.field({
+            type: "Date",
+            resolve: (tenant) => tenant.updatedAt,
+        }),
+        name: t.exposeString("name"),
+        description: t.string({
+            nullable: true,
+            resolve: (tenant) => tenant.description,
+        }),
+        isActive: t.exposeBoolean("isActive"),
+        users: t.relation("users"),
+        startDate: t.field({
+            type: "Date",
+            resolve: (tenant) => tenant.startDate,
+        }),
+        periodLength: t.exposeInt("periodLength"),
+        logo: t.string({
+            nullable: true,
+            resolve: (tenant) => tenant.logo,
+        }),
+    }),
 });
 
-export const QueryTenant = extendType({
-    type: "Query",
-    definition(t) {
-        t.field("tenantFromId", {
-            type: Tenant,
-            args: {
-                tenantId: nonNull(stringArg()),
-            },
-            resolve: (_parent, args, ctx) => {
-                return ctx.prisma.tenant.findUnique({
-                    where: {
-                        id: args.tenantId,
-                    },
-                });
-            },
-        });
-    },
-});
+builder.queryFields((t) => ({
+    tenant: t.prismaField({
+        type: "Tenant",
+        args: {
+            id: t.arg.string({ required: true }),
+        },
+        resolve: async (query, root, args, ctx, info) => {
+            return await prisma.tenant.findUnique({
+                ...query,
+                rejectOnNotFound: true,
+                where: {
+                    id: args.id,
+                },
+            });
+        },
+    }),
+}));
 
-export const MutationTenant = extendType({
-    type: "Mutation",
-    definition(t) {
-        t.field("createTenant", {
-            type: Tenant,
-            args: {
-                name: nonNull(stringArg()),
-                description: nonNull(stringArg()),
-                logo: nonNull(stringArg()),
-                isActive: nonNull(booleanArg()),
-                startDate: nonNull(stringArg()),
-                periodLength: nonNull(intArg()),
-            },
-            resolve: (_parent, args, ctx) => {
-                return ctx.prisma.tenant.create({
-                    data: {
-                        name: args.name,
-                        description: args.description,
-                        logo: args.logo,
-                        isActive: args.isActive,
-                        startDate: args.startDate,
-                        periodLength: args.periodLength,
-                    },
-                });
-            },
-        });
-        // t.field("updateTenant", {
-        //     type: Tenant,
-        //     args: {
-        //         id: nonNull(stringArg()),
-        //         name: stringArg(),
-        //         description: stringArg(),
-        //         logo: stringArg(),
-        //         isActive: booleanArg(),
-        //         startDate: stringArg(),
-        //         periodLength: stringArg(),
-        //     },
-        //     resolve: (_parent, args, ctx) => {
-        //         return ctx.prisma.tenant.update({
-        //             where: {
-        //                 id: args.id,
-        //             },
-        //             data: {
-        //                 name: args.name,
-        //                 description: args.description,
-        //                 logo: args.logo,
-        //                 isActive: args.isActive,
-        //                 startDate: args.startDate,
-        //                 periodLength: args.periodLength,
-        //             },
-        //         });
-        //     },
-        // });
-    },
-});
+builder.mutationFields((t) => ({
+    createTenant: t.prismaField({
+        type: "Tenant",
+        args: {
+            name: t.arg.string({ required: true }),
+            description: t.arg.string(),
+            isActive: t.arg.boolean({ required: true }),
+            startDate: t.arg({
+                type: "Date",
+                required: true,
+            }),
+            periodLength: t.arg.int({ required: true }),
+            logo: t.arg.string(),
+        },
+        resolve: async (query, root, args, ctx, info) => {
+            return await prisma.tenant.create({
+                data: {
+                    ...args,
+                },
+            });
+        },
+    }),
+    updateTenant: t.prismaField({
+        type: "Tenant",
+        args: {
+            id: t.arg.string({ required: true }),
+            name: t.arg.string(),
+            description: t.arg.string(),
+            isActive: t.arg.boolean(),
+            periodLength: t.arg.int(),
+            logo: t.arg.string(),
+        },
+        resolve: async (query, root, args, ctx, info) => {
+            return await prisma.tenant.update({
+                ...query,
+                where: {
+                    id: args.id,
+                },
+                data: {
+                    name: args.name ?? undefined,
+                    description: args.description,
+                    isActive:
+                        args.isActive === null ? undefined : args.isActive,
+                    periodLength: args.periodLength ?? undefined,
+                    logo: args.logo,
+                },
+            });
+        },
+    }),
+    deleteTenant: t.prismaField({
+        type: "Tenant",
+        args: {
+            id: t.arg.string({ required: true }),
+        },
+        resolve: async (query, root, args, ctx, info) => {
+            return await prisma.tenant.delete({
+                ...query,
+                where: {
+                    id: args.id,
+                },
+            });
+        },
+    }),
+}));

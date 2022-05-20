@@ -1,74 +1,85 @@
-import { arg, extendType, nonNull, objectType, stringArg } from "nexus";
-import * as NexusPrisma from "nexus-prisma";
+import { EventType, Status } from "@prisma/client";
 
-import { EventType } from "./EventType";
-import { Status } from "./Status";
+import prisma from "../../prisma";
+import { builder } from "../builder";
 
-export const StatusEvent = objectType({
-    name: NexusPrisma.StatusEvent.$name,
-    description: NexusPrisma.StatusEvent.$description,
-    definition(t) {
-        t.field(NexusPrisma.StatusEvent.id);
-        t.field(NexusPrisma.StatusEvent.type);
-        t.field(NexusPrisma.StatusEvent.createdAt);
-        t.field(NexusPrisma.StatusEvent.status);
-        t.field(NexusPrisma.StatusEvent.user);
-        t.field(NexusPrisma.StatusEvent.message);
-    },
+builder.prismaObject("StatusEvent", {
+    findUnique: (statusEvent) => ({ id: statusEvent.id }),
+    fields: (t) => ({
+        id: t.exposeID("id"),
+        createdAt: t.field({
+            type: "Date",
+            resolve: (statusEvent) => statusEvent.createdAt,
+        }),
+        status: t.field({
+            type: Status,
+            resolve: (statusEvent) => statusEvent.status,
+        }),
+        user: t.relation("user"),
+        type: t.field({
+            type: EventType,
+            resolve: (statusEvent) => statusEvent.type,
+        }),
+        message: t.string({
+            nullable: true,
+            resolve: (statusEvent) => statusEvent.message,
+        }),
+    }),
 });
 
-export const QueryStatusEvent = extendType({
-    type: "Query",
-    definition(t) {
-        t.nonNull.list.nonNull.field("statusEvents", {
-            type: StatusEvent,
-            args: {
-                timesheetId: nonNull(stringArg()),
-            },
-            resolve: (_parent, args, ctx) => {
-                return ctx.prisma.statusEvent.findMany({
-                    where: {
-                        timesheetId: args.timesheetId,
-                    },
-                });
-            },
-        });
-    },
-});
-
-export const MutationStatusEvent = extendType({
-    type: "Mutation",
-    definition(t) {
-        t.field("createStatusEvent", {
-            type: StatusEvent,
-            args: {
-                timesheetId: nonNull(stringArg()),
-                status: nonNull(arg({ type: Status })),
-                message: nonNull(stringArg()),
-                userId: nonNull(stringArg()),
-                type: nonNull(arg({ type: EventType })),
-            },
-            resolve: async (_parent, args, ctx) => {
-                await ctx.prisma.timesheet.update({
-                    where: {
+builder.queryFields((t) => ({
+    statusEvents: t.prismaField({
+        type: ["StatusEvent"],
+        args: {
+            timesheetId: t.arg.string({ required: true }),
+        },
+        resolve: async (query, root, args, ctx, info) => {
+            return await prisma.statusEvent.findMany({
+                ...query,
+                where: {
+                    timesheet: {
                         id: args.timesheetId,
                     },
-                    data: {
-                        status: args.status,
-                        isChanged: false,
-                    },
-                });
+                },
+            });
+        },
+    }),
+}));
 
-                return await ctx.prisma.statusEvent.create({
-                    data: {
-                        timesheetId: args.timesheetId,
-                        status: args.status,
-                        message: args.message,
-                        userId: args.userId,
-                        type: args.type,
+builder.mutationFields((t) => ({
+    createStatusEvent: t.prismaField({
+        type: "StatusEvent",
+        args: {
+            timesheetId: t.arg.string({ required: true }),
+            status: t.arg({
+                type: Status,
+                required: true,
+            }),
+            message: t.arg.string({ required: false }),
+            userId: t.arg.string({ required: true }),
+            type: t.arg({
+                type: EventType,
+                required: true,
+            }),
+        },
+        resolve: async (query, root, args, ctx, info) => {
+            return await prisma.statusEvent.create({
+                data: {
+                    timesheet: {
+                        connect: {
+                            id: args.timesheetId,
+                        },
                     },
-                });
-            },
-        });
-    },
-});
+                    status: args.status,
+                    message: args.message,
+                    user: {
+                        connect: {
+                            id: args.userId,
+                        },
+                    },
+                    type: args.type,
+                },
+            });
+        },
+    }),
+}));

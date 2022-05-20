@@ -1,86 +1,79 @@
-import { extendType, nonNull, objectType, stringArg } from "nexus";
-import * as NexusPrisma from "nexus-prisma";
+import prisma from "../../prisma";
+import { builder } from "../builder";
 
-import { Context } from "../context";
-
-export const OneTimeToken = objectType({
-    name: NexusPrisma.OneTimeToken.$name,
-    description: NexusPrisma.OneTimeToken.$description,
-    definition(t) {
-        t.field(NexusPrisma.OneTimeToken.id);
-        t.field(NexusPrisma.OneTimeToken.user);
-        t.field(NexusPrisma.OneTimeToken.tenant);
-        t.field(NexusPrisma.OneTimeToken.createdAt);
-        t.field(NexusPrisma.OneTimeToken.updatedAt);
-    },
+builder.prismaObject("OneTimeToken", {
+    findUnique: (token) => ({ id: token.id }),
+    fields: (t) => ({
+        id: t.exposeID("id"),
+        createdAt: t.field({
+            type: "Date",
+            resolve: (token) => token.createdAt,
+        }),
+        updatedAt: t.field({
+            type: "Date",
+            resolve: (token) => token.updatedAt,
+        }),
+        user: t.relation("user"),
+        tenant: t.relation("tenant"),
+    }),
 });
 
-export const QueryOneTimeToken = extendType({
-    type: "Query",
-    definition(t) {
-        t.field("getOneTimeToken", {
-            type: OneTimeToken,
-            args: {
-                id: nonNull(stringArg()),
-            },
-            resolve: (_parent, { id }, context: Context) => {
-                return context.prisma.oneTimeToken.findUnique({
-                    where: {
-                        id,
+builder.queryFields((t) => ({
+    oneTimeTokens: t.prismaField({
+        type: ["OneTimeToken"],
+        args: {
+            tenantId: t.arg.string({ required: true }),
+        },
+        resolve: async (query, root, args, ctx, info) => {
+            return await prisma.oneTimeToken.findMany({
+                ...query,
+                where: {
+                    tenant: {
+                        id: args.tenantId,
                     },
-                    include: {
-                        user: true,
-                        tenant: true,
-                    },
-                });
-            },
-        });
-        t.nonNull.list.nonNull.field("getOneTimeTokens", {
-            type: OneTimeToken,
-            args: {
-                tenantId: nonNull(stringArg()),
-            },
-            resolve: (_parent, { tenantId }, context: Context) => {
-                return context.prisma.oneTimeToken.findMany({
-                    where: {
-                        tenant: {
-                            id: tenantId,
-                        },
-                    },
-                    include: {
-                        user: true,
-                    },
-                });
-            },
-        });
-    },
-});
+                },
+            });
+        },
+    }),
+    oneTimeToken: t.prismaField({
+        type: "OneTimeToken",
+        args: {
+            id: t.arg.string({ required: true }),
+        },
+        resolve: async (query, root, args, ctx, info) => {
+            return await prisma.oneTimeToken.findUnique({
+                ...query,
+                rejectOnNotFound: true,
+                where: {
+                    id: args.id,
+                },
+            });
+        },
+    }),
+}));
 
-export const MutationOneTimeToken = extendType({
-    type: "Mutation",
-    definition(t) {
-        t.field("createOneTimeToken", {
-            type: OneTimeToken,
-            args: {
-                userId: nonNull(stringArg()),
-                tenantId: nonNull(stringArg()),
-            },
-            resolve: (_parent, { userId, tenantId }, context: Context) => {
-                return context.prisma.oneTimeToken.create({
-                    data: {
-                        user: {
-                            connect: {
-                                id: userId,
-                            },
-                        },
-                        tenant: {
-                            connect: {
-                                id: tenantId,
-                            },
+builder.mutationFields((t) => ({
+    createOneTimeToken: t.prismaField({
+        type: "OneTimeToken",
+        args: {
+            userId: t.arg.string({ required: true }),
+            tenantId: t.arg.string({ required: true }),
+        },
+        resolve: async (query, root, args, ctx, info) => {
+            return await prisma.oneTimeToken.create({
+                data: {
+                    user: {
+                        connect: {
+                            id: args.userId,
                         },
                     },
-                });
-            },
-        });
-    },
-});
+                    tenant: {
+                        connect: {
+                            id: args.tenantId,
+                        },
+                    },
+                },
+            });
+        },
+    }),
+}));

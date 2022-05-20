@@ -1,13 +1,20 @@
-import { objectType } from "nexus";
-import * as NexusPrisma from "nexus-prisma";
+import { builder } from "../builder";
 
-export const Period = objectType({
-    name: NexusPrisma.Period.$name,
-    description: NexusPrisma.Period.$description,
-    definition(t) {
-        t.field(NexusPrisma.Period.id);
-        t.field(NexusPrisma.Period.createdAt);
-        t.field(NexusPrisma.Period.startDate);
-        t.field(NexusPrisma.Period.endDate);
-    },
+builder.prismaObject("Period", {
+    findUnique: (period) => ({ id: period.id }),
+    fields: (t) => ({
+        id: t.exposeID("id"),
+        createdAt: t.field({
+            type: "Date",
+            resolve: (period) => period.createdAt,
+        }),
+        startDate: t.field({
+            type: "Date",
+            resolve: (period) => period.startDate,
+        }),
+        endDate: t.field({
+            type: "Date",
+            resolve: (period) => period.endDate,
+        }),
+    }),
 });

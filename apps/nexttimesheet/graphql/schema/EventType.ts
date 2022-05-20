@@ -1,4 +1,7 @@
-import { enumType } from "nexus";
-import * as NexusPrisma from "nexus-prisma";
+import { EventType } from "@prisma/client";
 
-export const EventType = enumType(NexusPrisma.EventType);
+import { builder } from "../builder";
+
+builder.enumType(EventType, {
+    name: "EventType",
+});

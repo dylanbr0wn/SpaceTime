@@ -1,185 +1,163 @@
-import {
-    arg,
-    extendType,
-    inputObjectType,
-    nonNull,
-    objectType,
-    stringArg,
-} from "nexus";
-import * as NexusPrisma from "nexus-prisma";
+import prisma from "../../prisma";
+import { builder } from "../builder";
 
-import { Context } from "../context";
-
-export const TimeEntryRow = objectType({
-    name: NexusPrisma.TimeEntryRow.$name,
-    description: NexusPrisma.TimeEntryRow.$description,
-    definition(t) {
-        t.field(NexusPrisma.TimeEntryRow.id);
-        t.field(NexusPrisma.TimeEntryRow.createdAt);
-        t.field(NexusPrisma.TimeEntryRow.updatedAt);
-        t.field(NexusPrisma.TimeEntryRow.workType);
-        t.field(NexusPrisma.TimeEntryRow.project);
-        t.field(NexusPrisma.TimeEntryRow.department);
-        t.field(NexusPrisma.TimeEntryRow.timeEntries);
-    },
+builder.prismaObject("TimeEntryRow", {
+    findUnique: (timeEntryRow) => ({ id: timeEntryRow.id }),
+    fields: (t) => ({
+        id: t.exposeID("id"),
+        createdAt: t.field({
+            type: "Date",
+            resolve: (timeEntryRow) => timeEntryRow.createdAt,
+        }),
+        updatedAt: t.field({
+            type: "Date",
+            resolve: (timeEntryRow) => timeEntryRow.updatedAt,
+        }),
+        timeEntries: t.relation("timeEntries"),
+        department: t.relation("department"),
+        project: t.relation("project"),
+        workType: t.relation("workType"),
+    }),
 });
 
-export const QueryTimeEntryRow = extendType({
-    type: "Query",
-    definition(t) {
-        t.field("getTimeEntryRow", {
-            type: "TimeEntryRow",
-            args: {
-                id: nonNull(stringArg()),
-            },
-            resolve: (_parent, { id }, context: Context) => {
-                return context.prisma.timeEntryRow.findUnique({
-                    where: {
-                        id,
+builder.queryFields((t) => ({
+    timeEntryRows: t.prismaField({
+        type: ["TimeEntryRow"],
+        args: {
+            timesheetId: t.arg.string({ required: true }),
+        },
+        resolve: async (query, root, args, ctx, info) => {
+            return await prisma.timeEntryRow.findMany({
+                ...query,
+                where: {
+                    timesheet: {
+                        id: args.timesheetId,
                     },
-                    include: {
-                        timeEntries: true,
-                    },
-                });
-            },
-        });
-        t.nonNull.list.nonNull.field("getTimeEntryRows", {
-            type: "TimeEntryRow",
-            args: {
-                timesheetId: nonNull(stringArg()),
-            },
-            resolve: (_parent, { timesheetId }, context: Context) => {
-                return context.prisma.timeEntryRow.findMany({
-                    where: {
-                        timesheetId,
-                    },
-                    include: {
-                        timeEntries: true,
-                    },
-                });
-            },
-        });
-    },
-});
+                },
+            });
+        },
+    }),
+    timeEntryRow: t.prismaField({
+        type: "TimeEntryRow",
+        args: {
+            id: t.arg.string({ required: true }),
+        },
+        resolve: async (query, root, args, ctx, info) => {
+            return await prisma.timeEntryRow.findUnique({
+                ...query,
+                rejectOnNotFound: true,
+                where: {
+                    id: args.id,
+                },
+            });
+        },
+    }),
+}));
 
-export const MutateTimeEntryRow = extendType({
-    type: "Mutation",
-    definition(t) {
-        t.field("createTimeEntryRow", {
-            type: "TimeEntryRow",
-            args: {
-                timesheetId: nonNull(stringArg()),
-                departmentId: stringArg(),
-                projectId: stringArg(),
-                workTypeId: stringArg(),
-            },
-            resolve: (_parent, args, ctx: Context) => {
-                return ctx.prisma.timeEntryRow.create({
-                    data: {
-                        timesheetId: args.timesheetId,
-                        departmentId: args.departmentId ?? undefined,
-                        projectId: args.projectId ?? undefined,
-                        workTypeId: args.workTypeId ?? undefined,
+builder.mutationFields((t) => ({
+    createTimeEntryRow: t.prismaField({
+        type: "TimeEntryRow",
+        args: {
+            departmentId: t.arg.string(),
+            projectId: t.arg.string(),
+            workTypeId: t.arg.string(),
+            timesheetId: t.arg.string({ required: true }),
+        },
+        resolve: async (query, root, args, ctx, info) => {
+            return await prisma.timeEntryRow.create({
+                data: {
+                    department: {
+                        connect: {
+                            id: args.departmentId ?? undefined,
+                        },
                     },
-                });
-            },
-        });
-        t.field("updateTimeEntryRow", {
-            type: "TimeEntryRow",
-            args: {
-                id: nonNull(stringArg()),
-                departmentId: stringArg(),
-                projectId: stringArg(),
-                workTypeId: stringArg(),
-            },
-            resolve: (_parent, args, ctx: Context) => {
-                return ctx.prisma.timeEntryRow.update({
-                    where: { id: args.id },
-                    data: {
-                        workTypeId:
-                            args.workTypeId === "-1"
-                                ? null
-                                : args.workTypeId ?? undefined,
-                        projectId:
-                            args.projectId === "-1"
-                                ? null
-                                : args.projectId ?? undefined,
-                        departmentId:
-                            args.departmentId === "-1"
-                                ? null
-                                : args.departmentId ?? undefined,
+                    project: {
+                        connect: {
+                            id: args.projectId ?? undefined,
+                        },
                     },
-                });
-            },
-        });
-        t.field("deleteTimeEntryRow", {
-            type: "TimeEntryRow",
-            args: {
-                TimeEntryRow: nonNull(
-                    arg({
-                        type: TimeEntryRowDeleteInput,
-                    })
-                ),
-            },
-            resolve: async (_parent, { TimeEntryRow }, ctx: Context) => {
-                const entries = await ctx.prisma.timeEntry.findMany({
-                    where: { timeEntryRowId: TimeEntryRow.id },
-                    select: {
-                        entryComments: true,
+                    workType: {
+                        connect: {
+                            id: args.workTypeId ?? undefined,
+                        },
                     },
-                });
-
-                await Promise.all(
-                    entries.map(async (entry) => {
-                        return await Promise.all(
-                            entry.entryComments.map(async (entryComment) => {
-                                await ctx.prisma.entryComment.delete({
-                                    where: {
-                                        id: entryComment.id,
-                                    },
-                                });
-                            })
-                        );
-                    })
-                );
-
-                await ctx.prisma.timeEntry.deleteMany({
-                    where: { timeEntryRowId: TimeEntryRow.id },
-                });
-
-                return await ctx.prisma.timeEntryRow.delete({
-                    where: {
-                        id: TimeEntryRow.id,
+                    timesheet: {
+                        connect: {
+                            id: args.timesheetId,
+                        },
                     },
-                });
-            },
-        });
-    },
-});
+                },
+            });
+        },
+    }),
+    updateTimeEntryRow: t.prismaField({
+        type: "TimeEntryRow",
+        args: {
+            id: t.arg.string({ required: true }),
+            departmentId: t.arg.string(),
+            projectId: t.arg.string(),
+            workTypeId: t.arg.string(),
+        },
+        resolve: async (query, root, args, ctx, info) => {
+            return await prisma.timeEntryRow.update({
+                where: {
+                    id: args.id,
+                },
+                data: {
+                    department: {
+                        connect: {
+                            id: args.departmentId ?? undefined,
+                        },
+                    },
+                    project: {
+                        connect: {
+                            id: args.projectId ?? undefined,
+                        },
+                    },
+                    workType: {
+                        connect: {
+                            id: args.workTypeId ?? undefined,
+                        },
+                    },
+                },
+            });
+        },
+    }),
+    deleteTimeEntryRow: t.prismaField({
+        type: "TimeEntryRow",
+        args: {
+            id: t.arg.string({ required: true }),
+        },
+        resolve: async (query, root, args, ctx, info) => {
+            const entries = await prisma.timeEntry.findMany({
+                where: { timeEntryRowId: args.id },
+                select: {
+                    entryComments: true,
+                },
+            });
 
-// export const TimeEntryRowCreateInput = inputObjectType({
-//     name: "TimeEntryRowCreateInput",
-//     definition(t) {
-//         t.field(NexusPrisma.TimeEntryRow.departmentId);
-//         t.field(NexusPrisma.TimeEntryRow.timesheetId);
-//         t.field(NexusPrisma.TimeEntryRow.workTypeId);
-//         t.field(NexusPrisma.TimeEntryRow.projectId);
-//     },
-// });
+            await Promise.all(
+                entries.map(async (entry) => {
+                    return await Promise.all(
+                        entry.entryComments.map(async (entryComment) => {
+                            await prisma.entryComment.delete({
+                                where: {
+                                    id: entryComment.id,
+                                },
+                            });
+                        })
+                    );
+                })
+            );
 
-export const TimeEntryRowUpdateInput = inputObjectType({
-    name: "TimeEntryRowUpdateInput",
-    definition(t) {
-        t.field(NexusPrisma.TimeEntryRow.id);
-        t.field(NexusPrisma.TimeEntryRow.departmentId);
-        t.field(NexusPrisma.TimeEntryRow.workTypeId);
-        t.field(NexusPrisma.TimeEntryRow.projectId);
-    },
-});
-
-export const TimeEntryRowDeleteInput = inputObjectType({
-    name: "TimeEntryRowDeleteInput",
-    definition(t) {
-        t.field(NexusPrisma.TimeEntryRow.id);
-    },
-});
+            await prisma.timeEntry.deleteMany({
+                where: { timeEntryRowId: args.id },
+            });
+            return await prisma.timeEntryRow.delete({
+                where: {
+                    id: args.id,
+                },
+            });
+        },
+    }),
+}));

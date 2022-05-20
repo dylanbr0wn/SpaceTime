@@ -6,8 +6,10 @@ generator client {
   previewFeatures = ["referentialIntegrity"]
 }
 
-generator nexusPrisma {
-  provider = "nexus-prisma"
+generator pothos {
+  provider = "prisma-pothos-types"
+  clientOutput = "@prisma/client"
+  output = "../graphql/pothos-types.ts"
 }
 
 datasource db {
@@ -31,7 +33,7 @@ datasource db {
 model User {
   id               String         @id @default(cuid())
   email            String
-  auth0Id          String?        @unique
+  authId            String?        @unique
   code             String?
   isAdmin          Boolean        @default(false)
   isActive         Boolean        @default(true)
@@ -82,10 +84,14 @@ model Department {
   name          String         @db.VarChar(255)
   isActive      Boolean        @default(false)
   description   String?        @db.Text
+  tenant       Tenant        @relation(fields: [tenantId], references: [id])
+  tenantId     String
   pinnedRows    PinnedRow[]
   projects      Project[]
   users         User[]
   timeEntryRows TimeEntryRow[]
+
+  @@index([tenantId])
 }
 
 model WorkType {
@@ -100,8 +106,12 @@ model WorkType {
   multiplier    Float          @default(1.0)
   description   String?        @db.Text
   isSystem      Boolean        @default(false)
+  tenant       Tenant        @relation(fields: [tenantId], references: [id])
+  tenantId     String
   pinnedRows    PinnedRow[]
   timeEntryRows TimeEntryRow[]
+
+  @@index([tenantId])
 }
 
 model Project {
@@ -114,10 +124,12 @@ model Project {
   department    Department     @relation(fields: [departmentId], references: [id])
   departmentId  String
   code          String         @db.VarChar(255)
+  tenant       Tenant        @relation(fields: [tenantId], references: [id])
+  tenantId     String
   timeEntryRows TimeEntryRow[]
   pinnedRows    PinnedRow[]
 
-  @@index([departmentId])
+  @@index([departmentId, tenantId])
 }
 
 model TimeEntryRow {
@@ -216,6 +228,9 @@ model Tenant {
   name         String         @db.Text
   description  String?        @db.Text
   logo         String?        @db.Text
+  departments  Department[]
+  projects    Project[]
+  workTypes    WorkType[]
   oneTimeToken OneTimeToken[]
 }
 

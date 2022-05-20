@@ -1,29 +1,32 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import { ApolloServer } from "apollo-server-micro";
 import Cors from "micro-cors";
-import type { NextApiHandler, NextApiRequest, NextApiResponse } from "next";
+import type { NextApiHandler } from "next";
 import { getSession } from "next-auth/react";
 
-import { schema } from "../../graphql";
-import { createPrismaContext } from "../../graphql/context";
+// import { createPrismaContext } from "../../graphql/context";
+import { schema } from "../../graphql/schema";
 
-const cors = Cors({ origin: "http://localhost:3000", allowCredentials: true });
+const cors = Cors({
+    // origin: "http://localhost:3000",
+    // allowCredentials: true
+});
 
 const server = new ApolloServer({
-    context: createPrismaContext,
+    // context: createPrismaContext,
     schema: schema,
 });
 
 const startServer = server.start();
 
 const handler: NextApiHandler = cors(async (req, res) => {
-    const session = await getSession({ req });
-    if (!session) {
-        res.statusCode = 401;
-        res.statusMessage = "Unauthorized";
-        res.end();
-        return false;
-    }
+    // const session = await getSession({ req });
+    // if (!session) {
+    //     res.statusCode = 401;
+    //     res.statusMessage = "Unauthorized";
+    //     res.end();
+    //     return false;
+    // }
     if (req.method === "OPTIONS") {
         res.end();
         return false;
