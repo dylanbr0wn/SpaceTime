@@ -23,7 +23,7 @@ import {
 
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
     const session = await getSession(ctx);
-    
+
     if (!session) {
         return {
             redirect: {
@@ -44,6 +44,14 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
             auth0Id: String(user?.sub),
         },
     });
+    if (!userData?.getUserFromAuth0) {
+        return {
+            redirect: {
+                destination: "/auth/register",
+                permanent: false,
+            },
+        };
+    }
 
     return {
         props: {

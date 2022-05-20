@@ -51,6 +51,7 @@ type Mutation {
   createEntryComment(entryComment: EntryCommentCreateInput!): EntryComment
   createOneTimeToken(tenantId: String!, userId: String!): OneTimeToken
   createStatusEvent(message: String!, status: Status!, timesheetId: String!, type: EventType!, userId: String!): StatusEvent
+  createTenant(description: String!, isActive: Boolean!, logo: String!, name: String!, periodLength: Int!, startDate: String!): Tenant
   createTimeEntry(date: String!, hours: Int!, index: Int!, timeEntryRowId: String!): TimeEntry
   createTimeEntryRow(departmentId: String, projectId: String, timesheetId: String!, workTypeId: String): TimeEntryRow
   createUser(user: UserCreateInput!): User
@@ -194,9 +195,9 @@ input TimesheetGetInput {
 type User {
   auth0Id: String
   avatar: String
-  code: String!
+  code: String
   createdAt: DateTime!
-  department: Department!
+  department: Department
   email: String!
   id: ID!
   isActive: Boolean!
@@ -207,7 +208,7 @@ type User {
   managees: [User!]!
   manager: User
   name: String
-  tenant: Tenant!
+  tenant: Tenant
   updatedAt: DateTime!
 }
 

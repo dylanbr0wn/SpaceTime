@@ -102,23 +102,23 @@ export const QueryUsers = extendType({
                 });
             },
         });
-        t.field("getUserFromCode", {
-            type: "User",
-            args: {
-                code: nonNull(arg(NexusPrisma.User.code)),
-                tenantId: nonNull(stringArg()),
-            },
-            resolve: (_parent, args, context: Context) => {
-                return context.prisma.user.findUnique({
-                    where: {
-                        code_tenantId: {
-                            code: args.code,
-                            tenantId: args.tenantId,
-                        },
-                    },
-                });
-            },
-        });
+        // t.field("getUserFromCode", {
+        //     type: "User",
+        //     args: {
+        //         code: nonNull(arg(NexusPrisma.User.code)),
+        //         tenantId: nonNull(stringArg()),
+        //     },
+        //     resolve: (_parent, args, context: Context) => {
+        //         return context.prisma.user.findUnique({
+        //             where: {
+        //                 code_tenantId: {
+        //                     code: args.code,
+        //                     tenantId: args.tenantId,
+        //                 },
+        //             },
+        //         });
+        //     },
+        // });
     },
 });
 
@@ -151,48 +151,42 @@ export const MutateUsers = extendType({
             },
         });
 
-        t.field("createUser", {
+        t.field("createUserNew", {
             type: "User",
             args: {
-                user: nonNull(arg({ type: UserCreateInput })),
+                // user: nonNull(arg({ type: UserCreateInput })),
+                tenantId: nonNull(stringArg()),
+                email: nonNull(stringArg()),
+                name: nonNull(stringArg()),
+                avatar: stringArg(),
+                auth0Id: nonNull(stringArg()),
             },
-            resolve: async (_parent, { user }, context: Context) => {
-                const userExists = await context.prisma.user.findUnique({
-                    where: {
-                        code_tenantId: {
-                            code: user.code,
-                            tenantId: user.tenantId,
-                        },
-                    },
-                });
+            resolve: async (
+                _parent,
+                { tenantId, name, email, auth0Id },
+                context: Context
+            ) => {
+                // const userExists = await context.prisma.user.findUnique({
+                //     where: {
+                //         code_tenantId: {
+                //             code: user.code,
+                //             tenantId: user.tenantId,
+                //         },
+                //     },
+                // });
 
-                if (userExists) throw Error("Code already exists");
+                // if (userExists) throw Error("Code already exists");
 
                 return context.prisma.user.create({
                     data: {
-                        email: user.email,
-                        auth0Id: user.auth0Id,
-                        tenant: {
-                            connect: {
-                                id: user.tenantId,
-                            },
-                        },
-                        code: user.code,
-                        isActive: user.isActive,
-                        isAdmin: user.isAdmin,
-                        name: user.name,
-                        department: {
-                            connect: {
-                                id: user.departmentId,
-                            },
-                        },
-                        manager: {
-                            connect: {
-                                id: user.managerId,
-                            },
-                        },
-                        isPaymentManager: user.isPaymentManager,
-                        isManager: user.isManager,
+                        email,
+                        auth0Id,
+                        tenantId,
+                        isActive: true,
+                        isAdmin: true,
+                        name,
+                        isPaymentManager: true,
+                        isManager: true,
                     },
                 });
             },

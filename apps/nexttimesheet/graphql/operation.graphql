@@ -270,6 +270,7 @@ mutation DeleteTimeEntryRow($timeEntryRow: TimeEntryRowDeleteInput!) {
 query getUserFromToken($token: ID!) {
     getUserFromToken(token: $token) {
         id
+        name
         tenant {
             name
             description
@@ -502,5 +503,18 @@ mutation UpdateTimesheetChanged($timesheetId: String!, $changed: Boolean!){
         id
         updatedAt
         isChanged
+    }
+}
+
+mutation CreateTenant($name: String!, $description: String!, $logo: String!, $isActive: Boolean!, $startDate:String!, $periodLength:Int! ){
+    createTenant(name: $name, description: $description, logo: $logo, isActive: $isActive, startDate: $startDate, periodLength: $periodLength) {
+        id
+        name
+        description
+        startDate
+        periodLength
+        isActive
+        updatedAt
+        createdAt
     }
 }

@@ -1,4 +1,11 @@
-import { extendType, nonNull, objectType, stringArg } from "nexus";
+import {
+    booleanArg,
+    extendType,
+    intArg,
+    nonNull,
+    objectType,
+    stringArg,
+} from "nexus";
 import * as NexusPrisma from "nexus-prisma";
 
 export const Tenant = objectType({
@@ -33,5 +40,61 @@ export const QueryTenant = extendType({
                 });
             },
         });
+    },
+});
+
+export const MutationTenant = extendType({
+    type: "Mutation",
+    definition(t) {
+        t.field("createTenant", {
+            type: Tenant,
+            args: {
+                name: nonNull(stringArg()),
+                description: nonNull(stringArg()),
+                logo: nonNull(stringArg()),
+                isActive: nonNull(booleanArg()),
+                startDate: nonNull(stringArg()),
+                periodLength: nonNull(intArg()),
+            },
+            resolve: (_parent, args, ctx) => {
+                return ctx.prisma.tenant.create({
+                    data: {
+                        name: args.name,
+                        description: args.description,
+                        logo: args.logo,
+                        isActive: args.isActive,
+                        startDate: args.startDate,
+                        periodLength: args.periodLength,
+                    },
+                });
+            },
+        });
+        // t.field("updateTenant", {
+        //     type: Tenant,
+        //     args: {
+        //         id: nonNull(stringArg()),
+        //         name: stringArg(),
+        //         description: stringArg(),
+        //         logo: stringArg(),
+        //         isActive: booleanArg(),
+        //         startDate: stringArg(),
+        //         periodLength: stringArg(),
+        //     },
+        //     resolve: (_parent, args, ctx) => {
+        //         return ctx.prisma.tenant.update({
+        //             where: {
+        //                 id: args.id,
+        //             },
+        //             data: {
+        //                 name: args.name,
+        //                 description: args.description,
+        //                 logo: args.logo,
+        //                 isActive: args.isActive,
+        //                 startDate: args.startDate,
+        //                 periodLength: args.periodLength,
+        //             },
+        //         });
+        //     },
+        // });
     },
 });

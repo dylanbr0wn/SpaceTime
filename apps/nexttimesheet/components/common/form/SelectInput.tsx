@@ -37,7 +37,7 @@ const SelectInput = ({
                     }}
                 >
                     {({ open }) => (
-                        <div className="relative mt-1 w-full">
+                        <div className="relative w-full z-50">
                             <Listbox.Button
                                 className={`relative w-full cursor-default outline outline-offset-2 text-sm rounded-lg bg-base-100 text-base-content border border-base-content/20 px-4 flex h-12 justify-between ${
                                     open

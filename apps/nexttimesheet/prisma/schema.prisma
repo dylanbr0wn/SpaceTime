@@ -32,7 +32,7 @@ model User {
   id               String         @id @default(cuid())
   email            String
   auth0Id          String?        @unique
-  code             String
+  code             String?
   isAdmin          Boolean        @default(false)
   isActive         Boolean        @default(true)
   isManager        Boolean        @default(false)
@@ -42,20 +42,20 @@ model User {
   managerId        String?
   manager          User?          @relation("management", fields: [managerId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   managees         User[]         @relation("management")
-  department       Department     @relation(fields: [departmentId], references: [id])
-  departmentId     String
+  department       Department?     @relation(fields: [departmentId], references: [id])
+  departmentId     String?
   createdAt        DateTime       @default(now())
   updatedAt        DateTime       @updatedAt
   pinnedRows       PinnedRow[]
   entryComments    EntryComment[]
   timesheets       Timesheet[]
-  tenant           Tenant         @relation(fields: [tenantId], references: [id])
-  tenantId         String
+  tenant           Tenant?         @relation(fields: [tenantId], references: [id])
+  tenantId         String?
   isSetup          Boolean        @default(false)
   oneTimeToken     OneTimeToken[]
   statusEvents     StatusEvent[]
 
-  @@unique([code, tenantId])
+ // @@unique([code, tenantId])
   @@index([departmentId, managerId, tenantId])
 }
 

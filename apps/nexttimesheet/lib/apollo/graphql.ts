@@ -64,6 +64,7 @@ export type Mutation = {
   createEntryComment?: Maybe<EntryComment>;
   createOneTimeToken?: Maybe<OneTimeToken>;
   createStatusEvent?: Maybe<StatusEvent>;
+  createTenant?: Maybe<Tenant>;
   createTimeEntry?: Maybe<TimeEntry>;
   createTimeEntryRow?: Maybe<TimeEntryRow>;
   createUser?: Maybe<User>;
@@ -101,6 +102,16 @@ export type MutationCreateStatusEventArgs = {
   timesheetId: Scalars['String'];
   type: EventType;
   userId: Scalars['String'];
+};
+
+
+export type MutationCreateTenantArgs = {
+  description: Scalars['String'];
+  isActive: Scalars['Boolean'];
+  logo: Scalars['String'];
+  name: Scalars['String'];
+  periodLength: Scalars['Int'];
+  startDate: Scalars['String'];
 };
 
 
@@ -596,7 +607,7 @@ export type GetUserFromTokenQueryVariables = Exact<{
 }>;
 
 
-export type GetUserFromTokenQuery = { __typename?: 'Query', getUserFromToken?: { __typename?: 'User', id: string, tenant: { __typename?: 'Tenant', name: string, description?: string | null, logo?: string | null, isActive: boolean, updatedAt: any, createdAt: any } } | null };
+export type GetUserFromTokenQuery = { __typename?: 'Query', getUserFromToken?: { __typename?: 'User', id: string, name?: string | null, tenant: { __typename?: 'Tenant', name: string, description?: string | null, logo?: string | null, isActive: boolean, updatedAt: any, createdAt: any } } | null };
 
 export type AttachAuth0IdMutationVariables = Exact<{
   auth0Id: Scalars['String'];
@@ -703,6 +714,18 @@ export type UpdateTimesheetChangedMutationVariables = Exact<{
 
 
 export type UpdateTimesheetChangedMutation = { __typename?: 'Mutation', updateTimesheet?: { __typename?: 'Timesheet', id: string, updatedAt: any, isChanged: boolean } | null };
+
+export type CreateTenantMutationVariables = Exact<{
+  name: Scalars['String'];
+  description: Scalars['String'];
+  logo: Scalars['String'];
+  isActive: Scalars['Boolean'];
+  startDate: Scalars['String'];
+  periodLength: Scalars['Int'];
+}>;
+
+
+export type CreateTenantMutation = { __typename?: 'Mutation', createTenant?: { __typename?: 'Tenant', id: string, name: string, description?: string | null, startDate: any, periodLength: number, isActive: boolean, updatedAt: any, createdAt: any } | null };
 
 
 export const TenantFromIdDocument = gql`
@@ -1459,6 +1482,7 @@ export const GetUserFromTokenDocument = gql`
     query getUserFromToken($token: ID!) {
   getUserFromToken(token: $token) {
     id
+    name
     tenant {
       name
       description
@@ -2130,3 +2154,55 @@ export function useUpdateTimesheetChangedMutation(baseOptions?: Apollo.MutationH
 export type UpdateTimesheetChangedMutationHookResult = ReturnType<typeof useUpdateTimesheetChangedMutation>;
 export type UpdateTimesheetChangedMutationResult = Apollo.MutationResult<UpdateTimesheetChangedMutation>;
 export type UpdateTimesheetChangedMutationOptions = Apollo.BaseMutationOptions<UpdateTimesheetChangedMutation, UpdateTimesheetChangedMutationVariables>;
+export const CreateTenantDocument = gql`
+    mutation CreateTenant($name: String!, $description: String!, $logo: String!, $isActive: Boolean!, $startDate: String!, $periodLength: Int!) {
+  createTenant(
+    name: $name
+    description: $description
+    logo: $logo
+    isActive: $isActive
+    startDate: $startDate
+    periodLength: $periodLength
+  ) {
+    id
+    name
+    description
+    startDate
+    periodLength
+    isActive
+    updatedAt
+    createdAt
+  }
+}
+    `;
+export type CreateTenantMutationFn = Apollo.MutationFunction<CreateTenantMutation, CreateTenantMutationVariables>;
+
+/**
+ * __useCreateTenantMutation__
+ *
+ * To run a mutation, you first call `useCreateTenantMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateTenantMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createTenantMutation, { data, loading, error }] = useCreateTenantMutation({
+ *   variables: {
+ *      name: // value for 'name'
+ *      description: // value for 'description'
+ *      logo: // value for 'logo'
+ *      isActive: // value for 'isActive'
+ *      startDate: // value for 'startDate'
+ *      periodLength: // value for 'periodLength'
+ *   },
+ * });
+ */
+export function useCreateTenantMutation(baseOptions?: Apollo.MutationHookOptions<CreateTenantMutation, CreateTenantMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateTenantMutation, CreateTenantMutationVariables>(CreateTenantDocument, options);
+      }
+export type CreateTenantMutationHookResult = ReturnType<typeof useCreateTenantMutation>;
+export type CreateTenantMutationResult = Apollo.MutationResult<CreateTenantMutation>;
+export type CreateTenantMutationOptions = Apollo.BaseMutationOptions<CreateTenantMutation, CreateTenantMutationVariables>;

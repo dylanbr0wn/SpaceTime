@@ -36,6 +36,14 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
             auth0Id: String(user?.sub),
         },
     });
+    if (!userData?.getUserFromAuth0) {
+        return {
+            redirect: {
+                destination: "/auth/register",
+                permanent: false,
+            },
+        };
+    }
 
     return {
         props: {

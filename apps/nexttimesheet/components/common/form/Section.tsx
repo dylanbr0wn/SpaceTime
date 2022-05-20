@@ -6,7 +6,7 @@ const Section = ({ children, title = "" }) => {
                     {title}
                 </div>
             )}
-            <div className="flex space-x-4 py-2">{children}</div>
+            <div className="flex space-x-4">{children}</div>
         </div>
     );
 };
