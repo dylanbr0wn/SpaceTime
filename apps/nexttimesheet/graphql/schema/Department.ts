@@ -21,6 +21,7 @@ builder.prismaObject("Department", {
             resolve: (department) => department.description,
         }),
         projects: t.relation("projects"),
+        isActive: t.exposeBoolean("isActive"),
     }),
 });
 

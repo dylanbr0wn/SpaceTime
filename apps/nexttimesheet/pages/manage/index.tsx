@@ -1,6 +1,6 @@
 import { GetServerSidePropsContext, NextPage } from "next";
 import { Session } from "next-auth";
-import { getSession, useSession } from "next-auth/react";
+import { getSession } from "next-auth/react";
 
 import { Tab } from "@headlessui/react";
 import {
@@ -14,16 +14,16 @@ import TokenList from "../../components/admin/TokenList";
 import UsersList from "../../components/admin/UsersList";
 import DashBoard from "../../components/Dashboard";
 import {
-    GetUserFromAuth0Document,
-    GetUserFromAuth0Query,
-    GetUserFromAuth0QueryVariables,
     initializeApollo,
     User,
+    UserFromAuthIdDocument,
+    UserFromAuthIdQuery,
+    UserFromAuthIdQueryVariables,
 } from "../../lib/apollo";
 
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
     const session = await getSession(ctx);
-
+    console.log(session);
     if (!session) {
         return {
             redirect: {
@@ -36,15 +36,15 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
     const client = initializeApollo({ headers: ctx?.req?.headers });
 
     const { data: userData } = await client.query<
-        GetUserFromAuth0Query,
-        GetUserFromAuth0QueryVariables
+        UserFromAuthIdQuery,
+        UserFromAuthIdQueryVariables
     >({
-        query: GetUserFromAuth0Document,
+        query: UserFromAuthIdDocument,
         variables: {
             auth0Id: String(user?.sub),
         },
     });
-    if (!userData?.getUserFromAuth0) {
+    if (!userData?.userFromAuthId) {
         return {
             redirect: {
                 destination: "/auth/register",
@@ -55,14 +55,14 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
 
     return {
         props: {
-            userData: userData?.getUserFromAuth0,
-            user,
+            userData: userData?.userFromAuthId,
         },
     };
 };
 
 const Manage: NextPage<{
     userData: Partial<User>;
+    user: Session["user"];
 }> = ({ userData, user }) => {
     if (typeof window === "undefined") return null;
     return (

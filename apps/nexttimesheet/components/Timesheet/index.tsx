@@ -1,13 +1,14 @@
 /* eslint-disable react/jsx-key */
 /* eslint react/prop-types: 0 */
 import { DateTime } from "luxon";
+import { Session } from "next-auth";
 import * as React from "react";
 
-import { UserProfile } from "@auth0/nextjs-auth0";
+import { useQuery } from "@apollo/client";
 
 import {
     Status as TimesheetStatus,
-    useGetTimesheetQuery,
+    TimesheetDocument,
     User,
 } from "../../lib/apollo";
 import ApprovalTree from "../ApprovalTree";
@@ -41,10 +42,10 @@ import TimesheetTable from "./Table";
  */
 const Timesheet = ({
     user,
-    auth0User,
+    authUser,
 }: {
     user: Partial<User>;
-    auth0User: UserProfile;
+    authUser: Session["user"];
 }) => {
     // const [type, setType] = React.useState("user");
     // const { userId } = useParams();
@@ -53,15 +54,15 @@ const Timesheet = ({
         DateTime.now().startOf("day").toUTC().startOf("day").toISO()
     );
 
-    const { data: timesheetData, loading: timesheetLoading } =
-        useGetTimesheetQuery({
+    const { data: timesheetData, loading: timesheetLoading } = useQuery(
+        TimesheetDocument,
+        {
             variables: {
-                timesheet: {
-                    userId: String(user?.id),
-                    date: timesheetQueryDate,
-                },
+                userId: String(user?.id),
+                date: timesheetQueryDate,
             },
-        });
+        }
+    );
 
     const { timesheetDates, startDate, periodLength } = useTimesheetDates(
         timesheetData,
@@ -70,7 +71,7 @@ const Timesheet = ({
     );
 
     React.useEffect(() => {
-        console.log(!!timesheetData?.getTimesheet?.id);
+        console.log(!!timesheetData?.timesheetFromDate?.id);
         console.log(!timesheetLoading);
     }, [timesheetData, timesheetLoading]);
 
@@ -121,22 +122,22 @@ const Timesheet = ({
                         </label> */}
                         <Status
                             timesheetChanged={
-                                !!timesheetData?.getTimesheet?.isChanged
+                                !!timesheetData?.timesheetFromDate?.isChanged
                             }
                             status={
-                                timesheetData?.getTimesheet?.status ??
+                                timesheetData?.timesheetFromDate?.status ??
                                 TimesheetStatus.Unsubmitted
                             }
                             timesheetId={
-                                timesheetData?.getTimesheet?.id ?? "-1"
+                                timesheetData?.timesheetFromDate?.id ?? "-1"
                             }
                             user={user}
                         />
                     </div>
                 </div>
-                {!timesheetLoading && timesheetData?.getTimesheet ? (
+                {!timesheetLoading && timesheetData?.timesheetFromDate ? (
                     <TimesheetTable
-                        timesheetData={timesheetData?.getTimesheet}
+                        timesheetData={timesheetData?.timesheetFromDate}
                         timesheetDates={timesheetDates}
                         user={user}
                     />
@@ -147,7 +148,7 @@ const Timesheet = ({
                 )}
                 <ApprovalTree
                     user={user}
-                    timesheetId={timesheetData?.getTimesheet?.id ?? "-1"}
+                    timesheetId={timesheetData?.timesheetFromDate?.id ?? "-1"}
                 />
             </div>
         </>

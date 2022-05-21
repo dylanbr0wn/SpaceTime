@@ -1,4 +1,6 @@
-import { useGetEntryCommentQuery } from "../../../lib/apollo";
+import { useQuery } from "@apollo/client";
+
+import { EntryCommentDocument } from "../../../lib/apollo";
 import Avatar from "../../common/Avatar";
 import Loading from "../../common/Loading";
 
@@ -9,9 +11,9 @@ const Comment = ({
     comment: { id: string };
     userId: string;
 }) => {
-    const { data, loading, error } = useGetEntryCommentQuery({
+    const { data, loading, error } = useQuery(EntryCommentDocument, {
         variables: {
-            commentId: comment.id,
+            id: comment.id,
         },
         skip: !comment.id,
     });
@@ -27,23 +29,23 @@ const Comment = ({
             ) : (
                 <div
                     className={`flex my-2 ${
-                        data?.getEntryComment?.user.id !== userId
+                        data?.entryComment?.user.id !== userId
                             ? "flex-row-reverse text-right"
                             : ""
                     }`}
                 >
                     <Avatar
                         bg={
-                            data?.getEntryComment?.user.id !== userId
+                            data?.entryComment?.user.id !== userId
                                 ? "bg-secondary"
                                 : "bg-primary"
                         }
-                        name={data?.getEntryComment?.user.name}
-                        image={data?.getEntryComment?.user.avatar}
+                        name={data?.entryComment?.user.name}
+                        image={data?.entryComment?.user.avatar}
                     />
 
                     <p className="text-base-content px-2">
-                        {data?.getEntryComment?.text}
+                        {data?.entryComment?.text}
                     </p>
                 </div>
             )}

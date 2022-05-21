@@ -2,12 +2,12 @@ import cuid from "cuid";
 import { DateTime } from "luxon";
 import * as React from "react";
 
-import { gql } from "@apollo/client";
+import { gql, useMutation } from "@apollo/client";
 import { PaperAirplaneIcon } from "@heroicons/react/outline";
 
 import {
+    CreateEntryCommentDocument,
     EntryComment,
-    useCreateEntryCommentMutation,
     User,
 } from "../../../lib/apollo";
 import Avatar from "../../common/Avatar";
@@ -33,16 +33,16 @@ const Comments = ({
         setComment(event.target.value);
     };
 
-    const [createEntryCommentMutation] = useCreateEntryCommentMutation();
+    const [createEntryCommentMutation] = useMutation(
+        CreateEntryCommentDocument
+    );
 
     const saveComment = () => {
         createEntryCommentMutation({
             variables: {
-                entryComment: {
-                    timeEntryId,
-                    text: comment,
-                    userId: user?.id ?? "-1",
-                },
+                entryId: timeEntryId,
+                text: comment,
+                userId: user?.id ?? "-1",
             },
             optimisticResponse: {
                 createEntryComment: {

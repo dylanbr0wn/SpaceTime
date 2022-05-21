@@ -1,12 +1,13 @@
 import * as React from "react";
 
+import { useQuery } from "@apollo/client";
 import { Row } from "@tanstack/react-table";
 
 import {
     Project,
+    ProjectsDocument,
     TimeEntryRow,
-    useProjectsQuery,
-    useWorkTypesQuery,
+    WorkTypesDocument,
 } from "../../../lib/apollo";
 import { MyTableGenerics } from "../Table";
 
@@ -25,9 +26,9 @@ export const useProjects = (
         data,
         error: projectsError,
         loading: projectsLoading,
-    } = useProjectsQuery();
+    } = useQuery(ProjectsDocument);
 
-    const { data: WorkTypesData } = useWorkTypesQuery();
+    const { data: WorkTypesData } = useQuery(WorkTypesDocument);
 
     // disable project select if department is not set
 

@@ -48,6 +48,7 @@ builder.prismaObject("User", {
 builder.queryFields((t) => ({
     users: t.prismaField({
         type: ["User"],
+        // errors: {},
         args: {
             tenantId: t.arg.string({ required: true }),
         },
@@ -64,6 +65,7 @@ builder.queryFields((t) => ({
     }),
     user: t.prismaField({
         type: "User",
+        // errors: {},
         args: {
             id: t.arg.string({ required: true }),
         },
@@ -79,6 +81,7 @@ builder.queryFields((t) => ({
     }),
     userFromToken: t.prismaField({
         type: "User",
+        // errors: {},
         args: {
             token: t.arg.string({ required: true }),
         },
@@ -99,6 +102,7 @@ builder.queryFields((t) => ({
     }),
     managers: t.prismaField({
         type: ["User"],
+        // errors: {},
         args: {
             tenantId: t.arg.string({ required: true }),
         },
@@ -116,6 +120,7 @@ builder.queryFields((t) => ({
     }),
     userFromAuthId: t.prismaField({
         type: "User",
+        // errors: {},
         args: {
             authId: t.arg.string({ required: true }),
         },

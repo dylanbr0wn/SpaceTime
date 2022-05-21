@@ -1,4 +1,5 @@
 import SchemaBuilder from "@pothos/core";
+// import ErrorsPlugin from "@pothos/plugin-errors";
 import PrismaPlugin from "@pothos/plugin-prisma";
 
 import prisma from "../prisma/index";
@@ -18,8 +19,14 @@ export const builder = new SchemaBuilder<{
         };
     };
 }>({
-    plugins: [PrismaPlugin],
+    plugins: [
+        // ErrorsPlugin,
+        PrismaPlugin,
+    ],
     prisma: {
         client: prisma,
     },
+    // errorOptions: {
+    //     defaultTypes: [Error],
+    // },
 });

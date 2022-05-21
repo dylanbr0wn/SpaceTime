@@ -1,8 +1,13 @@
 import * as React from "react";
 
+import { useQuery } from "@apollo/client";
 import { Row } from "@tanstack/react-table";
 
-import { TimeEntryRow, useWorkTypesQuery, WorkType } from "../../../lib/apollo";
+import {
+    TimeEntryRow,
+    WorkTypesDocument,
+    WorkTypesQuery,
+} from "../../../lib/apollo";
 import { MyTableGenerics } from "../Table";
 
 export const useWorkTypes = (
@@ -10,7 +15,7 @@ export const useWorkTypes = (
     currentRow: Partial<TimeEntryRow> | undefined
 ) => {
     const [filteredWorkTypes, setFilteredWorkTypes] = React.useState<
-        WorkType[]
+        WorkTypesQuery["workTypes"]
     >([]);
 
     const [disableWorkTypeSelect, setDisableWorkTypeSelect] =
@@ -18,7 +23,7 @@ export const useWorkTypes = (
 
     const [allWorkTypesUsed, setAllWorkTypesUsed] = React.useState(false);
 
-    const { data } = useWorkTypesQuery();
+    const { data } = useQuery(WorkTypesDocument);
 
     React.useEffect(() => {
         const currentWorkTypes: string[] = rows

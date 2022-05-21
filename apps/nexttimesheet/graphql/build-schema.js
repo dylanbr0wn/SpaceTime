@@ -11,5 +11,5 @@ Object.keys(require.cache)
 
 // load schema using @boost/module avoid having to compile typescript files
 module.exports = require("@boost/module").requireModule(
-    require.resolve("./schema")
+    require.resolve("./schema/index.ts")
 );

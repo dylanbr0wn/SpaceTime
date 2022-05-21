@@ -12,10 +12,13 @@ import "./StatusEvent";
 import "./Tenant";
 import "./TimeEntry";
 import "./TimeEntryRow";
-import "../scalar-types";
+import "./Date";
+import "./Errors";
 
 import { builder } from "../builder";
 builder.queryType({});
 builder.mutationType({});
 
-export const schema = builder.toSchema({});
+const schema = builder.toSchema({});
+
+export default schema;

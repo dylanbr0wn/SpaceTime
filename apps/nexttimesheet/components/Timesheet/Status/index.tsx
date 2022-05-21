@@ -2,17 +2,17 @@ import cuid from "cuid";
 import { DateTime } from "luxon";
 import * as React from "react";
 
-import { useApolloClient, useReactiveVar } from "@apollo/client";
+import { useMutation, useReactiveVar } from "@apollo/client";
 import { ExclamationIcon } from "@heroicons/react/solid";
 
 import {
+    CreateStatusEventDocument,
     EventType,
     IsChanged as isChangedVar,
     Status,
     StatusEventsDocument,
-    useCreateStatusEventMutation,
+    UpdateTimesheetChangedDocument,
     User,
-    useUpdateTimesheetChangedMutation,
 } from "../../../lib/apollo";
 import ErrorBoundary from "../../common/ErrorBoundary";
 import CustModal from "../../common/Modal";
@@ -36,15 +36,14 @@ const StatusBlock = ({
     timesheetChanged: boolean;
 }) => {
     const [showModal, setShowModal] = React.useState(false);
-    const [nextStatus, setNextStatus] = React.useState<Status>(
-        Status.Submitted
-    );
+    const [nextStatus] = React.useState<Status>(Status.Submitted);
     // const [hasChanged, setHasChanged] = React.useState(false);
 
     const isChanged = useReactiveVar(isChangedVar);
 
-    const [updateTimesheetChangedMutation] =
-        useUpdateTimesheetChangedMutation();
+    const [updateTimesheetChangedMutation] = useMutation(
+        UpdateTimesheetChangedDocument
+    );
 
     React.useEffect(() => {
         if (!timesheetChanged && isChanged) {
@@ -64,7 +63,7 @@ const StatusBlock = ({
 
     const [comment, setComment] = React.useState("");
 
-    const [createStatusEventMutation] = useCreateStatusEventMutation();
+    const [createStatusEventMutation] = useMutation(CreateStatusEventDocument);
 
     const submit = () => {
         isChangedVar(false);
@@ -100,9 +99,10 @@ const StatusBlock = ({
                         },
                     },
                     (newData) => {
+                        if (!data?.createStatusEvent) return newData;
                         return {
                             statusEvents: [
-                                ...newData.statusEvents,
+                                ...(newData?.statusEvents ?? []),
                                 data?.createStatusEvent,
                             ],
                         };

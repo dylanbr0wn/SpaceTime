@@ -1,13 +1,16 @@
 import { useRouter } from "next/router";
 import * as React from "react";
 
-import { useGetUserFromTokenLazyQuery } from "../../lib/apollo";
+import { useLazyQuery } from "@apollo/client";
+
+import { UserFromTokenDocument } from "../../lib/apollo";
 
 const Join = () => {
     const [attempted, setAttempted] = React.useState(false);
 
-    const [getUserFromTokenLazy, { loading, data: TenantData, error }] =
-        useGetUserFromTokenLazyQuery();
+    const [getUserFromTokenLazy, { loading, data: TenantData }] = useLazyQuery(
+        UserFromTokenDocument
+    );
 
     const router = useRouter();
 
@@ -18,7 +21,7 @@ const Join = () => {
     };
 
     React.useEffect(() => {
-        if (TenantData?.getUserFromToken) {
+        if (TenantData?.userFromToken) {
             router.replace(`/register/token/${token}`);
         }
     }, [TenantData, router, token]);

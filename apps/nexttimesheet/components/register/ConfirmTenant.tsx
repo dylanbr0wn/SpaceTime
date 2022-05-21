@@ -3,22 +3,22 @@ import { Session } from "next-auth";
 import { useSession } from "next-auth/react";
 import * as React from "react";
 
+import { useQuery } from "@apollo/client";
+
 import {
-    GetUserFromAuth0Document,
-    useAttachAuth0IdMutation,
-    useGetUserFromTokenQuery,
+    UserFromTokenDocument,
 } from "../../lib/apollo";
 
 const ConfirmTenant = ({ userData }: { userData: Session }) => {
     const router = useRouter();
 
-    const { data: TenantData, loading } = useGetUserFromTokenQuery({
+    const { data: TenantData, loading } = useQuery(UserFromTokenDocument, {
         variables: {
             token: String(router.query.id),
         },
     });
 
-    const [attachAuth0IdMutation, { data }] = useAttachAuth0IdMutation();
+    const [attachAuth0IdMutation, { data }] = useQuery();
 
     const onConfirm = () => {
         if (!TenantData?.getUserFromToken?.id) return;

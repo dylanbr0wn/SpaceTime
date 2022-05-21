@@ -1,6 +1,5 @@
+import { Session } from "next-auth";
 import React from "react";
-
-import { UserProfile } from "@auth0/nextjs-auth0";
 
 import { User } from "../../lib/apollo";
 import Timesheet from "../Timesheet";
@@ -19,7 +18,7 @@ const EmployeeTimesheet = ({
     user,
 }: {
     userData: Partial<User>;
-    user: UserProfile;
+    user: Session["user"];
 }) => {
     return (
         <div className="w-full">

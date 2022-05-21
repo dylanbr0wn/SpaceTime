@@ -2,14 +2,14 @@ import { DateTime } from "luxon";
 import * as React from "react";
 
 import {
-    GetTimeEntryRowsQuery,
-    GetTimesheetQuery,
     IsChanged,
     TimeEntryRow,
+    TimeEntryRowsQuery,
+    TimesheetQuery,
 } from "../../lib/apollo";
 
 export const useTimesheetDates = (
-    timesheetData: GetTimesheetQuery | null | undefined,
+    timesheetData: TimesheetQuery | null | undefined,
     // getorCreateTimesheetMutation: GetorCreateTimesheetMutationFn,
     userId: string
 ) => {
@@ -19,17 +19,39 @@ export const useTimesheetDates = (
     // const [timesheetId, setTimesheetId] = React.useState();
 
     React.useEffect(() => {
-        if (timesheetData?.getTimesheet) {
-            IsChanged(timesheetData?.getTimesheet.isChanged);
+        if (timesheetData?.timesheetFromDate) {
+            IsChanged(timesheetData?.timesheetFromDate.isChanged);
             const dates: DateTime[] = [];
-            const endDate = DateTime.fromISO(
-                timesheetData?.getTimesheet?.period.endDate,
-                { zone: "utc" }
-            );
-            const startDate = DateTime.fromISO(
-                timesheetData?.getTimesheet?.period.startDate,
-                { zone: "utc" }
-            );
+            let endDate: DateTime, startDate: DateTime;
+            if (
+                typeof timesheetData?.timesheetFromDate?.period.endDate ===
+                "string"
+            ) {
+                endDate = DateTime.fromISO(
+                    timesheetData?.timesheetFromDate?.period.endDate,
+                    { zone: "utc" }
+                );
+            } else {
+                endDate = DateTime.fromJSDate(
+                    timesheetData?.timesheetFromDate?.period.endDate,
+                    { zone: "utc" }
+                );
+            }
+            if (
+                typeof timesheetData?.timesheetFromDate?.period.startDate ===
+                "string"
+            ) {
+                startDate = DateTime.fromISO(
+                    timesheetData?.timesheetFromDate?.period.startDate,
+                    { zone: "utc" }
+                );
+            } else {
+                startDate = DateTime.fromJSDate(
+                    timesheetData?.timesheetFromDate?.period.startDate,
+                    { zone: "utc" }
+                );
+            }
+
             setPeriodLength(endDate.diff(startDate, "days").days);
             setStartDate(startDate);
             let current = startDate;
@@ -46,7 +68,7 @@ export const useTimesheetDates = (
 };
 
 export const useTimesheet = (
-    data: GetTimeEntryRowsQuery | undefined,
+    data: TimeEntryRowsQuery | undefined,
     timesheetDates: DateTime[],
 
     userId: string
@@ -72,7 +94,7 @@ export const useTimesheet = (
                 updatedAt: DateTime.now().toISO(),
             };
             const timeEntryRows: Partial<TimeEntryRow>[] =
-                data.getTimeEntryRows.map((row) => {
+                data.timeEntryRows.map((row) => {
                     const newRow = { ...defaultRow, ...row };
 
                     return {

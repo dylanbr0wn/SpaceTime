@@ -1,6 +1,5 @@
 {
     "files.autoSave": "off",
-    "eslint.format.enable": false,
     "editor.defaultFormatter": "dbaeumer.vscode-eslint",
     "editor.codeActionsOnSave": {
         "source.fixAll.eslint": true
@@ -13,5 +12,5 @@
     },
     "[prisma]": {
         "editor.defaultFormatter": "Prisma.prisma"
-    },
+    }
 }

@@ -1,8 +1,9 @@
 import * as React from "react";
 
+import { useMutation } from "@apollo/client";
 import { BackspaceIcon } from "@heroicons/react/outline";
 
-import { IsChanged, useDeleteTimeEntryRowMutation } from "../../../lib/apollo";
+import { DeleteTimeEntryRowDocument, IsChanged } from "../../../lib/apollo";
 import ConfirmCloseModal from "../../common/ConfirmCloseModal";
 import ErrorBoundary from "../../common/ErrorBoundary";
 
@@ -32,7 +33,9 @@ const TimesheetDeleteEntryInput = ({
     //     };
     // }, [rowId]);
 
-    const [deleteTimeEntryRowMutation] = useDeleteTimeEntryRowMutation();
+    const [deleteTimeEntryRowMutation] = useMutation(
+        DeleteTimeEntryRowDocument
+    );
 
     // Will delete a row. Dispatches deleteTimeEntryRow api call and redux action.
     // Delete button sub component
@@ -40,9 +43,7 @@ const TimesheetDeleteEntryInput = ({
     const deleteRow = async () => {
         deleteTimeEntryRowMutation({
             variables: {
-                timeEntryRow: {
-                    id: rowId ?? "-1",
-                },
+                id: rowId ?? "-1",
             },
             optimisticResponse: {
                 deleteTimeEntryRow: {

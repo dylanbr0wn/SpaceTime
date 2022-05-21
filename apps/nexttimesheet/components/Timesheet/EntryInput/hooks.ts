@@ -1,16 +1,15 @@
 import * as React from "react";
 
-import {
-    TimeEntryFromIndexQuery,
-    useTimeEntryFromIndexQuery,
-} from "../../../lib/apollo";
+import { useQuery } from "@apollo/client";
+
+import { TimeEntryDocument, TimeEntryQuery } from "../../../lib/apollo";
 
 export const useTimeEntry = (rowId: string | undefined, index: number) => {
-    const [isEditing, setIsEditing] = React.useState(false); // Is the input field active?
-    const [isSaving, setIsSaving] = React.useState(false); // Keep track of saving state
+    // const [isEditing, setIsEditing] = React.useState(false); // Is the input field active?
+    // const [isSaving, setIsSaving] = React.useState(false); // Keep track of saving state
     const [needsToSave, setNeedsToSave] = React.useState(false);
     const [timeEntry, setTimeEntry] = React.useState<
-        TimeEntryFromIndexQuery["timeEntryFromIndex"]
+        TimeEntryQuery["timeEntry"]
     >({
         id: "-1",
         date: "",
@@ -20,20 +19,20 @@ export const useTimeEntry = (rowId: string | undefined, index: number) => {
         hours: 0,
         entryComments: [],
     });
-    const { data: timeEntryData } = useTimeEntryFromIndexQuery({
+    const { data: timeEntryData } = useQuery(TimeEntryDocument, {
         variables: {
             timeEntryRowId: rowId ?? "-1",
             index,
         },
     });
 
-    React.useEffect(() => {
-        setIsSaving(false);
-    }, [timeEntry]);
+    // React.useEffect(() => {
+    //     setIsSaving(false);
+    // }, [timeEntry]);
 
     React.useEffect(() => {
-        if (timeEntryData?.timeEntryFromIndex) {
-            setTimeEntry(timeEntryData?.timeEntryFromIndex);
+        if (timeEntryData?.timeEntry) {
+            setTimeEntry(timeEntryData?.timeEntry);
 
             // }
         } else {
@@ -50,10 +49,8 @@ export const useTimeEntry = (rowId: string | undefined, index: number) => {
     }, [index, timeEntryData]);
 
     React.useEffect(() => {
-        setNeedsToSave(
-            timeEntryData?.timeEntryFromIndex?.hours !== timeEntry?.hours
-        );
+        setNeedsToSave(timeEntryData?.timeEntry?.hours !== timeEntry?.hours);
     }, [timeEntryData, timeEntry]);
 
-    return { timeEntry, setTimeEntry, needsToSave, setIsSaving, setIsEditing };
+    return { timeEntry, setTimeEntry, needsToSave };
 };

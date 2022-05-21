@@ -2,6 +2,7 @@ import cuid from "cuid";
 import { DateTime } from "luxon";
 import * as React from "react";
 
+import { useMutation, useQuery } from "@apollo/client";
 import { PlusIcon } from "@heroicons/react/outline";
 import {
     createTable,
@@ -10,13 +11,12 @@ import {
 } from "@tanstack/react-table";
 
 import {
-    GetTimeEntryRowsDocument,
-    GetTimeEntryRowsQuery,
-    GetTimeEntryRowsQueryVariables,
+    CreateTimeEntryRowDocument,
     TimeEntryRow,
-    Timesheet,
-    useCreateTimeEntryRowMutation,
-    useGetTimeEntryRowsQuery,
+    TimeEntryRowsDocument,
+    TimeEntryRowsQuery,
+    TimeEntryRowsQueryVariables,
+    TimesheetQuery,
     User,
 } from "../../lib/apollo";
 import { getDayFeatures } from "../../lib/utils";
@@ -49,7 +49,7 @@ const TimesheetTable = ({
     user,
 }: {
     timesheetDates: DateTime[];
-    timesheetData: Partial<Timesheet> | undefined | null;
+    timesheetData: TimesheetQuery["timesheetFromDate"] | undefined | null;
     user: Partial<User>;
 }) => {
     // const [pinRows, setPinRows] = React.useState([]);
@@ -59,7 +59,7 @@ const TimesheetTable = ({
         data,
         loading: rowsLoading,
         // error,
-    } = useGetTimeEntryRowsQuery({
+    } = useQuery(TimeEntryRowsDocument, {
         variables: {
             timesheetId: timesheetData?.id ?? "-1",
         },
@@ -72,7 +72,9 @@ const TimesheetTable = ({
         String(user?.id)
     );
 
-    const [createTimeEntryRowMutation] = useCreateTimeEntryRowMutation();
+    const [createTimeEntryRowMutation] = useMutation(
+        CreateTimeEntryRowDocument
+    );
 
     const createTimeEntryRow = () => {
         createTimeEntryRowMutation({
@@ -105,26 +107,26 @@ const TimesheetTable = ({
                 const timeEntryRow = data?.createTimeEntryRow;
                 if (!timeEntryRow) return;
                 const timeEntryRowsData = cache.readQuery<
-                    GetTimeEntryRowsQuery,
-                    GetTimeEntryRowsQueryVariables
+                    TimeEntryRowsQuery,
+                    TimeEntryRowsQueryVariables
                 >({
-                    query: GetTimeEntryRowsDocument,
+                    query: TimeEntryRowsDocument,
                     variables: {
                         timesheetId: timesheetData?.id ?? "-1",
                     },
                 });
-                const timeEntryRows = timeEntryRowsData?.getTimeEntryRows;
+                const timeEntryRows = timeEntryRowsData?.timeEntryRows;
                 if (!timeEntryRows) return;
                 cache.writeQuery<
-                    GetTimeEntryRowsQuery,
-                    GetTimeEntryRowsQueryVariables
+                    TimeEntryRowsQuery,
+                    TimeEntryRowsQueryVariables
                 >({
-                    query: GetTimeEntryRowsDocument,
+                    query: TimeEntryRowsDocument,
                     variables: {
                         timesheetId: timesheetData?.id ?? "-1",
                     },
                     data: {
-                        getTimeEntryRows: [...timeEntryRows, timeEntryRow],
+                        timeEntryRows: [...timeEntryRows, timeEntryRow],
                     },
                 });
             },

@@ -1,2208 +1,4742 @@
-import { gql } from '@apollo/client';
-import * as Apollo from '@apollo/client';
+import { TypedDocumentNode as DocumentNode } from "@graphql-typed-document-node/core";
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
-export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
-export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
-export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
-const defaultOptions = {} as const;
+export type Exact<T extends { [key: string]: unknown }> = {
+    [K in keyof T]: T[K];
+};
+export type MakeOptional<T, K extends keyof T> = Omit<T, K> & {
+    [SubKey in K]?: Maybe<T[SubKey]>;
+};
+export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & {
+    [SubKey in K]: Maybe<T[SubKey]>;
+};
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
-  ID: string;
-  String: string;
-  Boolean: boolean;
-  Int: number;
-  Float: number;
-  /** A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar. */
-  DateTime: any;
+    ID: string;
+    String: string;
+    Boolean: boolean;
+    Int: number;
+    Float: number;
+    /** A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar. */
+    Date: Date | string;
 };
 
 export type Department = {
-  __typename?: 'Department';
-  createdAt: Scalars['DateTime'];
-  description?: Maybe<Scalars['String']>;
-  id: Scalars['ID'];
-  isActive: Scalars['Boolean'];
-  name: Scalars['String'];
-  projects: Array<Project>;
-  updatedAt: Scalars['DateTime'];
-  users: Array<User>;
+    __typename?: "Department";
+    createdAt: Scalars["Date"];
+    description?: Maybe<Scalars["String"]>;
+    id: Scalars["ID"];
+    isActive: Scalars["Boolean"];
+    name: Scalars["String"];
+    projects: Array<Project>;
+    tenant: Tenant;
+    updatedAt: Scalars["Date"];
+    users: Array<User>;
 };
 
 export type EntryComment = {
-  __typename?: 'EntryComment';
-  createdAt: Scalars['DateTime'];
-  id: Scalars['ID'];
-  text: Scalars['String'];
-  updatedAt: Scalars['DateTime'];
-  user: User;
-};
-
-export type EntryCommentCreateInput = {
-  text: Scalars['String'];
-  timeEntryId: Scalars['String'];
-  userId: Scalars['String'];
-};
-
-export type EntryCommentDeleteInput = {
-  id: Scalars['ID'];
-};
-
-export type EntryCommentUpdateInput = {
-  id: Scalars['ID'];
-  text: Scalars['String'];
+    __typename?: "EntryComment";
+    createdAt: Scalars["Date"];
+    id: Scalars["ID"];
+    text: Scalars["String"];
+    updatedAt: Scalars["Date"];
+    user: User;
 };
 
 export enum EventType {
-  Comment = 'Comment',
-  StatusChange = 'StatusChange'
+    Comment = "Comment",
+    StatusChange = "StatusChange",
 }
 
 export type Mutation = {
-  __typename?: 'Mutation';
-  attachAuth0Id?: Maybe<User>;
-  createEntryComment?: Maybe<EntryComment>;
-  createOneTimeToken?: Maybe<OneTimeToken>;
-  createStatusEvent?: Maybe<StatusEvent>;
-  createTenant?: Maybe<Tenant>;
-  createTimeEntry?: Maybe<TimeEntry>;
-  createTimeEntryRow?: Maybe<TimeEntryRow>;
-  createUser?: Maybe<User>;
-  deleteEntryComment?: Maybe<EntryComment>;
-  deleteTimeEntry?: Maybe<TimeEntry>;
-  deleteTimeEntryRow?: Maybe<TimeEntryRow>;
-  updateEntryComment?: Maybe<EntryComment>;
-  updateTimeEntryRow?: Maybe<TimeEntryRow>;
-  updateTimeEntryhours?: Maybe<TimeEntry>;
-  updateTimesheet?: Maybe<Timesheet>;
-  updateUser?: Maybe<User>;
+    __typename?: "Mutation";
+    createEntryComment: EntryComment;
+    createOneTimeToken: OneTimeToken;
+    createStatusEvent: StatusEvent;
+    createTenant: Tenant;
+    createTimeEntry: TimeEntry;
+    createTimeEntryRow: TimeEntryRow;
+    createUser: User;
+    createUserBasic: User;
+    deleteEntryComment: EntryComment;
+    deleteTenant: Tenant;
+    deleteTimeEntry: TimeEntry;
+    deleteTimeEntryRow: TimeEntryRow;
+    updateEntryComment: EntryComment;
+    updateTenant: Tenant;
+    updateTimeEntry: TimeEntry;
+    updateTimeEntryRow: TimeEntryRow;
+    updateTimesheet: Timesheet;
+    updateUser: User;
 };
-
-
-export type MutationAttachAuth0IdArgs = {
-  auth0Id: Scalars['String'];
-  userId: Scalars['ID'];
-};
-
 
 export type MutationCreateEntryCommentArgs = {
-  entryComment: EntryCommentCreateInput;
+    entryId: Scalars["String"];
+    text: Scalars["String"];
+    userId: Scalars["String"];
 };
-
 
 export type MutationCreateOneTimeTokenArgs = {
-  tenantId: Scalars['String'];
-  userId: Scalars['String'];
+    tenantId: Scalars["String"];
+    userId: Scalars["String"];
 };
-
 
 export type MutationCreateStatusEventArgs = {
-  message: Scalars['String'];
-  status: Status;
-  timesheetId: Scalars['String'];
-  type: EventType;
-  userId: Scalars['String'];
+    message?: InputMaybe<Scalars["String"]>;
+    status: Status;
+    timesheetId: Scalars["String"];
+    type: EventType;
+    userId: Scalars["String"];
 };
-
 
 export type MutationCreateTenantArgs = {
-  description: Scalars['String'];
-  isActive: Scalars['Boolean'];
-  logo: Scalars['String'];
-  name: Scalars['String'];
-  periodLength: Scalars['Int'];
-  startDate: Scalars['String'];
+    description?: InputMaybe<Scalars["String"]>;
+    isActive: Scalars["Boolean"];
+    logo?: InputMaybe<Scalars["String"]>;
+    name: Scalars["String"];
+    periodLength: Scalars["Int"];
+    startDate: Scalars["Date"];
 };
-
 
 export type MutationCreateTimeEntryArgs = {
-  date: Scalars['String'];
-  hours: Scalars['Int'];
-  index: Scalars['Int'];
-  timeEntryRowId: Scalars['String'];
+    date: Scalars["Date"];
+    hours: Scalars["Float"];
+    index: Scalars["Int"];
+    timeEntryRowId: Scalars["String"];
 };
-
 
 export type MutationCreateTimeEntryRowArgs = {
-  departmentId?: InputMaybe<Scalars['String']>;
-  projectId?: InputMaybe<Scalars['String']>;
-  timesheetId: Scalars['String'];
-  workTypeId?: InputMaybe<Scalars['String']>;
+    departmentId?: InputMaybe<Scalars["String"]>;
+    projectId?: InputMaybe<Scalars["String"]>;
+    timesheetId: Scalars["String"];
+    workTypeId?: InputMaybe<Scalars["String"]>;
 };
-
 
 export type MutationCreateUserArgs = {
-  user: UserCreateInput;
+    authId: Scalars["String"];
+    avatar?: InputMaybe<Scalars["String"]>;
+    code?: InputMaybe<Scalars["String"]>;
+    departmentId?: InputMaybe<Scalars["String"]>;
+    email: Scalars["String"];
+    isActive?: InputMaybe<Scalars["Boolean"]>;
+    isAdmin?: InputMaybe<Scalars["Boolean"]>;
+    isManager?: InputMaybe<Scalars["Boolean"]>;
+    isPaymentManager?: InputMaybe<Scalars["Boolean"]>;
+    isSetup?: InputMaybe<Scalars["Boolean"]>;
+    managerId?: InputMaybe<Scalars["String"]>;
+    name: Scalars["String"];
+    tenantId: Scalars["String"];
 };
 
+export type MutationCreateUserBasicArgs = {
+    authId: Scalars["String"];
+    avatar?: InputMaybe<Scalars["String"]>;
+    email: Scalars["String"];
+    name: Scalars["String"];
+    tenantId: Scalars["String"];
+};
 
 export type MutationDeleteEntryCommentArgs = {
-  EntryComment: EntryCommentDeleteInput;
+    id: Scalars["String"];
 };
 
+export type MutationDeleteTenantArgs = {
+    id: Scalars["String"];
+};
 
 export type MutationDeleteTimeEntryArgs = {
-  id: Scalars['String'];
+    id: Scalars["String"];
 };
-
 
 export type MutationDeleteTimeEntryRowArgs = {
-  TimeEntryRow: TimeEntryRowDeleteInput;
+    id: Scalars["String"];
 };
-
 
 export type MutationUpdateEntryCommentArgs = {
-  entryComment: EntryCommentUpdateInput;
+    id: Scalars["String"];
+    text: Scalars["String"];
 };
 
+export type MutationUpdateTenantArgs = {
+    description?: InputMaybe<Scalars["String"]>;
+    id: Scalars["String"];
+    isActive?: InputMaybe<Scalars["Boolean"]>;
+    logo?: InputMaybe<Scalars["String"]>;
+    name?: InputMaybe<Scalars["String"]>;
+    periodLength?: InputMaybe<Scalars["Int"]>;
+};
+
+export type MutationUpdateTimeEntryArgs = {
+    hours: Scalars["Float"];
+    id: Scalars["String"];
+};
 
 export type MutationUpdateTimeEntryRowArgs = {
-  departmentId?: InputMaybe<Scalars['String']>;
-  id: Scalars['String'];
-  projectId?: InputMaybe<Scalars['String']>;
-  workTypeId?: InputMaybe<Scalars['String']>;
+    departmentId?: InputMaybe<Scalars["String"]>;
+    id: Scalars["String"];
+    projectId?: InputMaybe<Scalars["String"]>;
+    workTypeId?: InputMaybe<Scalars["String"]>;
 };
-
-
-export type MutationUpdateTimeEntryhoursArgs = {
-  hours: Scalars['Int'];
-  id: Scalars['String'];
-};
-
 
 export type MutationUpdateTimesheetArgs = {
-  id: Scalars['String'];
-  isChanged: Scalars['Boolean'];
+    id: Scalars["String"];
+    isChanged: Scalars["Boolean"];
 };
 
-
 export type MutationUpdateUserArgs = {
-  user: UserUpdateInput;
+    authId?: InputMaybe<Scalars["String"]>;
+    avatar?: InputMaybe<Scalars["String"]>;
+    code?: InputMaybe<Scalars["String"]>;
+    departmentId?: InputMaybe<Scalars["String"]>;
+    email?: InputMaybe<Scalars["String"]>;
+    id: Scalars["String"];
+    isActive?: InputMaybe<Scalars["Boolean"]>;
+    isAdmin?: InputMaybe<Scalars["Boolean"]>;
+    isManager?: InputMaybe<Scalars["Boolean"]>;
+    isPaymentManager?: InputMaybe<Scalars["Boolean"]>;
+    isSetup?: InputMaybe<Scalars["Boolean"]>;
+    managerId?: InputMaybe<Scalars["String"]>;
+    name?: InputMaybe<Scalars["String"]>;
 };
 
 export type OneTimeToken = {
-  __typename?: 'OneTimeToken';
-  createdAt: Scalars['DateTime'];
-  id: Scalars['ID'];
-  tenant: Tenant;
-  updatedAt: Scalars['DateTime'];
-  user: User;
+    __typename?: "OneTimeToken";
+    createdAt: Scalars["Date"];
+    id: Scalars["ID"];
+    tenant: Tenant;
+    updatedAt: Scalars["Date"];
+    user: User;
 };
 
 export type Period = {
-  __typename?: 'Period';
-  createdAt: Scalars['DateTime'];
-  endDate: Scalars['DateTime'];
-  id: Scalars['ID'];
-  startDate: Scalars['DateTime'];
+    __typename?: "Period";
+    createdAt: Scalars["Date"];
+    endDate: Scalars["Date"];
+    id: Scalars["ID"];
+    startDate: Scalars["Date"];
 };
 
 export type Project = {
-  __typename?: 'Project';
-  code: Scalars['String'];
-  createdAt: Scalars['DateTime'];
-  department: Department;
-  description?: Maybe<Scalars['String']>;
-  id: Scalars['ID'];
-  isActive: Scalars['Boolean'];
-  name: Scalars['String'];
-  updatedAt: Scalars['DateTime'];
+    __typename?: "Project";
+    code: Scalars["String"];
+    createdAt: Scalars["Date"];
+    department: Department;
+    description?: Maybe<Scalars["String"]>;
+    id: Scalars["ID"];
+    isActive: Scalars["Boolean"];
+    name: Scalars["String"];
+    tenant: Tenant;
+    updatedAt: Scalars["Date"];
 };
 
 export type Query = {
-  __typename?: 'Query';
-  departments: Array<Department>;
-  getEntryComment?: Maybe<EntryComment>;
-  getEntryComments?: Maybe<Array<EntryComment>>;
-  getEntryCommentsByTimesheet: Array<EntryComment>;
-  getOneTimeToken?: Maybe<OneTimeToken>;
-  getOneTimeTokens: Array<OneTimeToken>;
-  getTimeEntryRow?: Maybe<TimeEntryRow>;
-  getTimeEntryRows: Array<TimeEntryRow>;
-  getTimesheet?: Maybe<Timesheet>;
-  getUserFromAuth0?: Maybe<User>;
-  getUserFromCode?: Maybe<User>;
-  getUserFromToken?: Maybe<User>;
-  managers: Array<User>;
-  projects: Array<Project>;
-  statusEvents: Array<StatusEvent>;
-  tenantFromId?: Maybe<Tenant>;
-  timeEntry?: Maybe<TimeEntry>;
-  timeEntryFromId?: Maybe<TimeEntry>;
-  timeEntryFromIndex?: Maybe<TimeEntry>;
-  timesheet?: Maybe<Timesheet>;
-  users: Array<User>;
-  workTypes: Array<WorkType>;
+    __typename?: "Query";
+    departments: Array<Department>;
+    entryComment: EntryComment;
+    entryComments: Array<EntryComment>;
+    managers: Array<User>;
+    oneTimeToken: OneTimeToken;
+    oneTimeTokens: Array<OneTimeToken>;
+    project: Project;
+    projects: Array<Project>;
+    statusEvents: Array<StatusEvent>;
+    tenant: Tenant;
+    timeEntry: TimeEntry;
+    timeEntryRow: TimeEntryRow;
+    timeEntryRows: Array<TimeEntryRow>;
+    timesheet: Timesheet;
+    timesheetFromDate: Timesheet;
+    user: User;
+    userFromAuthId: User;
+    userFromToken: User;
+    users: Array<User>;
+    workType: WorkType;
+    workTypes: Array<WorkType>;
 };
 
-
-export type QueryGetEntryCommentArgs = {
-  commentId: Scalars['String'];
+export type QueryDepartmentsArgs = {
+    tenantId: Scalars["String"];
 };
 
-
-export type QueryGetEntryCommentsArgs = {
-  timeEntryId: Scalars['String'];
+export type QueryEntryCommentArgs = {
+    id: Scalars["String"];
 };
 
-
-export type QueryGetEntryCommentsByTimesheetArgs = {
-  timesheetId: Scalars['String'];
+export type QueryEntryCommentsArgs = {
+    entryId: Scalars["String"];
 };
-
-
-export type QueryGetOneTimeTokenArgs = {
-  id: Scalars['String'];
-};
-
-
-export type QueryGetOneTimeTokensArgs = {
-  tenantId: Scalars['String'];
-};
-
-
-export type QueryGetTimeEntryRowArgs = {
-  id: Scalars['String'];
-};
-
-
-export type QueryGetTimeEntryRowsArgs = {
-  timesheetId: Scalars['String'];
-};
-
-
-export type QueryGetTimesheetArgs = {
-  Timesheet: TimesheetGetInput;
-};
-
-
-export type QueryGetUserFromAuth0Args = {
-  auth0Id: Scalars['String'];
-};
-
-
-export type QueryGetUserFromCodeArgs = {
-  code: Scalars['String'];
-  tenantId: Scalars['String'];
-};
-
-
-export type QueryGetUserFromTokenArgs = {
-  token: Scalars['ID'];
-};
-
 
 export type QueryManagersArgs = {
-  tenantId: Scalars['String'];
+    tenantId: Scalars["String"];
 };
 
+export type QueryOneTimeTokenArgs = {
+    id: Scalars["String"];
+};
+
+export type QueryOneTimeTokensArgs = {
+    tenantId: Scalars["String"];
+};
+
+export type QueryProjectArgs = {
+    id: Scalars["String"];
+};
+
+export type QueryProjectsArgs = {
+    tenantId: Scalars["String"];
+};
 
 export type QueryStatusEventsArgs = {
-  timesheetId: Scalars['String'];
+    timesheetId: Scalars["String"];
 };
 
-
-export type QueryTenantFromIdArgs = {
-  tenantId: Scalars['String'];
+export type QueryTenantArgs = {
+    id: Scalars["String"];
 };
-
 
 export type QueryTimeEntryArgs = {
-  date: Scalars['String'];
-  timeEntryRowId: Scalars['String'];
+    index: Scalars["Int"];
+    timeEntryRowId: Scalars["String"];
 };
 
-
-export type QueryTimeEntryFromIdArgs = {
-  id: Scalars['String'];
+export type QueryTimeEntryRowArgs = {
+    id: Scalars["String"];
 };
 
-
-export type QueryTimeEntryFromIndexArgs = {
-  index: Scalars['Int'];
-  timeEntryRowId: Scalars['String'];
+export type QueryTimeEntryRowsArgs = {
+    timesheetId: Scalars["String"];
 };
-
 
 export type QueryTimesheetArgs = {
-  id: Scalars['String'];
+    id: Scalars["String"];
 };
 
+export type QueryTimesheetFromDateArgs = {
+    date: Scalars["Date"];
+    userId: Scalars["String"];
+};
+
+export type QueryUserArgs = {
+    id: Scalars["String"];
+};
+
+export type QueryUserFromAuthIdArgs = {
+    authId: Scalars["String"];
+};
+
+export type QueryUserFromTokenArgs = {
+    token: Scalars["String"];
+};
 
 export type QueryUsersArgs = {
-  tenantId: Scalars['String'];
+    tenantId: Scalars["String"];
+};
+
+export type QueryWorkTypeArgs = {
+    id: Scalars["String"];
+};
+
+export type QueryWorkTypesArgs = {
+    tenantId: Scalars["String"];
 };
 
 export enum Status {
-  ManagerApproved = 'ManagerApproved',
-  PaymentApproved = 'PaymentApproved',
-  Rejected = 'Rejected',
-  Submitted = 'Submitted',
-  Unsubmitted = 'Unsubmitted'
+    ManagerApproved = "ManagerApproved",
+    PaymentApproved = "PaymentApproved",
+    Rejected = "Rejected",
+    Submitted = "Submitted",
+    Unsubmitted = "Unsubmitted",
 }
 
 export type StatusEvent = {
-  __typename?: 'StatusEvent';
-  createdAt: Scalars['DateTime'];
-  id: Scalars['ID'];
-  message?: Maybe<Scalars['String']>;
-  status: Status;
-  type: EventType;
-  user: User;
+    __typename?: "StatusEvent";
+    createdAt: Scalars["Date"];
+    id: Scalars["ID"];
+    message?: Maybe<Scalars["String"]>;
+    status: Status;
+    type: EventType;
+    user: User;
 };
 
 export type Tenant = {
-  __typename?: 'Tenant';
-  createdAt: Scalars['DateTime'];
-  description?: Maybe<Scalars['String']>;
-  id: Scalars['ID'];
-  isActive: Scalars['Boolean'];
-  logo?: Maybe<Scalars['String']>;
-  name: Scalars['String'];
-  periodLength: Scalars['Int'];
-  startDate: Scalars['DateTime'];
-  updatedAt: Scalars['DateTime'];
+    __typename?: "Tenant";
+    createdAt: Scalars["Date"];
+    description?: Maybe<Scalars["String"]>;
+    id: Scalars["ID"];
+    isActive: Scalars["Boolean"];
+    logo?: Maybe<Scalars["String"]>;
+    name: Scalars["String"];
+    periodLength: Scalars["Int"];
+    startDate: Scalars["Date"];
+    updatedAt: Scalars["Date"];
+    users: Array<User>;
 };
 
 export type TimeEntry = {
-  __typename?: 'TimeEntry';
-  createdAt: Scalars['DateTime'];
-  date: Scalars['DateTime'];
-  entryComments: Array<EntryComment>;
-  hours: Scalars['Float'];
-  id: Scalars['ID'];
-  index: Scalars['Int'];
-  updatedAt: Scalars['DateTime'];
+    __typename?: "TimeEntry";
+    createdAt: Scalars["Date"];
+    date: Scalars["Date"];
+    entryComments: Array<EntryComment>;
+    hours: Scalars["Float"];
+    id: Scalars["ID"];
+    index: Scalars["Int"];
+    updatedAt: Scalars["Date"];
 };
 
 export type TimeEntryRow = {
-  __typename?: 'TimeEntryRow';
-  createdAt: Scalars['DateTime'];
-  department?: Maybe<Department>;
-  id: Scalars['ID'];
-  project?: Maybe<Project>;
-  timeEntries: Array<TimeEntry>;
-  updatedAt: Scalars['DateTime'];
-  workType?: Maybe<WorkType>;
-};
-
-export type TimeEntryRowDeleteInput = {
-  id: Scalars['ID'];
-};
-
-export type TimeEntryRowUpdateInput = {
-  departmentId?: InputMaybe<Scalars['String']>;
-  id: Scalars['ID'];
-  projectId?: InputMaybe<Scalars['String']>;
-  workTypeId?: InputMaybe<Scalars['String']>;
+    __typename?: "TimeEntryRow";
+    createdAt: Scalars["Date"];
+    department: Department;
+    id: Scalars["ID"];
+    project: Project;
+    timeEntries: Array<TimeEntry>;
+    updatedAt: Scalars["Date"];
+    workType: WorkType;
 };
 
 export type Timesheet = {
-  __typename?: 'Timesheet';
-  createdAt: Scalars['DateTime'];
-  id: Scalars['ID'];
-  isChanged: Scalars['Boolean'];
-  period: Period;
-  status: Status;
-  timeEntryRows: Array<TimeEntryRow>;
-  updatedAt: Scalars['DateTime'];
-  user: User;
-};
-
-export type TimesheetGetInput = {
-  date: Scalars['DateTime'];
-  userId: Scalars['String'];
+    __typename?: "Timesheet";
+    createdAt: Scalars["Date"];
+    id: Scalars["ID"];
+    isChanged: Scalars["Boolean"];
+    period: Period;
+    status: Status;
+    timeEntryRows: Array<TimeEntryRow>;
+    updatedAt: Scalars["Date"];
+    user: User;
 };
 
 export type User = {
-  __typename?: 'User';
-  auth0Id?: Maybe<Scalars['String']>;
-  avatar?: Maybe<Scalars['String']>;
-  code: Scalars['String'];
-  createdAt: Scalars['DateTime'];
-  department: Department;
-  email: Scalars['String'];
-  id: Scalars['ID'];
-  isActive: Scalars['Boolean'];
-  isAdmin: Scalars['Boolean'];
-  isManager: Scalars['Boolean'];
-  isPaymentManager: Scalars['Boolean'];
-  isSetup: Scalars['Boolean'];
-  managees: Array<User>;
-  manager?: Maybe<User>;
-  name?: Maybe<Scalars['String']>;
-  tenant: Tenant;
-  updatedAt: Scalars['DateTime'];
-};
-
-/** User Create Input */
-export type UserCreateInput = {
-  auth0Id: Scalars['String'];
-  avatar?: InputMaybe<Scalars['String']>;
-  code: Scalars['String'];
-  departmentId: Scalars['String'];
-  email: Scalars['String'];
-  isActive: Scalars['Boolean'];
-  isAdmin: Scalars['Boolean'];
-  isManager: Scalars['Boolean'];
-  isPaymentManager: Scalars['Boolean'];
-  managerId: Scalars['String'];
-  name?: InputMaybe<Scalars['String']>;
-  tenantId: Scalars['String'];
-};
-
-/** User Update Input */
-export type UserUpdateInput = {
-  auth0Id: Scalars['String'];
-  code: Scalars['String'];
-  departmentId: Scalars['String'];
-  email: Scalars['String'];
-  id: Scalars['ID'];
-  isActive: Scalars['Boolean'];
-  isAdmin: Scalars['Boolean'];
-  isManager: Scalars['Boolean'];
-  isPaymentManager: Scalars['Boolean'];
-  managerId: Scalars['String'];
+    __typename?: "User";
+    authId?: Maybe<Scalars["String"]>;
+    avatar?: Maybe<Scalars["String"]>;
+    code?: Maybe<Scalars["String"]>;
+    createdAt: Scalars["Date"];
+    department: Department;
+    email?: Maybe<Scalars["String"]>;
+    id: Scalars["ID"];
+    isActive: Scalars["Boolean"];
+    isAdmin: Scalars["Boolean"];
+    isManager: Scalars["Boolean"];
+    isPaymentManager: Scalars["Boolean"];
+    isSetup: Scalars["Boolean"];
+    managees: Array<User>;
+    manager: User;
+    name?: Maybe<Scalars["String"]>;
+    tenant: Tenant;
+    updatedAt: Scalars["Date"];
 };
 
 export type WorkType = {
-  __typename?: 'WorkType';
-  code: Scalars['String'];
-  createdAt: Scalars['DateTime'];
-  description?: Maybe<Scalars['String']>;
-  id: Scalars['ID'];
-  isActive: Scalars['Boolean'];
-  isBillable: Scalars['Boolean'];
-  isDefault: Scalars['Boolean'];
-  isSystem: Scalars['Boolean'];
-  multiplier: Scalars['Float'];
-  name: Scalars['String'];
-  updatedAt: Scalars['DateTime'];
+    __typename?: "WorkType";
+    code: Scalars["String"];
+    createdAt: Scalars["Date"];
+    description?: Maybe<Scalars["String"]>;
+    id: Scalars["ID"];
+    isActive: Scalars["Boolean"];
+    isBillable: Scalars["Boolean"];
+    isDefault: Scalars["Boolean"];
+    isSystem: Scalars["Boolean"];
+    multiplier: Scalars["Float"];
+    name: Scalars["String"];
+    tenant: Tenant;
+    updatedAt: Scalars["Date"];
 };
 
-export type TenantFromIdQueryVariables = Exact<{
-  tenantId: Scalars['String'];
+export type TenantQueryVariables = Exact<{
+    tenantId: Scalars["String"];
 }>;
 
+export type TenantQuery = {
+    __typename?: "Query";
+    tenant: {
+        __typename?: "Tenant";
+        id: string;
+        isActive: boolean;
+        name: string;
+        description?: string | null;
+        createdAt: Date | string;
+        updatedAt: Date | string;
+        startDate: Date | string;
+    };
+};
 
-export type TenantFromIdQuery = { __typename?: 'Query', tenantFromId?: { __typename?: 'Tenant', id: string, isActive: boolean, name: string, description?: string | null } | null };
-
-export type GetUserFromAuth0QueryVariables = Exact<{
-  auth0Id: Scalars['String'];
+export type UserFromAuthIdQueryVariables = Exact<{
+    auth0Id: Scalars["String"];
 }>;
 
+export type UserFromAuthIdQuery = {
+    __typename?: "Query";
+    userFromAuthId: {
+        __typename?: "User";
+        id: string;
+        email?: string | null;
+        authId?: string | null;
+        code?: string | null;
+        avatar?: string | null;
+        name?: string | null;
+        isActive: boolean;
+        isAdmin: boolean;
+        createdAt: Date | string;
+        updatedAt: Date | string;
+        isPaymentManager: boolean;
+        isManager: boolean;
+        department: { __typename?: "Department"; id: string };
+        managees: Array<{ __typename?: "User"; id: string }>;
+        manager: { __typename?: "User"; id: string };
+        tenant: { __typename?: "Tenant"; id: string };
+    };
+};
 
-export type GetUserFromAuth0Query = { __typename?: 'Query', getUserFromAuth0?: { __typename?: 'User', id: string, email: string, auth0Id?: string | null, code: string, avatar?: string | null, name?: string | null, isActive: boolean, isAdmin: boolean, createdAt: any, updatedAt: any, isPaymentManager: boolean, isManager: boolean, department: { __typename?: 'Department', id: string }, managees: Array<{ __typename?: 'User', id: string }>, manager?: { __typename?: 'User', id: string } | null, tenant: { __typename?: 'Tenant', id: string } } | null };
-
-export type GetTimesheetQueryVariables = Exact<{
-  timesheet: TimesheetGetInput;
+export type TimesheetQueryVariables = Exact<{
+    date: Scalars["Date"];
+    userId: Scalars["String"];
 }>;
 
+export type TimesheetQuery = {
+    __typename?: "Query";
+    timesheetFromDate: {
+        __typename?: "Timesheet";
+        id: string;
+        status: Status;
+        isChanged: boolean;
+        period: {
+            __typename?: "Period";
+            id: string;
+            startDate: Date | string;
+            endDate: Date | string;
+        };
+    };
+};
 
-export type GetTimesheetQuery = { __typename?: 'Query', getTimesheet?: { __typename?: 'Timesheet', id: string, status: Status, isChanged: boolean, period: { __typename?: 'Period', id: string, startDate: any, endDate: any } } | null };
+export type DepartmentsQueryVariables = Exact<{
+    tenantId: Scalars["String"];
+}>;
 
-export type DepartmentsQueryVariables = Exact<{ [key: string]: never; }>;
+export type DepartmentsQuery = {
+    __typename?: "Query";
+    departments: Array<{
+        __typename?: "Department";
+        id: string;
+        name: string;
+        createdAt: Date | string;
+        updatedAt: Date | string;
+        isActive: boolean;
+        description?: string | null;
+    }>;
+};
 
+export type ProjectsQueryVariables = Exact<{
+    tenantId: Scalars["String"];
+}>;
 
-export type DepartmentsQuery = { __typename?: 'Query', departments: Array<{ __typename?: 'Department', id: string, name: string, createdAt: any, updatedAt: any, isActive: boolean, description?: string | null }> };
+export type ProjectsQuery = {
+    __typename?: "Query";
+    projects: Array<{
+        __typename?: "Project";
+        id: string;
+        name: string;
+        createdAt: Date | string;
+        updatedAt: Date | string;
+        isActive: boolean;
+        description?: string | null;
+        code: string;
+        department: { __typename?: "Department"; id: string };
+    }>;
+};
 
-export type ProjectsQueryVariables = Exact<{ [key: string]: never; }>;
+export type WorkTypesQueryVariables = Exact<{
+    tenantId: Scalars["String"];
+}>;
 
-
-export type ProjectsQuery = { __typename?: 'Query', projects: Array<{ __typename?: 'Project', id: string, name: string, createdAt: any, updatedAt: any, isActive: boolean, description?: string | null, code: string, department: { __typename?: 'Department', id: string } }> };
-
-export type WorkTypesQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type WorkTypesQuery = { __typename?: 'Query', workTypes: Array<{ __typename?: 'WorkType', id: string, name: string, createdAt: any, updatedAt: any, isActive: boolean, description?: string | null, code: string, isSystem: boolean, isDefault: boolean, multiplier: number, isBillable: boolean }> };
+export type WorkTypesQuery = {
+    __typename?: "Query";
+    workTypes: Array<{
+        __typename?: "WorkType";
+        id: string;
+        name: string;
+        createdAt: Date | string;
+        updatedAt: Date | string;
+        isActive: boolean;
+        description?: string | null;
+        code: string;
+        isSystem: boolean;
+        isDefault: boolean;
+        multiplier: number;
+        isBillable: boolean;
+    }>;
+};
 
 export type TimeEntryQueryVariables = Exact<{
-  date: Scalars['String'];
-  timeEntryRowId: Scalars['String'];
+    index: Scalars["Int"];
+    timeEntryRowId: Scalars["String"];
 }>;
 
-
-export type TimeEntryQuery = { __typename?: 'Query', timeEntry?: { __typename?: 'TimeEntry', id: string, createdAt: any, updatedAt: any, date: any, hours: number, entryComments: Array<{ __typename?: 'EntryComment', id: string, createdAt: any, updatedAt: any, text: string, user: { __typename?: 'User', id: string } }> } | null };
-
-export type TimeEntryFromIndexQueryVariables = Exact<{
-  index: Scalars['Int'];
-  timeEntryRowId: Scalars['String'];
-}>;
-
-
-export type TimeEntryFromIndexQuery = { __typename?: 'Query', timeEntryFromIndex?: { __typename?: 'TimeEntry', id: string, createdAt: any, updatedAt: any, date: any, hours: number, index: number, entryComments: Array<{ __typename?: 'EntryComment', id: string }> } | null };
+export type TimeEntryQuery = {
+    __typename?: "Query";
+    timeEntry: {
+        __typename?: "TimeEntry";
+        id: string;
+        createdAt: Date | string;
+        updatedAt: Date | string;
+        date: Date | string;
+        index: number;
+        hours: number;
+        entryComments: Array<{ __typename?: "EntryComment"; id: string }>;
+    };
+};
 
 export type CreateTimeEntryMutationVariables = Exact<{
-  index: Scalars['Int'];
-  timeEntryRowId: Scalars['String'];
-  hours: Scalars['Int'];
-  date: Scalars['String'];
+    index: Scalars["Int"];
+    timeEntryRowId: Scalars["String"];
+    hours: Scalars["Float"];
+    date: Scalars["Date"];
 }>;
 
-
-export type CreateTimeEntryMutation = { __typename?: 'Mutation', createTimeEntry?: { __typename?: 'TimeEntry', id: string, createdAt: any, updatedAt: any, date: any, hours: number, index: number, entryComments: Array<{ __typename?: 'EntryComment', id: string }> } | null };
+export type CreateTimeEntryMutation = {
+    __typename?: "Mutation";
+    createTimeEntry: {
+        __typename?: "TimeEntry";
+        id: string;
+        createdAt: Date | string;
+        updatedAt: Date | string;
+        date: Date | string;
+        hours: number;
+        index: number;
+        entryComments: Array<{ __typename?: "EntryComment"; id: string }>;
+    };
+};
 
 export type UpdateTimeEntryhoursMutationVariables = Exact<{
-  updateTimeEntryhoursId: Scalars['String'];
-  hours: Scalars['Int'];
+    id: Scalars["String"];
+    hours: Scalars["Float"];
 }>;
 
-
-export type UpdateTimeEntryhoursMutation = { __typename?: 'Mutation', updateTimeEntryhours?: { __typename?: 'TimeEntry', id: string, createdAt: any, updatedAt: any, date: any, hours: number, index: number, entryComments: Array<{ __typename?: 'EntryComment', id: string }> } | null };
+export type UpdateTimeEntryhoursMutation = {
+    __typename?: "Mutation";
+    updateTimeEntry: {
+        __typename?: "TimeEntry";
+        id: string;
+        createdAt: Date | string;
+        updatedAt: Date | string;
+        date: Date | string;
+        hours: number;
+        index: number;
+        entryComments: Array<{ __typename?: "EntryComment"; id: string }>;
+    };
+};
 
 export type DeleteTimeEntryMutationVariables = Exact<{
-  deleteTimeEntryId: Scalars['String'];
+    id: Scalars["String"];
 }>;
 
-
-export type DeleteTimeEntryMutation = { __typename?: 'Mutation', deleteTimeEntry?: { __typename?: 'TimeEntry', id: string, hours: number, date: any, index: number, updatedAt: any, createdAt: any } | null };
+export type DeleteTimeEntryMutation = {
+    __typename?: "Mutation";
+    deleteTimeEntry: {
+        __typename?: "TimeEntry";
+        id: string;
+        hours: number;
+        date: Date | string;
+        index: number;
+        updatedAt: Date | string;
+        createdAt: Date | string;
+    };
+};
 
 export type UpdateTimeEntryRowMutationVariables = Exact<{
-  updateTimeEntryRowId: Scalars['String'];
-  departmentId?: InputMaybe<Scalars['String']>;
-  projectId?: InputMaybe<Scalars['String']>;
-  workTypeId?: InputMaybe<Scalars['String']>;
+    updateTimeEntryRowId: Scalars["String"];
+    departmentId?: InputMaybe<Scalars["String"]>;
+    projectId?: InputMaybe<Scalars["String"]>;
+    workTypeId?: InputMaybe<Scalars["String"]>;
 }>;
 
+export type UpdateTimeEntryRowMutation = {
+    __typename?: "Mutation";
+    updateTimeEntryRow: {
+        __typename?: "TimeEntryRow";
+        id: string;
+        createdAt: Date | string;
+        updatedAt: Date | string;
+        workType: { __typename?: "WorkType"; id: string };
+        project: { __typename?: "Project"; id: string };
+        department: { __typename?: "Department"; id: string };
+    };
+};
 
-export type UpdateTimeEntryRowMutation = { __typename?: 'Mutation', updateTimeEntryRow?: { __typename?: 'TimeEntryRow', id: string, createdAt: any, updatedAt: any, workType?: { __typename?: 'WorkType', id: string } | null, project?: { __typename?: 'Project', id: string } | null, department?: { __typename?: 'Department', id: string } | null } | null };
-
-export type GetTimeEntriesQueryVariables = Exact<{
-  rowId: Scalars['String'];
+export type TimeEntriesQueryVariables = Exact<{
+    id: Scalars["String"];
 }>;
 
+export type TimeEntriesQuery = {
+    __typename?: "Query";
+    timeEntryRow: {
+        __typename?: "TimeEntryRow";
+        timeEntries: Array<{ __typename?: "TimeEntry"; id: string }>;
+    };
+};
 
-export type GetTimeEntriesQuery = { __typename?: 'Query', getTimeEntryRow?: { __typename?: 'TimeEntryRow', timeEntries: Array<{ __typename?: 'TimeEntry', id: string }> } | null };
-
-export type GetTimeEntryRowQueryVariables = Exact<{
-  getTimeEntryRowId: Scalars['String'];
+export type TimeEntryRowQueryVariables = Exact<{
+    id: Scalars["String"];
 }>;
 
+export type TimeEntryRowQuery = {
+    __typename?: "Query";
+    timeEntryRow: {
+        __typename?: "TimeEntryRow";
+        id: string;
+        createdAt: Date | string;
+        updatedAt: Date | string;
+        workType: { __typename?: "WorkType"; id: string };
+        project: { __typename?: "Project"; id: string };
+        department: { __typename?: "Department"; id: string };
+    };
+};
 
-export type GetTimeEntryRowQuery = { __typename?: 'Query', getTimeEntryRow?: { __typename?: 'TimeEntryRow', id: string, createdAt: any, updatedAt: any, workType?: { __typename?: 'WorkType', id: string } | null, project?: { __typename?: 'Project', id: string } | null, department?: { __typename?: 'Department', id: string } | null } | null };
-
-export type GetTimeEntryRowsQueryVariables = Exact<{
-  timesheetId: Scalars['String'];
+export type TimeEntryRowsQueryVariables = Exact<{
+    timesheetId: Scalars["String"];
 }>;
 
-
-export type GetTimeEntryRowsQuery = { __typename?: 'Query', getTimeEntryRows: Array<{ __typename?: 'TimeEntryRow', id: string, createdAt: any, updatedAt: any, workType?: { __typename?: 'WorkType', id: string } | null, project?: { __typename?: 'Project', id: string } | null, department?: { __typename?: 'Department', id: string } | null, timeEntries: Array<{ __typename?: 'TimeEntry', id: string }> }> };
+export type TimeEntryRowsQuery = {
+    __typename?: "Query";
+    timeEntryRows: Array<{
+        __typename?: "TimeEntryRow";
+        id: string;
+        createdAt: Date | string;
+        updatedAt: Date | string;
+        workType: { __typename?: "WorkType"; id: string };
+        project: { __typename?: "Project"; id: string };
+        department: { __typename?: "Department"; id: string };
+        timeEntries: Array<{ __typename?: "TimeEntry"; id: string }>;
+    }>;
+};
 
 export type CreateTimeEntryRowMutationVariables = Exact<{
-  timesheetId: Scalars['String'];
+    timesheetId: Scalars["String"];
 }>;
 
-
-export type CreateTimeEntryRowMutation = { __typename?: 'Mutation', createTimeEntryRow?: { __typename?: 'TimeEntryRow', id: string, createdAt: any, updatedAt: any, workType?: { __typename?: 'WorkType', id: string } | null, project?: { __typename?: 'Project', id: string } | null, department?: { __typename?: 'Department', id: string } | null, timeEntries: Array<{ __typename?: 'TimeEntry', id: string }> } | null };
+export type CreateTimeEntryRowMutation = {
+    __typename?: "Mutation";
+    createTimeEntryRow: {
+        __typename?: "TimeEntryRow";
+        id: string;
+        createdAt: Date | string;
+        updatedAt: Date | string;
+        workType: { __typename?: "WorkType"; id: string };
+        project: { __typename?: "Project"; id: string };
+        department: { __typename?: "Department"; id: string };
+        timeEntries: Array<{ __typename?: "TimeEntry"; id: string }>;
+    };
+};
 
 export type DeleteTimeEntryRowMutationVariables = Exact<{
-  timeEntryRow: TimeEntryRowDeleteInput;
+    id: Scalars["String"];
 }>;
 
+export type DeleteTimeEntryRowMutation = {
+    __typename?: "Mutation";
+    deleteTimeEntryRow: { __typename?: "TimeEntryRow"; id: string };
+};
 
-export type DeleteTimeEntryRowMutation = { __typename?: 'Mutation', deleteTimeEntryRow?: { __typename?: 'TimeEntryRow', id: string } | null };
-
-export type GetUserFromTokenQueryVariables = Exact<{
-  token: Scalars['ID'];
+export type UserFromTokenQueryVariables = Exact<{
+    token: Scalars["String"];
 }>;
 
+export type UserFromTokenQuery = {
+    __typename?: "Query";
+    userFromToken: {
+        __typename?: "User";
+        id: string;
+        name?: string | null;
+        tenant: {
+            __typename?: "Tenant";
+            name: string;
+            description?: string | null;
+            logo?: string | null;
+            isActive: boolean;
+            updatedAt: Date | string;
+            createdAt: Date | string;
+        };
+    };
+};
 
-export type GetUserFromTokenQuery = { __typename?: 'Query', getUserFromToken?: { __typename?: 'User', id: string, name?: string | null, tenant: { __typename?: 'Tenant', name: string, description?: string | null, logo?: string | null, isActive: boolean, updatedAt: any, createdAt: any } } | null };
-
-export type AttachAuth0IdMutationVariables = Exact<{
-  auth0Id: Scalars['String'];
-  userId: Scalars['ID'];
+export type EntryCommentQueryVariables = Exact<{
+    id: Scalars["String"];
 }>;
 
-
-export type AttachAuth0IdMutation = { __typename?: 'Mutation', attachAuth0Id?: { __typename?: 'User', id: string, email: string, auth0Id?: string | null, code: string, isActive: boolean, isAdmin: boolean, createdAt: any, updatedAt: any, isPaymentManager: boolean, isManager: boolean, department: { __typename?: 'Department', id: string }, tenant: { __typename?: 'Tenant', id: string }, managees: Array<{ __typename?: 'User', id: string }>, manager?: { __typename?: 'User', id: string } | null } | null };
-
-export type GetEntryCommentQueryVariables = Exact<{
-  commentId: Scalars['String'];
-}>;
-
-
-export type GetEntryCommentQuery = { __typename?: 'Query', getEntryComment?: { __typename?: 'EntryComment', id: string, createdAt: any, updatedAt: any, text: string, user: { __typename?: 'User', id: string, name?: string | null, avatar?: string | null } } | null };
+export type EntryCommentQuery = {
+    __typename?: "Query";
+    entryComment: {
+        __typename?: "EntryComment";
+        id: string;
+        createdAt: Date | string;
+        updatedAt: Date | string;
+        text: string;
+        user: {
+            __typename?: "User";
+            id: string;
+            name?: string | null;
+            avatar?: string | null;
+        };
+    };
+};
 
 export type CreateEntryCommentMutationVariables = Exact<{
-  entryComment: EntryCommentCreateInput;
+    text: Scalars["String"];
+    entryId: Scalars["String"];
+    userId: Scalars["String"];
 }>;
 
-
-export type CreateEntryCommentMutation = { __typename?: 'Mutation', createEntryComment?: { __typename?: 'EntryComment', id: string, createdAt: any, updatedAt: any, text: string, user: { __typename?: 'User', id: string, name?: string | null, avatar?: string | null } } | null };
+export type CreateEntryCommentMutation = {
+    __typename?: "Mutation";
+    createEntryComment: {
+        __typename?: "EntryComment";
+        id: string;
+        createdAt: Date | string;
+        updatedAt: Date | string;
+        text: string;
+        user: {
+            __typename?: "User";
+            id: string;
+            name?: string | null;
+            avatar?: string | null;
+        };
+    };
+};
 
 export type CreateOneTimeTokenMutationVariables = Exact<{
-  userId: Scalars['String'];
-  tenantId: Scalars['String'];
+    userId: Scalars["String"];
+    tenantId: Scalars["String"];
 }>;
 
-
-export type CreateOneTimeTokenMutation = { __typename?: 'Mutation', createOneTimeToken?: { __typename?: 'OneTimeToken', id: string, createdAt: any, updatedAt: any, user: { __typename?: 'User', id: string }, tenant: { __typename?: 'Tenant', id: string } } | null };
+export type CreateOneTimeTokenMutation = {
+    __typename?: "Mutation";
+    createOneTimeToken: {
+        __typename?: "OneTimeToken";
+        id: string;
+        createdAt: Date | string;
+        updatedAt: Date | string;
+        user: { __typename?: "User"; id: string };
+        tenant: { __typename?: "Tenant"; id: string };
+    };
+};
 
 export type CreateUserMutationVariables = Exact<{
-  user: UserCreateInput;
+    email: Scalars["String"];
+    name: Scalars["String"];
+    tenantId: Scalars["String"];
+    authId: Scalars["String"];
+    code?: InputMaybe<Scalars["String"]>;
+    avatar?: InputMaybe<Scalars["String"]>;
+    isActive?: InputMaybe<Scalars["Boolean"]>;
+    isAdmin?: InputMaybe<Scalars["Boolean"]>;
+    isPaymentManager?: InputMaybe<Scalars["Boolean"]>;
+    isManager?: InputMaybe<Scalars["Boolean"]>;
+    departmentId?: InputMaybe<Scalars["String"]>;
+    managerId?: InputMaybe<Scalars["String"]>;
 }>;
 
-
-export type CreateUserMutation = { __typename?: 'Mutation', createUser?: { __typename?: 'User', id: string, email: string, auth0Id?: string | null, isActive: boolean, code: string, isAdmin: boolean, name?: string | null, avatar?: string | null, createdAt: any, updatedAt: any, isPaymentManager: boolean, isManager: boolean, tenant: { __typename?: 'Tenant', id: string }, department: { __typename?: 'Department', id: string }, manager?: { __typename?: 'User', id: string } | null, managees: Array<{ __typename?: 'User', id: string }> } | null };
+export type CreateUserMutation = {
+    __typename?: "Mutation";
+    createUser: {
+        __typename?: "User";
+        id: string;
+        email?: string | null;
+        authId?: string | null;
+        isActive: boolean;
+        code?: string | null;
+        isAdmin: boolean;
+        name?: string | null;
+        avatar?: string | null;
+        createdAt: Date | string;
+        updatedAt: Date | string;
+        isPaymentManager: boolean;
+        isManager: boolean;
+        tenant: { __typename?: "Tenant"; id: string };
+        department: { __typename?: "Department"; id: string };
+        manager: { __typename?: "User"; id: string };
+        managees: Array<{ __typename?: "User"; id: string }>;
+    };
+};
 
 export type ManagersQueryVariables = Exact<{
-  tenantId: Scalars['String'];
+    tenantId: Scalars["String"];
 }>;
 
+export type ManagersQuery = {
+    __typename?: "Query";
+    managers: Array<{ __typename?: "User"; id: string; name?: string | null }>;
+};
 
-export type ManagersQuery = { __typename?: 'Query', managers: Array<{ __typename?: 'User', id: string, name?: string | null }> };
-
-export type GetUserFromCodeQueryVariables = Exact<{
-  code: Scalars['String'];
-  tenantId: Scalars['String'];
+export type OneTimeTokensQueryVariables = Exact<{
+    tenantId: Scalars["String"];
 }>;
 
-
-export type GetUserFromCodeQuery = { __typename?: 'Query', getUserFromCode?: { __typename?: 'User', id: string } | null };
-
-export type GetOneTimeTokensQueryVariables = Exact<{
-  tenantId: Scalars['String'];
-}>;
-
-
-export type GetOneTimeTokensQuery = { __typename?: 'Query', getOneTimeTokens: Array<{ __typename?: 'OneTimeToken', id: string, createdAt: any, user: { __typename?: 'User', id: string, name?: string | null, avatar?: string | null } }> };
+export type OneTimeTokensQuery = {
+    __typename?: "Query";
+    oneTimeTokens: Array<{
+        __typename?: "OneTimeToken";
+        id: string;
+        createdAt: Date | string;
+        user: {
+            __typename?: "User";
+            id: string;
+            name?: string | null;
+            avatar?: string | null;
+        };
+    }>;
+};
 
 export type UsersQueryVariables = Exact<{
-  tenantId: Scalars['String'];
+    tenantId: Scalars["String"];
 }>;
 
-
-export type UsersQuery = { __typename?: 'Query', users: Array<{ __typename?: 'User', id: string, email: string, auth0Id?: string | null, code: string, isActive: boolean, isAdmin: boolean, name?: string | null, avatar?: string | null, createdAt: any, updatedAt: any, isPaymentManager: boolean, isManager: boolean, isSetup: boolean, tenant: { __typename?: 'Tenant', id: string, name: string }, department: { __typename?: 'Department', id: string, name: string }, managees: Array<{ __typename?: 'User', id: string, email: string, name?: string | null, avatar?: string | null }>, manager?: { __typename?: 'User', id: string, email: string, name?: string | null } | null }> };
-
-export type TimeEntryFromIdQueryVariables = Exact<{
-  id: Scalars['String'];
-}>;
-
-
-export type TimeEntryFromIdQuery = { __typename?: 'Query', timeEntryFromId?: { __typename?: 'TimeEntry', id: string, createdAt: any, updatedAt: any, date: any, hours: number, entryComments: Array<{ __typename?: 'EntryComment', id: string }> } | null };
+export type UsersQuery = {
+    __typename?: "Query";
+    users: Array<{
+        __typename?: "User";
+        id: string;
+        email?: string | null;
+        authId?: string | null;
+        code?: string | null;
+        isActive: boolean;
+        isAdmin: boolean;
+        name?: string | null;
+        avatar?: string | null;
+        createdAt: Date | string;
+        updatedAt: Date | string;
+        isPaymentManager: boolean;
+        isManager: boolean;
+        isSetup: boolean;
+        tenant: { __typename?: "Tenant"; id: string; name: string };
+        department: { __typename?: "Department"; id: string; name: string };
+        managees: Array<{
+            __typename?: "User";
+            id: string;
+            email?: string | null;
+            name?: string | null;
+            avatar?: string | null;
+        }>;
+        manager: {
+            __typename?: "User";
+            id: string;
+            email?: string | null;
+            name?: string | null;
+        };
+    }>;
+};
 
 export type StatusEventsQueryVariables = Exact<{
-  timesheetId: Scalars['String'];
+    timesheetId: Scalars["String"];
 }>;
 
-
-export type StatusEventsQuery = { __typename?: 'Query', statusEvents: Array<{ __typename?: 'StatusEvent', id: string, createdAt: any, type: EventType, status: Status, message?: string | null, user: { __typename?: 'User', name?: string | null, avatar?: string | null } }> };
+export type StatusEventsQuery = {
+    __typename?: "Query";
+    statusEvents: Array<{
+        __typename?: "StatusEvent";
+        id: string;
+        createdAt: Date | string;
+        type: EventType;
+        status: Status;
+        message?: string | null;
+        user: {
+            __typename?: "User";
+            name?: string | null;
+            avatar?: string | null;
+        };
+    }>;
+};
 
 export type CreateStatusEventMutationVariables = Exact<{
-  timesheetId: Scalars['String'];
-  type: EventType;
-  status: Status;
-  message: Scalars['String'];
-  userId: Scalars['String'];
+    timesheetId: Scalars["String"];
+    type: EventType;
+    status: Status;
+    message: Scalars["String"];
+    userId: Scalars["String"];
 }>;
 
-
-export type CreateStatusEventMutation = { __typename?: 'Mutation', createStatusEvent?: { __typename?: 'StatusEvent', id: string, createdAt: any, type: EventType, status: Status, message?: string | null, user: { __typename?: 'User', name?: string | null, avatar?: string | null } } | null };
+export type CreateStatusEventMutation = {
+    __typename?: "Mutation";
+    createStatusEvent: {
+        __typename?: "StatusEvent";
+        id: string;
+        createdAt: Date | string;
+        type: EventType;
+        status: Status;
+        message?: string | null;
+        user: {
+            __typename?: "User";
+            name?: string | null;
+            avatar?: string | null;
+        };
+    };
+};
 
 export type TimesheetUpdatedQueryVariables = Exact<{
-  timesheetId: Scalars['String'];
+    timesheetId: Scalars["String"];
 }>;
 
-
-export type TimesheetUpdatedQuery = { __typename?: 'Query', timesheet?: { __typename?: 'Timesheet', updatedAt: any, id: string, timeEntryRows: Array<{ __typename?: 'TimeEntryRow', id: string, updatedAt: any, timeEntries: Array<{ __typename?: 'TimeEntry', id: string, updatedAt: any }> }> } | null };
+export type TimesheetUpdatedQuery = {
+    __typename?: "Query";
+    timesheet: {
+        __typename?: "Timesheet";
+        updatedAt: Date | string;
+        id: string;
+        timeEntryRows: Array<{
+            __typename?: "TimeEntryRow";
+            id: string;
+            updatedAt: Date | string;
+            timeEntries: Array<{
+                __typename?: "TimeEntry";
+                id: string;
+                updatedAt: Date | string;
+            }>;
+        }>;
+    };
+};
 
 export type UpdateTimesheetChangedMutationVariables = Exact<{
-  timesheetId: Scalars['String'];
-  changed: Scalars['Boolean'];
+    timesheetId: Scalars["String"];
+    changed: Scalars["Boolean"];
 }>;
 
-
-export type UpdateTimesheetChangedMutation = { __typename?: 'Mutation', updateTimesheet?: { __typename?: 'Timesheet', id: string, updatedAt: any, isChanged: boolean } | null };
+export type UpdateTimesheetChangedMutation = {
+    __typename?: "Mutation";
+    updateTimesheet: {
+        __typename?: "Timesheet";
+        id: string;
+        updatedAt: Date | string;
+        isChanged: boolean;
+    };
+};
 
 export type CreateTenantMutationVariables = Exact<{
-  name: Scalars['String'];
-  description: Scalars['String'];
-  logo: Scalars['String'];
-  isActive: Scalars['Boolean'];
-  startDate: Scalars['String'];
-  periodLength: Scalars['Int'];
+    name: Scalars["String"];
+    description: Scalars["String"];
+    logo: Scalars["String"];
+    isActive: Scalars["Boolean"];
+    startDate: Scalars["Date"];
+    periodLength: Scalars["Int"];
 }>;
 
+export type CreateTenantMutation = {
+    __typename?: "Mutation";
+    createTenant: {
+        __typename?: "Tenant";
+        id: string;
+        name: string;
+        description?: string | null;
+        startDate: Date | string;
+        periodLength: number;
+        isActive: boolean;
+        updatedAt: Date | string;
+        createdAt: Date | string;
+    };
+};
 
-export type CreateTenantMutation = { __typename?: 'Mutation', createTenant?: { __typename?: 'Tenant', id: string, name: string, description?: string | null, startDate: any, periodLength: number, isActive: boolean, updatedAt: any, createdAt: any } | null };
-
-
-export const TenantFromIdDocument = gql`
-    query TenantFromId($tenantId: String!) {
-  tenantFromId(tenantId: $tenantId) {
-    id
-    isActive
-    name
-    description
-  }
-}
-    `;
-
-/**
- * __useTenantFromIdQuery__
- *
- * To run a query within a React component, call `useTenantFromIdQuery` and pass it any options that fit your needs.
- * When your component renders, `useTenantFromIdQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useTenantFromIdQuery({
- *   variables: {
- *      tenantId: // value for 'tenantId'
- *   },
- * });
- */
-export function useTenantFromIdQuery(baseOptions: Apollo.QueryHookOptions<TenantFromIdQuery, TenantFromIdQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<TenantFromIdQuery, TenantFromIdQueryVariables>(TenantFromIdDocument, options);
-      }
-export function useTenantFromIdLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<TenantFromIdQuery, TenantFromIdQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<TenantFromIdQuery, TenantFromIdQueryVariables>(TenantFromIdDocument, options);
-        }
-export type TenantFromIdQueryHookResult = ReturnType<typeof useTenantFromIdQuery>;
-export type TenantFromIdLazyQueryHookResult = ReturnType<typeof useTenantFromIdLazyQuery>;
-export type TenantFromIdQueryResult = Apollo.QueryResult<TenantFromIdQuery, TenantFromIdQueryVariables>;
-export const GetUserFromAuth0Document = gql`
-    query GetUserFromAuth0($auth0Id: String!) {
-  getUserFromAuth0(auth0Id: $auth0Id) {
-    id
-    email
-    auth0Id
-    code
-    avatar
-    name
-    isActive
-    isAdmin
-    createdAt
-    updatedAt
-    department {
-      id
-    }
-    managees {
-      id
-    }
-    manager {
-      id
-    }
-    isPaymentManager
-    isManager
-    tenant {
-      id
-    }
-  }
-}
-    `;
-
-/**
- * __useGetUserFromAuth0Query__
- *
- * To run a query within a React component, call `useGetUserFromAuth0Query` and pass it any options that fit your needs.
- * When your component renders, `useGetUserFromAuth0Query` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetUserFromAuth0Query({
- *   variables: {
- *      auth0Id: // value for 'auth0Id'
- *   },
- * });
- */
-export function useGetUserFromAuth0Query(baseOptions: Apollo.QueryHookOptions<GetUserFromAuth0Query, GetUserFromAuth0QueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetUserFromAuth0Query, GetUserFromAuth0QueryVariables>(GetUserFromAuth0Document, options);
-      }
-export function useGetUserFromAuth0LazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetUserFromAuth0Query, GetUserFromAuth0QueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetUserFromAuth0Query, GetUserFromAuth0QueryVariables>(GetUserFromAuth0Document, options);
-        }
-export type GetUserFromAuth0QueryHookResult = ReturnType<typeof useGetUserFromAuth0Query>;
-export type GetUserFromAuth0LazyQueryHookResult = ReturnType<typeof useGetUserFromAuth0LazyQuery>;
-export type GetUserFromAuth0QueryResult = Apollo.QueryResult<GetUserFromAuth0Query, GetUserFromAuth0QueryVariables>;
-export const GetTimesheetDocument = gql`
-    query GetTimesheet($timesheet: TimesheetGetInput!) {
-  getTimesheet(Timesheet: $timesheet) {
-    id
-    status
-    isChanged
-    period {
-      id
-      startDate
-      endDate
-    }
-  }
-}
-    `;
-
-/**
- * __useGetTimesheetQuery__
- *
- * To run a query within a React component, call `useGetTimesheetQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetTimesheetQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetTimesheetQuery({
- *   variables: {
- *      timesheet: // value for 'timesheet'
- *   },
- * });
- */
-export function useGetTimesheetQuery(baseOptions: Apollo.QueryHookOptions<GetTimesheetQuery, GetTimesheetQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetTimesheetQuery, GetTimesheetQueryVariables>(GetTimesheetDocument, options);
-      }
-export function useGetTimesheetLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetTimesheetQuery, GetTimesheetQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetTimesheetQuery, GetTimesheetQueryVariables>(GetTimesheetDocument, options);
-        }
-export type GetTimesheetQueryHookResult = ReturnType<typeof useGetTimesheetQuery>;
-export type GetTimesheetLazyQueryHookResult = ReturnType<typeof useGetTimesheetLazyQuery>;
-export type GetTimesheetQueryResult = Apollo.QueryResult<GetTimesheetQuery, GetTimesheetQueryVariables>;
-export const DepartmentsDocument = gql`
-    query Departments {
-  departments {
-    id
-    name
-    createdAt
-    updatedAt
-    isActive
-    description
-  }
-}
-    `;
-
-/**
- * __useDepartmentsQuery__
- *
- * To run a query within a React component, call `useDepartmentsQuery` and pass it any options that fit your needs.
- * When your component renders, `useDepartmentsQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useDepartmentsQuery({
- *   variables: {
- *   },
- * });
- */
-export function useDepartmentsQuery(baseOptions?: Apollo.QueryHookOptions<DepartmentsQuery, DepartmentsQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<DepartmentsQuery, DepartmentsQueryVariables>(DepartmentsDocument, options);
-      }
-export function useDepartmentsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<DepartmentsQuery, DepartmentsQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<DepartmentsQuery, DepartmentsQueryVariables>(DepartmentsDocument, options);
-        }
-export type DepartmentsQueryHookResult = ReturnType<typeof useDepartmentsQuery>;
-export type DepartmentsLazyQueryHookResult = ReturnType<typeof useDepartmentsLazyQuery>;
-export type DepartmentsQueryResult = Apollo.QueryResult<DepartmentsQuery, DepartmentsQueryVariables>;
-export const ProjectsDocument = gql`
-    query Projects {
-  projects {
-    id
-    name
-    createdAt
-    updatedAt
-    isActive
-    description
-    code
-    department {
-      id
-    }
-  }
-}
-    `;
-
-/**
- * __useProjectsQuery__
- *
- * To run a query within a React component, call `useProjectsQuery` and pass it any options that fit your needs.
- * When your component renders, `useProjectsQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useProjectsQuery({
- *   variables: {
- *   },
- * });
- */
-export function useProjectsQuery(baseOptions?: Apollo.QueryHookOptions<ProjectsQuery, ProjectsQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<ProjectsQuery, ProjectsQueryVariables>(ProjectsDocument, options);
-      }
-export function useProjectsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ProjectsQuery, ProjectsQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<ProjectsQuery, ProjectsQueryVariables>(ProjectsDocument, options);
-        }
-export type ProjectsQueryHookResult = ReturnType<typeof useProjectsQuery>;
-export type ProjectsLazyQueryHookResult = ReturnType<typeof useProjectsLazyQuery>;
-export type ProjectsQueryResult = Apollo.QueryResult<ProjectsQuery, ProjectsQueryVariables>;
-export const WorkTypesDocument = gql`
-    query WorkTypes {
-  workTypes {
-    id
-    name
-    createdAt
-    updatedAt
-    isActive
-    description
-    code
-    isSystem
-    isDefault
-    multiplier
-    isBillable
-  }
-}
-    `;
-
-/**
- * __useWorkTypesQuery__
- *
- * To run a query within a React component, call `useWorkTypesQuery` and pass it any options that fit your needs.
- * When your component renders, `useWorkTypesQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useWorkTypesQuery({
- *   variables: {
- *   },
- * });
- */
-export function useWorkTypesQuery(baseOptions?: Apollo.QueryHookOptions<WorkTypesQuery, WorkTypesQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<WorkTypesQuery, WorkTypesQueryVariables>(WorkTypesDocument, options);
-      }
-export function useWorkTypesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<WorkTypesQuery, WorkTypesQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<WorkTypesQuery, WorkTypesQueryVariables>(WorkTypesDocument, options);
-        }
-export type WorkTypesQueryHookResult = ReturnType<typeof useWorkTypesQuery>;
-export type WorkTypesLazyQueryHookResult = ReturnType<typeof useWorkTypesLazyQuery>;
-export type WorkTypesQueryResult = Apollo.QueryResult<WorkTypesQuery, WorkTypesQueryVariables>;
-export const TimeEntryDocument = gql`
-    query TimeEntry($date: String!, $timeEntryRowId: String!) {
-  timeEntry(date: $date, timeEntryRowId: $timeEntryRowId) {
-    id
-    createdAt
-    updatedAt
-    date
-    hours
-    entryComments {
-      id
-      createdAt
-      updatedAt
-      text
-      user {
-        id
-      }
-    }
-  }
-}
-    `;
-
-/**
- * __useTimeEntryQuery__
- *
- * To run a query within a React component, call `useTimeEntryQuery` and pass it any options that fit your needs.
- * When your component renders, `useTimeEntryQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useTimeEntryQuery({
- *   variables: {
- *      date: // value for 'date'
- *      timeEntryRowId: // value for 'timeEntryRowId'
- *   },
- * });
- */
-export function useTimeEntryQuery(baseOptions: Apollo.QueryHookOptions<TimeEntryQuery, TimeEntryQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<TimeEntryQuery, TimeEntryQueryVariables>(TimeEntryDocument, options);
-      }
-export function useTimeEntryLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<TimeEntryQuery, TimeEntryQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<TimeEntryQuery, TimeEntryQueryVariables>(TimeEntryDocument, options);
-        }
-export type TimeEntryQueryHookResult = ReturnType<typeof useTimeEntryQuery>;
-export type TimeEntryLazyQueryHookResult = ReturnType<typeof useTimeEntryLazyQuery>;
-export type TimeEntryQueryResult = Apollo.QueryResult<TimeEntryQuery, TimeEntryQueryVariables>;
-export const TimeEntryFromIndexDocument = gql`
-    query TimeEntryFromIndex($index: Int!, $timeEntryRowId: String!) {
-  timeEntryFromIndex(index: $index, timeEntryRowId: $timeEntryRowId) {
-    id
-    createdAt
-    updatedAt
-    date
-    hours
-    index
-    entryComments {
-      id
-    }
-  }
-}
-    `;
-
-/**
- * __useTimeEntryFromIndexQuery__
- *
- * To run a query within a React component, call `useTimeEntryFromIndexQuery` and pass it any options that fit your needs.
- * When your component renders, `useTimeEntryFromIndexQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useTimeEntryFromIndexQuery({
- *   variables: {
- *      index: // value for 'index'
- *      timeEntryRowId: // value for 'timeEntryRowId'
- *   },
- * });
- */
-export function useTimeEntryFromIndexQuery(baseOptions: Apollo.QueryHookOptions<TimeEntryFromIndexQuery, TimeEntryFromIndexQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<TimeEntryFromIndexQuery, TimeEntryFromIndexQueryVariables>(TimeEntryFromIndexDocument, options);
-      }
-export function useTimeEntryFromIndexLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<TimeEntryFromIndexQuery, TimeEntryFromIndexQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<TimeEntryFromIndexQuery, TimeEntryFromIndexQueryVariables>(TimeEntryFromIndexDocument, options);
-        }
-export type TimeEntryFromIndexQueryHookResult = ReturnType<typeof useTimeEntryFromIndexQuery>;
-export type TimeEntryFromIndexLazyQueryHookResult = ReturnType<typeof useTimeEntryFromIndexLazyQuery>;
-export type TimeEntryFromIndexQueryResult = Apollo.QueryResult<TimeEntryFromIndexQuery, TimeEntryFromIndexQueryVariables>;
-export const CreateTimeEntryDocument = gql`
-    mutation CreateTimeEntry($index: Int!, $timeEntryRowId: String!, $hours: Int!, $date: String!) {
-  createTimeEntry(
-    index: $index
-    hours: $hours
-    date: $date
-    timeEntryRowId: $timeEntryRowId
-  ) {
-    id
-    createdAt
-    updatedAt
-    date
-    hours
-    index
-    entryComments {
-      id
-    }
-  }
-}
-    `;
-export type CreateTimeEntryMutationFn = Apollo.MutationFunction<CreateTimeEntryMutation, CreateTimeEntryMutationVariables>;
-
-/**
- * __useCreateTimeEntryMutation__
- *
- * To run a mutation, you first call `useCreateTimeEntryMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useCreateTimeEntryMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [createTimeEntryMutation, { data, loading, error }] = useCreateTimeEntryMutation({
- *   variables: {
- *      index: // value for 'index'
- *      timeEntryRowId: // value for 'timeEntryRowId'
- *      hours: // value for 'hours'
- *      date: // value for 'date'
- *   },
- * });
- */
-export function useCreateTimeEntryMutation(baseOptions?: Apollo.MutationHookOptions<CreateTimeEntryMutation, CreateTimeEntryMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<CreateTimeEntryMutation, CreateTimeEntryMutationVariables>(CreateTimeEntryDocument, options);
-      }
-export type CreateTimeEntryMutationHookResult = ReturnType<typeof useCreateTimeEntryMutation>;
-export type CreateTimeEntryMutationResult = Apollo.MutationResult<CreateTimeEntryMutation>;
-export type CreateTimeEntryMutationOptions = Apollo.BaseMutationOptions<CreateTimeEntryMutation, CreateTimeEntryMutationVariables>;
-export const UpdateTimeEntryhoursDocument = gql`
-    mutation UpdateTimeEntryhours($updateTimeEntryhoursId: String!, $hours: Int!) {
-  updateTimeEntryhours(id: $updateTimeEntryhoursId, hours: $hours) {
-    id
-    createdAt
-    updatedAt
-    date
-    hours
-    index
-    entryComments {
-      id
-    }
-  }
-}
-    `;
-export type UpdateTimeEntryhoursMutationFn = Apollo.MutationFunction<UpdateTimeEntryhoursMutation, UpdateTimeEntryhoursMutationVariables>;
-
-/**
- * __useUpdateTimeEntryhoursMutation__
- *
- * To run a mutation, you first call `useUpdateTimeEntryhoursMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useUpdateTimeEntryhoursMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [updateTimeEntryhoursMutation, { data, loading, error }] = useUpdateTimeEntryhoursMutation({
- *   variables: {
- *      updateTimeEntryhoursId: // value for 'updateTimeEntryhoursId'
- *      hours: // value for 'hours'
- *   },
- * });
- */
-export function useUpdateTimeEntryhoursMutation(baseOptions?: Apollo.MutationHookOptions<UpdateTimeEntryhoursMutation, UpdateTimeEntryhoursMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<UpdateTimeEntryhoursMutation, UpdateTimeEntryhoursMutationVariables>(UpdateTimeEntryhoursDocument, options);
-      }
-export type UpdateTimeEntryhoursMutationHookResult = ReturnType<typeof useUpdateTimeEntryhoursMutation>;
-export type UpdateTimeEntryhoursMutationResult = Apollo.MutationResult<UpdateTimeEntryhoursMutation>;
-export type UpdateTimeEntryhoursMutationOptions = Apollo.BaseMutationOptions<UpdateTimeEntryhoursMutation, UpdateTimeEntryhoursMutationVariables>;
-export const DeleteTimeEntryDocument = gql`
-    mutation DeleteTimeEntry($deleteTimeEntryId: String!) {
-  deleteTimeEntry(id: $deleteTimeEntryId) {
-    id
-    hours
-    date
-    index
-    updatedAt
-    createdAt
-  }
-}
-    `;
-export type DeleteTimeEntryMutationFn = Apollo.MutationFunction<DeleteTimeEntryMutation, DeleteTimeEntryMutationVariables>;
-
-/**
- * __useDeleteTimeEntryMutation__
- *
- * To run a mutation, you first call `useDeleteTimeEntryMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useDeleteTimeEntryMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [deleteTimeEntryMutation, { data, loading, error }] = useDeleteTimeEntryMutation({
- *   variables: {
- *      deleteTimeEntryId: // value for 'deleteTimeEntryId'
- *   },
- * });
- */
-export function useDeleteTimeEntryMutation(baseOptions?: Apollo.MutationHookOptions<DeleteTimeEntryMutation, DeleteTimeEntryMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<DeleteTimeEntryMutation, DeleteTimeEntryMutationVariables>(DeleteTimeEntryDocument, options);
-      }
-export type DeleteTimeEntryMutationHookResult = ReturnType<typeof useDeleteTimeEntryMutation>;
-export type DeleteTimeEntryMutationResult = Apollo.MutationResult<DeleteTimeEntryMutation>;
-export type DeleteTimeEntryMutationOptions = Apollo.BaseMutationOptions<DeleteTimeEntryMutation, DeleteTimeEntryMutationVariables>;
-export const UpdateTimeEntryRowDocument = gql`
-    mutation UpdateTimeEntryRow($updateTimeEntryRowId: String!, $departmentId: String, $projectId: String, $workTypeId: String) {
-  updateTimeEntryRow(
-    id: $updateTimeEntryRowId
-    departmentId: $departmentId
-    projectId: $projectId
-    workTypeId: $workTypeId
-  ) {
-    id
-    createdAt
-    updatedAt
-    workType {
-      id
-    }
-    project {
-      id
-    }
-    department {
-      id
-    }
-  }
-}
-    `;
-export type UpdateTimeEntryRowMutationFn = Apollo.MutationFunction<UpdateTimeEntryRowMutation, UpdateTimeEntryRowMutationVariables>;
-
-/**
- * __useUpdateTimeEntryRowMutation__
- *
- * To run a mutation, you first call `useUpdateTimeEntryRowMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useUpdateTimeEntryRowMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [updateTimeEntryRowMutation, { data, loading, error }] = useUpdateTimeEntryRowMutation({
- *   variables: {
- *      updateTimeEntryRowId: // value for 'updateTimeEntryRowId'
- *      departmentId: // value for 'departmentId'
- *      projectId: // value for 'projectId'
- *      workTypeId: // value for 'workTypeId'
- *   },
- * });
- */
-export function useUpdateTimeEntryRowMutation(baseOptions?: Apollo.MutationHookOptions<UpdateTimeEntryRowMutation, UpdateTimeEntryRowMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<UpdateTimeEntryRowMutation, UpdateTimeEntryRowMutationVariables>(UpdateTimeEntryRowDocument, options);
-      }
-export type UpdateTimeEntryRowMutationHookResult = ReturnType<typeof useUpdateTimeEntryRowMutation>;
-export type UpdateTimeEntryRowMutationResult = Apollo.MutationResult<UpdateTimeEntryRowMutation>;
-export type UpdateTimeEntryRowMutationOptions = Apollo.BaseMutationOptions<UpdateTimeEntryRowMutation, UpdateTimeEntryRowMutationVariables>;
-export const GetTimeEntriesDocument = gql`
-    query GetTimeEntries($rowId: String!) {
-  getTimeEntryRow(id: $rowId) {
-    timeEntries {
-      id
-    }
-  }
-}
-    `;
-
-/**
- * __useGetTimeEntriesQuery__
- *
- * To run a query within a React component, call `useGetTimeEntriesQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetTimeEntriesQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetTimeEntriesQuery({
- *   variables: {
- *      rowId: // value for 'rowId'
- *   },
- * });
- */
-export function useGetTimeEntriesQuery(baseOptions: Apollo.QueryHookOptions<GetTimeEntriesQuery, GetTimeEntriesQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetTimeEntriesQuery, GetTimeEntriesQueryVariables>(GetTimeEntriesDocument, options);
-      }
-export function useGetTimeEntriesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetTimeEntriesQuery, GetTimeEntriesQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetTimeEntriesQuery, GetTimeEntriesQueryVariables>(GetTimeEntriesDocument, options);
-        }
-export type GetTimeEntriesQueryHookResult = ReturnType<typeof useGetTimeEntriesQuery>;
-export type GetTimeEntriesLazyQueryHookResult = ReturnType<typeof useGetTimeEntriesLazyQuery>;
-export type GetTimeEntriesQueryResult = Apollo.QueryResult<GetTimeEntriesQuery, GetTimeEntriesQueryVariables>;
-export const GetTimeEntryRowDocument = gql`
-    query GetTimeEntryRow($getTimeEntryRowId: String!) {
-  getTimeEntryRow(id: $getTimeEntryRowId) {
-    id
-    createdAt
-    updatedAt
-    workType {
-      id
-    }
-    project {
-      id
-    }
-    department {
-      id
-    }
-  }
-}
-    `;
-
-/**
- * __useGetTimeEntryRowQuery__
- *
- * To run a query within a React component, call `useGetTimeEntryRowQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetTimeEntryRowQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetTimeEntryRowQuery({
- *   variables: {
- *      getTimeEntryRowId: // value for 'getTimeEntryRowId'
- *   },
- * });
- */
-export function useGetTimeEntryRowQuery(baseOptions: Apollo.QueryHookOptions<GetTimeEntryRowQuery, GetTimeEntryRowQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetTimeEntryRowQuery, GetTimeEntryRowQueryVariables>(GetTimeEntryRowDocument, options);
-      }
-export function useGetTimeEntryRowLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetTimeEntryRowQuery, GetTimeEntryRowQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetTimeEntryRowQuery, GetTimeEntryRowQueryVariables>(GetTimeEntryRowDocument, options);
-        }
-export type GetTimeEntryRowQueryHookResult = ReturnType<typeof useGetTimeEntryRowQuery>;
-export type GetTimeEntryRowLazyQueryHookResult = ReturnType<typeof useGetTimeEntryRowLazyQuery>;
-export type GetTimeEntryRowQueryResult = Apollo.QueryResult<GetTimeEntryRowQuery, GetTimeEntryRowQueryVariables>;
-export const GetTimeEntryRowsDocument = gql`
-    query GetTimeEntryRows($timesheetId: String!) {
-  getTimeEntryRows(timesheetId: $timesheetId) {
-    id
-    createdAt
-    updatedAt
-    workType {
-      id
-    }
-    project {
-      id
-    }
-    department {
-      id
-    }
-    timeEntries {
-      id
-    }
-  }
-}
-    `;
-
-/**
- * __useGetTimeEntryRowsQuery__
- *
- * To run a query within a React component, call `useGetTimeEntryRowsQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetTimeEntryRowsQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetTimeEntryRowsQuery({
- *   variables: {
- *      timesheetId: // value for 'timesheetId'
- *   },
- * });
- */
-export function useGetTimeEntryRowsQuery(baseOptions: Apollo.QueryHookOptions<GetTimeEntryRowsQuery, GetTimeEntryRowsQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetTimeEntryRowsQuery, GetTimeEntryRowsQueryVariables>(GetTimeEntryRowsDocument, options);
-      }
-export function useGetTimeEntryRowsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetTimeEntryRowsQuery, GetTimeEntryRowsQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetTimeEntryRowsQuery, GetTimeEntryRowsQueryVariables>(GetTimeEntryRowsDocument, options);
-        }
-export type GetTimeEntryRowsQueryHookResult = ReturnType<typeof useGetTimeEntryRowsQuery>;
-export type GetTimeEntryRowsLazyQueryHookResult = ReturnType<typeof useGetTimeEntryRowsLazyQuery>;
-export type GetTimeEntryRowsQueryResult = Apollo.QueryResult<GetTimeEntryRowsQuery, GetTimeEntryRowsQueryVariables>;
-export const CreateTimeEntryRowDocument = gql`
-    mutation CreateTimeEntryRow($timesheetId: String!) {
-  createTimeEntryRow(timesheetId: $timesheetId) {
-    id
-    createdAt
-    updatedAt
-    workType {
-      id
-    }
-    project {
-      id
-    }
-    department {
-      id
-    }
-    timeEntries {
-      id
-    }
-  }
-}
-    `;
-export type CreateTimeEntryRowMutationFn = Apollo.MutationFunction<CreateTimeEntryRowMutation, CreateTimeEntryRowMutationVariables>;
-
-/**
- * __useCreateTimeEntryRowMutation__
- *
- * To run a mutation, you first call `useCreateTimeEntryRowMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useCreateTimeEntryRowMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [createTimeEntryRowMutation, { data, loading, error }] = useCreateTimeEntryRowMutation({
- *   variables: {
- *      timesheetId: // value for 'timesheetId'
- *   },
- * });
- */
-export function useCreateTimeEntryRowMutation(baseOptions?: Apollo.MutationHookOptions<CreateTimeEntryRowMutation, CreateTimeEntryRowMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<CreateTimeEntryRowMutation, CreateTimeEntryRowMutationVariables>(CreateTimeEntryRowDocument, options);
-      }
-export type CreateTimeEntryRowMutationHookResult = ReturnType<typeof useCreateTimeEntryRowMutation>;
-export type CreateTimeEntryRowMutationResult = Apollo.MutationResult<CreateTimeEntryRowMutation>;
-export type CreateTimeEntryRowMutationOptions = Apollo.BaseMutationOptions<CreateTimeEntryRowMutation, CreateTimeEntryRowMutationVariables>;
-export const DeleteTimeEntryRowDocument = gql`
-    mutation DeleteTimeEntryRow($timeEntryRow: TimeEntryRowDeleteInput!) {
-  deleteTimeEntryRow(TimeEntryRow: $timeEntryRow) {
-    id
-  }
-}
-    `;
-export type DeleteTimeEntryRowMutationFn = Apollo.MutationFunction<DeleteTimeEntryRowMutation, DeleteTimeEntryRowMutationVariables>;
-
-/**
- * __useDeleteTimeEntryRowMutation__
- *
- * To run a mutation, you first call `useDeleteTimeEntryRowMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useDeleteTimeEntryRowMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [deleteTimeEntryRowMutation, { data, loading, error }] = useDeleteTimeEntryRowMutation({
- *   variables: {
- *      timeEntryRow: // value for 'timeEntryRow'
- *   },
- * });
- */
-export function useDeleteTimeEntryRowMutation(baseOptions?: Apollo.MutationHookOptions<DeleteTimeEntryRowMutation, DeleteTimeEntryRowMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<DeleteTimeEntryRowMutation, DeleteTimeEntryRowMutationVariables>(DeleteTimeEntryRowDocument, options);
-      }
-export type DeleteTimeEntryRowMutationHookResult = ReturnType<typeof useDeleteTimeEntryRowMutation>;
-export type DeleteTimeEntryRowMutationResult = Apollo.MutationResult<DeleteTimeEntryRowMutation>;
-export type DeleteTimeEntryRowMutationOptions = Apollo.BaseMutationOptions<DeleteTimeEntryRowMutation, DeleteTimeEntryRowMutationVariables>;
-export const GetUserFromTokenDocument = gql`
-    query getUserFromToken($token: ID!) {
-  getUserFromToken(token: $token) {
-    id
-    name
-    tenant {
-      name
-      description
-      logo
-      isActive
-      updatedAt
-      createdAt
-    }
-  }
-}
-    `;
-
-/**
- * __useGetUserFromTokenQuery__
- *
- * To run a query within a React component, call `useGetUserFromTokenQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetUserFromTokenQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetUserFromTokenQuery({
- *   variables: {
- *      token: // value for 'token'
- *   },
- * });
- */
-export function useGetUserFromTokenQuery(baseOptions: Apollo.QueryHookOptions<GetUserFromTokenQuery, GetUserFromTokenQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetUserFromTokenQuery, GetUserFromTokenQueryVariables>(GetUserFromTokenDocument, options);
-      }
-export function useGetUserFromTokenLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetUserFromTokenQuery, GetUserFromTokenQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetUserFromTokenQuery, GetUserFromTokenQueryVariables>(GetUserFromTokenDocument, options);
-        }
-export type GetUserFromTokenQueryHookResult = ReturnType<typeof useGetUserFromTokenQuery>;
-export type GetUserFromTokenLazyQueryHookResult = ReturnType<typeof useGetUserFromTokenLazyQuery>;
-export type GetUserFromTokenQueryResult = Apollo.QueryResult<GetUserFromTokenQuery, GetUserFromTokenQueryVariables>;
-export const AttachAuth0IdDocument = gql`
-    mutation AttachAuth0Id($auth0Id: String!, $userId: ID!) {
-  attachAuth0Id(auth0Id: $auth0Id, userId: $userId) {
-    id
-    email
-    auth0Id
-    code
-    isActive
-    isAdmin
-    createdAt
-    updatedAt
-    department {
-      id
-    }
-    tenant {
-      id
-    }
-    managees {
-      id
-    }
-    manager {
-      id
-    }
-    isPaymentManager
-    isManager
-  }
-}
-    `;
-export type AttachAuth0IdMutationFn = Apollo.MutationFunction<AttachAuth0IdMutation, AttachAuth0IdMutationVariables>;
-
-/**
- * __useAttachAuth0IdMutation__
- *
- * To run a mutation, you first call `useAttachAuth0IdMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useAttachAuth0IdMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [attachAuth0IdMutation, { data, loading, error }] = useAttachAuth0IdMutation({
- *   variables: {
- *      auth0Id: // value for 'auth0Id'
- *      userId: // value for 'userId'
- *   },
- * });
- */
-export function useAttachAuth0IdMutation(baseOptions?: Apollo.MutationHookOptions<AttachAuth0IdMutation, AttachAuth0IdMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<AttachAuth0IdMutation, AttachAuth0IdMutationVariables>(AttachAuth0IdDocument, options);
-      }
-export type AttachAuth0IdMutationHookResult = ReturnType<typeof useAttachAuth0IdMutation>;
-export type AttachAuth0IdMutationResult = Apollo.MutationResult<AttachAuth0IdMutation>;
-export type AttachAuth0IdMutationOptions = Apollo.BaseMutationOptions<AttachAuth0IdMutation, AttachAuth0IdMutationVariables>;
-export const GetEntryCommentDocument = gql`
-    query GetEntryComment($commentId: String!) {
-  getEntryComment(commentId: $commentId) {
-    id
-    createdAt
-    updatedAt
-    text
-    user {
-      id
-      name
-      avatar
-    }
-  }
-}
-    `;
-
-/**
- * __useGetEntryCommentQuery__
- *
- * To run a query within a React component, call `useGetEntryCommentQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetEntryCommentQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetEntryCommentQuery({
- *   variables: {
- *      commentId: // value for 'commentId'
- *   },
- * });
- */
-export function useGetEntryCommentQuery(baseOptions: Apollo.QueryHookOptions<GetEntryCommentQuery, GetEntryCommentQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetEntryCommentQuery, GetEntryCommentQueryVariables>(GetEntryCommentDocument, options);
-      }
-export function useGetEntryCommentLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetEntryCommentQuery, GetEntryCommentQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetEntryCommentQuery, GetEntryCommentQueryVariables>(GetEntryCommentDocument, options);
-        }
-export type GetEntryCommentQueryHookResult = ReturnType<typeof useGetEntryCommentQuery>;
-export type GetEntryCommentLazyQueryHookResult = ReturnType<typeof useGetEntryCommentLazyQuery>;
-export type GetEntryCommentQueryResult = Apollo.QueryResult<GetEntryCommentQuery, GetEntryCommentQueryVariables>;
-export const CreateEntryCommentDocument = gql`
-    mutation createEntryComment($entryComment: EntryCommentCreateInput!) {
-  createEntryComment(entryComment: $entryComment) {
-    id
-    createdAt
-    updatedAt
-    text
-    user {
-      id
-      name
-      avatar
-    }
-  }
-}
-    `;
-export type CreateEntryCommentMutationFn = Apollo.MutationFunction<CreateEntryCommentMutation, CreateEntryCommentMutationVariables>;
-
-/**
- * __useCreateEntryCommentMutation__
- *
- * To run a mutation, you first call `useCreateEntryCommentMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useCreateEntryCommentMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [createEntryCommentMutation, { data, loading, error }] = useCreateEntryCommentMutation({
- *   variables: {
- *      entryComment: // value for 'entryComment'
- *   },
- * });
- */
-export function useCreateEntryCommentMutation(baseOptions?: Apollo.MutationHookOptions<CreateEntryCommentMutation, CreateEntryCommentMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<CreateEntryCommentMutation, CreateEntryCommentMutationVariables>(CreateEntryCommentDocument, options);
-      }
-export type CreateEntryCommentMutationHookResult = ReturnType<typeof useCreateEntryCommentMutation>;
-export type CreateEntryCommentMutationResult = Apollo.MutationResult<CreateEntryCommentMutation>;
-export type CreateEntryCommentMutationOptions = Apollo.BaseMutationOptions<CreateEntryCommentMutation, CreateEntryCommentMutationVariables>;
-export const CreateOneTimeTokenDocument = gql`
-    mutation CreateOneTimeToken($userId: String!, $tenantId: String!) {
-  createOneTimeToken(userId: $userId, tenantId: $tenantId) {
-    id
-    user {
-      id
-    }
-    tenant {
-      id
-    }
-    createdAt
-    updatedAt
-  }
-}
-    `;
-export type CreateOneTimeTokenMutationFn = Apollo.MutationFunction<CreateOneTimeTokenMutation, CreateOneTimeTokenMutationVariables>;
-
-/**
- * __useCreateOneTimeTokenMutation__
- *
- * To run a mutation, you first call `useCreateOneTimeTokenMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useCreateOneTimeTokenMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [createOneTimeTokenMutation, { data, loading, error }] = useCreateOneTimeTokenMutation({
- *   variables: {
- *      userId: // value for 'userId'
- *      tenantId: // value for 'tenantId'
- *   },
- * });
- */
-export function useCreateOneTimeTokenMutation(baseOptions?: Apollo.MutationHookOptions<CreateOneTimeTokenMutation, CreateOneTimeTokenMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<CreateOneTimeTokenMutation, CreateOneTimeTokenMutationVariables>(CreateOneTimeTokenDocument, options);
-      }
-export type CreateOneTimeTokenMutationHookResult = ReturnType<typeof useCreateOneTimeTokenMutation>;
-export type CreateOneTimeTokenMutationResult = Apollo.MutationResult<CreateOneTimeTokenMutation>;
-export type CreateOneTimeTokenMutationOptions = Apollo.BaseMutationOptions<CreateOneTimeTokenMutation, CreateOneTimeTokenMutationVariables>;
-export const CreateUserDocument = gql`
-    mutation CreateUser($user: UserCreateInput!) {
-  createUser(user: $user) {
-    id
-    email
-    auth0Id
-    isActive
-    code
-    isAdmin
-    tenant {
-      id
-    }
-    name
-    avatar
-    createdAt
-    updatedAt
-    department {
-      id
-    }
-    manager {
-      id
-    }
-    isPaymentManager
-    isManager
-    managees {
-      id
-    }
-  }
-}
-    `;
-export type CreateUserMutationFn = Apollo.MutationFunction<CreateUserMutation, CreateUserMutationVariables>;
-
-/**
- * __useCreateUserMutation__
- *
- * To run a mutation, you first call `useCreateUserMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useCreateUserMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [createUserMutation, { data, loading, error }] = useCreateUserMutation({
- *   variables: {
- *      user: // value for 'user'
- *   },
- * });
- */
-export function useCreateUserMutation(baseOptions?: Apollo.MutationHookOptions<CreateUserMutation, CreateUserMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<CreateUserMutation, CreateUserMutationVariables>(CreateUserDocument, options);
-      }
-export type CreateUserMutationHookResult = ReturnType<typeof useCreateUserMutation>;
-export type CreateUserMutationResult = Apollo.MutationResult<CreateUserMutation>;
-export type CreateUserMutationOptions = Apollo.BaseMutationOptions<CreateUserMutation, CreateUserMutationVariables>;
-export const ManagersDocument = gql`
-    query Managers($tenantId: String!) {
-  managers(tenantId: $tenantId) {
-    id
-    name
-  }
-}
-    `;
-
-/**
- * __useManagersQuery__
- *
- * To run a query within a React component, call `useManagersQuery` and pass it any options that fit your needs.
- * When your component renders, `useManagersQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useManagersQuery({
- *   variables: {
- *      tenantId: // value for 'tenantId'
- *   },
- * });
- */
-export function useManagersQuery(baseOptions: Apollo.QueryHookOptions<ManagersQuery, ManagersQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<ManagersQuery, ManagersQueryVariables>(ManagersDocument, options);
-      }
-export function useManagersLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ManagersQuery, ManagersQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<ManagersQuery, ManagersQueryVariables>(ManagersDocument, options);
-        }
-export type ManagersQueryHookResult = ReturnType<typeof useManagersQuery>;
-export type ManagersLazyQueryHookResult = ReturnType<typeof useManagersLazyQuery>;
-export type ManagersQueryResult = Apollo.QueryResult<ManagersQuery, ManagersQueryVariables>;
-export const GetUserFromCodeDocument = gql`
-    query GetUserFromCode($code: String!, $tenantId: String!) {
-  getUserFromCode(code: $code, tenantId: $tenantId) {
-    id
-  }
-}
-    `;
-
-/**
- * __useGetUserFromCodeQuery__
- *
- * To run a query within a React component, call `useGetUserFromCodeQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetUserFromCodeQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetUserFromCodeQuery({
- *   variables: {
- *      code: // value for 'code'
- *      tenantId: // value for 'tenantId'
- *   },
- * });
- */
-export function useGetUserFromCodeQuery(baseOptions: Apollo.QueryHookOptions<GetUserFromCodeQuery, GetUserFromCodeQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetUserFromCodeQuery, GetUserFromCodeQueryVariables>(GetUserFromCodeDocument, options);
-      }
-export function useGetUserFromCodeLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetUserFromCodeQuery, GetUserFromCodeQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetUserFromCodeQuery, GetUserFromCodeQueryVariables>(GetUserFromCodeDocument, options);
-        }
-export type GetUserFromCodeQueryHookResult = ReturnType<typeof useGetUserFromCodeQuery>;
-export type GetUserFromCodeLazyQueryHookResult = ReturnType<typeof useGetUserFromCodeLazyQuery>;
-export type GetUserFromCodeQueryResult = Apollo.QueryResult<GetUserFromCodeQuery, GetUserFromCodeQueryVariables>;
-export const GetOneTimeTokensDocument = gql`
-    query GetOneTimeTokens($tenantId: String!) {
-  getOneTimeTokens(tenantId: $tenantId) {
-    id
-    user {
-      id
-      name
-      avatar
-    }
-    createdAt
-  }
-}
-    `;
-
-/**
- * __useGetOneTimeTokensQuery__
- *
- * To run a query within a React component, call `useGetOneTimeTokensQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetOneTimeTokensQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetOneTimeTokensQuery({
- *   variables: {
- *      tenantId: // value for 'tenantId'
- *   },
- * });
- */
-export function useGetOneTimeTokensQuery(baseOptions: Apollo.QueryHookOptions<GetOneTimeTokensQuery, GetOneTimeTokensQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetOneTimeTokensQuery, GetOneTimeTokensQueryVariables>(GetOneTimeTokensDocument, options);
-      }
-export function useGetOneTimeTokensLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetOneTimeTokensQuery, GetOneTimeTokensQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetOneTimeTokensQuery, GetOneTimeTokensQueryVariables>(GetOneTimeTokensDocument, options);
-        }
-export type GetOneTimeTokensQueryHookResult = ReturnType<typeof useGetOneTimeTokensQuery>;
-export type GetOneTimeTokensLazyQueryHookResult = ReturnType<typeof useGetOneTimeTokensLazyQuery>;
-export type GetOneTimeTokensQueryResult = Apollo.QueryResult<GetOneTimeTokensQuery, GetOneTimeTokensQueryVariables>;
-export const UsersDocument = gql`
-    query Users($tenantId: String!) {
-  users(tenantId: $tenantId) {
-    id
-    email
-    auth0Id
-    code
-    isActive
-    isAdmin
-    tenant {
-      id
-      name
-    }
-    name
-    avatar
-    createdAt
-    updatedAt
-    department {
-      id
-      name
-    }
-    managees {
-      id
-      email
-      name
-      avatar
-    }
-    manager {
-      id
-      email
-      name
-    }
-    isPaymentManager
-    isManager
-    isSetup
-  }
-}
-    `;
-
-/**
- * __useUsersQuery__
- *
- * To run a query within a React component, call `useUsersQuery` and pass it any options that fit your needs.
- * When your component renders, `useUsersQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useUsersQuery({
- *   variables: {
- *      tenantId: // value for 'tenantId'
- *   },
- * });
- */
-export function useUsersQuery(baseOptions: Apollo.QueryHookOptions<UsersQuery, UsersQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<UsersQuery, UsersQueryVariables>(UsersDocument, options);
-      }
-export function useUsersLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<UsersQuery, UsersQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<UsersQuery, UsersQueryVariables>(UsersDocument, options);
-        }
-export type UsersQueryHookResult = ReturnType<typeof useUsersQuery>;
-export type UsersLazyQueryHookResult = ReturnType<typeof useUsersLazyQuery>;
-export type UsersQueryResult = Apollo.QueryResult<UsersQuery, UsersQueryVariables>;
-export const TimeEntryFromIdDocument = gql`
-    query TimeEntryFromId($id: String!) {
-  timeEntryFromId(id: $id) {
-    id
-    createdAt
-    updatedAt
-    date
-    hours
-    entryComments {
-      id
-    }
-  }
-}
-    `;
-
-/**
- * __useTimeEntryFromIdQuery__
- *
- * To run a query within a React component, call `useTimeEntryFromIdQuery` and pass it any options that fit your needs.
- * When your component renders, `useTimeEntryFromIdQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useTimeEntryFromIdQuery({
- *   variables: {
- *      id: // value for 'id'
- *   },
- * });
- */
-export function useTimeEntryFromIdQuery(baseOptions: Apollo.QueryHookOptions<TimeEntryFromIdQuery, TimeEntryFromIdQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<TimeEntryFromIdQuery, TimeEntryFromIdQueryVariables>(TimeEntryFromIdDocument, options);
-      }
-export function useTimeEntryFromIdLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<TimeEntryFromIdQuery, TimeEntryFromIdQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<TimeEntryFromIdQuery, TimeEntryFromIdQueryVariables>(TimeEntryFromIdDocument, options);
-        }
-export type TimeEntryFromIdQueryHookResult = ReturnType<typeof useTimeEntryFromIdQuery>;
-export type TimeEntryFromIdLazyQueryHookResult = ReturnType<typeof useTimeEntryFromIdLazyQuery>;
-export type TimeEntryFromIdQueryResult = Apollo.QueryResult<TimeEntryFromIdQuery, TimeEntryFromIdQueryVariables>;
-export const StatusEventsDocument = gql`
-    query StatusEvents($timesheetId: String!) {
-  statusEvents(timesheetId: $timesheetId) {
-    id
-    createdAt
-    type
-    status
-    message
-    user {
-      name
-      avatar
-    }
-  }
-}
-    `;
-
-/**
- * __useStatusEventsQuery__
- *
- * To run a query within a React component, call `useStatusEventsQuery` and pass it any options that fit your needs.
- * When your component renders, `useStatusEventsQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useStatusEventsQuery({
- *   variables: {
- *      timesheetId: // value for 'timesheetId'
- *   },
- * });
- */
-export function useStatusEventsQuery(baseOptions: Apollo.QueryHookOptions<StatusEventsQuery, StatusEventsQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<StatusEventsQuery, StatusEventsQueryVariables>(StatusEventsDocument, options);
-      }
-export function useStatusEventsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<StatusEventsQuery, StatusEventsQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<StatusEventsQuery, StatusEventsQueryVariables>(StatusEventsDocument, options);
-        }
-export type StatusEventsQueryHookResult = ReturnType<typeof useStatusEventsQuery>;
-export type StatusEventsLazyQueryHookResult = ReturnType<typeof useStatusEventsLazyQuery>;
-export type StatusEventsQueryResult = Apollo.QueryResult<StatusEventsQuery, StatusEventsQueryVariables>;
-export const CreateStatusEventDocument = gql`
-    mutation CreateStatusEvent($timesheetId: String!, $type: EventType!, $status: Status!, $message: String!, $userId: String!) {
-  createStatusEvent(
-    timesheetId: $timesheetId
-    type: $type
-    status: $status
-    message: $message
-    userId: $userId
-  ) {
-    id
-    createdAt
-    type
-    status
-    message
-    user {
-      name
-      avatar
-    }
-  }
-}
-    `;
-export type CreateStatusEventMutationFn = Apollo.MutationFunction<CreateStatusEventMutation, CreateStatusEventMutationVariables>;
-
-/**
- * __useCreateStatusEventMutation__
- *
- * To run a mutation, you first call `useCreateStatusEventMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useCreateStatusEventMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [createStatusEventMutation, { data, loading, error }] = useCreateStatusEventMutation({
- *   variables: {
- *      timesheetId: // value for 'timesheetId'
- *      type: // value for 'type'
- *      status: // value for 'status'
- *      message: // value for 'message'
- *      userId: // value for 'userId'
- *   },
- * });
- */
-export function useCreateStatusEventMutation(baseOptions?: Apollo.MutationHookOptions<CreateStatusEventMutation, CreateStatusEventMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<CreateStatusEventMutation, CreateStatusEventMutationVariables>(CreateStatusEventDocument, options);
-      }
-export type CreateStatusEventMutationHookResult = ReturnType<typeof useCreateStatusEventMutation>;
-export type CreateStatusEventMutationResult = Apollo.MutationResult<CreateStatusEventMutation>;
-export type CreateStatusEventMutationOptions = Apollo.BaseMutationOptions<CreateStatusEventMutation, CreateStatusEventMutationVariables>;
-export const TimesheetUpdatedDocument = gql`
-    query TimesheetUpdated($timesheetId: String!) {
-  timesheet(id: $timesheetId) {
-    updatedAt
-    id
-    timeEntryRows {
-      id
-      updatedAt
-      timeEntries {
-        id
-        updatedAt
-      }
-    }
-  }
-}
-    `;
-
-/**
- * __useTimesheetUpdatedQuery__
- *
- * To run a query within a React component, call `useTimesheetUpdatedQuery` and pass it any options that fit your needs.
- * When your component renders, `useTimesheetUpdatedQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useTimesheetUpdatedQuery({
- *   variables: {
- *      timesheetId: // value for 'timesheetId'
- *   },
- * });
- */
-export function useTimesheetUpdatedQuery(baseOptions: Apollo.QueryHookOptions<TimesheetUpdatedQuery, TimesheetUpdatedQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<TimesheetUpdatedQuery, TimesheetUpdatedQueryVariables>(TimesheetUpdatedDocument, options);
-      }
-export function useTimesheetUpdatedLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<TimesheetUpdatedQuery, TimesheetUpdatedQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<TimesheetUpdatedQuery, TimesheetUpdatedQueryVariables>(TimesheetUpdatedDocument, options);
-        }
-export type TimesheetUpdatedQueryHookResult = ReturnType<typeof useTimesheetUpdatedQuery>;
-export type TimesheetUpdatedLazyQueryHookResult = ReturnType<typeof useTimesheetUpdatedLazyQuery>;
-export type TimesheetUpdatedQueryResult = Apollo.QueryResult<TimesheetUpdatedQuery, TimesheetUpdatedQueryVariables>;
-export const UpdateTimesheetChangedDocument = gql`
-    mutation UpdateTimesheetChanged($timesheetId: String!, $changed: Boolean!) {
-  updateTimesheet(id: $timesheetId, isChanged: $changed) {
-    id
-    updatedAt
-    isChanged
-  }
-}
-    `;
-export type UpdateTimesheetChangedMutationFn = Apollo.MutationFunction<UpdateTimesheetChangedMutation, UpdateTimesheetChangedMutationVariables>;
-
-/**
- * __useUpdateTimesheetChangedMutation__
- *
- * To run a mutation, you first call `useUpdateTimesheetChangedMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useUpdateTimesheetChangedMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [updateTimesheetChangedMutation, { data, loading, error }] = useUpdateTimesheetChangedMutation({
- *   variables: {
- *      timesheetId: // value for 'timesheetId'
- *      changed: // value for 'changed'
- *   },
- * });
- */
-export function useUpdateTimesheetChangedMutation(baseOptions?: Apollo.MutationHookOptions<UpdateTimesheetChangedMutation, UpdateTimesheetChangedMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<UpdateTimesheetChangedMutation, UpdateTimesheetChangedMutationVariables>(UpdateTimesheetChangedDocument, options);
-      }
-export type UpdateTimesheetChangedMutationHookResult = ReturnType<typeof useUpdateTimesheetChangedMutation>;
-export type UpdateTimesheetChangedMutationResult = Apollo.MutationResult<UpdateTimesheetChangedMutation>;
-export type UpdateTimesheetChangedMutationOptions = Apollo.BaseMutationOptions<UpdateTimesheetChangedMutation, UpdateTimesheetChangedMutationVariables>;
-export const CreateTenantDocument = gql`
-    mutation CreateTenant($name: String!, $description: String!, $logo: String!, $isActive: Boolean!, $startDate: String!, $periodLength: Int!) {
-  createTenant(
-    name: $name
-    description: $description
-    logo: $logo
-    isActive: $isActive
-    startDate: $startDate
-    periodLength: $periodLength
-  ) {
-    id
-    name
-    description
-    startDate
-    periodLength
-    isActive
-    updatedAt
-    createdAt
-  }
-}
-    `;
-export type CreateTenantMutationFn = Apollo.MutationFunction<CreateTenantMutation, CreateTenantMutationVariables>;
-
-/**
- * __useCreateTenantMutation__
- *
- * To run a mutation, you first call `useCreateTenantMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useCreateTenantMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [createTenantMutation, { data, loading, error }] = useCreateTenantMutation({
- *   variables: {
- *      name: // value for 'name'
- *      description: // value for 'description'
- *      logo: // value for 'logo'
- *      isActive: // value for 'isActive'
- *      startDate: // value for 'startDate'
- *      periodLength: // value for 'periodLength'
- *   },
- * });
- */
-export function useCreateTenantMutation(baseOptions?: Apollo.MutationHookOptions<CreateTenantMutation, CreateTenantMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<CreateTenantMutation, CreateTenantMutationVariables>(CreateTenantDocument, options);
-      }
-export type CreateTenantMutationHookResult = ReturnType<typeof useCreateTenantMutation>;
-export type CreateTenantMutationResult = Apollo.MutationResult<CreateTenantMutation>;
-export type CreateTenantMutationOptions = Apollo.BaseMutationOptions<CreateTenantMutation, CreateTenantMutationVariables>;
+export const TenantDocument = {
+    kind: "Document",
+    definitions: [
+        {
+            kind: "OperationDefinition",
+            operation: "query",
+            name: { kind: "Name", value: "Tenant" },
+            variableDefinitions: [
+                {
+                    kind: "VariableDefinition",
+                    variable: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "tenantId" },
+                    },
+                    type: {
+                        kind: "NonNullType",
+                        type: {
+                            kind: "NamedType",
+                            name: { kind: "Name", value: "String" },
+                        },
+                    },
+                },
+            ],
+            selectionSet: {
+                kind: "SelectionSet",
+                selections: [
+                    {
+                        kind: "Field",
+                        name: { kind: "Name", value: "tenant" },
+                        arguments: [
+                            {
+                                kind: "Argument",
+                                name: { kind: "Name", value: "id" },
+                                value: {
+                                    kind: "Variable",
+                                    name: { kind: "Name", value: "tenantId" },
+                                },
+                            },
+                        ],
+                        selectionSet: {
+                            kind: "SelectionSet",
+                            selections: [
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "id" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "isActive" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "name" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: {
+                                        kind: "Name",
+                                        value: "description",
+                                    },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "createdAt" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "updatedAt" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "startDate" },
+                                },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+    ],
+} as unknown as DocumentNode<TenantQuery, TenantQueryVariables>;
+export const UserFromAuthIdDocument = {
+    kind: "Document",
+    definitions: [
+        {
+            kind: "OperationDefinition",
+            operation: "query",
+            name: { kind: "Name", value: "UserFromAuthId" },
+            variableDefinitions: [
+                {
+                    kind: "VariableDefinition",
+                    variable: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "auth0Id" },
+                    },
+                    type: {
+                        kind: "NonNullType",
+                        type: {
+                            kind: "NamedType",
+                            name: { kind: "Name", value: "String" },
+                        },
+                    },
+                },
+            ],
+            selectionSet: {
+                kind: "SelectionSet",
+                selections: [
+                    {
+                        kind: "Field",
+                        name: { kind: "Name", value: "userFromAuthId" },
+                        arguments: [
+                            {
+                                kind: "Argument",
+                                name: { kind: "Name", value: "authId" },
+                                value: {
+                                    kind: "Variable",
+                                    name: { kind: "Name", value: "auth0Id" },
+                                },
+                            },
+                        ],
+                        selectionSet: {
+                            kind: "SelectionSet",
+                            selections: [
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "id" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "email" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "authId" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "code" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "avatar" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "name" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "isActive" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "isAdmin" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "createdAt" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "updatedAt" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "department" },
+                                    selectionSet: {
+                                        kind: "SelectionSet",
+                                        selections: [
+                                            {
+                                                kind: "Field",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "id",
+                                                },
+                                            },
+                                        ],
+                                    },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "managees" },
+                                    selectionSet: {
+                                        kind: "SelectionSet",
+                                        selections: [
+                                            {
+                                                kind: "Field",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "id",
+                                                },
+                                            },
+                                        ],
+                                    },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "manager" },
+                                    selectionSet: {
+                                        kind: "SelectionSet",
+                                        selections: [
+                                            {
+                                                kind: "Field",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "id",
+                                                },
+                                            },
+                                        ],
+                                    },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: {
+                                        kind: "Name",
+                                        value: "isPaymentManager",
+                                    },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "isManager" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "tenant" },
+                                    selectionSet: {
+                                        kind: "SelectionSet",
+                                        selections: [
+                                            {
+                                                kind: "Field",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "id",
+                                                },
+                                            },
+                                        ],
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+    ],
+} as unknown as DocumentNode<UserFromAuthIdQuery, UserFromAuthIdQueryVariables>;
+export const TimesheetDocument = {
+    kind: "Document",
+    definitions: [
+        {
+            kind: "OperationDefinition",
+            operation: "query",
+            name: { kind: "Name", value: "Timesheet" },
+            variableDefinitions: [
+                {
+                    kind: "VariableDefinition",
+                    variable: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "date" },
+                    },
+                    type: {
+                        kind: "NonNullType",
+                        type: {
+                            kind: "NamedType",
+                            name: { kind: "Name", value: "Date" },
+                        },
+                    },
+                },
+                {
+                    kind: "VariableDefinition",
+                    variable: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "userId" },
+                    },
+                    type: {
+                        kind: "NonNullType",
+                        type: {
+                            kind: "NamedType",
+                            name: { kind: "Name", value: "String" },
+                        },
+                    },
+                },
+            ],
+            selectionSet: {
+                kind: "SelectionSet",
+                selections: [
+                    {
+                        kind: "Field",
+                        name: { kind: "Name", value: "timesheetFromDate" },
+                        arguments: [
+                            {
+                                kind: "Argument",
+                                name: { kind: "Name", value: "date" },
+                                value: {
+                                    kind: "Variable",
+                                    name: { kind: "Name", value: "date" },
+                                },
+                            },
+                            {
+                                kind: "Argument",
+                                name: { kind: "Name", value: "userId" },
+                                value: {
+                                    kind: "Variable",
+                                    name: { kind: "Name", value: "userId" },
+                                },
+                            },
+                        ],
+                        selectionSet: {
+                            kind: "SelectionSet",
+                            selections: [
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "id" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "status" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "isChanged" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "period" },
+                                    selectionSet: {
+                                        kind: "SelectionSet",
+                                        selections: [
+                                            {
+                                                kind: "Field",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "id",
+                                                },
+                                            },
+                                            {
+                                                kind: "Field",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "startDate",
+                                                },
+                                            },
+                                            {
+                                                kind: "Field",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "endDate",
+                                                },
+                                            },
+                                        ],
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+    ],
+} as unknown as DocumentNode<TimesheetQuery, TimesheetQueryVariables>;
+export const DepartmentsDocument = {
+    kind: "Document",
+    definitions: [
+        {
+            kind: "OperationDefinition",
+            operation: "query",
+            name: { kind: "Name", value: "Departments" },
+            variableDefinitions: [
+                {
+                    kind: "VariableDefinition",
+                    variable: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "tenantId" },
+                    },
+                    type: {
+                        kind: "NonNullType",
+                        type: {
+                            kind: "NamedType",
+                            name: { kind: "Name", value: "String" },
+                        },
+                    },
+                },
+            ],
+            selectionSet: {
+                kind: "SelectionSet",
+                selections: [
+                    {
+                        kind: "Field",
+                        name: { kind: "Name", value: "departments" },
+                        arguments: [
+                            {
+                                kind: "Argument",
+                                name: { kind: "Name", value: "tenantId" },
+                                value: {
+                                    kind: "Variable",
+                                    name: { kind: "Name", value: "tenantId" },
+                                },
+                            },
+                        ],
+                        selectionSet: {
+                            kind: "SelectionSet",
+                            selections: [
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "id" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "name" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "createdAt" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "updatedAt" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "isActive" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: {
+                                        kind: "Name",
+                                        value: "description",
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+    ],
+} as unknown as DocumentNode<DepartmentsQuery, DepartmentsQueryVariables>;
+export const ProjectsDocument = {
+    kind: "Document",
+    definitions: [
+        {
+            kind: "OperationDefinition",
+            operation: "query",
+            name: { kind: "Name", value: "Projects" },
+            variableDefinitions: [
+                {
+                    kind: "VariableDefinition",
+                    variable: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "tenantId" },
+                    },
+                    type: {
+                        kind: "NonNullType",
+                        type: {
+                            kind: "NamedType",
+                            name: { kind: "Name", value: "String" },
+                        },
+                    },
+                },
+            ],
+            selectionSet: {
+                kind: "SelectionSet",
+                selections: [
+                    {
+                        kind: "Field",
+                        name: { kind: "Name", value: "projects" },
+                        arguments: [
+                            {
+                                kind: "Argument",
+                                name: { kind: "Name", value: "tenantId" },
+                                value: {
+                                    kind: "Variable",
+                                    name: { kind: "Name", value: "tenantId" },
+                                },
+                            },
+                        ],
+                        selectionSet: {
+                            kind: "SelectionSet",
+                            selections: [
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "id" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "name" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "createdAt" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "updatedAt" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "isActive" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: {
+                                        kind: "Name",
+                                        value: "description",
+                                    },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "code" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "department" },
+                                    selectionSet: {
+                                        kind: "SelectionSet",
+                                        selections: [
+                                            {
+                                                kind: "Field",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "id",
+                                                },
+                                            },
+                                        ],
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+    ],
+} as unknown as DocumentNode<ProjectsQuery, ProjectsQueryVariables>;
+export const WorkTypesDocument = {
+    kind: "Document",
+    definitions: [
+        {
+            kind: "OperationDefinition",
+            operation: "query",
+            name: { kind: "Name", value: "WorkTypes" },
+            variableDefinitions: [
+                {
+                    kind: "VariableDefinition",
+                    variable: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "tenantId" },
+                    },
+                    type: {
+                        kind: "NonNullType",
+                        type: {
+                            kind: "NamedType",
+                            name: { kind: "Name", value: "String" },
+                        },
+                    },
+                },
+            ],
+            selectionSet: {
+                kind: "SelectionSet",
+                selections: [
+                    {
+                        kind: "Field",
+                        name: { kind: "Name", value: "workTypes" },
+                        arguments: [
+                            {
+                                kind: "Argument",
+                                name: { kind: "Name", value: "tenantId" },
+                                value: {
+                                    kind: "Variable",
+                                    name: { kind: "Name", value: "tenantId" },
+                                },
+                            },
+                        ],
+                        selectionSet: {
+                            kind: "SelectionSet",
+                            selections: [
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "id" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "name" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "createdAt" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "updatedAt" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "isActive" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: {
+                                        kind: "Name",
+                                        value: "description",
+                                    },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "code" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "isSystem" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "isDefault" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "multiplier" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "isBillable" },
+                                },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+    ],
+} as unknown as DocumentNode<WorkTypesQuery, WorkTypesQueryVariables>;
+export const TimeEntryDocument = {
+    kind: "Document",
+    definitions: [
+        {
+            kind: "OperationDefinition",
+            operation: "query",
+            name: { kind: "Name", value: "TimeEntry" },
+            variableDefinitions: [
+                {
+                    kind: "VariableDefinition",
+                    variable: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "index" },
+                    },
+                    type: {
+                        kind: "NonNullType",
+                        type: {
+                            kind: "NamedType",
+                            name: { kind: "Name", value: "Int" },
+                        },
+                    },
+                },
+                {
+                    kind: "VariableDefinition",
+                    variable: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "timeEntryRowId" },
+                    },
+                    type: {
+                        kind: "NonNullType",
+                        type: {
+                            kind: "NamedType",
+                            name: { kind: "Name", value: "String" },
+                        },
+                    },
+                },
+            ],
+            selectionSet: {
+                kind: "SelectionSet",
+                selections: [
+                    {
+                        kind: "Field",
+                        name: { kind: "Name", value: "timeEntry" },
+                        arguments: [
+                            {
+                                kind: "Argument",
+                                name: { kind: "Name", value: "index" },
+                                value: {
+                                    kind: "Variable",
+                                    name: { kind: "Name", value: "index" },
+                                },
+                            },
+                            {
+                                kind: "Argument",
+                                name: { kind: "Name", value: "timeEntryRowId" },
+                                value: {
+                                    kind: "Variable",
+                                    name: {
+                                        kind: "Name",
+                                        value: "timeEntryRowId",
+                                    },
+                                },
+                            },
+                        ],
+                        selectionSet: {
+                            kind: "SelectionSet",
+                            selections: [
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "id" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "createdAt" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "updatedAt" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "date" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "index" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "hours" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: {
+                                        kind: "Name",
+                                        value: "entryComments",
+                                    },
+                                    selectionSet: {
+                                        kind: "SelectionSet",
+                                        selections: [
+                                            {
+                                                kind: "Field",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "id",
+                                                },
+                                            },
+                                        ],
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+    ],
+} as unknown as DocumentNode<TimeEntryQuery, TimeEntryQueryVariables>;
+export const CreateTimeEntryDocument = {
+    kind: "Document",
+    definitions: [
+        {
+            kind: "OperationDefinition",
+            operation: "mutation",
+            name: { kind: "Name", value: "CreateTimeEntry" },
+            variableDefinitions: [
+                {
+                    kind: "VariableDefinition",
+                    variable: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "index" },
+                    },
+                    type: {
+                        kind: "NonNullType",
+                        type: {
+                            kind: "NamedType",
+                            name: { kind: "Name", value: "Int" },
+                        },
+                    },
+                },
+                {
+                    kind: "VariableDefinition",
+                    variable: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "timeEntryRowId" },
+                    },
+                    type: {
+                        kind: "NonNullType",
+                        type: {
+                            kind: "NamedType",
+                            name: { kind: "Name", value: "String" },
+                        },
+                    },
+                },
+                {
+                    kind: "VariableDefinition",
+                    variable: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "hours" },
+                    },
+                    type: {
+                        kind: "NonNullType",
+                        type: {
+                            kind: "NamedType",
+                            name: { kind: "Name", value: "Float" },
+                        },
+                    },
+                },
+                {
+                    kind: "VariableDefinition",
+                    variable: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "date" },
+                    },
+                    type: {
+                        kind: "NonNullType",
+                        type: {
+                            kind: "NamedType",
+                            name: { kind: "Name", value: "Date" },
+                        },
+                    },
+                },
+            ],
+            selectionSet: {
+                kind: "SelectionSet",
+                selections: [
+                    {
+                        kind: "Field",
+                        name: { kind: "Name", value: "createTimeEntry" },
+                        arguments: [
+                            {
+                                kind: "Argument",
+                                name: { kind: "Name", value: "index" },
+                                value: {
+                                    kind: "Variable",
+                                    name: { kind: "Name", value: "index" },
+                                },
+                            },
+                            {
+                                kind: "Argument",
+                                name: { kind: "Name", value: "hours" },
+                                value: {
+                                    kind: "Variable",
+                                    name: { kind: "Name", value: "hours" },
+                                },
+                            },
+                            {
+                                kind: "Argument",
+                                name: { kind: "Name", value: "date" },
+                                value: {
+                                    kind: "Variable",
+                                    name: { kind: "Name", value: "date" },
+                                },
+                            },
+                            {
+                                kind: "Argument",
+                                name: { kind: "Name", value: "timeEntryRowId" },
+                                value: {
+                                    kind: "Variable",
+                                    name: {
+                                        kind: "Name",
+                                        value: "timeEntryRowId",
+                                    },
+                                },
+                            },
+                        ],
+                        selectionSet: {
+                            kind: "SelectionSet",
+                            selections: [
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "id" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "createdAt" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "updatedAt" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "date" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "hours" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "index" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: {
+                                        kind: "Name",
+                                        value: "entryComments",
+                                    },
+                                    selectionSet: {
+                                        kind: "SelectionSet",
+                                        selections: [
+                                            {
+                                                kind: "Field",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "id",
+                                                },
+                                            },
+                                        ],
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+    ],
+} as unknown as DocumentNode<
+    CreateTimeEntryMutation,
+    CreateTimeEntryMutationVariables
+>;
+export const UpdateTimeEntryhoursDocument = {
+    kind: "Document",
+    definitions: [
+        {
+            kind: "OperationDefinition",
+            operation: "mutation",
+            name: { kind: "Name", value: "UpdateTimeEntryhours" },
+            variableDefinitions: [
+                {
+                    kind: "VariableDefinition",
+                    variable: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "id" },
+                    },
+                    type: {
+                        kind: "NonNullType",
+                        type: {
+                            kind: "NamedType",
+                            name: { kind: "Name", value: "String" },
+                        },
+                    },
+                },
+                {
+                    kind: "VariableDefinition",
+                    variable: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "hours" },
+                    },
+                    type: {
+                        kind: "NonNullType",
+                        type: {
+                            kind: "NamedType",
+                            name: { kind: "Name", value: "Float" },
+                        },
+                    },
+                },
+            ],
+            selectionSet: {
+                kind: "SelectionSet",
+                selections: [
+                    {
+                        kind: "Field",
+                        name: { kind: "Name", value: "updateTimeEntry" },
+                        arguments: [
+                            {
+                                kind: "Argument",
+                                name: { kind: "Name", value: "id" },
+                                value: {
+                                    kind: "Variable",
+                                    name: { kind: "Name", value: "id" },
+                                },
+                            },
+                            {
+                                kind: "Argument",
+                                name: { kind: "Name", value: "hours" },
+                                value: {
+                                    kind: "Variable",
+                                    name: { kind: "Name", value: "hours" },
+                                },
+                            },
+                        ],
+                        selectionSet: {
+                            kind: "SelectionSet",
+                            selections: [
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "id" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "createdAt" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "updatedAt" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "date" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "hours" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "index" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: {
+                                        kind: "Name",
+                                        value: "entryComments",
+                                    },
+                                    selectionSet: {
+                                        kind: "SelectionSet",
+                                        selections: [
+                                            {
+                                                kind: "Field",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "id",
+                                                },
+                                            },
+                                        ],
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+    ],
+} as unknown as DocumentNode<
+    UpdateTimeEntryhoursMutation,
+    UpdateTimeEntryhoursMutationVariables
+>;
+export const DeleteTimeEntryDocument = {
+    kind: "Document",
+    definitions: [
+        {
+            kind: "OperationDefinition",
+            operation: "mutation",
+            name: { kind: "Name", value: "DeleteTimeEntry" },
+            variableDefinitions: [
+                {
+                    kind: "VariableDefinition",
+                    variable: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "id" },
+                    },
+                    type: {
+                        kind: "NonNullType",
+                        type: {
+                            kind: "NamedType",
+                            name: { kind: "Name", value: "String" },
+                        },
+                    },
+                },
+            ],
+            selectionSet: {
+                kind: "SelectionSet",
+                selections: [
+                    {
+                        kind: "Field",
+                        name: { kind: "Name", value: "deleteTimeEntry" },
+                        arguments: [
+                            {
+                                kind: "Argument",
+                                name: { kind: "Name", value: "id" },
+                                value: {
+                                    kind: "Variable",
+                                    name: { kind: "Name", value: "id" },
+                                },
+                            },
+                        ],
+                        selectionSet: {
+                            kind: "SelectionSet",
+                            selections: [
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "id" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "hours" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "date" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "index" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "updatedAt" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "createdAt" },
+                                },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+    ],
+} as unknown as DocumentNode<
+    DeleteTimeEntryMutation,
+    DeleteTimeEntryMutationVariables
+>;
+export const UpdateTimeEntryRowDocument = {
+    kind: "Document",
+    definitions: [
+        {
+            kind: "OperationDefinition",
+            operation: "mutation",
+            name: { kind: "Name", value: "UpdateTimeEntryRow" },
+            variableDefinitions: [
+                {
+                    kind: "VariableDefinition",
+                    variable: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "updateTimeEntryRowId" },
+                    },
+                    type: {
+                        kind: "NonNullType",
+                        type: {
+                            kind: "NamedType",
+                            name: { kind: "Name", value: "String" },
+                        },
+                    },
+                },
+                {
+                    kind: "VariableDefinition",
+                    variable: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "departmentId" },
+                    },
+                    type: {
+                        kind: "NamedType",
+                        name: { kind: "Name", value: "String" },
+                    },
+                },
+                {
+                    kind: "VariableDefinition",
+                    variable: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "projectId" },
+                    },
+                    type: {
+                        kind: "NamedType",
+                        name: { kind: "Name", value: "String" },
+                    },
+                },
+                {
+                    kind: "VariableDefinition",
+                    variable: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "workTypeId" },
+                    },
+                    type: {
+                        kind: "NamedType",
+                        name: { kind: "Name", value: "String" },
+                    },
+                },
+            ],
+            selectionSet: {
+                kind: "SelectionSet",
+                selections: [
+                    {
+                        kind: "Field",
+                        name: { kind: "Name", value: "updateTimeEntryRow" },
+                        arguments: [
+                            {
+                                kind: "Argument",
+                                name: { kind: "Name", value: "id" },
+                                value: {
+                                    kind: "Variable",
+                                    name: {
+                                        kind: "Name",
+                                        value: "updateTimeEntryRowId",
+                                    },
+                                },
+                            },
+                            {
+                                kind: "Argument",
+                                name: { kind: "Name", value: "departmentId" },
+                                value: {
+                                    kind: "Variable",
+                                    name: {
+                                        kind: "Name",
+                                        value: "departmentId",
+                                    },
+                                },
+                            },
+                            {
+                                kind: "Argument",
+                                name: { kind: "Name", value: "projectId" },
+                                value: {
+                                    kind: "Variable",
+                                    name: { kind: "Name", value: "projectId" },
+                                },
+                            },
+                            {
+                                kind: "Argument",
+                                name: { kind: "Name", value: "workTypeId" },
+                                value: {
+                                    kind: "Variable",
+                                    name: { kind: "Name", value: "workTypeId" },
+                                },
+                            },
+                        ],
+                        selectionSet: {
+                            kind: "SelectionSet",
+                            selections: [
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "id" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "createdAt" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "updatedAt" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "workType" },
+                                    selectionSet: {
+                                        kind: "SelectionSet",
+                                        selections: [
+                                            {
+                                                kind: "Field",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "id",
+                                                },
+                                            },
+                                        ],
+                                    },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "project" },
+                                    selectionSet: {
+                                        kind: "SelectionSet",
+                                        selections: [
+                                            {
+                                                kind: "Field",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "id",
+                                                },
+                                            },
+                                        ],
+                                    },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "department" },
+                                    selectionSet: {
+                                        kind: "SelectionSet",
+                                        selections: [
+                                            {
+                                                kind: "Field",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "id",
+                                                },
+                                            },
+                                        ],
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+    ],
+} as unknown as DocumentNode<
+    UpdateTimeEntryRowMutation,
+    UpdateTimeEntryRowMutationVariables
+>;
+export const TimeEntriesDocument = {
+    kind: "Document",
+    definitions: [
+        {
+            kind: "OperationDefinition",
+            operation: "query",
+            name: { kind: "Name", value: "TimeEntries" },
+            variableDefinitions: [
+                {
+                    kind: "VariableDefinition",
+                    variable: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "id" },
+                    },
+                    type: {
+                        kind: "NonNullType",
+                        type: {
+                            kind: "NamedType",
+                            name: { kind: "Name", value: "String" },
+                        },
+                    },
+                },
+            ],
+            selectionSet: {
+                kind: "SelectionSet",
+                selections: [
+                    {
+                        kind: "Field",
+                        name: { kind: "Name", value: "timeEntryRow" },
+                        arguments: [
+                            {
+                                kind: "Argument",
+                                name: { kind: "Name", value: "id" },
+                                value: {
+                                    kind: "Variable",
+                                    name: { kind: "Name", value: "id" },
+                                },
+                            },
+                        ],
+                        selectionSet: {
+                            kind: "SelectionSet",
+                            selections: [
+                                {
+                                    kind: "Field",
+                                    name: {
+                                        kind: "Name",
+                                        value: "timeEntries",
+                                    },
+                                    selectionSet: {
+                                        kind: "SelectionSet",
+                                        selections: [
+                                            {
+                                                kind: "Field",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "id",
+                                                },
+                                            },
+                                        ],
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+    ],
+} as unknown as DocumentNode<TimeEntriesQuery, TimeEntriesQueryVariables>;
+export const TimeEntryRowDocument = {
+    kind: "Document",
+    definitions: [
+        {
+            kind: "OperationDefinition",
+            operation: "query",
+            name: { kind: "Name", value: "TimeEntryRow" },
+            variableDefinitions: [
+                {
+                    kind: "VariableDefinition",
+                    variable: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "id" },
+                    },
+                    type: {
+                        kind: "NonNullType",
+                        type: {
+                            kind: "NamedType",
+                            name: { kind: "Name", value: "String" },
+                        },
+                    },
+                },
+            ],
+            selectionSet: {
+                kind: "SelectionSet",
+                selections: [
+                    {
+                        kind: "Field",
+                        name: { kind: "Name", value: "timeEntryRow" },
+                        arguments: [
+                            {
+                                kind: "Argument",
+                                name: { kind: "Name", value: "id" },
+                                value: {
+                                    kind: "Variable",
+                                    name: { kind: "Name", value: "id" },
+                                },
+                            },
+                        ],
+                        selectionSet: {
+                            kind: "SelectionSet",
+                            selections: [
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "id" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "createdAt" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "updatedAt" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "workType" },
+                                    selectionSet: {
+                                        kind: "SelectionSet",
+                                        selections: [
+                                            {
+                                                kind: "Field",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "id",
+                                                },
+                                            },
+                                        ],
+                                    },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "project" },
+                                    selectionSet: {
+                                        kind: "SelectionSet",
+                                        selections: [
+                                            {
+                                                kind: "Field",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "id",
+                                                },
+                                            },
+                                        ],
+                                    },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "department" },
+                                    selectionSet: {
+                                        kind: "SelectionSet",
+                                        selections: [
+                                            {
+                                                kind: "Field",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "id",
+                                                },
+                                            },
+                                        ],
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+    ],
+} as unknown as DocumentNode<TimeEntryRowQuery, TimeEntryRowQueryVariables>;
+export const TimeEntryRowsDocument = {
+    kind: "Document",
+    definitions: [
+        {
+            kind: "OperationDefinition",
+            operation: "query",
+            name: { kind: "Name", value: "TimeEntryRows" },
+            variableDefinitions: [
+                {
+                    kind: "VariableDefinition",
+                    variable: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "timesheetId" },
+                    },
+                    type: {
+                        kind: "NonNullType",
+                        type: {
+                            kind: "NamedType",
+                            name: { kind: "Name", value: "String" },
+                        },
+                    },
+                },
+            ],
+            selectionSet: {
+                kind: "SelectionSet",
+                selections: [
+                    {
+                        kind: "Field",
+                        name: { kind: "Name", value: "timeEntryRows" },
+                        arguments: [
+                            {
+                                kind: "Argument",
+                                name: { kind: "Name", value: "timesheetId" },
+                                value: {
+                                    kind: "Variable",
+                                    name: {
+                                        kind: "Name",
+                                        value: "timesheetId",
+                                    },
+                                },
+                            },
+                        ],
+                        selectionSet: {
+                            kind: "SelectionSet",
+                            selections: [
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "id" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "createdAt" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "updatedAt" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "workType" },
+                                    selectionSet: {
+                                        kind: "SelectionSet",
+                                        selections: [
+                                            {
+                                                kind: "Field",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "id",
+                                                },
+                                            },
+                                        ],
+                                    },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "project" },
+                                    selectionSet: {
+                                        kind: "SelectionSet",
+                                        selections: [
+                                            {
+                                                kind: "Field",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "id",
+                                                },
+                                            },
+                                        ],
+                                    },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "department" },
+                                    selectionSet: {
+                                        kind: "SelectionSet",
+                                        selections: [
+                                            {
+                                                kind: "Field",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "id",
+                                                },
+                                            },
+                                        ],
+                                    },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: {
+                                        kind: "Name",
+                                        value: "timeEntries",
+                                    },
+                                    selectionSet: {
+                                        kind: "SelectionSet",
+                                        selections: [
+                                            {
+                                                kind: "Field",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "id",
+                                                },
+                                            },
+                                        ],
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+    ],
+} as unknown as DocumentNode<TimeEntryRowsQuery, TimeEntryRowsQueryVariables>;
+export const CreateTimeEntryRowDocument = {
+    kind: "Document",
+    definitions: [
+        {
+            kind: "OperationDefinition",
+            operation: "mutation",
+            name: { kind: "Name", value: "CreateTimeEntryRow" },
+            variableDefinitions: [
+                {
+                    kind: "VariableDefinition",
+                    variable: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "timesheetId" },
+                    },
+                    type: {
+                        kind: "NonNullType",
+                        type: {
+                            kind: "NamedType",
+                            name: { kind: "Name", value: "String" },
+                        },
+                    },
+                },
+            ],
+            selectionSet: {
+                kind: "SelectionSet",
+                selections: [
+                    {
+                        kind: "Field",
+                        name: { kind: "Name", value: "createTimeEntryRow" },
+                        arguments: [
+                            {
+                                kind: "Argument",
+                                name: { kind: "Name", value: "timesheetId" },
+                                value: {
+                                    kind: "Variable",
+                                    name: {
+                                        kind: "Name",
+                                        value: "timesheetId",
+                                    },
+                                },
+                            },
+                        ],
+                        selectionSet: {
+                            kind: "SelectionSet",
+                            selections: [
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "id" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "createdAt" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "updatedAt" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "workType" },
+                                    selectionSet: {
+                                        kind: "SelectionSet",
+                                        selections: [
+                                            {
+                                                kind: "Field",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "id",
+                                                },
+                                            },
+                                        ],
+                                    },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "project" },
+                                    selectionSet: {
+                                        kind: "SelectionSet",
+                                        selections: [
+                                            {
+                                                kind: "Field",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "id",
+                                                },
+                                            },
+                                        ],
+                                    },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "department" },
+                                    selectionSet: {
+                                        kind: "SelectionSet",
+                                        selections: [
+                                            {
+                                                kind: "Field",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "id",
+                                                },
+                                            },
+                                        ],
+                                    },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: {
+                                        kind: "Name",
+                                        value: "timeEntries",
+                                    },
+                                    selectionSet: {
+                                        kind: "SelectionSet",
+                                        selections: [
+                                            {
+                                                kind: "Field",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "id",
+                                                },
+                                            },
+                                        ],
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+    ],
+} as unknown as DocumentNode<
+    CreateTimeEntryRowMutation,
+    CreateTimeEntryRowMutationVariables
+>;
+export const DeleteTimeEntryRowDocument = {
+    kind: "Document",
+    definitions: [
+        {
+            kind: "OperationDefinition",
+            operation: "mutation",
+            name: { kind: "Name", value: "DeleteTimeEntryRow" },
+            variableDefinitions: [
+                {
+                    kind: "VariableDefinition",
+                    variable: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "id" },
+                    },
+                    type: {
+                        kind: "NonNullType",
+                        type: {
+                            kind: "NamedType",
+                            name: { kind: "Name", value: "String" },
+                        },
+                    },
+                },
+            ],
+            selectionSet: {
+                kind: "SelectionSet",
+                selections: [
+                    {
+                        kind: "Field",
+                        name: { kind: "Name", value: "deleteTimeEntryRow" },
+                        arguments: [
+                            {
+                                kind: "Argument",
+                                name: { kind: "Name", value: "id" },
+                                value: {
+                                    kind: "Variable",
+                                    name: { kind: "Name", value: "id" },
+                                },
+                            },
+                        ],
+                        selectionSet: {
+                            kind: "SelectionSet",
+                            selections: [
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "id" },
+                                },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+    ],
+} as unknown as DocumentNode<
+    DeleteTimeEntryRowMutation,
+    DeleteTimeEntryRowMutationVariables
+>;
+export const UserFromTokenDocument = {
+    kind: "Document",
+    definitions: [
+        {
+            kind: "OperationDefinition",
+            operation: "query",
+            name: { kind: "Name", value: "UserFromToken" },
+            variableDefinitions: [
+                {
+                    kind: "VariableDefinition",
+                    variable: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "token" },
+                    },
+                    type: {
+                        kind: "NonNullType",
+                        type: {
+                            kind: "NamedType",
+                            name: { kind: "Name", value: "String" },
+                        },
+                    },
+                },
+            ],
+            selectionSet: {
+                kind: "SelectionSet",
+                selections: [
+                    {
+                        kind: "Field",
+                        name: { kind: "Name", value: "userFromToken" },
+                        arguments: [
+                            {
+                                kind: "Argument",
+                                name: { kind: "Name", value: "token" },
+                                value: {
+                                    kind: "Variable",
+                                    name: { kind: "Name", value: "token" },
+                                },
+                            },
+                        ],
+                        selectionSet: {
+                            kind: "SelectionSet",
+                            selections: [
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "id" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "name" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "tenant" },
+                                    selectionSet: {
+                                        kind: "SelectionSet",
+                                        selections: [
+                                            {
+                                                kind: "Field",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "name",
+                                                },
+                                            },
+                                            {
+                                                kind: "Field",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "description",
+                                                },
+                                            },
+                                            {
+                                                kind: "Field",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "logo",
+                                                },
+                                            },
+                                            {
+                                                kind: "Field",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "isActive",
+                                                },
+                                            },
+                                            {
+                                                kind: "Field",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "updatedAt",
+                                                },
+                                            },
+                                            {
+                                                kind: "Field",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "createdAt",
+                                                },
+                                            },
+                                        ],
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+    ],
+} as unknown as DocumentNode<UserFromTokenQuery, UserFromTokenQueryVariables>;
+export const EntryCommentDocument = {
+    kind: "Document",
+    definitions: [
+        {
+            kind: "OperationDefinition",
+            operation: "query",
+            name: { kind: "Name", value: "EntryComment" },
+            variableDefinitions: [
+                {
+                    kind: "VariableDefinition",
+                    variable: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "id" },
+                    },
+                    type: {
+                        kind: "NonNullType",
+                        type: {
+                            kind: "NamedType",
+                            name: { kind: "Name", value: "String" },
+                        },
+                    },
+                },
+            ],
+            selectionSet: {
+                kind: "SelectionSet",
+                selections: [
+                    {
+                        kind: "Field",
+                        name: { kind: "Name", value: "entryComment" },
+                        arguments: [
+                            {
+                                kind: "Argument",
+                                name: { kind: "Name", value: "id" },
+                                value: {
+                                    kind: "Variable",
+                                    name: { kind: "Name", value: "id" },
+                                },
+                            },
+                        ],
+                        selectionSet: {
+                            kind: "SelectionSet",
+                            selections: [
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "id" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "createdAt" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "updatedAt" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "text" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "user" },
+                                    selectionSet: {
+                                        kind: "SelectionSet",
+                                        selections: [
+                                            {
+                                                kind: "Field",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "id",
+                                                },
+                                            },
+                                            {
+                                                kind: "Field",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "name",
+                                                },
+                                            },
+                                            {
+                                                kind: "Field",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "avatar",
+                                                },
+                                            },
+                                        ],
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+    ],
+} as unknown as DocumentNode<EntryCommentQuery, EntryCommentQueryVariables>;
+export const CreateEntryCommentDocument = {
+    kind: "Document",
+    definitions: [
+        {
+            kind: "OperationDefinition",
+            operation: "mutation",
+            name: { kind: "Name", value: "createEntryComment" },
+            variableDefinitions: [
+                {
+                    kind: "VariableDefinition",
+                    variable: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "text" },
+                    },
+                    type: {
+                        kind: "NonNullType",
+                        type: {
+                            kind: "NamedType",
+                            name: { kind: "Name", value: "String" },
+                        },
+                    },
+                },
+                {
+                    kind: "VariableDefinition",
+                    variable: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "entryId" },
+                    },
+                    type: {
+                        kind: "NonNullType",
+                        type: {
+                            kind: "NamedType",
+                            name: { kind: "Name", value: "String" },
+                        },
+                    },
+                },
+                {
+                    kind: "VariableDefinition",
+                    variable: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "userId" },
+                    },
+                    type: {
+                        kind: "NonNullType",
+                        type: {
+                            kind: "NamedType",
+                            name: { kind: "Name", value: "String" },
+                        },
+                    },
+                },
+            ],
+            selectionSet: {
+                kind: "SelectionSet",
+                selections: [
+                    {
+                        kind: "Field",
+                        name: { kind: "Name", value: "createEntryComment" },
+                        arguments: [
+                            {
+                                kind: "Argument",
+                                name: { kind: "Name", value: "text" },
+                                value: {
+                                    kind: "Variable",
+                                    name: { kind: "Name", value: "text" },
+                                },
+                            },
+                            {
+                                kind: "Argument",
+                                name: { kind: "Name", value: "entryId" },
+                                value: {
+                                    kind: "Variable",
+                                    name: { kind: "Name", value: "entryId" },
+                                },
+                            },
+                            {
+                                kind: "Argument",
+                                name: { kind: "Name", value: "userId" },
+                                value: {
+                                    kind: "Variable",
+                                    name: { kind: "Name", value: "userId" },
+                                },
+                            },
+                        ],
+                        selectionSet: {
+                            kind: "SelectionSet",
+                            selections: [
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "id" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "createdAt" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "updatedAt" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "text" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "user" },
+                                    selectionSet: {
+                                        kind: "SelectionSet",
+                                        selections: [
+                                            {
+                                                kind: "Field",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "id",
+                                                },
+                                            },
+                                            {
+                                                kind: "Field",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "name",
+                                                },
+                                            },
+                                            {
+                                                kind: "Field",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "avatar",
+                                                },
+                                            },
+                                        ],
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+    ],
+} as unknown as DocumentNode<
+    CreateEntryCommentMutation,
+    CreateEntryCommentMutationVariables
+>;
+export const CreateOneTimeTokenDocument = {
+    kind: "Document",
+    definitions: [
+        {
+            kind: "OperationDefinition",
+            operation: "mutation",
+            name: { kind: "Name", value: "CreateOneTimeToken" },
+            variableDefinitions: [
+                {
+                    kind: "VariableDefinition",
+                    variable: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "userId" },
+                    },
+                    type: {
+                        kind: "NonNullType",
+                        type: {
+                            kind: "NamedType",
+                            name: { kind: "Name", value: "String" },
+                        },
+                    },
+                },
+                {
+                    kind: "VariableDefinition",
+                    variable: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "tenantId" },
+                    },
+                    type: {
+                        kind: "NonNullType",
+                        type: {
+                            kind: "NamedType",
+                            name: { kind: "Name", value: "String" },
+                        },
+                    },
+                },
+            ],
+            selectionSet: {
+                kind: "SelectionSet",
+                selections: [
+                    {
+                        kind: "Field",
+                        name: { kind: "Name", value: "createOneTimeToken" },
+                        arguments: [
+                            {
+                                kind: "Argument",
+                                name: { kind: "Name", value: "userId" },
+                                value: {
+                                    kind: "Variable",
+                                    name: { kind: "Name", value: "userId" },
+                                },
+                            },
+                            {
+                                kind: "Argument",
+                                name: { kind: "Name", value: "tenantId" },
+                                value: {
+                                    kind: "Variable",
+                                    name: { kind: "Name", value: "tenantId" },
+                                },
+                            },
+                        ],
+                        selectionSet: {
+                            kind: "SelectionSet",
+                            selections: [
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "id" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "user" },
+                                    selectionSet: {
+                                        kind: "SelectionSet",
+                                        selections: [
+                                            {
+                                                kind: "Field",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "id",
+                                                },
+                                            },
+                                        ],
+                                    },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "tenant" },
+                                    selectionSet: {
+                                        kind: "SelectionSet",
+                                        selections: [
+                                            {
+                                                kind: "Field",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "id",
+                                                },
+                                            },
+                                        ],
+                                    },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "createdAt" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "updatedAt" },
+                                },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+    ],
+} as unknown as DocumentNode<
+    CreateOneTimeTokenMutation,
+    CreateOneTimeTokenMutationVariables
+>;
+export const CreateUserDocument = {
+    kind: "Document",
+    definitions: [
+        {
+            kind: "OperationDefinition",
+            operation: "mutation",
+            name: { kind: "Name", value: "CreateUser" },
+            variableDefinitions: [
+                {
+                    kind: "VariableDefinition",
+                    variable: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "email" },
+                    },
+                    type: {
+                        kind: "NonNullType",
+                        type: {
+                            kind: "NamedType",
+                            name: { kind: "Name", value: "String" },
+                        },
+                    },
+                },
+                {
+                    kind: "VariableDefinition",
+                    variable: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "name" },
+                    },
+                    type: {
+                        kind: "NonNullType",
+                        type: {
+                            kind: "NamedType",
+                            name: { kind: "Name", value: "String" },
+                        },
+                    },
+                },
+                {
+                    kind: "VariableDefinition",
+                    variable: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "tenantId" },
+                    },
+                    type: {
+                        kind: "NonNullType",
+                        type: {
+                            kind: "NamedType",
+                            name: { kind: "Name", value: "String" },
+                        },
+                    },
+                },
+                {
+                    kind: "VariableDefinition",
+                    variable: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "authId" },
+                    },
+                    type: {
+                        kind: "NonNullType",
+                        type: {
+                            kind: "NamedType",
+                            name: { kind: "Name", value: "String" },
+                        },
+                    },
+                },
+                {
+                    kind: "VariableDefinition",
+                    variable: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "code" },
+                    },
+                    type: {
+                        kind: "NamedType",
+                        name: { kind: "Name", value: "String" },
+                    },
+                },
+                {
+                    kind: "VariableDefinition",
+                    variable: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "avatar" },
+                    },
+                    type: {
+                        kind: "NamedType",
+                        name: { kind: "Name", value: "String" },
+                    },
+                },
+                {
+                    kind: "VariableDefinition",
+                    variable: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "isActive" },
+                    },
+                    type: {
+                        kind: "NamedType",
+                        name: { kind: "Name", value: "Boolean" },
+                    },
+                },
+                {
+                    kind: "VariableDefinition",
+                    variable: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "isAdmin" },
+                    },
+                    type: {
+                        kind: "NamedType",
+                        name: { kind: "Name", value: "Boolean" },
+                    },
+                },
+                {
+                    kind: "VariableDefinition",
+                    variable: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "isPaymentManager" },
+                    },
+                    type: {
+                        kind: "NamedType",
+                        name: { kind: "Name", value: "Boolean" },
+                    },
+                },
+                {
+                    kind: "VariableDefinition",
+                    variable: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "isManager" },
+                    },
+                    type: {
+                        kind: "NamedType",
+                        name: { kind: "Name", value: "Boolean" },
+                    },
+                },
+                {
+                    kind: "VariableDefinition",
+                    variable: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "departmentId" },
+                    },
+                    type: {
+                        kind: "NamedType",
+                        name: { kind: "Name", value: "String" },
+                    },
+                },
+                {
+                    kind: "VariableDefinition",
+                    variable: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "managerId" },
+                    },
+                    type: {
+                        kind: "NamedType",
+                        name: { kind: "Name", value: "String" },
+                    },
+                },
+            ],
+            selectionSet: {
+                kind: "SelectionSet",
+                selections: [
+                    {
+                        kind: "Field",
+                        name: { kind: "Name", value: "createUser" },
+                        arguments: [
+                            {
+                                kind: "Argument",
+                                name: { kind: "Name", value: "email" },
+                                value: {
+                                    kind: "Variable",
+                                    name: { kind: "Name", value: "email" },
+                                },
+                            },
+                            {
+                                kind: "Argument",
+                                name: { kind: "Name", value: "name" },
+                                value: {
+                                    kind: "Variable",
+                                    name: { kind: "Name", value: "name" },
+                                },
+                            },
+                            {
+                                kind: "Argument",
+                                name: { kind: "Name", value: "tenantId" },
+                                value: {
+                                    kind: "Variable",
+                                    name: { kind: "Name", value: "tenantId" },
+                                },
+                            },
+                            {
+                                kind: "Argument",
+                                name: { kind: "Name", value: "authId" },
+                                value: {
+                                    kind: "Variable",
+                                    name: { kind: "Name", value: "authId" },
+                                },
+                            },
+                            {
+                                kind: "Argument",
+                                name: { kind: "Name", value: "code" },
+                                value: {
+                                    kind: "Variable",
+                                    name: { kind: "Name", value: "code" },
+                                },
+                            },
+                            {
+                                kind: "Argument",
+                                name: { kind: "Name", value: "avatar" },
+                                value: {
+                                    kind: "Variable",
+                                    name: { kind: "Name", value: "avatar" },
+                                },
+                            },
+                            {
+                                kind: "Argument",
+                                name: { kind: "Name", value: "isActive" },
+                                value: {
+                                    kind: "Variable",
+                                    name: { kind: "Name", value: "isActive" },
+                                },
+                            },
+                            {
+                                kind: "Argument",
+                                name: { kind: "Name", value: "isAdmin" },
+                                value: {
+                                    kind: "Variable",
+                                    name: { kind: "Name", value: "isAdmin" },
+                                },
+                            },
+                            {
+                                kind: "Argument",
+                                name: {
+                                    kind: "Name",
+                                    value: "isPaymentManager",
+                                },
+                                value: {
+                                    kind: "Variable",
+                                    name: {
+                                        kind: "Name",
+                                        value: "isPaymentManager",
+                                    },
+                                },
+                            },
+                            {
+                                kind: "Argument",
+                                name: { kind: "Name", value: "isManager" },
+                                value: {
+                                    kind: "Variable",
+                                    name: { kind: "Name", value: "isManager" },
+                                },
+                            },
+                            {
+                                kind: "Argument",
+                                name: { kind: "Name", value: "departmentId" },
+                                value: {
+                                    kind: "Variable",
+                                    name: {
+                                        kind: "Name",
+                                        value: "departmentId",
+                                    },
+                                },
+                            },
+                            {
+                                kind: "Argument",
+                                name: { kind: "Name", value: "managerId" },
+                                value: {
+                                    kind: "Variable",
+                                    name: { kind: "Name", value: "managerId" },
+                                },
+                            },
+                        ],
+                        selectionSet: {
+                            kind: "SelectionSet",
+                            selections: [
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "id" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "email" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "authId" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "isActive" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "code" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "isAdmin" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "tenant" },
+                                    selectionSet: {
+                                        kind: "SelectionSet",
+                                        selections: [
+                                            {
+                                                kind: "Field",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "id",
+                                                },
+                                            },
+                                        ],
+                                    },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "name" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "avatar" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "createdAt" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "updatedAt" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "department" },
+                                    selectionSet: {
+                                        kind: "SelectionSet",
+                                        selections: [
+                                            {
+                                                kind: "Field",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "id",
+                                                },
+                                            },
+                                        ],
+                                    },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "manager" },
+                                    selectionSet: {
+                                        kind: "SelectionSet",
+                                        selections: [
+                                            {
+                                                kind: "Field",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "id",
+                                                },
+                                            },
+                                        ],
+                                    },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: {
+                                        kind: "Name",
+                                        value: "isPaymentManager",
+                                    },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "isManager" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "managees" },
+                                    selectionSet: {
+                                        kind: "SelectionSet",
+                                        selections: [
+                                            {
+                                                kind: "Field",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "id",
+                                                },
+                                            },
+                                        ],
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+    ],
+} as unknown as DocumentNode<CreateUserMutation, CreateUserMutationVariables>;
+export const ManagersDocument = {
+    kind: "Document",
+    definitions: [
+        {
+            kind: "OperationDefinition",
+            operation: "query",
+            name: { kind: "Name", value: "Managers" },
+            variableDefinitions: [
+                {
+                    kind: "VariableDefinition",
+                    variable: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "tenantId" },
+                    },
+                    type: {
+                        kind: "NonNullType",
+                        type: {
+                            kind: "NamedType",
+                            name: { kind: "Name", value: "String" },
+                        },
+                    },
+                },
+            ],
+            selectionSet: {
+                kind: "SelectionSet",
+                selections: [
+                    {
+                        kind: "Field",
+                        name: { kind: "Name", value: "managers" },
+                        arguments: [
+                            {
+                                kind: "Argument",
+                                name: { kind: "Name", value: "tenantId" },
+                                value: {
+                                    kind: "Variable",
+                                    name: { kind: "Name", value: "tenantId" },
+                                },
+                            },
+                        ],
+                        selectionSet: {
+                            kind: "SelectionSet",
+                            selections: [
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "id" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "name" },
+                                },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+    ],
+} as unknown as DocumentNode<ManagersQuery, ManagersQueryVariables>;
+export const OneTimeTokensDocument = {
+    kind: "Document",
+    definitions: [
+        {
+            kind: "OperationDefinition",
+            operation: "query",
+            name: { kind: "Name", value: "OneTimeTokens" },
+            variableDefinitions: [
+                {
+                    kind: "VariableDefinition",
+                    variable: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "tenantId" },
+                    },
+                    type: {
+                        kind: "NonNullType",
+                        type: {
+                            kind: "NamedType",
+                            name: { kind: "Name", value: "String" },
+                        },
+                    },
+                },
+            ],
+            selectionSet: {
+                kind: "SelectionSet",
+                selections: [
+                    {
+                        kind: "Field",
+                        name: { kind: "Name", value: "oneTimeTokens" },
+                        arguments: [
+                            {
+                                kind: "Argument",
+                                name: { kind: "Name", value: "tenantId" },
+                                value: {
+                                    kind: "Variable",
+                                    name: { kind: "Name", value: "tenantId" },
+                                },
+                            },
+                        ],
+                        selectionSet: {
+                            kind: "SelectionSet",
+                            selections: [
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "id" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "user" },
+                                    selectionSet: {
+                                        kind: "SelectionSet",
+                                        selections: [
+                                            {
+                                                kind: "Field",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "id",
+                                                },
+                                            },
+                                            {
+                                                kind: "Field",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "name",
+                                                },
+                                            },
+                                            {
+                                                kind: "Field",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "avatar",
+                                                },
+                                            },
+                                        ],
+                                    },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "createdAt" },
+                                },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+    ],
+} as unknown as DocumentNode<OneTimeTokensQuery, OneTimeTokensQueryVariables>;
+export const UsersDocument = {
+    kind: "Document",
+    definitions: [
+        {
+            kind: "OperationDefinition",
+            operation: "query",
+            name: { kind: "Name", value: "Users" },
+            variableDefinitions: [
+                {
+                    kind: "VariableDefinition",
+                    variable: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "tenantId" },
+                    },
+                    type: {
+                        kind: "NonNullType",
+                        type: {
+                            kind: "NamedType",
+                            name: { kind: "Name", value: "String" },
+                        },
+                    },
+                },
+            ],
+            selectionSet: {
+                kind: "SelectionSet",
+                selections: [
+                    {
+                        kind: "Field",
+                        name: { kind: "Name", value: "users" },
+                        arguments: [
+                            {
+                                kind: "Argument",
+                                name: { kind: "Name", value: "tenantId" },
+                                value: {
+                                    kind: "Variable",
+                                    name: { kind: "Name", value: "tenantId" },
+                                },
+                            },
+                        ],
+                        selectionSet: {
+                            kind: "SelectionSet",
+                            selections: [
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "id" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "email" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "authId" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "code" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "isActive" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "isAdmin" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "tenant" },
+                                    selectionSet: {
+                                        kind: "SelectionSet",
+                                        selections: [
+                                            {
+                                                kind: "Field",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "id",
+                                                },
+                                            },
+                                            {
+                                                kind: "Field",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "name",
+                                                },
+                                            },
+                                        ],
+                                    },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "name" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "avatar" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "createdAt" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "updatedAt" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "department" },
+                                    selectionSet: {
+                                        kind: "SelectionSet",
+                                        selections: [
+                                            {
+                                                kind: "Field",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "id",
+                                                },
+                                            },
+                                            {
+                                                kind: "Field",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "name",
+                                                },
+                                            },
+                                        ],
+                                    },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "managees" },
+                                    selectionSet: {
+                                        kind: "SelectionSet",
+                                        selections: [
+                                            {
+                                                kind: "Field",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "id",
+                                                },
+                                            },
+                                            {
+                                                kind: "Field",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "email",
+                                                },
+                                            },
+                                            {
+                                                kind: "Field",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "name",
+                                                },
+                                            },
+                                            {
+                                                kind: "Field",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "avatar",
+                                                },
+                                            },
+                                        ],
+                                    },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "manager" },
+                                    selectionSet: {
+                                        kind: "SelectionSet",
+                                        selections: [
+                                            {
+                                                kind: "Field",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "id",
+                                                },
+                                            },
+                                            {
+                                                kind: "Field",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "email",
+                                                },
+                                            },
+                                            {
+                                                kind: "Field",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "name",
+                                                },
+                                            },
+                                        ],
+                                    },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: {
+                                        kind: "Name",
+                                        value: "isPaymentManager",
+                                    },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "isManager" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "isSetup" },
+                                },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+    ],
+} as unknown as DocumentNode<UsersQuery, UsersQueryVariables>;
+export const StatusEventsDocument = {
+    kind: "Document",
+    definitions: [
+        {
+            kind: "OperationDefinition",
+            operation: "query",
+            name: { kind: "Name", value: "StatusEvents" },
+            variableDefinitions: [
+                {
+                    kind: "VariableDefinition",
+                    variable: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "timesheetId" },
+                    },
+                    type: {
+                        kind: "NonNullType",
+                        type: {
+                            kind: "NamedType",
+                            name: { kind: "Name", value: "String" },
+                        },
+                    },
+                },
+            ],
+            selectionSet: {
+                kind: "SelectionSet",
+                selections: [
+                    {
+                        kind: "Field",
+                        name: { kind: "Name", value: "statusEvents" },
+                        arguments: [
+                            {
+                                kind: "Argument",
+                                name: { kind: "Name", value: "timesheetId" },
+                                value: {
+                                    kind: "Variable",
+                                    name: {
+                                        kind: "Name",
+                                        value: "timesheetId",
+                                    },
+                                },
+                            },
+                        ],
+                        selectionSet: {
+                            kind: "SelectionSet",
+                            selections: [
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "id" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "createdAt" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "type" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "status" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "message" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "user" },
+                                    selectionSet: {
+                                        kind: "SelectionSet",
+                                        selections: [
+                                            {
+                                                kind: "Field",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "name",
+                                                },
+                                            },
+                                            {
+                                                kind: "Field",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "avatar",
+                                                },
+                                            },
+                                        ],
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+    ],
+} as unknown as DocumentNode<StatusEventsQuery, StatusEventsQueryVariables>;
+export const CreateStatusEventDocument = {
+    kind: "Document",
+    definitions: [
+        {
+            kind: "OperationDefinition",
+            operation: "mutation",
+            name: { kind: "Name", value: "CreateStatusEvent" },
+            variableDefinitions: [
+                {
+                    kind: "VariableDefinition",
+                    variable: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "timesheetId" },
+                    },
+                    type: {
+                        kind: "NonNullType",
+                        type: {
+                            kind: "NamedType",
+                            name: { kind: "Name", value: "String" },
+                        },
+                    },
+                },
+                {
+                    kind: "VariableDefinition",
+                    variable: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "type" },
+                    },
+                    type: {
+                        kind: "NonNullType",
+                        type: {
+                            kind: "NamedType",
+                            name: { kind: "Name", value: "EventType" },
+                        },
+                    },
+                },
+                {
+                    kind: "VariableDefinition",
+                    variable: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "status" },
+                    },
+                    type: {
+                        kind: "NonNullType",
+                        type: {
+                            kind: "NamedType",
+                            name: { kind: "Name", value: "Status" },
+                        },
+                    },
+                },
+                {
+                    kind: "VariableDefinition",
+                    variable: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "message" },
+                    },
+                    type: {
+                        kind: "NonNullType",
+                        type: {
+                            kind: "NamedType",
+                            name: { kind: "Name", value: "String" },
+                        },
+                    },
+                },
+                {
+                    kind: "VariableDefinition",
+                    variable: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "userId" },
+                    },
+                    type: {
+                        kind: "NonNullType",
+                        type: {
+                            kind: "NamedType",
+                            name: { kind: "Name", value: "String" },
+                        },
+                    },
+                },
+            ],
+            selectionSet: {
+                kind: "SelectionSet",
+                selections: [
+                    {
+                        kind: "Field",
+                        name: { kind: "Name", value: "createStatusEvent" },
+                        arguments: [
+                            {
+                                kind: "Argument",
+                                name: { kind: "Name", value: "timesheetId" },
+                                value: {
+                                    kind: "Variable",
+                                    name: {
+                                        kind: "Name",
+                                        value: "timesheetId",
+                                    },
+                                },
+                            },
+                            {
+                                kind: "Argument",
+                                name: { kind: "Name", value: "type" },
+                                value: {
+                                    kind: "Variable",
+                                    name: { kind: "Name", value: "type" },
+                                },
+                            },
+                            {
+                                kind: "Argument",
+                                name: { kind: "Name", value: "status" },
+                                value: {
+                                    kind: "Variable",
+                                    name: { kind: "Name", value: "status" },
+                                },
+                            },
+                            {
+                                kind: "Argument",
+                                name: { kind: "Name", value: "message" },
+                                value: {
+                                    kind: "Variable",
+                                    name: { kind: "Name", value: "message" },
+                                },
+                            },
+                            {
+                                kind: "Argument",
+                                name: { kind: "Name", value: "userId" },
+                                value: {
+                                    kind: "Variable",
+                                    name: { kind: "Name", value: "userId" },
+                                },
+                            },
+                        ],
+                        selectionSet: {
+                            kind: "SelectionSet",
+                            selections: [
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "id" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "createdAt" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "type" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "status" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "message" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "user" },
+                                    selectionSet: {
+                                        kind: "SelectionSet",
+                                        selections: [
+                                            {
+                                                kind: "Field",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "name",
+                                                },
+                                            },
+                                            {
+                                                kind: "Field",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "avatar",
+                                                },
+                                            },
+                                        ],
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+    ],
+} as unknown as DocumentNode<
+    CreateStatusEventMutation,
+    CreateStatusEventMutationVariables
+>;
+export const TimesheetUpdatedDocument = {
+    kind: "Document",
+    definitions: [
+        {
+            kind: "OperationDefinition",
+            operation: "query",
+            name: { kind: "Name", value: "TimesheetUpdated" },
+            variableDefinitions: [
+                {
+                    kind: "VariableDefinition",
+                    variable: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "timesheetId" },
+                    },
+                    type: {
+                        kind: "NonNullType",
+                        type: {
+                            kind: "NamedType",
+                            name: { kind: "Name", value: "String" },
+                        },
+                    },
+                },
+            ],
+            selectionSet: {
+                kind: "SelectionSet",
+                selections: [
+                    {
+                        kind: "Field",
+                        name: { kind: "Name", value: "timesheet" },
+                        arguments: [
+                            {
+                                kind: "Argument",
+                                name: { kind: "Name", value: "id" },
+                                value: {
+                                    kind: "Variable",
+                                    name: {
+                                        kind: "Name",
+                                        value: "timesheetId",
+                                    },
+                                },
+                            },
+                        ],
+                        selectionSet: {
+                            kind: "SelectionSet",
+                            selections: [
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "updatedAt" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "id" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: {
+                                        kind: "Name",
+                                        value: "timeEntryRows",
+                                    },
+                                    selectionSet: {
+                                        kind: "SelectionSet",
+                                        selections: [
+                                            {
+                                                kind: "Field",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "id",
+                                                },
+                                            },
+                                            {
+                                                kind: "Field",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "updatedAt",
+                                                },
+                                            },
+                                            {
+                                                kind: "Field",
+                                                name: {
+                                                    kind: "Name",
+                                                    value: "timeEntries",
+                                                },
+                                                selectionSet: {
+                                                    kind: "SelectionSet",
+                                                    selections: [
+                                                        {
+                                                            kind: "Field",
+                                                            name: {
+                                                                kind: "Name",
+                                                                value: "id",
+                                                            },
+                                                        },
+                                                        {
+                                                            kind: "Field",
+                                                            name: {
+                                                                kind: "Name",
+                                                                value: "updatedAt",
+                                                            },
+                                                        },
+                                                    ],
+                                                },
+                                            },
+                                        ],
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+    ],
+} as unknown as DocumentNode<
+    TimesheetUpdatedQuery,
+    TimesheetUpdatedQueryVariables
+>;
+export const UpdateTimesheetChangedDocument = {
+    kind: "Document",
+    definitions: [
+        {
+            kind: "OperationDefinition",
+            operation: "mutation",
+            name: { kind: "Name", value: "UpdateTimesheetChanged" },
+            variableDefinitions: [
+                {
+                    kind: "VariableDefinition",
+                    variable: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "timesheetId" },
+                    },
+                    type: {
+                        kind: "NonNullType",
+                        type: {
+                            kind: "NamedType",
+                            name: { kind: "Name", value: "String" },
+                        },
+                    },
+                },
+                {
+                    kind: "VariableDefinition",
+                    variable: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "changed" },
+                    },
+                    type: {
+                        kind: "NonNullType",
+                        type: {
+                            kind: "NamedType",
+                            name: { kind: "Name", value: "Boolean" },
+                        },
+                    },
+                },
+            ],
+            selectionSet: {
+                kind: "SelectionSet",
+                selections: [
+                    {
+                        kind: "Field",
+                        name: { kind: "Name", value: "updateTimesheet" },
+                        arguments: [
+                            {
+                                kind: "Argument",
+                                name: { kind: "Name", value: "id" },
+                                value: {
+                                    kind: "Variable",
+                                    name: {
+                                        kind: "Name",
+                                        value: "timesheetId",
+                                    },
+                                },
+                            },
+                            {
+                                kind: "Argument",
+                                name: { kind: "Name", value: "isChanged" },
+                                value: {
+                                    kind: "Variable",
+                                    name: { kind: "Name", value: "changed" },
+                                },
+                            },
+                        ],
+                        selectionSet: {
+                            kind: "SelectionSet",
+                            selections: [
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "id" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "updatedAt" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "isChanged" },
+                                },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+    ],
+} as unknown as DocumentNode<
+    UpdateTimesheetChangedMutation,
+    UpdateTimesheetChangedMutationVariables
+>;
+export const CreateTenantDocument = {
+    kind: "Document",
+    definitions: [
+        {
+            kind: "OperationDefinition",
+            operation: "mutation",
+            name: { kind: "Name", value: "CreateTenant" },
+            variableDefinitions: [
+                {
+                    kind: "VariableDefinition",
+                    variable: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "name" },
+                    },
+                    type: {
+                        kind: "NonNullType",
+                        type: {
+                            kind: "NamedType",
+                            name: { kind: "Name", value: "String" },
+                        },
+                    },
+                },
+                {
+                    kind: "VariableDefinition",
+                    variable: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "description" },
+                    },
+                    type: {
+                        kind: "NonNullType",
+                        type: {
+                            kind: "NamedType",
+                            name: { kind: "Name", value: "String" },
+                        },
+                    },
+                },
+                {
+                    kind: "VariableDefinition",
+                    variable: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "logo" },
+                    },
+                    type: {
+                        kind: "NonNullType",
+                        type: {
+                            kind: "NamedType",
+                            name: { kind: "Name", value: "String" },
+                        },
+                    },
+                },
+                {
+                    kind: "VariableDefinition",
+                    variable: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "isActive" },
+                    },
+                    type: {
+                        kind: "NonNullType",
+                        type: {
+                            kind: "NamedType",
+                            name: { kind: "Name", value: "Boolean" },
+                        },
+                    },
+                },
+                {
+                    kind: "VariableDefinition",
+                    variable: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "startDate" },
+                    },
+                    type: {
+                        kind: "NonNullType",
+                        type: {
+                            kind: "NamedType",
+                            name: { kind: "Name", value: "Date" },
+                        },
+                    },
+                },
+                {
+                    kind: "VariableDefinition",
+                    variable: {
+                        kind: "Variable",
+                        name: { kind: "Name", value: "periodLength" },
+                    },
+                    type: {
+                        kind: "NonNullType",
+                        type: {
+                            kind: "NamedType",
+                            name: { kind: "Name", value: "Int" },
+                        },
+                    },
+                },
+            ],
+            selectionSet: {
+                kind: "SelectionSet",
+                selections: [
+                    {
+                        kind: "Field",
+                        name: { kind: "Name", value: "createTenant" },
+                        arguments: [
+                            {
+                                kind: "Argument",
+                                name: { kind: "Name", value: "name" },
+                                value: {
+                                    kind: "Variable",
+                                    name: { kind: "Name", value: "name" },
+                                },
+                            },
+                            {
+                                kind: "Argument",
+                                name: { kind: "Name", value: "description" },
+                                value: {
+                                    kind: "Variable",
+                                    name: {
+                                        kind: "Name",
+                                        value: "description",
+                                    },
+                                },
+                            },
+                            {
+                                kind: "Argument",
+                                name: { kind: "Name", value: "logo" },
+                                value: {
+                                    kind: "Variable",
+                                    name: { kind: "Name", value: "logo" },
+                                },
+                            },
+                            {
+                                kind: "Argument",
+                                name: { kind: "Name", value: "isActive" },
+                                value: {
+                                    kind: "Variable",
+                                    name: { kind: "Name", value: "isActive" },
+                                },
+                            },
+                            {
+                                kind: "Argument",
+                                name: { kind: "Name", value: "startDate" },
+                                value: {
+                                    kind: "Variable",
+                                    name: { kind: "Name", value: "startDate" },
+                                },
+                            },
+                            {
+                                kind: "Argument",
+                                name: { kind: "Name", value: "periodLength" },
+                                value: {
+                                    kind: "Variable",
+                                    name: {
+                                        kind: "Name",
+                                        value: "periodLength",
+                                    },
+                                },
+                            },
+                        ],
+                        selectionSet: {
+                            kind: "SelectionSet",
+                            selections: [
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "id" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "name" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: {
+                                        kind: "Name",
+                                        value: "description",
+                                    },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "startDate" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: {
+                                        kind: "Name",
+                                        value: "periodLength",
+                                    },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "isActive" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "updatedAt" },
+                                },
+                                {
+                                    kind: "Field",
+                                    name: { kind: "Name", value: "createdAt" },
+                                },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+    ],
+} as unknown as DocumentNode<
+    CreateTenantMutation,
+    CreateTenantMutationVariables
+>;

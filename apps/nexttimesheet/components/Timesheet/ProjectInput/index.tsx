@@ -1,17 +1,18 @@
 import * as React from "react";
 
+import { useMutation } from "@apollo/client";
 import { Listbox, Transition } from "@headlessui/react";
 import { CheckIcon, SelectorIcon } from "@heroicons/react/solid";
 import { Row } from "@tanstack/react-table";
 
 import {
-    GetTimeEntryRowsDocument,
-    GetTimeEntryRowsQuery,
-    GetTimeEntryRowsQueryVariables,
     IsChanged,
     Project,
     TimeEntryRow,
-    useUpdateTimeEntryRowMutation,
+    TimeEntryRowsDocument,
+    TimeEntryRowsQuery,
+    TimeEntryRowsQueryVariables,
+    UpdateTimeEntryRowDocument,
 } from "../../../lib/apollo";
 import ErrorBoundary from "../../common/ErrorBoundary";
 import { MyTableGenerics } from "../Table";
@@ -41,7 +42,7 @@ const TimesheetProjectInput = ({
     // We need to keep and update the state of the cell normally
     const [project, setProject] = React.useState<Project | null>(null);
     // const [foundProject, setFoundProject] = React.useState(true);
-    const [updateTimeEntryRow] = useUpdateTimeEntryRowMutation();
+    const [updateTimeEntryRow] = useMutation(UpdateTimeEntryRowDocument);
 
     const {
         // projects,
@@ -71,8 +72,8 @@ const TimesheetProjectInput = ({
                 updateTimeEntryRow: {
                     __typename: "TimeEntryRow",
                     id: row?.id ?? "-1",
-                    createdAt: row?.createdAt,
-                    updatedAt: row?.updatedAt,
+                    createdAt: row?.createdAt ?? new Date(),
+                    updatedAt: row?.updatedAt ?? new Date(),
                     department: {
                         __typename: "Department",
                         id: row?.department?.id ?? "-1",
@@ -90,16 +91,16 @@ const TimesheetProjectInput = ({
             update: (cache, { data }) => {
                 const newEntryRow = data?.updateTimeEntryRow ?? {};
                 const rows = cache.readQuery<
-                    GetTimeEntryRowsQuery,
-                    GetTimeEntryRowsQueryVariables
+                    TimeEntryRowsQuery,
+                    TimeEntryRowsQueryVariables
                 >({
-                    query: GetTimeEntryRowsDocument,
+                    query: TimeEntryRowsDocument,
                     variables: {
                         timesheetId,
                     },
                 });
 
-                const oldRows = rows?.getTimeEntryRows ?? [];
+                const oldRows = rows?.timeEntryRows ?? [];
 
                 const newTimeEntryRows = oldRows.map((timeEntryRow) => {
                     if (timeEntryRow.id === row?.id) {
@@ -112,15 +113,15 @@ const TimesheetProjectInput = ({
                 });
 
                 cache.writeQuery<
-                    GetTimeEntryRowsQuery,
-                    GetTimeEntryRowsQueryVariables
+                    TimeEntryRowsQuery,
+                    TimeEntryRowsQueryVariables
                 >({
-                    query: GetTimeEntryRowsDocument,
+                    query: TimeEntryRowsDocument,
                     variables: {
                         timesheetId,
                     },
                     data: {
-                        getTimeEntryRows: newTimeEntryRows,
+                        timeEntryRows: newTimeEntryRows,
                     },
                 });
             },

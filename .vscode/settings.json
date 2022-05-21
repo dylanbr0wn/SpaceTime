@@ -12,4 +12,5 @@
         "strings": true
     },
     "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+    "graphql-config.load.filePath": "./apps/nexttimesheet/.graphqlrc.yml",
 }

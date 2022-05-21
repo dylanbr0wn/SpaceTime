@@ -1,19 +1,16 @@
 import { DateTime } from "luxon";
 import * as React from "react";
 
-import {
-    EventType,
-    Status,
-    StatusEvent,
-    useStatusEventsQuery,
-} from "../../lib/apollo";
+import { useQuery } from "@apollo/client";
+
+import { StatusEventsDocument } from "../../lib/apollo";
 import Avatar from "../common/Avatar";
 
 import StatusTitle from "./StatusTitle";
 import TimeSince from "./TimeSince";
 
 const ApprovalTree = ({ user, timesheetId }) => {
-    const { data, loading, error } = useStatusEventsQuery({
+    const { data } = useQuery(StatusEventsDocument, {
         variables: {
             timesheetId,
         },
@@ -34,9 +31,15 @@ const ApprovalTree = ({ user, timesheetId }) => {
                                 {user.name}
                                 <span className="ml-3 font-normal text-base-content/30 hover:underline no-underline ">
                                     <TimeSince
-                                        date={DateTime.fromISO(
-                                            event.createdAt
-                                        ).toISO()}
+                                        date={
+                                            typeof event.createdAt === "string"
+                                                ? DateTime.fromISO(
+                                                      event.createdAt
+                                                  ).toISO()
+                                                : DateTime.fromJSDate(
+                                                      event.createdAt
+                                                  ).toISO()
+                                        }
                                     />
                                 </span>
                             </div>

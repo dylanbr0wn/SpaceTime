@@ -6,16 +6,16 @@ import * as React from "react";
 import DashBoard from "../components/Dashboard";
 import EmployeeTimesheet from "../components/EmployeeTimesheet";
 import {
-    client,
-    GetUserFromAuth0Document,
-    GetUserFromAuth0Query,
-    GetUserFromAuth0QueryVariables,
     initializeApollo,
     User,
+    UserFromAuthIdDocument,
+    UserFromAuthIdQuery,
+    UserFromAuthIdQueryVariables,
 } from "../lib/apollo";
 
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
     const session = await getSession(ctx);
+    console.log(session);
     if (!session) {
         return {
             redirect: {
@@ -27,16 +27,18 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
     const user = session?.user;
     const client = initializeApollo({ headers: ctx?.req?.headers });
 
-    const { data: userData } = await client.query<
-        GetUserFromAuth0Query,
-        GetUserFromAuth0QueryVariables
+    const { data: userData, errors } = await client.query<
+        UserFromAuthIdQuery,
+        UserFromAuthIdQueryVariables
     >({
-        query: GetUserFromAuth0Document,
+        query: UserFromAuthIdDocument,
         variables: {
             auth0Id: String(user?.sub),
         },
+        errorPolicy: "none",
     });
-    if (!userData?.getUserFromAuth0) {
+    console.log(errors);
+    if (!userData?.userFromAuthId) {
         return {
             redirect: {
                 destination: "/auth/register",
@@ -47,7 +49,7 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
 
     return {
         props: {
-            userData: userData?.getUserFromAuth0,
+            userData: userData?.userFromAuthId,
         },
     };
 };

@@ -3,7 +3,7 @@ import { Session } from "next-auth";
 import * as React from "react";
 
 import { FeedbackFish } from "@feedback-fish/react";
-import { Menu, Popover } from "@headlessui/react";
+import { Menu } from "@headlessui/react";
 import {
     CalendarIcon,
     PencilAltIcon,
@@ -11,7 +11,6 @@ import {
     UserGroupIcon,
 } from "@heroicons/react/outline";
 
-import { User } from "../../lib/apollo";
 import Avatar from "../common/Avatar";
 import Transition from "../common/CustTransition";
 import ErrorBoundary from "../common/ErrorBoundary";
@@ -89,7 +88,7 @@ const TimesheetMenu = ({ user }: { user: Session["user"] }) => {
                     <div className="flex-grow"></div>
                     <FeedbackFish
                         projectId="98bcbfde97c737"
-                        userId={user.email ?? ""}
+                        userId={user?.email ?? ""}
                     >
                         <button
                             title="feedback"

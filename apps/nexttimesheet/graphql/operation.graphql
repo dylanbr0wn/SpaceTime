@@ -1,43 +1,56 @@
-query TenantFromId($tenantId: String!) {
-    tenantFromId(tenantId: $tenantId) {
+query Tenant($tenantId: String!) {
+    tenant(id: $tenantId) {
         id
         isActive
         name
         description
-    }
-}
-
-query GetUserFromAuth0($auth0Id: String!) {
-    getUserFromAuth0(auth0Id: $auth0Id) {
-        id
-        email
-        auth0Id
-        code
-        avatar
-        name
-        isActive
-        isAdmin
         createdAt
         updatedAt
-        department {
-            id
-        }
-        managees {
-            id
-        }
-        manager {
-            id
-        }
-        isPaymentManager
-        isManager
-        tenant {
-            id
-        }
+        startDate
     }
 }
 
-query GetTimesheet($timesheet: TimesheetGetInput!) {
-    getTimesheet(Timesheet: $timesheet) {
+query UserFromAuthId($authId: String!) {
+  userFromAuthId(authId: $authId) {
+    ... on BaseError {
+      message
+    }
+    ... on QueryUserFromAuthIdSuccess {
+      data {
+        authId
+        avatar
+        code
+        createdAt
+        department {
+          id
+        }
+        email
+        id
+        isActive
+        isAdmin
+        isManager
+        isPaymentManager
+        isSetup
+        managees {
+          id
+        }
+        manager {
+          id
+        }
+        name
+        updatedAt
+        tenant {
+          id
+        }
+      }
+    }
+  }
+}
+    
+
+
+query Timesheet($date: Date!, $userId: String!) {
+    timesheetFromDate(date:$date, userId: $userId ) {
         id
         status
         isChanged
@@ -49,8 +62,8 @@ query GetTimesheet($timesheet: TimesheetGetInput!) {
     }
 }
 
-query Departments {
-    departments {
+query Departments($tenantId: String!) {
+    departments(tenantId: $tenantId) {
         id
         name
         createdAt
@@ -60,8 +73,8 @@ query Departments {
     }
 }
 
-query Projects {
-    projects {
+query Projects($tenantId: String!) {
+    projects(tenantId: $tenantId ) {
         id
         name
         createdAt
@@ -75,8 +88,8 @@ query Projects {
     }
 }
 
-query WorkTypes {
-    workTypes {
+query WorkTypes($tenantId: String!) {
+    workTypes(tenantId: $tenantId) {
         id
         name
         createdAt
@@ -90,41 +103,21 @@ query WorkTypes {
         isBillable
     }
 }
-query TimeEntry($date: String! $timeEntryRowId: String!) {
-    timeEntry(date: $date, timeEntryRowId: $timeEntryRowId) {
+query TimeEntry($index: Int! $timeEntryRowId: String!) {
+    timeEntry(index: $index, timeEntryRowId: $timeEntryRowId) {
         id
         createdAt
         updatedAt
         date
-        hours
-        entryComments {
-            id
-            createdAt
-            updatedAt
-            text
-            user {
-                id
-            }
-        }
-    }
-}
-
-query TimeEntryFromIndex($index: Int! $timeEntryRowId: String!) {
-    timeEntryFromIndex(index: $index, timeEntryRowId: $timeEntryRowId) {
-        id
-        createdAt
-        updatedAt
-        date
-        hours
         index
+        hours
         entryComments {
             id
         }
     }
-}
-      
+}    
 
-mutation CreateTimeEntry($index: Int! $timeEntryRowId: String! $hours: Int! $date: String!) {
+mutation CreateTimeEntry($index: Int! $timeEntryRowId: String! $hours: Float! $date: Date!) {
     createTimeEntry(index: $index, hours: $hours, date: $date, timeEntryRowId: $timeEntryRowId) {
         id
         createdAt
@@ -139,10 +132,10 @@ mutation CreateTimeEntry($index: Int! $timeEntryRowId: String! $hours: Int! $dat
 }
 
 mutation UpdateTimeEntryhours(
-    $updateTimeEntryhoursId: String!
-    $hours: Int!
+    $id: String!
+    $hours: Float!
 ) {
-    updateTimeEntryhours(id: $updateTimeEntryhoursId, hours: $hours) {
+    updateTimeEntry(id: $id, hours: $hours) {
         id
         createdAt
         updatedAt
@@ -155,8 +148,8 @@ mutation UpdateTimeEntryhours(
     }
 }
 
-mutation DeleteTimeEntry($deleteTimeEntryId: String!) {
-    deleteTimeEntry(id: $deleteTimeEntryId) {
+mutation DeleteTimeEntry($id: String!) {
+    deleteTimeEntry(id: $id) {
         id
         hours
         date
@@ -192,17 +185,16 @@ mutation UpdateTimeEntryRow(
     }
 }
 
-query GetTimeEntries($rowId: String!) {
-    getTimeEntryRow(id: $rowId) {
+query TimeEntries($id: String!) {
+    timeEntryRow(id: $id) {
        timeEntries{
            id
        }
-        
     }
 }
 
-query GetTimeEntryRow($getTimeEntryRowId: String!) {
-    getTimeEntryRow(id: $getTimeEntryRowId) {
+query TimeEntryRow($id: String!) {
+    timeEntryRow(id: $id) {
         id
         createdAt
         updatedAt
@@ -219,8 +211,8 @@ query GetTimeEntryRow($getTimeEntryRowId: String!) {
     }
 }
 
-query GetTimeEntryRows($timesheetId: String!) {
-    getTimeEntryRows(timesheetId: $timesheetId) {
+query TimeEntryRows($timesheetId: String!) {
+    timeEntryRows(timesheetId: $timesheetId) {
         id
         createdAt
         updatedAt
@@ -261,14 +253,14 @@ mutation CreateTimeEntryRow($timesheetId: String!) {
     }
 }
 
-mutation DeleteTimeEntryRow($timeEntryRow: TimeEntryRowDeleteInput!) {
-    deleteTimeEntryRow(TimeEntryRow: $timeEntryRow) {
+mutation DeleteTimeEntryRow($id: String!) {
+    deleteTimeEntryRow(id: $id) {
         id
     }
 }
 
-query getUserFromToken($token: ID!) {
-    getUserFromToken(token: $token) {
+query UserFromToken($token: String!) {
+    userFromToken(token: $token) {
         id
         name
         tenant {
@@ -282,35 +274,8 @@ query getUserFromToken($token: ID!) {
     }
 }
 
-mutation AttachAuth0Id($auth0Id: String!, $userId: ID!) {
-    attachAuth0Id(auth0Id: $auth0Id, userId: $userId) {
-        id
-        email
-        auth0Id
-        code
-        isActive
-        isAdmin
-        createdAt
-        updatedAt
-        department {
-            id
-        }
-        tenant {
-            id
-        }
-        managees {
-            id
-        }
-        manager {
-            id
-        }
-        isPaymentManager
-        isManager
-    }
-}
-
-query GetEntryComment($commentId: String!) {
-    getEntryComment(commentId: $commentId) {
+query EntryComment($id: String!) {
+    entryComment(id: $id) {
         id
         createdAt
         updatedAt
@@ -323,8 +288,8 @@ query GetEntryComment($commentId: String!) {
     }
 }
 
-mutation createEntryComment($entryComment: EntryCommentCreateInput!) {
-    createEntryComment(entryComment: $entryComment) {
+mutation createEntryComment($text: String!, $entryId: String!, $userId: String!) {
+    createEntryComment(text: $text, entryId: $entryId, userId: $userId) {
         id
         createdAt
         updatedAt
@@ -351,11 +316,11 @@ mutation CreateOneTimeToken($userId: String!, $tenantId: String!) {
     }
 }
 
-mutation CreateUser($user: UserCreateInput!) {
-    createUser(user: $user) {
+mutation CreateUser($email: String!, $name: String!, $tenantId: String!, $authId: String!, $code: String, $avatar: String, $isActive: Boolean, $isAdmin: Boolean, $isPaymentManager: Boolean, $isManager: Boolean, $departmentId: String, $managerId: String, ) {
+    createUser(email: $email, name: $name, tenantId: $tenantId, authId: $authId, code: $code, avatar: $avatar, isActive: $isActive, isAdmin: $isAdmin, isPaymentManager: $isPaymentManager, isManager: $isManager, departmentId: $departmentId, managerId: $managerId) {
         id
         email
-        auth0Id
+        authId
         isActive
         code
         isAdmin
@@ -387,14 +352,8 @@ query Managers($tenantId: String!) {
   }
 }
 
-query GetUserFromCode($code: String!, $tenantId: String!) {
-  getUserFromCode(code: $code, tenantId: $tenantId) {
-    id
-  }
-}
-
-query GetOneTimeTokens($tenantId: String!) {
-  getOneTimeTokens(tenantId: $tenantId) {
+query OneTimeTokens($tenantId: String!) {
+  oneTimeTokens(tenantId: $tenantId) {
     id
     user {
       id
@@ -409,7 +368,7 @@ query Users($tenantId: String!) {
   users(tenantId: $tenantId) {
     id
     email
-    auth0Id
+    authId
     code
     isActive
     isAdmin
@@ -440,19 +399,12 @@ query Users($tenantId: String!) {
     isManager
     isSetup
   }
+  ...Error
 }
 
-query TimeEntryFromId($id: String!){
-    timeEntryFromId(id: $id) {
-        id
-        createdAt
-        updatedAt
-        date
-        hours
-        entryComments {
-            id
-        }
-    }
+fragment Error on BaseError {
+    message
+    __typename
 }
 
 query StatusEvents($timesheetId: String!){
@@ -506,7 +458,7 @@ mutation UpdateTimesheetChanged($timesheetId: String!, $changed: Boolean!){
     }
 }
 
-mutation CreateTenant($name: String!, $description: String!, $logo: String!, $isActive: Boolean!, $startDate:String!, $periodLength:Int! ){
+mutation CreateTenant($name: String!, $description: String!, $logo: String!, $isActive: Boolean!, $startDate:Date!, $periodLength:Int! ){
     createTenant(name: $name, description: $description, logo: $logo, isActive: $isActive, startDate: $startDate, periodLength: $periodLength) {
         id
         name

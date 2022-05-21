@@ -2,23 +2,21 @@ import cuid from "cuid";
 import { DateTime } from "luxon";
 import * as React from "react";
 
+import { useMutation } from "@apollo/client";
+
 import {
-    GetTimeEntriesDocument,
-    GetTimeEntriesQuery,
-    GetTimeEntriesQueryVariables,
+    CreateTimeEntryDocument,
+    DeleteTimeEntryDocument,
     IsChanged,
-    TimeEntryFromIdDocument,
-    TimeEntryFromIdQuery,
-    TimeEntryFromIdQueryVariables,
-    TimeEntryFromIndexDocument,
-    TimeEntryFromIndexQuery,
-    TimeEntryFromIndexQueryVariables,
+    TimeEntriesDocument,
+    TimeEntriesQuery,
+    TimeEntriesQueryVariables,
+    TimeEntryDocument,
+    TimeEntryQuery,
+    TimeEntryQueryVariables,
     TimeEntryRow,
-    TimesheetUpdatedDocument,
-    useCreateTimeEntryMutation,
-    useDeleteTimeEntryMutation,
+    UpdateTimeEntryhoursDocument,
     User,
-    useUpdateTimeEntryhoursMutation,
 } from "../../../lib/apollo";
 import ErrorBoundary from "../../common/ErrorBoundary";
 import CustModal from "../../common/Modal";
@@ -48,9 +46,11 @@ const TimesheetEntryInput = ({
 }) => {
     // We need to keep and update the state of the cell normally
 
-    const [updateTimeEntryhoursMutation] = useUpdateTimeEntryhoursMutation();
-    const [createTimeEntryMutation] = useCreateTimeEntryMutation();
-    const [deleteTimeEntryMutation] = useDeleteTimeEntryMutation();
+    const [updateTimeEntryhoursMutation] = useMutation(
+        UpdateTimeEntryhoursDocument
+    );
+    const [createTimeEntryMutation] = useMutation(CreateTimeEntryDocument);
+    const [deleteTimeEntryMutation] = useMutation(DeleteTimeEntryDocument);
 
     const [disableEntryInput, setDisableEntryInput] = React.useState(true);
 
@@ -69,8 +69,10 @@ const TimesheetEntryInput = ({
         }
     }, [row]);
 
-    const { timeEntry, setTimeEntry, needsToSave, setIsSaving, setIsEditing } =
-        useTimeEntry(row?.id, index);
+    const { timeEntry, setTimeEntry, needsToSave } = useTimeEntry(
+        row?.id,
+        index
+    );
 
     const onHourChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         let hours = parseFloat(e.target.value);
@@ -108,12 +110,9 @@ const TimesheetEntryInput = ({
                     // cache.modify({
                     //     id: cache.identify({
                     // })
-                    cache.updateQuery<
-                        TimeEntryFromIndexQuery,
-                        TimeEntryFromIndexQueryVariables
-                    >(
+                    cache.updateQuery<TimeEntryQuery, TimeEntryQueryVariables>(
                         {
-                            query: TimeEntryFromIndexDocument,
+                            query: TimeEntryDocument,
                             variables: {
                                 timeEntryRowId: row?.id ?? "-1",
                                 index,
@@ -122,39 +121,43 @@ const TimesheetEntryInput = ({
                         },
                         (data) => {
                             return {
-                                timeEntryFromIndex:
-                                    TimeEntryData?.createTimeEntry,
+                                timeEntry: TimeEntryData?.createTimeEntry ?? {
+                                    __typename: "TimeEntry",
+                                    id: cuid(),
+                                    date: date.toISO(),
+                                    createdAt: DateTime.now().toISO(),
+                                    updatedAt: DateTime.now().toISO(),
+                                    index,
+                                    hours: timeEntry?.hours ?? 0,
+                                    entryComments: [],
+                                },
                             };
                         }
                     );
 
                     cache.updateQuery<
-                        GetTimeEntriesQuery,
-                        GetTimeEntriesQueryVariables
+                        TimeEntriesQuery,
+                        TimeEntriesQueryVariables
                     >(
                         {
-                            query: GetTimeEntriesDocument,
+                            query: TimeEntriesDocument,
                             variables: {
-                                rowId: row?.id ?? "-1",
+                                id: row?.id ?? "-1",
                             },
                         },
                         (data) => {
                             const TimeEntry = TimeEntryData?.createTimeEntry;
                             if (!TimeEntry) return data;
-                            const timeEntries =
-                                data?.getTimeEntryRow?.timeEntries;
+                            const timeEntries = data?.timeEntryRow?.timeEntries;
                             if (!timeEntries) return data;
 
                             return {
-                                getTimeEntryRow: {
+                                timeEntryRow: {
                                     __typename: "TimeEntryRow",
                                     timeEntries: [
                                         ...timeEntries,
                                         {
-                                            __typename: "TimeEntry",
-                                            id:
-                                                TimeEntryData.createTimeEntry
-                                                    ?.id ?? "-1",
+                                            ...TimeEntry,
                                         },
                                     ],
                                 },
@@ -168,11 +171,11 @@ const TimesheetEntryInput = ({
             if (needsToSave) {
                 updateTimeEntryhoursMutation({
                     variables: {
-                        updateTimeEntryhoursId: timeEntry?.id ?? "-1",
+                        id: timeEntry?.id ?? "-1",
                         hours: timeEntry?.hours ?? 0,
                     },
                     optimisticResponse: {
-                        updateTimeEntryhours: {
+                        updateTimeEntry: {
                             __typename: "TimeEntry",
                             id: timeEntry?.id ?? "-1",
                             date: timeEntry?.date ?? "",
@@ -185,21 +188,29 @@ const TimesheetEntryInput = ({
                     },
                     update: (cache, { data: TimeEntryData }) => {
                         cache.updateQuery<
-                            TimeEntryFromIdQuery,
-                            TimeEntryFromIdQueryVariables
+                            TimeEntryQuery,
+                            TimeEntryQueryVariables
                         >(
                             {
-                                query: TimeEntryFromIdDocument,
+                                query: TimeEntryDocument,
                                 variables: {
-                                    id:
-                                        TimeEntryData?.updateTimeEntryhours
-                                            ?.id ?? "-1",
+                                    timeEntryRowId: row?.id ?? "-1",
+                                    index,
                                 },
                             },
                             (data) => {
                                 return {
-                                    timeEntryFromId:
-                                        TimeEntryData?.updateTimeEntryhours,
+                                    timeEntry:
+                                        TimeEntryData?.updateTimeEntry ?? {
+                                            __typename: "TimeEntry",
+                                            id: cuid(),
+                                            date: date.toISO(),
+                                            createdAt: DateTime.now().toISO(),
+                                            updatedAt: DateTime.now().toISO(),
+                                            index,
+                                            hours: timeEntry?.hours ?? 0,
+                                            entryComments: [],
+                                        },
                                 };
                             }
                         );
@@ -210,7 +221,7 @@ const TimesheetEntryInput = ({
         } else if (timeEntry?.id !== "-1" && timeEntry?.hours === 0) {
             deleteTimeEntryMutation({
                 variables: {
-                    deleteTimeEntryId: timeEntry?.id ?? "-1",
+                    id: timeEntry?.id ?? "-1",
                 },
                 optimisticResponse: {
                     deleteTimeEntry: {
@@ -250,9 +261,9 @@ const TimesheetEntryInput = ({
             });
             IsChanged(true);
         } else {
-            setIsSaving(false);
+            // setIsSaving(false);
         }
-        setIsEditing(false);
+        // setIsEditing(false);
     };
 
     // when comment change detected, will wait 0.75s to update. If updated before end of 0.75s, timer will restart.
@@ -293,7 +304,7 @@ const TimesheetEntryInput = ({
                         }
                         onChange={onHourChange}
                         onBlur={onBlur}
-                        onFocus={() => setIsEditing(true)}
+                        // onFocus={() => setIsEditing(true)}
                         className={`w-full h-full input input-bordered input-sm bg-base-300 px-2 text-sm ${
                             false || disableEntryInput ? "input-disabled" : ""
                         } ${

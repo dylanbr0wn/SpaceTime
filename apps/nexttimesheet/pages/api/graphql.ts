@@ -5,7 +5,7 @@ import type { NextApiHandler } from "next";
 import { getSession } from "next-auth/react";
 
 // import { createPrismaContext } from "../../graphql/context";
-import { schema } from "../../graphql/schema";
+import schema from "../../graphql/schema";
 
 const cors = Cors({
     // origin: "http://localhost:3000",

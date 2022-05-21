@@ -3,12 +3,10 @@ import { DateTime } from "luxon";
 import * as React from "react";
 import validator from "validator";
 
-import {
-    useCreateTenantMutation,
-    useCreateUserMutation,
-} from "../../lib/apollo";
+import { useMutation } from "@apollo/client";
+
+import { CreateTenantDocument } from "../../lib/apollo";
 import ErrorBoundary from "../common/ErrorBoundary";
-import CheckBox from "../common/form/CheckBox";
 import Section from "../common/form/Section";
 import SelectInput from "../common/form/SelectInput";
 import TextInput from "../common/form/TextInput";
@@ -58,9 +56,9 @@ const Create = () => {
         return undefined;
     };
 
-    const [createTenant] = useCreateTenantMutation();
+    const [createTenant] = useMutation(CreateTenantDocument);
 
-    const [createUser] = useCreateUserMutation();
+    // const [createUser] = useQuery(CreateUserDocument);
 
     return (
         <div className="flex flex-col">
@@ -88,7 +86,7 @@ const Create = () => {
                             .startOf("day")
                             .toISO();
 
-                        const tenant = await createTenant({
+                        await createTenant({
                             variables: {
                                 name: values.name,
                                 description: values.description,

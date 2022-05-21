@@ -18,10 +18,10 @@ export enum RegisterTab {
 }
 
 const Register = () => {
-    const [tab, setTab] = React.useState<RegisterTab>(RegisterTab.Join);
-    const [showRegister, setShowRegister] = React.useState(true);
+    // const [tab, setTab] = React.useState<RegisterTab>(RegisterTab.Join);
+    // const [showRegister, setShowRegister] = React.useState(true);
     // const showRegisterDebounced = useDebounce(showRegister, 500);
-    const router = useRouter();
+    // const router = useRouter();
 
     const session = useSession();
 

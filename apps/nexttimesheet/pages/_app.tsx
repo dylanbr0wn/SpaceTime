@@ -1,5 +1,5 @@
 import type { AppProps } from "next/app";
-import { getSession, SessionProvider, useSession } from "next-auth/react";
+import { SessionProvider, useSession } from "next-auth/react";
 import * as React from "react";
 import { Toaster } from "react-hot-toast";
 
@@ -8,29 +8,6 @@ import { ApolloProvider } from "@apollo/client";
 import { useApollo } from "../lib/apollo";
 
 import "../styles/globals.css";
-
-// export const getInitialProps = async (ctx) => {
-//     const session = await getSession(ctx);
-
-//     const user = session?.user;
-
-//     const { data: userData } = await client.query<
-//         GetUserFromAuth0Query,
-//         GetUserFromAuth0QueryVariables
-//     >({
-//         query: GetUserFromAuth0Document,
-//         variables: {
-//             auth0Id: String(user?.sub),
-//         },
-//     });
-
-//     return {
-//         props: {
-//             userData: userData?.getUserFromAuth0,
-//             user,
-//         },
-//     };
-// };
 
 function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
     const apolloClient = useApollo(pageProps);

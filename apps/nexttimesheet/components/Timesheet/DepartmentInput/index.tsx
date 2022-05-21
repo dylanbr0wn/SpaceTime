@@ -1,18 +1,19 @@
 import React, { useEffect, useState } from "react";
 
+import { useMutation, useQuery } from "@apollo/client";
 // import Tooltip from "../../Tooltip";
 import { Listbox, Transition } from "@headlessui/react";
 import { CheckIcon, SelectorIcon } from "@heroicons/react/solid";
 
 import {
     Department,
-    GetTimeEntryRowsDocument,
-    GetTimeEntryRowsQuery,
-    GetTimeEntryRowsQueryVariables,
+    DepartmentsDocument,
     IsChanged,
     TimeEntryRow,
-    useDepartmentsQuery,
-    useUpdateTimeEntryRowMutation,
+    TimeEntryRowsDocument,
+    TimeEntryRowsQuery,
+    TimeEntryRowsQueryVariables,
+    UpdateTimeEntryRowDocument,
 } from "../../../lib/apollo";
 import ErrorBoundary from "../../common/ErrorBoundary";
 
@@ -39,9 +40,9 @@ const TimesheetDepartmentInput = ({
 
     const [department, setDepartment] = useState<Department | null>(null);
 
-    const { data: departmentsData } = useDepartmentsQuery();
+    const { data: departmentsData } = useQuery(DepartmentsDocument);
 
-    const [updateTimeEntryRow] = useUpdateTimeEntryRowMutation();
+    const [updateTimeEntryRow] = useMutation(UpdateTimeEntryRowDocument);
 
     // When changed, dispatch api call and redux action.
     const onChange = async (department: Department) => {
@@ -58,8 +59,8 @@ const TimesheetDepartmentInput = ({
                 updateTimeEntryRow: {
                     __typename: "TimeEntryRow",
                     id: row?.id ?? "-1",
-                    createdAt: row?.createdAt,
-                    updatedAt: row?.updatedAt,
+                    createdAt: row?.createdAt ?? new Date(),
+                    updatedAt: row?.updatedAt ?? new Date(),
                     department: {
                         __typename: "Department",
                         id: department.id,
@@ -77,16 +78,16 @@ const TimesheetDepartmentInput = ({
             update: (cache, { data }) => {
                 const newEntryRow = data?.updateTimeEntryRow ?? {};
                 const rows = cache.readQuery<
-                    GetTimeEntryRowsQuery,
-                    GetTimeEntryRowsQueryVariables
+                    TimeEntryRowsQuery,
+                    TimeEntryRowsQueryVariables
                 >({
-                    query: GetTimeEntryRowsDocument,
+                    query: TimeEntryRowsDocument,
                     variables: {
                         timesheetId,
                     },
                 });
 
-                const oldRows = rows?.getTimeEntryRows ?? [];
+                const oldRows = rows?.timeEntryRows ?? [];
 
                 const newTimeEntryRows = oldRows.map((timeEntryRow) => {
                     if (timeEntryRow.id === row?.id) {
@@ -99,15 +100,15 @@ const TimesheetDepartmentInput = ({
                 });
 
                 cache.writeQuery<
-                    GetTimeEntryRowsQuery,
-                    GetTimeEntryRowsQueryVariables
+                    TimeEntryRowsQuery,
+                    TimeEntryRowsQueryVariables
                 >({
-                    query: GetTimeEntryRowsDocument,
+                    query: TimeEntryRowsDocument,
                     variables: {
                         timesheetId,
                     },
                     data: {
-                        getTimeEntryRows: newTimeEntryRows,
+                        timeEntryRows: newTimeEntryRows,
                     },
                 });
             },

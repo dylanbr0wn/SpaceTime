@@ -1,7 +1,7 @@
 import { DateTime } from "luxon";
 import * as React from "react";
 
-import { KeyIcon } from "@heroicons/react/outline";
+import { useQuery } from "@apollo/client";
 import {
     createTable,
     getCoreRowModelSync,
@@ -12,11 +12,7 @@ import {
     useTableInstance,
 } from "@tanstack/react-table";
 
-import {
-    OneTimeToken,
-    useGetOneTimeTokensQuery,
-    User,
-} from "../../../lib/apollo";
+import { OneTimeToken, OneTimeTokensDocument, User } from "../../../lib/apollo";
 import Avatar from "../../common/Avatar";
 import CopyField from "../../common/CopyField";
 import Loading from "../../common/Loading";
@@ -28,7 +24,7 @@ const table =
     >();
 
 const TokenList = ({ currentUser }: { currentUser: Partial<User> }) => {
-    const { data, error, loading } = useGetOneTimeTokensQuery({
+    const { data, error, loading } = useQuery(OneTimeTokensDocument, {
         variables: {
             tenantId: currentUser.tenant?.id ?? "-1",
         },
@@ -37,7 +33,7 @@ const TokenList = ({ currentUser }: { currentUser: Partial<User> }) => {
     const [pagination, setPagination] = React.useState<PaginationState>({
         pageIndex: 0,
         pageSize: 5,
-        pageCount: undefined,
+        pageCount: data?.oneTimeTokens.length ?? 0 / 5,
     });
 
     const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -68,13 +64,20 @@ const TokenList = ({ currentUser }: { currentUser: Partial<User> }) => {
             }),
             table.createDataColumn((row) => row.createdAt, {
                 id: "created",
-                cell: (info) => (
-                    <div className=" py-2 ">
-                        {DateTime.fromISO(info?.value ?? "").toFormat(
-                            "dd/LL/yyyy"
-                        )}
-                    </div>
-                ),
+                cell: (info) => {
+                    let date: DateTime;
+                    if (typeof info.value === "string") {
+                        date = DateTime.fromISO(info.value);
+                    } else {
+                        date = DateTime.fromJSDate(info?.value ?? new Date());
+                    }
+
+                    return (
+                        <div className=" py-2 ">
+                            {date.toFormat("dd/LL/yyyy")}
+                        </div>
+                    );
+                },
 
                 header: () => (
                     <div className="text-left mr-3 font-bold ">Date Issued</div>
@@ -85,7 +88,7 @@ const TokenList = ({ currentUser }: { currentUser: Partial<User> }) => {
     );
 
     const instance = useTableInstance(table, {
-        data: (data?.getOneTimeTokens as OneTimeToken[]) ?? [],
+        data: (data?.oneTimeTokens as OneTimeToken[]) ?? [],
         columns,
         state: {
             sorting,

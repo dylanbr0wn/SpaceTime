@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { UsersIcon } from "@heroicons/react/outline";
+import { useQuery } from "@apollo/client";
 import {
     createTable,
     getCoreRowModelSync,
@@ -11,7 +11,7 @@ import {
     useTableInstance,
 } from "@tanstack/react-table";
 
-import { User, useUsersQuery } from "../../../lib/apollo";
+import { User, UsersDocument } from "../../../lib/apollo";
 import Avatar from "../../common/Avatar";
 import ErrorBoundary from "../../common/ErrorBoundary";
 import Loading from "../../common/Loading";
@@ -20,20 +20,21 @@ import DefaultTable from "../../common/Table";
 const table = createTable().setRowType<Partial<User>>();
 
 const UsersList = ({ user }: { user: Partial<User> }) => {
-    const [pagination, setPagination] = React.useState<PaginationState>({
-        pageIndex: 0,
-        pageSize: 5,
-        pageCount: undefined,
-    });
     const {
         data: usersData,
         loading,
         error,
-    } = useUsersQuery({
+    } = useQuery(UsersDocument, {
         variables: {
             tenantId: user?.tenant?.id ?? "-1",
         },
     });
+    const [pagination, setPagination] = React.useState<PaginationState>({
+        pageIndex: 0,
+        pageSize: 5,
+        pageCount: usersData?.users.length ?? 0 / 5,
+    });
+
     const [sorting, setSorting] = React.useState<SortingState>([]);
 
     // Columns specifier for react tables
