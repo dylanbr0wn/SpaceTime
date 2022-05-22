@@ -1,12 +1,24 @@
+import { useSession } from "next-auth/react";
 import * as React from "react";
 
 const UserDetails = () => {
+    const session = useSession();
+
     return (
-        <div className="flex flex-col">
-            <div className=" w-96 text-sky-200 p-4">
-                Perfect. Now we just need a little more information from you
-                before we can get started.
-            </div>
+        <div className="w-full h-full bg-base-100 flex flex-col ">
+            {/* {showRegisterDebounced && ( */}
+            <>
+                {/* <SplashWaves /> */}
+                <div className="card m-auto bg-base-300 min-w-96 min-h-1/2">
+                    <div className="flex flex-col card-body ">
+                        <div className="card-title">
+                            Welcome {session?.data?.user?.nickname}! 🎉
+                        </div>
+                        
+                    </div>
+                </div>
+            </>
+            {/* )} */}
         </div>
     );
 };

@@ -13,7 +13,8 @@ import { MyTableGenerics } from "../Table";
 
 export const useProjects = (
     currentRow: Partial<TimeEntryRow> | undefined,
-    rows: Partial<Row<MyTableGenerics>>[]
+    rows: Partial<Row<MyTableGenerics>>[],
+    tenantId: string
 ) => {
     const [projects, setProjects] = React.useState<Project[]>([]);
     const [disableProjectSelect, setDisableProjectSelect] =
@@ -26,9 +27,17 @@ export const useProjects = (
         data,
         error: projectsError,
         loading: projectsLoading,
-    } = useQuery(ProjectsDocument);
+    } = useQuery(ProjectsDocument, {
+        variables: {
+            tenantId,
+        },
+    });
 
-    const { data: WorkTypesData } = useQuery(WorkTypesDocument);
+    const { data: WorkTypesData } = useQuery(WorkTypesDocument, {
+        variables: {
+            tenantId,
+        },
+    });
 
     // disable project select if department is not set
 

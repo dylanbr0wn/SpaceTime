@@ -12,7 +12,8 @@ import { MyTableGenerics } from "../Table";
 
 export const useWorkTypes = (
     rows: Row<MyTableGenerics>[],
-    currentRow: Partial<TimeEntryRow> | undefined
+    currentRow: Partial<TimeEntryRow> | undefined,
+    tenantId: string
 ) => {
     const [filteredWorkTypes, setFilteredWorkTypes] = React.useState<
         WorkTypesQuery["workTypes"]
@@ -23,7 +24,11 @@ export const useWorkTypes = (
 
     const [allWorkTypesUsed, setAllWorkTypesUsed] = React.useState(false);
 
-    const { data } = useQuery(WorkTypesDocument);
+    const { data } = useQuery(WorkTypesDocument, {
+        variables: {
+            tenantId,
+        },
+    });
 
     React.useEffect(() => {
         const currentWorkTypes: string[] = rows

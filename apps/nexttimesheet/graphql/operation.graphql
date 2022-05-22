@@ -12,11 +12,6 @@ query Tenant($tenantId: String!) {
 
 query UserFromAuthId($authId: String!) {
   userFromAuthId(authId: $authId) {
-    ... on BaseError {
-      message
-    }
-    ... on QueryUserFromAuthIdSuccess {
-      data {
         authId
         avatar
         code
@@ -42,8 +37,6 @@ query UserFromAuthId($authId: String!) {
         tenant {
           id
         }
-      }
-    }
   }
 }
     
@@ -316,13 +309,14 @@ mutation CreateOneTimeToken($userId: String!, $tenantId: String!) {
     }
 }
 
-mutation CreateUser($email: String!, $name: String!, $tenantId: String!, $authId: String!, $code: String, $avatar: String, $isActive: Boolean, $isAdmin: Boolean, $isPaymentManager: Boolean, $isManager: Boolean, $departmentId: String, $managerId: String, ) {
+mutation CreateUser($email: String!, $name: String!, $tenantId: String, $authId: String!, $code: String, $avatar: String, $isActive: Boolean, $isAdmin: Boolean, $isPaymentManager: Boolean, $isManager: Boolean, $departmentId: String, $managerId: String, ) {
     createUser(email: $email, name: $name, tenantId: $tenantId, authId: $authId, code: $code, avatar: $avatar, isActive: $isActive, isAdmin: $isAdmin, isPaymentManager: $isPaymentManager, isManager: $isManager, departmentId: $departmentId, managerId: $managerId) {
         id
         email
         authId
         isActive
         code
+        isSetup
         isAdmin
         tenant {
             id
@@ -344,6 +338,38 @@ mutation CreateUser($email: String!, $name: String!, $tenantId: String!, $authId
         }
     }
 }
+
+mutation UpdateUser($id: String!, $authId: String, $avatar: String,$tenantId: String, $code: String, $departmentId: String, $email: String, $isActive: Boolean, $isAdmin: Boolean, $isManager: Boolean, $isPaymentManager: Boolean, $isSetup: Boolean, $managerId: String, $name: String) {
+  updateUser(id: $id, authId: $authId,tenantId: $tenantId, avatar: $avatar, code: $code, departmentId: $departmentId, email: $email, isActive: $isActive, isAdmin: $isAdmin, isManager: $isManager, isPaymentManager: $isPaymentManager, isSetup: $isSetup, managerId: $managerId, name: $name) {
+    updatedAt
+    tenant {
+      id
+    }
+    name
+    manager {
+      id
+    }
+    managees {
+      id
+    }
+    isSetup
+    isPaymentManager
+    isManager
+    isAdmin
+    isActive
+    id
+    email
+    department {
+      id
+    }
+    createdAt
+    code
+    avatar
+    authId
+  }
+}
+
+
 
 query Managers($tenantId: String!) {
   managers(tenantId: $tenantId) {
@@ -399,12 +425,6 @@ query Users($tenantId: String!) {
     isManager
     isSetup
   }
-  ...Error
-}
-
-fragment Error on BaseError {
-    message
-    __typename
 }
 
 query StatusEvents($timesheetId: String!){

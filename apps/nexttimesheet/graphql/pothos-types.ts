@@ -1,4 +1,19 @@
-import type { Prisma, User, TimeEntry, Department, WorkType, Project, TimeEntryRow, Period, EntryComment, PinnedRow, Timesheet, Tenant, OneTimeToken, StatusEvent } from "@prisma/client";
+import type {
+    Department,
+    EntryComment,
+    OneTimeToken,
+    Period,
+    PinnedRow,
+    Prisma,
+    Project,
+    StatusEvent,
+    Tenant,
+    TimeEntry,
+    TimeEntryRow,
+    Timesheet,
+    User,
+    WorkType,
+} from "@prisma/client";
 export default interface PrismaTypes {
     User: {
         Name: "User";
@@ -6,9 +21,33 @@ export default interface PrismaTypes {
         Include: Prisma.UserInclude;
         Select: Prisma.UserSelect;
         Where: Prisma.UserWhereUniqueInput;
-        Fields: "manager" | "managees" | "department" | "pinnedRows" | "entryComments" | "timesheets" | "tenant" | "oneTimeToken" | "statusEvents";
-        RelationName: "manager" | "managees" | "department" | "pinnedRows" | "entryComments" | "timesheets" | "tenant" | "oneTimeToken" | "statusEvents";
-        ListRelations: "managees" | "pinnedRows" | "entryComments" | "timesheets" | "oneTimeToken" | "statusEvents";
+        Fields:
+            | "manager"
+            | "managees"
+            | "department"
+            | "pinnedRows"
+            | "entryComments"
+            | "timesheets"
+            | "tenant"
+            | "oneTimeToken"
+            | "statusEvents";
+        RelationName:
+            | "manager"
+            | "managees"
+            | "department"
+            | "pinnedRows"
+            | "entryComments"
+            | "timesheets"
+            | "tenant"
+            | "oneTimeToken"
+            | "statusEvents";
+        ListRelations:
+            | "managees"
+            | "pinnedRows"
+            | "entryComments"
+            | "timesheets"
+            | "oneTimeToken"
+            | "statusEvents";
         Relations: {
             manager: {
                 Shape: User | null;
@@ -74,8 +113,18 @@ export default interface PrismaTypes {
         Include: Prisma.DepartmentInclude;
         Select: Prisma.DepartmentSelect;
         Where: Prisma.DepartmentWhereUniqueInput;
-        Fields: "tenant" | "pinnedRows" | "projects" | "users" | "timeEntryRows";
-        RelationName: "tenant" | "pinnedRows" | "projects" | "users" | "timeEntryRows";
+        Fields:
+            | "tenant"
+            | "pinnedRows"
+            | "projects"
+            | "users"
+            | "timeEntryRows";
+        RelationName:
+            | "tenant"
+            | "pinnedRows"
+            | "projects"
+            | "users"
+            | "timeEntryRows";
         ListRelations: "pinnedRows" | "projects" | "users" | "timeEntryRows";
         Relations: {
             tenant: {
@@ -158,8 +207,18 @@ export default interface PrismaTypes {
         Include: Prisma.TimeEntryRowInclude;
         Select: Prisma.TimeEntryRowSelect;
         Where: Prisma.TimeEntryRowWhereUniqueInput;
-        Fields: "workType" | "project" | "department" | "timesheet" | "timeEntries";
-        RelationName: "workType" | "project" | "department" | "timesheet" | "timeEntries";
+        Fields:
+            | "workType"
+            | "project"
+            | "department"
+            | "timesheet"
+            | "timeEntries";
+        RelationName:
+            | "workType"
+            | "project"
+            | "department"
+            | "timesheet"
+            | "timeEntries";
         ListRelations: "timeEntries";
         Relations: {
             workType: {
@@ -286,9 +345,27 @@ export default interface PrismaTypes {
         Include: Prisma.TenantInclude;
         Select: Prisma.TenantSelect;
         Where: Prisma.TenantWhereUniqueInput;
-        Fields: "periods" | "users" | "departments" | "projects" | "workTypes" | "oneTimeToken";
-        RelationName: "periods" | "users" | "departments" | "projects" | "workTypes" | "oneTimeToken";
-        ListRelations: "periods" | "users" | "departments" | "projects" | "workTypes" | "oneTimeToken";
+        Fields:
+            | "periods"
+            | "users"
+            | "departments"
+            | "projects"
+            | "workTypes"
+            | "oneTimeToken";
+        RelationName:
+            | "periods"
+            | "users"
+            | "departments"
+            | "projects"
+            | "workTypes"
+            | "oneTimeToken";
+        ListRelations:
+            | "periods"
+            | "users"
+            | "departments"
+            | "projects"
+            | "workTypes"
+            | "oneTimeToken";
         Relations: {
             periods: {
                 Shape: Period[];

@@ -18,6 +18,7 @@ import {
     TimeEntryRowsQueryVariables,
     TimesheetQuery,
     User,
+    UserFromAuthIdQuery,
 } from "../../lib/apollo";
 import { getDayFeatures } from "../../lib/utils";
 
@@ -50,7 +51,7 @@ const TimesheetTable = ({
 }: {
     timesheetDates: DateTime[];
     timesheetData: TimesheetQuery["timesheetFromDate"] | undefined | null;
-    user: Partial<User>;
+    user: UserFromAuthIdQuery["userFromAuthId"];
 }) => {
     // const [pinRows, setPinRows] = React.useState([]);
     // const [otherRows, setOtherRows] = React.useState([]);
@@ -149,6 +150,7 @@ const TimesheetTable = ({
                                     value={value}
                                     row={row.original}
                                     userId={String(user?.id)}
+                                    tenantId={String(user?.tenant?.id)}
                                     timesheetId={
                                         instance.options.meta?.timesheetId ||
                                         "-1"
@@ -167,6 +169,7 @@ const TimesheetTable = ({
                                     row={row.original}
                                     rows={instance.getRowModel().rows}
                                     userId={String(user?.id)}
+                                     tenantId={String(user?.tenant?.id)}
                                     timesheetId={
                                         instance.options.meta?.timesheetId ||
                                         "-1"
@@ -186,6 +189,7 @@ const TimesheetTable = ({
                                 rows={instance.getRowModel().rows}
                                 column={column}
                                 userId={String(String(user?.id))}
+                                 tenantId={String(user?.tenant?.id)}
                                 timesheetId={
                                     instance.options.meta?.timesheetId || "-1"
                                 }

@@ -30,17 +30,23 @@ const TimesheetDepartmentInput = ({
     row,
     userId,
     timesheetId,
+    tenantId,
 }: {
     value: string;
     row: Partial<TimeEntryRow> | undefined;
     userId: string;
     timesheetId: string;
+    tenantId: string;
 }) => {
     // We need to keep and update the state of the cell normally
 
     const [department, setDepartment] = useState<Department | null>(null);
 
-    const { data: departmentsData } = useQuery(DepartmentsDocument);
+    const { data: departmentsData } = useQuery(DepartmentsDocument, {
+        variables: {
+            tenantId,
+        },
+    });
 
     const [updateTimeEntryRow] = useMutation(UpdateTimeEntryRowDocument);
 

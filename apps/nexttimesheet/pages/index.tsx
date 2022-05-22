@@ -33,9 +33,9 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
     >({
         query: UserFromAuthIdDocument,
         variables: {
-            auth0Id: String(user?.sub),
+            authId: String(user?.sub),
         },
-        errorPolicy: "none",
+        errorPolicy: "all",
     });
     console.log(errors);
     if (!userData?.userFromAuthId) {

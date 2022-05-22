@@ -33,12 +33,14 @@ const TimesheetWorkCodeInput = ({
     userId,
     rows,
     timesheetId,
+    tenantId,
 }: {
     value: string | undefined;
     row: Partial<TimeEntryRow> | undefined;
     rows: Row<MyTableGenerics>[];
     userId: string;
     timesheetId: string;
+    tenantId: string;
 }) => {
     // We need to keep and update the state of the cell normally
     const [workType, setWorkType] = React.useState<Partial<WorkType> | null>(
@@ -50,7 +52,7 @@ const TimesheetWorkCodeInput = ({
     // const allWorkCodes = useSelector((state) => state.workCodes);
 
     const { filteredWorkTypes, disableWorkTypeSelect, allWorkTypesUsed } =
-        useWorkTypes(rows, row);
+        useWorkTypes(rows, row, tenantId);
 
     React.useEffect(() => {
         if (allWorkTypesUsed && !showErrorModal) {

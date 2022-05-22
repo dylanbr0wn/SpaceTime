@@ -84,7 +84,11 @@ function createApolloClient(headers: IncomingHttpHeaders | null = null) {
                 },
             },
         }),
-
+        defaultOptions: {
+            query: {
+                errorPolicy: "all",
+            },
+        },
         connectToDevTools: true,
     });
 }

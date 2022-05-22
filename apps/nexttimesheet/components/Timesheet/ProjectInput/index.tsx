@@ -33,11 +33,13 @@ const TimesheetProjectInput = ({
     row,
     timesheetId,
     rows,
+    tenantId,
 }: {
     value: string;
     row: Partial<TimeEntryRow> | undefined;
     timesheetId: string;
     rows: Partial<Row<MyTableGenerics>>[];
+    tenantId: string;
 }) => {
     // We need to keep and update the state of the cell normally
     const [project, setProject] = React.useState<Project | null>(null);
@@ -49,7 +51,7 @@ const TimesheetProjectInput = ({
         filteredProjects,
         allProjectsLoaded,
         disableProjectSelect,
-    } = useProjects(row, rows);
+    } = useProjects(row, rows, tenantId);
 
     React.useEffect(() => {
         if (allProjectsLoaded) {

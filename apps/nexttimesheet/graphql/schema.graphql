@@ -35,7 +35,7 @@ type Mutation {
   createTenant(description: String, isActive: Boolean!, logo: String, name: String!, periodLength: Int!, startDate: Date!): Tenant!
   createTimeEntry(date: Date!, hours: Float!, index: Int!, timeEntryRowId: String!): TimeEntry!
   createTimeEntryRow(departmentId: String, projectId: String, timesheetId: String!, workTypeId: String): TimeEntryRow!
-  createUser(authId: String!, avatar: String, code: String, departmentId: String, email: String!, isActive: Boolean, isAdmin: Boolean, isManager: Boolean, isPaymentManager: Boolean, isSetup: Boolean, managerId: String, name: String!, tenantId: String!): User!
+  createUser(authId: String!, avatar: String, code: String, departmentId: String, email: String!, isActive: Boolean, isAdmin: Boolean, isManager: Boolean, isPaymentManager: Boolean, isSetup: Boolean, managerId: String, name: String!, tenantId: String): User!
   createUserBasic(authId: String!, avatar: String, email: String!, name: String!, tenantId: String!): User!
   deleteEntryComment(id: String!): EntryComment!
   deleteTenant(id: String!): Tenant!
@@ -46,7 +46,7 @@ type Mutation {
   updateTimeEntry(hours: Float!, id: String!): TimeEntry!
   updateTimeEntryRow(departmentId: String, id: String!, projectId: String, workTypeId: String): TimeEntryRow!
   updateTimesheet(id: String!, isChanged: Boolean!): Timesheet!
-  updateUser(authId: String, avatar: String, code: String, departmentId: String, email: String, id: String!, isActive: Boolean, isAdmin: Boolean, isManager: Boolean, isPaymentManager: Boolean, isSetup: Boolean, managerId: String, name: String): User!
+  updateUser(authId: String, avatar: String, code: String, departmentId: String, email: String, id: String!, isActive: Boolean, isAdmin: Boolean, isManager: Boolean, isPaymentManager: Boolean, isSetup: Boolean, managerId: String, name: String, tenantId: String): User!
 }
 
 type OneTimeToken {
@@ -142,12 +142,12 @@ type TimeEntry {
 
 type TimeEntryRow {
   createdAt: Date!
-  department: Department!
+  department: Department
   id: ID!
-  project: Project!
+  project: Project
   timeEntries: [TimeEntry!]!
   updatedAt: Date!
-  workType: WorkType!
+  workType: WorkType
 }
 
 type Timesheet {
@@ -166,7 +166,7 @@ type User {
   avatar: String
   code: String
   createdAt: Date!
-  department: Department!
+  department: Department
   email: String
   id: ID!
   isActive: Boolean!
@@ -174,10 +174,10 @@ type User {
   isManager: Boolean!
   isPaymentManager: Boolean!
   isSetup: Boolean!
-  managees: [User!]!
-  manager: User!
+  managees: [User!]
+  manager: User
   name: String
-  tenant: Tenant!
+  tenant: Tenant
   updatedAt: Date!
 }
 

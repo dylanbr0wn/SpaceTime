@@ -23,7 +23,6 @@ import {
 
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
     const session = await getSession(ctx);
-    console.log(session);
     if (!session) {
         return {
             redirect: {
@@ -41,7 +40,7 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
     >({
         query: UserFromAuthIdDocument,
         variables: {
-            auth0Id: String(user?.sub),
+            authId: String(user?.sub),
         },
     });
     if (!userData?.userFromAuthId) {

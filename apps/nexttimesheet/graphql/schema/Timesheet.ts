@@ -111,8 +111,6 @@ builder.queryFields((t) => ({
                         },
                     },
                 });
-            } else {
-                throw new Error("No period params found");
             }
             if (!period) throw new Error("Could not find or create period");
             // now have period, find or create timesheet

@@ -25,19 +25,19 @@ builder.prismaObject("User", {
             nullable: true,
             resolve: (user) => user.authId,
         }),
-        tenant: t.relation("tenant"),
+        tenant: t.relation("tenant", { nullable: true }),
         avatar: t.string({
             nullable: true,
             resolve: (user) => user.avatar,
         }),
-        department: t.relation("department"),
+        department: t.relation("department", { nullable: true }),
         isActive: t.exposeBoolean("isActive"),
         isAdmin: t.exposeBoolean("isAdmin"),
         isManager: t.exposeBoolean("isManager"),
         isPaymentManager: t.exposeBoolean("isPaymentManager"),
         isSetup: t.exposeBoolean("isSetup"),
-        manager: t.relation("manager"),
-        managees: t.relation("managees"),
+        manager: t.relation("manager", { nullable: true }),
+        managees: t.relation("managees", { nullable: true }),
         code: t.string({
             nullable: true,
             resolve: (user) => user.code,
@@ -143,7 +143,7 @@ builder.mutationFields((t) => ({
             name: t.arg.string({ required: true }),
             email: t.arg.string({ required: true }),
             authId: t.arg.string({ required: true }),
-            tenantId: t.arg.string({ required: true }),
+            tenantId: t.arg.string(),
             avatar: t.arg.string({ required: false }),
             isActive: t.arg.boolean({ required: false }),
             isAdmin: t.arg.boolean({ required: false }),
@@ -156,6 +156,7 @@ builder.mutationFields((t) => ({
         },
         resolve: async (query, root, args, ctx, info) => {
             const user = await prisma.user.create({
+                ...query,
                 data: {
                     isActive: args.isActive ?? undefined,
                     isAdmin: args.isAdmin ?? undefined,
@@ -166,15 +167,9 @@ builder.mutationFields((t) => ({
                     email: args.email,
                     authId: args.authId,
                     avatar: args.avatar,
-                    department: {
-                        connect: { id: args.departmentId ?? undefined },
-                    },
+                    departmentId: args.departmentId ?? undefined,
                     code: args.code,
-                    tenant: {
-                        connect: {
-                            id: args.tenantId,
-                        },
-                    },
+                    tenantId: args.tenantId ?? undefined,
                 },
             });
             return user;
@@ -191,6 +186,7 @@ builder.mutationFields((t) => ({
         },
         resolve: async (query, root, args, ctx, info) => {
             const user = await prisma.user.create({
+                ...query,
                 data: {
                     name: args.name,
                     email: args.email,
@@ -223,9 +219,11 @@ builder.mutationFields((t) => ({
             managerId: t.arg.string({ required: false }),
             departmentId: t.arg.string({ required: false }),
             code: t.arg.string({ required: false }),
+            tenantId: t.arg.string({ required: false }),
         },
         resolve: async (query, root, args, ctx, info) => {
             const user = await prisma.user.update({
+                ...query,
                 where: {
                     id: args.id,
                 },
@@ -239,15 +237,10 @@ builder.mutationFields((t) => ({
                     email: args.email ?? undefined,
                     authId: args.authId,
                     avatar: args.avatar,
-                    department: {
-                        connect: { id: args.departmentId ?? undefined },
-                    },
+                    departmentId: args.departmentId ?? undefined,
                     code: args.code,
-                    manager: {
-                        connect: {
-                            id: args.managerId ?? undefined,
-                        },
-                    },
+                    tenantId: args.tenantId ?? undefined,
+                    managerId: args.managerId ?? undefined,
                 },
             });
             return user;

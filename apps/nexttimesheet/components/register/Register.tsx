@@ -7,6 +7,8 @@ import { useDebounce } from "use-debounce";
 import { Tab } from "@headlessui/react";
 import { PlusCircleIcon, UserGroupIcon } from "@heroicons/react/outline";
 
+import { CreateUserMutation } from "../../lib/apollo";
+import CustTransition from "../common/CustTransition";
 import SplashWaves from "../waves/SplashWaves";
 
 import Create from "./Create";
@@ -17,30 +19,41 @@ export enum RegisterTab {
     Create,
 }
 
-const Register = () => {
+const Register = ({
+    user,
+}: {
+    user: CreateUserMutation["createUser"] | undefined;
+}) => {
     // const [tab, setTab] = React.useState<RegisterTab>(RegisterTab.Join);
     // const [showRegister, setShowRegister] = React.useState(true);
     // const showRegisterDebounced = useDebounce(showRegister, 500);
     // const router = useRouter();
 
-    const session = useSession();
+    const [touched, setTouched] = React.useState(false);
 
     return (
         <div className="w-full h-full bg-base-100 flex flex-col ">
             {/* {showRegisterDebounced && ( */}
             <>
                 {/* <SplashWaves /> */}
-                <div className="card m-auto bg-base-300 min-w-96 min-h-1/2">
+                <div className="card m-auto bg-base-300 min-w-96 min-h-1/2 overflow-visible">
                     <div className="flex flex-col card-body ">
-                        <div className="card-title">
-                            Welcome {session?.data?.user?.nickname}! 🎉
+                        <div className="card-title mb-3">
+                            Welcome {user?.name}! 🎉
                         </div>
-                        <div className="my-3"> What would you like to do?</div>
+                        {/* <div
+                            className={`my-3 ${
+                                touched && "opacity-0 scale-y-0"
+                            } transform transition-all `}
+                        >
+                            What would you like to do?
+                        </div> */}
                         <Tab.Group>
                             <Tab.List className="tabs mx-auto">
                                 <Tab as={React.Fragment}>
                                     {({ selected }) => (
                                         <button
+                                            onClick={() => setTouched(true)}
                                             className={`tab tab-bordered flex ${
                                                 selected && "tab-active"
                                             }`}
@@ -55,6 +68,7 @@ const Register = () => {
                                 <Tab as={React.Fragment}>
                                     {({ selected }) => (
                                         <button
+                                            onClick={() => setTouched(true)}
                                             className={`tab tab-bordered flex ${
                                                 selected && "tab-active"
                                             }`}
@@ -72,7 +86,7 @@ const Register = () => {
                                     <Join />
                                 </Tab.Panel>
                                 <Tab.Panel>
-                                    <Create />
+                                    <Create user={user} />
                                 </Tab.Panel>
                             </Tab.Panels>
                         </Tab.Group>

@@ -970,13 +970,9 @@
                 "name": "tenantId",
                 "description": null,
                 "type": {
-                  "kind": "NON_NULL",
-                  "name": null,
-                  "ofType": {
-                    "kind": "SCALAR",
-                    "name": "String",
-                    "ofType": null
-                  }
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
                 },
                 "defaultValue": null,
                 "isDeprecated": false,
@@ -1683,6 +1679,18 @@
               },
               {
                 "name": "name",
+                "description": null,
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              },
+              {
+                "name": "tenantId",
                 "description": null,
                 "type": {
                   "kind": "SCALAR",
@@ -3319,13 +3327,9 @@
             "description": null,
             "args": [],
             "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "OBJECT",
-                "name": "Department",
-                "ofType": null
-              }
+              "kind": "OBJECT",
+              "name": "Department",
+              "ofType": null
             },
             "isDeprecated": false,
             "deprecationReason": null
@@ -3351,13 +3355,9 @@
             "description": null,
             "args": [],
             "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "OBJECT",
-                "name": "Project",
-                "ofType": null
-              }
+              "kind": "OBJECT",
+              "name": "Project",
+              "ofType": null
             },
             "isDeprecated": false,
             "deprecationReason": null
@@ -3407,13 +3407,9 @@
             "description": null,
             "args": [],
             "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "OBJECT",
-                "name": "WorkType",
-                "ofType": null
-              }
+              "kind": "OBJECT",
+              "name": "WorkType",
+              "ofType": null
             },
             "isDeprecated": false,
             "deprecationReason": null
@@ -3633,13 +3629,9 @@
             "description": null,
             "args": [],
             "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "OBJECT",
-                "name": "Department",
-                "ofType": null
-              }
+              "kind": "OBJECT",
+              "name": "Department",
+              "ofType": null
             },
             "isDeprecated": false,
             "deprecationReason": null
@@ -3757,19 +3749,15 @@
             "description": null,
             "args": [],
             "type": {
-              "kind": "NON_NULL",
+              "kind": "LIST",
               "name": null,
               "ofType": {
-                "kind": "LIST",
+                "kind": "NON_NULL",
                 "name": null,
                 "ofType": {
-                  "kind": "NON_NULL",
-                  "name": null,
-                  "ofType": {
-                    "kind": "OBJECT",
-                    "name": "User",
-                    "ofType": null
-                  }
+                  "kind": "OBJECT",
+                  "name": "User",
+                  "ofType": null
                 }
               }
             },
@@ -3781,13 +3769,9 @@
             "description": null,
             "args": [],
             "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "OBJECT",
-                "name": "User",
-                "ofType": null
-              }
+              "kind": "OBJECT",
+              "name": "User",
+              "ofType": null
             },
             "isDeprecated": false,
             "deprecationReason": null
@@ -3809,13 +3793,9 @@
             "description": null,
             "args": [],
             "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "OBJECT",
-                "name": "Tenant",
-                "ofType": null
-              }
+              "kind": "OBJECT",
+              "name": "Tenant",
+              "ofType": null
             },
             "isDeprecated": false,
             "deprecationReason": null

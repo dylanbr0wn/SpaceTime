@@ -1,32 +1,74 @@
 import { useRouter } from "next/router";
 import { Session } from "next-auth";
-import { getSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import * as React from "react";
 
+import { useMutation, useQuery } from "@apollo/client";
+
+import Loading from "../../../components/common/Loading";
 import RegisterComponent from "../../../components/register/Register";
+import {
+    CreateUserDocument,
+    UserFromAuthIdDocument,
+} from "../../../lib/apollo";
 
-export const getServerSideProps = async (ctx) => {
-    const session = await getSession(ctx);
-    if (!session) {
-        return {
-            redirect: {
-                destination: "/api/auth/signin",
-                permanent: false,
-            },
-        };
-    }
-    return {
-        props: {
-            session,
+const Register = ({ user }: { user: Session["user"] }) => {
+    const router = useRouter();
+    const { data, error, loading } = useQuery(UserFromAuthIdDocument, {
+        variables: {
+            authId: String(user?.sub),
         },
-    };
-};
+    });
+    const [createUser, { data: newUserData, loading: loadingNewUser }] =
+        useMutation(CreateUserDocument);
 
-const Register = () => {
+    React.useEffect(() => {
+        if (
+            error?.graphQLErrors &&
+            !loading &&
+            !loadingNewUser &&
+            !newUserData?.createUser &&
+            user
+        ) {
+            createUser({
+                variables: {
+                    authId: String(user?.sub),
+                    email: user?.email ?? "",
+                    name: user?.nickname ?? "",
+                },
+                update: (cache, { data: createData }) => {
+                    cache.updateQuery(
+                        {
+                            query: UserFromAuthIdDocument,
+                            variables: {
+                                authId: String(user?.sub),
+                            },
+                        },
+                        (data) => {
+                            if (!createData?.createUser) return;
+                            return {
+                                userFromAuthId: createData.createUser,
+                            };
+                        }
+                    );
+                },
+            });
+        }
+    }, [user, data, error, createUser, loading, newUserData, loadingNewUser]);
+
+    React.useEffect(() => {
+        if (data?.userFromAuthId?.tenant?.id) {
+            router.push("/");
+        }
+    }, [data?.userFromAuthId, router]);
+
     return (
         <div className="h-full w-full">
-            <RegisterComponent />
+            <React.Suspense fallback={<Loading />}>
+                <RegisterComponent user={data?.userFromAuthId} />
+            </React.Suspense>
         </div>
     );
 };
+Register.auth = true;
 export default Register;

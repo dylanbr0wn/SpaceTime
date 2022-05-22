@@ -9,7 +9,11 @@
         "lint": "next lint",
         "codegen": "graphql-codegen --config .graphqlrc.yml --watch ./**/*.{ts,graphql}",
         "generate": "prisma generate",
-        "dbpush": "prisma db push"
+        "dbpush": "prisma db push",
+        "seed": "prisma db seed"
+    },
+    "prisma": {
+        "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
     },
     "dependencies": {
         "@apollo/client": "^3.6.2",

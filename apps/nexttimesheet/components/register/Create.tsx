@@ -1,11 +1,17 @@
 import { Form, Formik, FormikHelpers } from "formik";
 import { DateTime } from "luxon";
+import { useRouter } from "next/router";
+import { Session } from "next-auth";
 import * as React from "react";
 import validator from "validator";
 
 import { useMutation } from "@apollo/client";
 
-import { CreateTenantDocument } from "../../lib/apollo";
+import {
+    CreateTenantDocument,
+    CreateUserMutation,
+    UpdateUserDocument,
+} from "../../lib/apollo";
 import ErrorBoundary from "../common/ErrorBoundary";
 import Section from "../common/form/Section";
 import SelectInput from "../common/form/SelectInput";
@@ -31,7 +37,13 @@ const weeekdays = [
     { id: "7", name: "Saturday" },
 ];
 
-const Create = () => {
+const Create = ({
+    user,
+}: {
+    user: CreateUserMutation["createUser"] | undefined;
+}) => {
+    const router = useRouter();
+
     const validateName = (name: string) => {
         if (!name) {
             return "A name is required!";
@@ -57,6 +69,8 @@ const Create = () => {
     };
 
     const [createTenant] = useMutation(CreateTenantDocument);
+
+    const [updateUser] = useMutation(UpdateUserDocument);
 
     // const [createUser] = useQuery(CreateUserDocument);
 
@@ -86,7 +100,7 @@ const Create = () => {
                             .startOf("day")
                             .toISO();
 
-                        await createTenant({
+                        const { data: tenantData } = await createTenant({
                             variables: {
                                 name: values.name,
                                 description: values.description,
@@ -96,34 +110,30 @@ const Create = () => {
                                 logo: "",
                             },
                         });
+                        console.log("tenant created");
+
+                        console.log(user);
+
+                        const { data: updatedUser } = await updateUser({
+                            variables: {
+                                id: String(user.id),
+                                tenantId: String(tenantData?.createTenant.id),
+                            },
+                        });
+
+                        console.log("user updated");
+
+                        if (updatedUser?.updateUser?.tenant?.id) {
+                            router.push("/");
+                        }
 
                         setStatus("complete");
                         setSubmitting(false);
                     }}
                 >
-                    {({ isValid, touched, isSubmitting, status }) => (
+                    {({ isValid, dirty, isSubmitting, status }) => (
                         <Form className="p-3 flex flex-col space-y-2">
-                            <Section title="Configuration">
-                                <div className="flex flex-col">
-                                    <TextInput
-                                        validate={validatePeriodLength}
-                                        label="Period Length"
-                                        name="periodLength"
-                                        id="periodLength"
-                                        placeholder="14"
-                                    />
-                                </div>
-                                <div className="flex flex-col w-48">
-                                    <SelectInput
-                                        validate={validateStartDate}
-                                        placeholder="Sunday"
-                                        name="startDate"
-                                        label="Start Day"
-                                        elements={weeekdays}
-                                    />
-                                </div>
-                            </Section>
-                            <Section title="Details">
+                            <Section title="Team Details">
                                 <div className="flex flex-col w-full">
                                     <TextInput
                                         label="Team Name"
@@ -145,10 +155,31 @@ const Create = () => {
                                     />
                                 </div>
                             </Section>
-
+                            <Section title="Configuration">
+                                <div className="flex flex-col">
+                                    <TextInput
+                                        validate={validatePeriodLength}
+                                        label="Period Length"
+                                        name="periodLength"
+                                        id="periodLength"
+                                        placeholder="14"
+                                    />
+                                </div>
+                                <div className="flex flex-col w-48">
+                                    <SelectInput
+                                        validate={validateStartDate}
+                                        placeholder="Sunday"
+                                        name="startDate"
+                                        label="Start Day"
+                                        elements={weeekdays}
+                                    />
+                                </div>
+                            </Section>
                             <div className="flex my-3">
                                 <button
-                                    disabled={!isValid}
+                                    disabled={
+                                        !isValid || !dirty || isSubmitting
+                                    }
                                     className="btn btn-primary"
                                     type="submit"
                                 >

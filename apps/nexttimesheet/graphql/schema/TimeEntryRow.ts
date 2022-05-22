@@ -14,9 +14,9 @@ builder.prismaObject("TimeEntryRow", {
             resolve: (timeEntryRow) => timeEntryRow.updatedAt,
         }),
         timeEntries: t.relation("timeEntries"),
-        department: t.relation("department"),
-        project: t.relation("project"),
-        workType: t.relation("workType"),
+        department: t.relation("department", { nullable: true }),
+        project: t.relation("project", { nullable: true }),
+        workType: t.relation("workType", { nullable: true }),
     }),
 });
 
@@ -66,26 +66,13 @@ builder.mutationFields((t) => ({
         resolve: async (query, root, args, ctx, info) => {
             return await prisma.timeEntryRow.create({
                 data: {
-                    department: {
-                        connect: {
-                            id: args.departmentId ?? undefined,
-                        },
-                    },
-                    project: {
-                        connect: {
-                            id: args.projectId ?? undefined,
-                        },
-                    },
-                    workType: {
-                        connect: {
-                            id: args.workTypeId ?? undefined,
-                        },
-                    },
-                    timesheet: {
-                        connect: {
-                            id: args.timesheetId,
-                        },
-                    },
+                    departmentId: args.departmentId ?? undefined,
+
+                    projectId: args.projectId ?? undefined,
+
+                    workTypeId: args.workTypeId ?? undefined,
+
+                    timesheetId: args.timesheetId,
                 },
             });
         },
@@ -104,21 +91,9 @@ builder.mutationFields((t) => ({
                     id: args.id,
                 },
                 data: {
-                    department: {
-                        connect: {
-                            id: args.departmentId ?? undefined,
-                        },
-                    },
-                    project: {
-                        connect: {
-                            id: args.projectId ?? undefined,
-                        },
-                    },
-                    workType: {
-                        connect: {
-                            id: args.workTypeId ?? undefined,
-                        },
-                    },
+                    departmentId: args.departmentId ?? undefined,
+                    projectId: args.projectId ?? undefined,
+                    workTypeId: args.workTypeId ?? undefined,
                 },
             });
         },
