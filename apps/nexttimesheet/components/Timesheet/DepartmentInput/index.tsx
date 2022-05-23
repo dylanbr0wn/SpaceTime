@@ -9,13 +9,13 @@ import {
     Department,
     DepartmentsDocument,
     IsChanged,
-    TimeEntryRow,
     TimeEntryRowsDocument,
     TimeEntryRowsQuery,
     TimeEntryRowsQueryVariables,
     UpdateTimeEntryRowDocument,
 } from "../../../lib/apollo";
 import ErrorBoundary from "../../common/ErrorBoundary";
+import { TimeEntryRow } from "../types";
 
 /**
  * @name TimesheetDepartmentInput
@@ -33,7 +33,7 @@ const TimesheetDepartmentInput = ({
     tenantId,
 }: {
     value: string;
-    row: Partial<TimeEntryRow> | undefined;
+    row: TimeEntryRow | undefined;
     userId: string;
     timesheetId: string;
     tenantId: string;
@@ -42,7 +42,7 @@ const TimesheetDepartmentInput = ({
 
     const [department, setDepartment] = useState<Department | null>(null);
 
-    const { data: departmentsData } = useQuery(DepartmentsDocument, {
+    const { data: departmentsData, loading } = useQuery(DepartmentsDocument, {
         variables: {
             tenantId,
         },
@@ -54,7 +54,7 @@ const TimesheetDepartmentInput = ({
     const onChange = async (department: Department) => {
         // setDepartment(department);
 
-        updateTimeEntryRow({
+        await updateTimeEntryRow({
             variables: {
                 updateTimeEntryRowId: row?.id ?? "-1",
                 departmentId: department.id,
@@ -131,10 +131,11 @@ const TimesheetDepartmentInput = ({
             setDepartment((department as Department) ?? null);
         }
     }, [value, departmentsData]);
+
     return (
         <>
             <ErrorBoundary>
-                {departmentsData?.departments && (
+                {departmentsData?.departments && !loading && (
                     <Listbox
                         aria-label="Department Input"
                         value={department}

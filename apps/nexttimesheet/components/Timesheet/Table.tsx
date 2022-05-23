@@ -12,12 +12,9 @@ import {
 
 import {
     CreateTimeEntryRowDocument,
-    TimeEntryRow,
     TimeEntryRowsDocument,
     TimeEntryRowsQuery,
     TimeEntryRowsQueryVariables,
-    TimesheetQuery,
-    User,
     UserFromAuthIdQuery,
 } from "../../lib/apollo";
 import { getDayFeatures } from "../../lib/utils";
@@ -27,13 +24,10 @@ import TimesheetDepartmentInput from "./DepartmentInput";
 import TimesheetEntryInput from "./EntryInput";
 import { useTimesheet } from "./hooks";
 import TimesheetProjectInput from "./ProjectInput";
+import { TimeEntryRow } from "./types";
 import TimesheetWorkCodeInput from "./WorkCodeInput";
 
-const table = createTable()
-    .setRowType<Partial<TimeEntryRow>>()
-    .setTableMetaType<{
-        timesheetId: string;
-    }>();
+const table = createTable().setRowType<TimeEntryRow>();
 
 export type MyTableGenerics = typeof table.generics;
 
@@ -45,12 +39,12 @@ export type MyTableGenerics = typeof table.generics;
  * @param {Object} props Props. See propTypes for details.
  */
 const TimesheetTable = ({
-    timesheetData,
+    timesheetId,
     timesheetDates,
     user,
 }: {
     timesheetDates: DateTime[];
-    timesheetData: TimesheetQuery["timesheetFromDate"] | undefined | null;
+    timesheetId: string | undefined;
     user: UserFromAuthIdQuery["userFromAuthId"];
 }) => {
     // const [pinRows, setPinRows] = React.useState([]);
@@ -62,9 +56,9 @@ const TimesheetTable = ({
         // error,
     } = useQuery(TimeEntryRowsDocument, {
         variables: {
-            timesheetId: timesheetData?.id ?? "-1",
+            timesheetId: timesheetId ?? "-1",
         },
-        skip: !timesheetData,
+        skip: !timesheetId,
     });
 
     const { memoTimesheet } = useTimesheet(
@@ -80,7 +74,7 @@ const TimesheetTable = ({
     const createTimeEntryRow = () => {
         createTimeEntryRowMutation({
             variables: {
-                timesheetId: timesheetData?.id ?? "-1",
+                timesheetId: timesheetId ?? "-1",
             },
             // refetchQueries: [GetTimeEntryRowsDocument],
             optimisticResponse: {
@@ -113,7 +107,7 @@ const TimesheetTable = ({
                 >({
                     query: TimeEntryRowsDocument,
                     variables: {
-                        timesheetId: timesheetData?.id ?? "-1",
+                        timesheetId: timesheetId ?? "-1",
                     },
                 });
                 const timeEntryRows = timeEntryRowsData?.timeEntryRows;
@@ -124,7 +118,7 @@ const TimesheetTable = ({
                 >({
                     query: TimeEntryRowsDocument,
                     variables: {
-                        timesheetId: timesheetData?.id ?? "-1",
+                        timesheetId: timesheetId ?? "-1",
                     },
                     data: {
                         timeEntryRows: [...timeEntryRows, timeEntryRow],
@@ -151,10 +145,7 @@ const TimesheetTable = ({
                                     row={row.original}
                                     userId={String(user?.id)}
                                     tenantId={String(user?.tenant?.id)}
-                                    timesheetId={
-                                        instance.options.meta?.timesheetId ||
-                                        "-1"
-                                    }
+                                    timesheetId={timesheetId ?? "-1"}
                                 />
                             ),
                         }
@@ -169,11 +160,8 @@ const TimesheetTable = ({
                                     row={row.original}
                                     rows={instance.getRowModel().rows}
                                     userId={String(user?.id)}
-                                     tenantId={String(user?.tenant?.id)}
-                                    timesheetId={
-                                        instance.options.meta?.timesheetId ||
-                                        "-1"
-                                    }
+                                    tenantId={String(user?.tenant?.id)}
+                                    timesheetId={timesheetId ?? "-1"}
                                 />
                             );
                         },
@@ -189,10 +177,8 @@ const TimesheetTable = ({
                                 rows={instance.getRowModel().rows}
                                 column={column}
                                 userId={String(String(user?.id))}
-                                 tenantId={String(user?.tenant?.id)}
-                                timesheetId={
-                                    instance.options.meta?.timesheetId || "-1"
-                                }
+                                tenantId={String(user?.tenant?.id)}
+                                timesheetId={timesheetId ?? "-1"}
                             />
                         ),
                     }),
@@ -203,45 +189,39 @@ const TimesheetTable = ({
                 id: "hours",
                 columns: timesheetDates.map((date, i) => {
                     const dayFeatures = getDayFeatures(date);
-                    return table.createDataColumn(
-                        (row) => row?.timeEntries?.at(i)?.id,
-                        {
-                            // eslint-disable-next-line react/display-name
-                            header: () => {
-                                return (
-                                    <div
-                                        data-tip={dayFeatures.hoverText}
-                                        className={`w-full tooltip box-border `}
-                                    >
-                                        <div className={`${dayFeatures.style}`}>
-                                            <div className="text-center">
-                                                {date.toFormat("ccc")}
-                                            </div>
-                                            <div
-                                                className="text-center"
-                                                style={{ fontWeight: 400 }}
-                                            >
-                                                {date.toFormat("L/d")}
-                                            </div>
+                    return table.createDataColumn(() => i, {
+                        // eslint-disable-next-line react/display-name
+                        header: () => {
+                            return (
+                                <div
+                                    data-tip={dayFeatures.hoverText}
+                                    className={`w-full tooltip box-border `}
+                                >
+                                    <div className={`${dayFeatures.style}`}>
+                                        <div className="text-center">
+                                            {date.toFormat("ccc")}
+                                        </div>
+                                        <div
+                                            className="text-center"
+                                            style={{ fontWeight: 400 }}
+                                        >
+                                            {date.toFormat("L/d")}
                                         </div>
                                     </div>
-                                );
-                            },
-                            id: `timeEntryCol${i}`,
-                            cell: ({ value, row, instance, column }) => (
-                                <TimesheetEntryInput
-                                    timesheetId={
-                                        instance.options.meta?.timesheetId ||
-                                        "-1"
-                                    }
-                                    index={i}
-                                    row={row.original}
-                                    date={date}
-                                    user={user}
-                                />
-                            ),
-                        }
-                    );
+                                </div>
+                            );
+                        },
+                        id: `timeEntryCol${i}`,
+                        cell: ({ value, row, instance, column }) => (
+                            <TimesheetEntryInput
+                                timesheetId={timesheetId ?? "-1"}
+                                index={i}
+                                row={row.original}
+                                date={date}
+                                user={user}
+                            />
+                        ),
+                    });
                 }),
             }),
             table.createDataColumn(() => "deleter", {
@@ -254,7 +234,7 @@ const TimesheetTable = ({
                 ),
             }),
         ],
-        [user, timesheetDates]
+        [user, timesheetDates, timesheetId]
     );
 
     // const columns = React.useMemo(
@@ -379,9 +359,7 @@ const TimesheetTable = ({
             data: memoTimesheet,
             columns,
             getCoreRowModel: getCoreRowModelSync(),
-            meta: {
-                timesheetId: timesheetData?.id ?? "-1",
-            },
+
             // use the skipPageReset option to disable page resetting temporarily
             // autoResetPage: !skipPageReset,
             // updateMyData isn't part of the API, but

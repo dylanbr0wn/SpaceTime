@@ -1,6 +1,5 @@
 import { useRouter } from "next/router";
 import { Session } from "next-auth";
-import { useSession } from "next-auth/react";
 import * as React from "react";
 
 import { useMutation, useQuery } from "@apollo/client";
@@ -34,7 +33,8 @@ const Register = ({ user }: { user: Session["user"] }) => {
                 variables: {
                     authId: String(user?.sub),
                     email: user?.email ?? "",
-                    name: user?.nickname ?? "",
+                    name: user?.name ?? "",
+                    avatar: user.image ?? "",
                 },
                 update: (cache, { data: createData }) => {
                     cache.updateQuery(

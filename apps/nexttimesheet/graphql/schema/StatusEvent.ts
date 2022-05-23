@@ -63,6 +63,15 @@ builder.mutationFields((t) => ({
             }),
         },
         resolve: async (query, root, args, ctx, info) => {
+            await prisma.timesheet.update({
+                where: {
+                    id: args.timesheetId,
+                },
+                data: {
+                    status: args.status,
+                    isChanged: false,
+                },
+            });
             return await prisma.statusEvent.create({
                 data: {
                     timesheet: {

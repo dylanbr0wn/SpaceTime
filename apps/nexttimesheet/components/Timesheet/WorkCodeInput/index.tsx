@@ -7,7 +7,6 @@ import { Row } from "@tanstack/react-table";
 
 import {
     IsChanged,
-    TimeEntryRow,
     TimeEntryRowsDocument,
     TimeEntryRowsQuery,
     TimeEntryRowsQueryVariables,
@@ -16,6 +15,7 @@ import {
 } from "../../../lib/apollo";
 import ErrorBoundary from "../../common/ErrorBoundary";
 import { MyTableGenerics } from "../Table";
+import { TimeEntryRow } from "../types";
 
 import { useWorkTypes } from "./hooks";
 
@@ -36,7 +36,7 @@ const TimesheetWorkCodeInput = ({
     tenantId,
 }: {
     value: string | undefined;
-    row: Partial<TimeEntryRow> | undefined;
+    row: TimeEntryRow | undefined;
     rows: Row<MyTableGenerics>[];
     userId: string;
     timesheetId: string;

@@ -8,7 +8,6 @@ import { Row } from "@tanstack/react-table";
 import {
     IsChanged,
     Project,
-    TimeEntryRow,
     TimeEntryRowsDocument,
     TimeEntryRowsQuery,
     TimeEntryRowsQueryVariables,
@@ -16,6 +15,7 @@ import {
 } from "../../../lib/apollo";
 import ErrorBoundary from "../../common/ErrorBoundary";
 import { MyTableGenerics } from "../Table";
+import { TimeEntryRow } from "../types";
 
 import { useProjects } from "./hooks";
 
@@ -36,9 +36,9 @@ const TimesheetProjectInput = ({
     tenantId,
 }: {
     value: string;
-    row: Partial<TimeEntryRow> | undefined;
+    row: TimeEntryRow | undefined;
     timesheetId: string;
-    rows: Partial<Row<MyTableGenerics>>[];
+    rows: Row<MyTableGenerics>[];
     tenantId: string;
 }) => {
     // We need to keep and update the state of the cell normally

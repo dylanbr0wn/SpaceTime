@@ -5,9 +5,7 @@ import * as React from "react";
 
 import { useQuery } from "@apollo/client";
 
-import {
-    UserFromTokenDocument,
-} from "../../lib/apollo";
+import { UserFromTokenDocument } from "../../lib/apollo";
 
 const ConfirmTenant = ({ userData }: { userData: Session }) => {
     const router = useRouter();

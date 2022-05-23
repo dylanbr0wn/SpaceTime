@@ -9,7 +9,7 @@ import { useQuery } from "@apollo/client";
 import {
     Status as TimesheetStatus,
     TimesheetDocument,
-    User,
+    UserFromAuthIdQuery,
 } from "../../lib/apollo";
 import ApprovalTree from "../ApprovalTree";
 import Loading from "../common/Loading";
@@ -44,7 +44,7 @@ const Timesheet = ({
     user,
     authUser,
 }: {
-    user: Partial<User>;
+    user: UserFromAuthIdQuery["userFromAuthId"];
     authUser: Session["user"];
 }) => {
     // const [type, setType] = React.useState("user");
@@ -65,15 +65,18 @@ const Timesheet = ({
     );
 
     const { timesheetDates, startDate, periodLength } = useTimesheetDates(
-        timesheetData,
+        timesheetData?.timesheetFromDate?.period?.endDate,
+        timesheetData?.timesheetFromDate?.period?.startDate,
+        timesheetData?.timesheetFromDate?.isChanged,
         // getorCreateTimesheetMutation,
         String(user?.id)
     );
 
-    React.useEffect(() => {
-        console.log(!!timesheetData?.timesheetFromDate?.id);
-        console.log(!timesheetLoading);
-    }, [timesheetData, timesheetLoading]);
+    // React.useEffect(() => {
+    //     if (timesheetData?.timesheetFromDate) {
+    //         IsChanged(timesheetData.timesheetFromDate.isChanged);
+    //     }
+    // }, [timesheetData, timesheetLoading]);
 
     // Updates the timesheet start date by subtracting or adding 14 days
 
@@ -137,7 +140,7 @@ const Timesheet = ({
                 </div>
                 {!timesheetLoading && timesheetData?.timesheetFromDate ? (
                     <TimesheetTable
-                        timesheetData={timesheetData?.timesheetFromDate}
+                        timesheetId={timesheetData?.timesheetFromDate?.id}
                         timesheetDates={timesheetDates}
                         user={user}
                     />

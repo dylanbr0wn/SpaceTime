@@ -1,23 +1,17 @@
-import { useRouter } from "next/router";
-import { Session } from "next-auth";
-import { useSession } from "next-auth/react";
 import * as React from "react";
-import { useDebounce } from "use-debounce";
 
 import { Tab } from "@headlessui/react";
 import { PlusCircleIcon, UserGroupIcon } from "@heroicons/react/outline";
 
 import { CreateUserMutation } from "../../lib/apollo";
-import CustTransition from "../common/CustTransition";
-import SplashWaves from "../waves/SplashWaves";
 
 import Create from "./Create";
 import Join from "./Join";
 
-export enum RegisterTab {
-    Join,
-    Create,
-}
+// export enum RegisterTab {
+//     Join,
+//     Create,
+// }
 
 const Register = ({
     user,
@@ -29,7 +23,7 @@ const Register = ({
     // const showRegisterDebounced = useDebounce(showRegister, 500);
     // const router = useRouter();
 
-    const [touched, setTouched] = React.useState(false);
+    // const [touched, setTouched] = React.useState(false);
 
     return (
         <div className="w-full h-full bg-base-100 flex flex-col ">
@@ -53,7 +47,7 @@ const Register = ({
                                 <Tab as={React.Fragment}>
                                     {({ selected }) => (
                                         <button
-                                            onClick={() => setTouched(true)}
+                                            // onClick={() => setTouched(true)}
                                             className={`tab tab-bordered flex ${
                                                 selected && "tab-active"
                                             }`}
@@ -68,7 +62,7 @@ const Register = ({
                                 <Tab as={React.Fragment}>
                                     {({ selected }) => (
                                         <button
-                                            onClick={() => setTouched(true)}
+                                            // onClick={() => setTouched(true)}
                                             className={`tab tab-bordered flex ${
                                                 selected && "tab-active"
                                             }`}

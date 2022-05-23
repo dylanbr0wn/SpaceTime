@@ -6,13 +6,13 @@ import { Row } from "@tanstack/react-table";
 import {
     Project,
     ProjectsDocument,
-    TimeEntryRow,
     WorkTypesDocument,
 } from "../../../lib/apollo";
 import { MyTableGenerics } from "../Table";
+import { TimeEntryRow } from "../types";
 
 export const useProjects = (
-    currentRow: Partial<TimeEntryRow> | undefined,
+    currentRow: TimeEntryRow | undefined,
     rows: Partial<Row<MyTableGenerics>>[],
     tenantId: string
 ) => {

@@ -1,7 +1,7 @@
 import { Session } from "next-auth";
 import React from "react";
 
-import { User } from "../../lib/apollo";
+import { UserFromAuthIdQuery } from "../../lib/apollo";
 import Timesheet from "../Timesheet";
 
 // import "react-dates/lib/css/_datepicker.css";
@@ -17,12 +17,12 @@ const EmployeeTimesheet = ({
     userData,
     user,
 }: {
-    userData: Partial<User>;
+    userData: UserFromAuthIdQuery["userFromAuthId"];
     user: Session["user"];
 }) => {
     return (
         <div className="w-full">
-            <Timesheet auth0User={user} user={userData} />
+            <Timesheet authUser={user} user={userData} />
         </div>
     );
 };

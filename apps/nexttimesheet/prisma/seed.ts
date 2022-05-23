@@ -2,13 +2,15 @@ import { Prisma, PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
+const tenantId = "cl3hvuu560013ymrmrno1j5sh";
+
 const departmentData: Prisma.DepartmentCreateInput[] = [
     {
         name: "IT",
         description: "Information Technology",
         tenant: {
             connect: {
-                id: "cl3goltrx059145lkkzhknirz",
+                id: tenantId,
             },
         },
         projects: {
@@ -16,7 +18,7 @@ const departmentData: Prisma.DepartmentCreateInput[] = [
                 data: [
                     {
                         name: "API",
-                        tenantId: "cl3goltrx059145lkkzhknirz",
+                        tenantId,
                         description: "API Development",
 
                         code: "API",
@@ -25,7 +27,7 @@ const departmentData: Prisma.DepartmentCreateInput[] = [
                         name: "Frontend",
                         description: "Frontend Development",
                         code: "FRONTEND",
-                        tenantId: "cl3goltrx059145lkkzhknirz",
+                        tenantId,
                     },
                 ],
             },
@@ -36,7 +38,7 @@ const departmentData: Prisma.DepartmentCreateInput[] = [
         description: "Finance and stuff",
         tenant: {
             connect: {
-                id: "cl3goltrx059145lkkzhknirz",
+                id: tenantId,
             },
         },
         projects: {
@@ -44,7 +46,7 @@ const departmentData: Prisma.DepartmentCreateInput[] = [
                 data: [
                     {
                         name: "Payroll",
-                        tenantId: "cl3goltrx059145lkkzhknirz",
+                        tenantId,
                         description: "Process Payroll",
 
                         code: "PAY",
@@ -53,7 +55,7 @@ const departmentData: Prisma.DepartmentCreateInput[] = [
                         name: "SALARY",
                         description: "SALARY REVIEW",
                         code: "SALARY",
-                        tenantId: "cl3goltrx059145lkkzhknirz",
+                        tenantId,
                     },
                 ],
             },
@@ -64,7 +66,7 @@ const departmentData: Prisma.DepartmentCreateInput[] = [
         description: "Parks and Recreation",
         tenant: {
             connect: {
-                id: "cl3goltrx059145lkkzhknirz",
+                id: tenantId,
             },
         },
         projects: {
@@ -72,7 +74,7 @@ const departmentData: Prisma.DepartmentCreateInput[] = [
                 data: [
                     {
                         name: "Maintenance",
-                        tenantId: "cl3goltrx059145lkkzhknirz",
+                        tenantId,
                         description: "Parks Maintenance",
 
                         code: "MAINT",
@@ -81,7 +83,7 @@ const departmentData: Prisma.DepartmentCreateInput[] = [
                         name: "Gardens",
                         description: "Gardens Maintenance",
                         code: "GARDENS",
-                        tenantId: "cl3goltrx059145lkkzhknirz",
+                        tenantId,
                     },
                 ],
             },
@@ -95,7 +97,7 @@ const workTypeData: Prisma.WorkTypeCreateInput[] = [
         description: "Regular work",
         tenant: {
             connect: {
-                id: "cl3goltrx059145lkkzhknirz",
+                id: tenantId,
             },
         },
         code: "REG",
@@ -105,7 +107,7 @@ const workTypeData: Prisma.WorkTypeCreateInput[] = [
         description: "Overtime work",
         tenant: {
             connect: {
-                id: "cl3goltrx059145lkkzhknirz",
+                id: tenantId,
             },
         },
         code: "OT",

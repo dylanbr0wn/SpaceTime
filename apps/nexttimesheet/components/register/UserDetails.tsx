@@ -12,9 +12,8 @@ const UserDetails = () => {
                 <div className="card m-auto bg-base-300 min-w-96 min-h-1/2">
                     <div className="flex flex-col card-body ">
                         <div className="card-title">
-                            Welcome {session?.data?.user?.nickname}! 🎉
+                            Welcome {session?.data?.user?.name}! 🎉
                         </div>
-                        
                     </div>
                 </div>
             </>

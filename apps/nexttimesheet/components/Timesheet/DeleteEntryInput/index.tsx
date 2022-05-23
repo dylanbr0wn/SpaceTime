@@ -4,8 +4,8 @@ import { useMutation } from "@apollo/client";
 import { BackspaceIcon } from "@heroicons/react/outline";
 
 import { DeleteTimeEntryRowDocument, IsChanged } from "../../../lib/apollo";
-import ConfirmCloseModal from "../../common/ConfirmCloseModal";
 import ErrorBoundary from "../../common/ErrorBoundary";
+import CustModal from "../../common/Modal";
 
 import { useRowHasHours } from "./hooks";
 
@@ -76,23 +76,6 @@ const TimesheetDeleteEntryInput = ({
         IsChanged(true);
 
         setShowDeleteConfirmModal(false);
-
-        // const result = await dispatch(
-        //     deleteTimeEntryRowDispatch(
-        //         row.index,
-        //         row.original,
-        //         EmployeeID,
-        //         timeEntryPeriodStartDate
-        //     )
-        // );
-        // if (!result.success) {
-        //     if (result.status === 423) {
-        //         setIsLocked(true);
-        //         setShowDeleteConfirmModal(false);
-        //     } else {
-        //         toast.warn(result.data);
-        //     }
-        // }
     };
 
     const handleDeleteRow = () => {
@@ -121,16 +104,37 @@ const TimesheetDeleteEntryInput = ({
                         <BackspaceIcon className="text-base-content h-6 w-6 m-auto group-hover:text-error transition-colors duration-200" />
                     </button>
                     <React.Suspense fallback={renderLoader()}>
-                        <ConfirmCloseModal
+                        <CustModal
+                            title={`Delete Timesheet Row?`}
+                            show={showDeleteConfirmModal}
                             onHide={() => {
                                 setShowDeleteConfirmModal(false);
                             }}
-                            onConfirm={deleteRow}
-                            modalShow={showDeleteConfirmModal}
-                            body="Are you sure you want to delete this row?"
-                            title={`Delete Timesheet Row?`}
-                            confirmButtonText="Delete"
-                        />
+                        >
+                            <div className="flex flex-col w-full p-3">
+                                <div className="mb-2">
+                                    There is currently time entered in this row,
+                                    are you sure you want to delete it?
+                                </div>
+
+                                <div className="flex mt-3 space-x-3">
+                                    <button
+                                        onClick={() => {
+                                            setShowDeleteConfirmModal(false);
+                                        }}
+                                        className="btn btn-error btn-outline"
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        onClick={deleteRow}
+                                        className="btn btn-primary"
+                                    >
+                                        Delete
+                                    </button>
+                                </div>
+                            </div>
+                        </CustModal>
                     </React.Suspense>
                 </span>
             </ErrorBoundary>

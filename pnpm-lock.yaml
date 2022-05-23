@@ -2,7 +2,7 @@ lockfileVersion: 5.4
 
 importers:
 
-  ../../.local/share/pnpm/store/v3/tmp/dlx-11198:
+  ../../Library/pnpm/store/v3/tmp/dlx-69904:
     specifiers:
       prisma: ^3.14.0
     dependencies:

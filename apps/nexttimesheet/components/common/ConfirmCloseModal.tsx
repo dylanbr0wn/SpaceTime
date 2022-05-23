@@ -28,7 +28,7 @@ const ConfirmCloseModal = ({
                         as="div"
                         className="fixed inset-0 z-10 overflow-y-auto"
                     >
-                        <div className="min-h-screen px-4 text-center">
+                        <div className="min-h-screen px-4 text-center h-full w-full">
                             <Transition.Child
                                 as={React.Fragment}
                                 enter="ease-out duration-300"
@@ -57,7 +57,7 @@ const ConfirmCloseModal = ({
                                 leaveFrom="opacity-100 scale-100"
                                 leaveTo="opacity-0 scale-95"
                             >
-                                <div className="inline-block w-full max-w-md p-6 my-8 overflow-hidden text-left align-middle transition-all transform bg-slate-900 shadow-xl rounded-2xl">
+                                <div className="card w-full max-w-md p-6 bg-base-100 m-auto">
                                     <Dialog.Title
                                         as="h3"
                                         className="text-lg font-medium leading-6 text-sky-200"

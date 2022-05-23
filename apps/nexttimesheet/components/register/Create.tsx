@@ -1,7 +1,6 @@
 import { Form, Formik, FormikHelpers } from "formik";
 import { DateTime } from "luxon";
 import { useRouter } from "next/router";
-import { Session } from "next-auth";
 import * as React from "react";
 import validator from "validator";
 
@@ -116,7 +115,7 @@ const Create = ({
 
                         const { data: updatedUser } = await updateUser({
                             variables: {
-                                id: String(user.id),
+                                id: String(user?.id),
                                 tenantId: String(tenantData?.createTenant.id),
                             },
                         });

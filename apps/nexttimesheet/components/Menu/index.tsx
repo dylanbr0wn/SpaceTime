@@ -108,7 +108,7 @@ const TimesheetMenu = ({ user }: { user: Session["user"] }) => {
                                     <Menu.Button className=" inline-flex justify-end h-full w-full  font-medium text-base-content btn btn-ghost  ">
                                         <div className="h-full mr-3 flex flex-col text-right">
                                             <div className="my-auto">
-                                                {user?.nickname}
+                                                {user?.name}
                                             </div>
                                         </div>
 

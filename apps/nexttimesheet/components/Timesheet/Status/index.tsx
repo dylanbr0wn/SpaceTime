@@ -12,7 +12,7 @@ import {
     Status,
     StatusEventsDocument,
     UpdateTimesheetChangedDocument,
-    User,
+    UserFromAuthIdQuery,
 } from "../../../lib/apollo";
 import ErrorBoundary from "../../common/ErrorBoundary";
 import CustModal from "../../common/Modal";
@@ -31,12 +31,15 @@ const StatusBlock = ({
     timesheetChanged,
 }: {
     status: Status;
-    user: Partial<User>;
+    user: UserFromAuthIdQuery["userFromAuthId"];
     timesheetId: string;
     timesheetChanged: boolean;
 }) => {
     const [showModal, setShowModal] = React.useState(false);
     const [nextStatus] = React.useState<Status>(Status.Submitted);
+    const [currentTimesheet, setCurrentTimesheet] = React.useState<
+        string | undefined
+    >();
     // const [hasChanged, setHasChanged] = React.useState(false);
 
     const isChanged = useReactiveVar(isChangedVar);
@@ -46,10 +49,11 @@ const StatusBlock = ({
     );
 
     React.useEffect(() => {
-        if (!timesheetChanged && isChanged) {
+        if (!timesheetChanged && isChanged && currentTimesheet) {
+            console.log("update");
             updateTimesheetChangedMutation({
                 variables: {
-                    timesheetId,
+                    timesheetId: currentTimesheet,
                     changed: isChanged,
                 },
             });
@@ -57,9 +61,19 @@ const StatusBlock = ({
     }, [
         isChanged,
         timesheetChanged,
-        timesheetId,
+        currentTimesheet,
         updateTimesheetChangedMutation,
     ]);
+
+    React.useEffect(() => {
+        if (
+            timesheetId !== "-1" &&
+            timesheetId &&
+            currentTimesheet !== timesheetId
+        ) {
+            setCurrentTimesheet(timesheetId);
+        }
+    }, [timesheetId, currentTimesheet]);
 
     const [comment, setComment] = React.useState("");
 
@@ -111,9 +125,10 @@ const StatusBlock = ({
                 cache.modify({
                     id: cache.identify({
                         __typename: "Timesheet",
-                        id: timesheetId ?? "-1",
+                        id: timesheetId,
                     }),
                     fields: {
+                        isChanged: () => false,
                         status: () => nextStatus,
                     },
                 });

@@ -55,7 +55,7 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
 };
 
 const Home: NextPage<{
-    userData: Partial<User>;
+    userData: UserFromAuthIdQuery["userFromAuthId"];
     user: Session["user"];
 }> = ({ userData, user }) => {
     return (

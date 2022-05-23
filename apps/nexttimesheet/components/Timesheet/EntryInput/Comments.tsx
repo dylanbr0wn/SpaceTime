@@ -8,7 +8,7 @@ import { PaperAirplaneIcon } from "@heroicons/react/outline";
 import {
     CreateEntryCommentDocument,
     EntryComment,
-    User,
+    UserFromAuthIdQuery,
 } from "../../../lib/apollo";
 import Avatar from "../../common/Avatar";
 
@@ -23,7 +23,7 @@ const Comments = ({
 }: {
     closeModal: () => void;
     comments: Pick<EntryComment, "id">[];
-    user: Partial<User>;
+    user: UserFromAuthIdQuery["userFromAuthId"];
     timeEntryId: string;
     timeEntryRowId: string;
 }) => {

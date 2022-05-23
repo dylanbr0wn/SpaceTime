@@ -14,12 +14,12 @@ import {
     TimeEntryDocument,
     TimeEntryQuery,
     TimeEntryQueryVariables,
-    TimeEntryRow,
     UpdateTimeEntryhoursDocument,
-    User,
+    UserFromAuthIdQuery,
 } from "../../../lib/apollo";
 import ErrorBoundary from "../../common/ErrorBoundary";
 import CustModal from "../../common/Modal";
+import { TimeEntryRow } from "../types";
 
 import Comments from "./Comments";
 import { useTimeEntry } from "./hooks";
@@ -38,9 +38,9 @@ const TimesheetEntryInput = ({
     timesheetId,
     index,
 }: {
-    row: Partial<TimeEntryRow> | undefined;
+    row: TimeEntryRow | undefined;
     date: DateTime;
-    user: Partial<User>;
+    user: UserFromAuthIdQuery["userFromAuthId"];
     timesheetId: string;
     index: number;
 }) => {

@@ -3,16 +3,13 @@ import * as React from "react";
 import { useQuery } from "@apollo/client";
 import { Row } from "@tanstack/react-table";
 
-import {
-    TimeEntryRow,
-    WorkTypesDocument,
-    WorkTypesQuery,
-} from "../../../lib/apollo";
+import { WorkTypesDocument, WorkTypesQuery } from "../../../lib/apollo";
 import { MyTableGenerics } from "../Table";
+import { TimeEntryRow } from "../types";
 
 export const useWorkTypes = (
     rows: Row<MyTableGenerics>[],
-    currentRow: Partial<TimeEntryRow> | undefined,
+    currentRow: TimeEntryRow | undefined,
     tenantId: string
 ) => {
     const [filteredWorkTypes, setFilteredWorkTypes] = React.useState<
