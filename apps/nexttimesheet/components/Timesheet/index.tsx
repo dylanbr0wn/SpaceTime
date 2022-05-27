@@ -15,7 +15,7 @@ import ApprovalTree from "../ApprovalTree";
 import Loading from "../common/Loading";
 
 import TimesheetDateInput from "./DateInput";
-import { useTimesheetDates } from "./hooks";
+import { useTimesheetColumns, useTimesheetDates } from "./hooks";
 import Status from "./Status";
 import TimesheetTable from "./Table";
 
@@ -72,11 +72,11 @@ const Timesheet = ({
         String(user?.id)
     );
 
-    // React.useEffect(() => {
-    //     if (timesheetData?.timesheetFromDate) {
-    //         IsChanged(timesheetData.timesheetFromDate.isChanged);
-    //     }
-    // }, [timesheetData, timesheetLoading]);
+    const { columns } = useTimesheetColumns(timesheetData?.timesheetFromDate);
+
+    React.useEffect(() => {
+        console.log(timesheetData?.timesheetFromDate);
+    }, [timesheetData]);
 
     // Updates the timesheet start date by subtracting or adding 14 days
 
@@ -143,6 +143,7 @@ const Timesheet = ({
                         timesheetId={timesheetData?.timesheetFromDate?.id}
                         timesheetDates={timesheetDates}
                         user={user}
+                        timesheetColumns={columns}
                     />
                 ) : (
                     <div className="w-full h-full mt-10">

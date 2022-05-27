@@ -1,3 +1,4 @@
+import cuid from "cuid";
 import React, { useEffect, useState } from "react";
 
 import { useMutation, useQuery } from "@apollo/client";
@@ -6,13 +7,11 @@ import { Listbox, Transition } from "@headlessui/react";
 import { CheckIcon, SelectorIcon } from "@heroicons/react/solid";
 
 import {
-    Department,
-    DepartmentsDocument,
+    EntryRowOptionDocument,
+    FieldDocument,
+    FieldOption,
     IsChanged,
-    TimeEntryRowsDocument,
-    TimeEntryRowsQuery,
-    TimeEntryRowsQueryVariables,
-    UpdateTimeEntryRowDocument,
+    UpdateEntryRowOptionDocument,
 } from "../../../lib/apollo";
 import ErrorBoundary from "../../common/ErrorBoundary";
 import { TimeEntryRow } from "../types";
@@ -26,95 +25,78 @@ import { TimeEntryRow } from "../types";
  * @param {Object} props Props. See propTypes for details.
  */
 const TimesheetDepartmentInput = ({
-    value,
     row,
+    fieldId,
     userId,
     timesheetId,
     tenantId,
+    fieldName,
 }: {
-    value: string;
     row: TimeEntryRow | undefined;
+    fieldId: string;
     userId: string;
     timesheetId: string;
     tenantId: string;
+    fieldName: string;
 }) => {
-    // We need to keep and update the state of the cell normally
+    const [field, setField] = useState<FieldOption | null>(null);
 
-    const [department, setDepartment] = useState<Department | null>(null);
-
-    const { data: departmentsData, loading } = useQuery(DepartmentsDocument, {
+    const { data: optionData, loading } = useQuery(EntryRowOptionDocument, {
         variables: {
-            tenantId,
+            fieldId,
+            rowId: row?.id ?? "-1",
         },
     });
 
-    const [updateTimeEntryRow] = useMutation(UpdateTimeEntryRowDocument);
+    const { data: fieldData } = useQuery(FieldDocument, {
+        variables: {
+            id: fieldId,
+        },
+    });
+
+    const [updateEntryRowOption] = useMutation(UpdateEntryRowOptionDocument);
 
     // When changed, dispatch api call and redux action.
-    const onChange = async (department: Department) => {
+    const onChange = async (field: FieldOption) => {
         // setDepartment(department);
+        setField(field);
 
-        await updateTimeEntryRow({
+        await updateEntryRowOption({
             variables: {
-                updateTimeEntryRowId: row?.id ?? "-1",
-                departmentId: department.id,
-                projectId: "-1",
-                workTypeId: "-1",
+                fieldId,
+                rowId: row?.id ?? "-1",
+                fieldOptionId: field.id,
             },
             optimisticResponse: {
-                updateTimeEntryRow: {
-                    __typename: "TimeEntryRow",
-                    id: row?.id ?? "-1",
+                updateEntryRowOption: {
+                    __typename: "EntryRowOption",
+                    id: optionData?.entryRowOption.id ?? cuid(),
                     createdAt: row?.createdAt ?? new Date(),
                     updatedAt: row?.updatedAt ?? new Date(),
-                    department: {
-                        __typename: "Department",
-                        id: department.id,
-                    },
-                    project: {
-                        __typename: "Project",
-                        id: "-1",
-                    },
-                    workType: {
-                        __typename: "WorkType",
-                        id: "-1",
+                    fieldOption: {
+                        __typename: "FieldOption",
+                        id: field.id,
+                        name: field.name,
+                        isActive: field.isActive,
+                        createdAt: field.createdAt,
+                        updatedAt: field.updatedAt,
                     },
                 },
             },
             update: (cache, { data }) => {
-                const newEntryRow = data?.updateTimeEntryRow ?? {};
-                const rows = cache.readQuery<
-                    TimeEntryRowsQuery,
-                    TimeEntryRowsQueryVariables
-                >({
-                    query: TimeEntryRowsDocument,
-                    variables: {
-                        timesheetId,
-                    },
-                });
-
-                const oldRows = rows?.timeEntryRows ?? [];
-
-                const newTimeEntryRows = oldRows.map((timeEntryRow) => {
-                    if (timeEntryRow.id === row?.id) {
-                        return {
-                            ...timeEntryRow,
-                            ...newEntryRow,
-                        };
-                    }
-                    return timeEntryRow;
-                });
-
-                cache.writeQuery<
-                    TimeEntryRowsQuery,
-                    TimeEntryRowsQueryVariables
-                >({
-                    query: TimeEntryRowsDocument,
-                    variables: {
-                        timesheetId,
-                    },
-                    data: {
-                        timeEntryRows: newTimeEntryRows,
+                cache.modify({
+                    id: cache.identify({
+                        __typename: "TimeEntryRow",
+                        id: row?.id ?? "-1",
+                    }),
+                    fields: {
+                        rowOptions(existingRowOptions = []) {
+                            const newRowOptions = [
+                                ...existingRowOptions,
+                                data?.updateEntryRowOption,
+                            ];
+                            return newRowOptions;
+                        },
                     },
                 });
             },
@@ -124,21 +106,21 @@ const TimesheetDepartmentInput = ({
 
     // If the initialValue is changed external, sync it up with our state
     useEffect(() => {
-        if (departmentsData?.departments) {
-            const department = departmentsData.departments.find(
-                (dep) => dep.id === value
+        if (optionData?.entryRowOption && fieldData?.field) {
+            const field = fieldData?.field.fieldOptions.find(
+                (dep) => dep.id === optionData.entryRowOption.fieldOption.id
             );
-            setDepartment((department as Department) ?? null);
+            setField((field as FieldOption) ?? null);
         }
-    }, [value, departmentsData]);
+    }, [optionData, fieldData]);
 
     return (
         <>
             <ErrorBoundary>
-                {departmentsData?.departments && !loading && (
+                {fieldData?.field && !loading && (
                     <Listbox
-                        aria-label="Department Input"
-                        value={department}
+                        aria-label={`${fieldName} Input`}
+                        value={field}
                         onChange={onChange}
                         // onBlur={onBlur}
                         disabled={false}
@@ -154,11 +136,12 @@ const TimesheetDepartmentInput = ({
                                            : "outline-transparent "
                                    } sm:text-sm cursor-pointer `}
                                 >
-                                    {department?.name ?? (
+                                    {field?.name ?? (
                                         <span
                                             className={`block truncate text-base-content/50`}
                                         >
-                                            Choose a department...
+                                            Choose a {fieldName.toLowerCase()}
+                                            ...
                                         </span>
                                     )}
                                     <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
@@ -175,7 +158,7 @@ const TimesheetDepartmentInput = ({
                                     leaveTo="opacity-0"
                                 >
                                     <Listbox.Options className="absolute z-10 w-full p-1 mt-1.5 overflow-auto text-base bg-base-300 border border-base-content/20 rounded-lg shadow-xl shadow-black/40 max-h-60 focus:outline-none sm:text-sm">
-                                        {departmentsData?.departments.map(
+                                        {fieldData?.field.fieldOptions.map(
                                             (department) => {
                                                 return (
                                                     <Listbox.Option

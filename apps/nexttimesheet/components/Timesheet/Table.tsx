@@ -20,12 +20,10 @@ import {
 import { getDayFeatures } from "../../lib/utils";
 
 import TimesheetDeleteEntryInput from "./DeleteEntryInput";
-import TimesheetDepartmentInput from "./DepartmentInput";
 import TimesheetEntryInput from "./EntryInput";
+import TimesheetDepartmentInput from "./FieldInput";
 import { useTimesheet } from "./hooks";
-import TimesheetProjectInput from "./ProjectInput";
 import { TimeEntryRow } from "./types";
-import TimesheetWorkCodeInput from "./WorkCodeInput";
 
 const table = createTable().setRowType<TimeEntryRow>();
 
@@ -42,10 +40,12 @@ const TimesheetTable = ({
     timesheetId,
     timesheetDates,
     user,
+    timesheetColumns,
 }: {
     timesheetDates: DateTime[];
     timesheetId: string | undefined;
     user: UserFromAuthIdQuery["userFromAuthId"];
+    timesheetColumns: { id: string; name: string }[];
 }) => {
     // const [pinRows, setPinRows] = React.useState([]);
     // const [otherRows, setOtherRows] = React.useState([]);
@@ -83,19 +83,7 @@ const TimesheetTable = ({
                     id: cuid(),
                     createdAt: DateTime.now().toISO(),
                     updatedAt: DateTime.now().toISO(),
-                    timeEntries: [],
-                    workType: {
-                        __typename: "WorkType",
-                        id: "-1",
-                    },
-                    project: {
-                        __typename: "Project",
-                        id: "-1",
-                    },
-                    department: {
-                        __typename: "Department",
-                        id: "-1",
-                    },
+                    rowOptions: [],
                 },
             },
             update: (cache, { data }) => {
@@ -133,56 +121,22 @@ const TimesheetTable = ({
             table.createGroup({
                 header: () => null,
                 id: "workdescription",
-                columns: [
-                    table.createDataColumn(
-                        (row) => row?.department?.id ?? "-1",
-                        {
-                            header: "Department",
-                            id: "department",
-                            cell: ({ value, row, instance }) => (
-                                <TimesheetDepartmentInput
-                                    value={value}
-                                    row={row.original}
-                                    userId={String(user?.id)}
-                                    tenantId={String(user?.tenant?.id)}
-                                    timesheetId={timesheetId ?? "-1"}
-                                />
-                            ),
-                        }
-                    ),
-                    table.createDataColumn((row) => row?.project?.id ?? "-1", {
-                        header: "Project",
-                        id: "project",
-                        cell: ({ value, row, instance }) => {
-                            return (
-                                <TimesheetProjectInput
-                                    value={value}
-                                    row={row.original}
-                                    rows={instance.getRowModel().rows}
-                                    userId={String(user?.id)}
-                                    tenantId={String(user?.tenant?.id)}
-                                    timesheetId={timesheetId ?? "-1"}
-                                />
-                            );
-                        },
-                    }),
-                    table.createDataColumn((row) => row?.workType?.id, {
-                        header: "Work Type",
-
-                        id: "workType",
-                        cell: ({ value, row, column, instance }) => (
-                            <TimesheetWorkCodeInput
-                                value={value}
+                columns: timesheetColumns.map(({ id, name }) =>
+                    table.createDataColumn(() => id, {
+                        header: name,
+                        id: name.toLowerCase(),
+                        cell: ({ row }) => (
+                            <TimesheetDepartmentInput
                                 row={row.original}
-                                rows={instance.getRowModel().rows}
-                                column={column}
-                                userId={String(String(user?.id))}
+                                fieldId={id}
+                                fieldName={name}
+                                userId={String(user?.id)}
                                 tenantId={String(user?.tenant?.id)}
                                 timesheetId={timesheetId ?? "-1"}
                             />
                         ),
-                    }),
-                ],
+                    })
+                ),
             }),
             table.createGroup({
                 header: "Hours",
@@ -234,7 +188,7 @@ const TimesheetTable = ({
                 ),
             }),
         ],
-        [user, timesheetDates, timesheetId]
+        [user, timesheetDates, timesheetId, timesheetColumns]
     );
 
     // const columns = React.useMemo(
@@ -390,31 +344,16 @@ const TimesheetTable = ({
                     <div className="flex flex-col flex-shrink">
                         {instance.getHeaderGroups().map((headerGroup) => (
                             <div
-                                className="flex space-x-1 flex-shrink"
+                                className="flex space-x-0.5 flex-shrink"
                                 key={headerGroup.id}
                             >
                                 {headerGroup.headers.map((column) => {
                                     if (
-                                        column.column.id === "workType" ||
-                                        column.column.id === "project" ||
-                                        column.column.id === "department"
+                                        column?.column?.parent?.id === "hours"
                                     ) {
                                         return (
                                             <div
-                                                className="text-base-content py-2 text-center text-lg w-44"
-                                                key={column.id}
-                                            >
-                                                {column.isPlaceholder ? null : (
-                                                    <div>
-                                                        {column.renderHeader()}
-                                                    </div>
-                                                )}
-                                            </div>
-                                        );
-                                    } else if (column.column.id === "hours") {
-                                        return (
-                                            <div
-                                                className="text-base-content py-2 text-center text-lg w-full"
+                                                className="text-base-content py-2 text-center text-lg w-14"
                                                 key={column.id}
                                             >
                                                 {column.isPlaceholder ? null : (
@@ -444,7 +383,7 @@ const TimesheetTable = ({
                                     } else {
                                         return (
                                             <div
-                                                className=" text-center py-1 text-lg text-base-content w-14"
+                                                className="text-base-content py-2 text-center text-lg w-44"
                                                 key={column.id}
                                             >
                                                 {column.isPlaceholder ? null : (
@@ -465,7 +404,7 @@ const TimesheetTable = ({
                                 {instance.getRowModel().rows.map((row) => {
                                     return (
                                         <div
-                                            className="rounded-md flex "
+                                            className="rounded-md flex space-x-0.5"
                                             key={row.id}
                                         >
                                             {row
@@ -473,37 +412,23 @@ const TimesheetTable = ({
                                                 .map((cell) => {
                                                     if (
                                                         cell.columnId ===
-                                                            "workType" ||
-                                                        cell.columnId ===
-                                                            "project"
-                                                    ) {
-                                                        return (
-                                                            <div
-                                                                className="w-44 mx-0.5"
-                                                                key={cell.id}
-                                                            >
-                                                                {cell.renderCell()}
-                                                            </div>
-                                                        );
-                                                    } else if (
-                                                        cell.columnId ===
                                                         "deleter"
                                                     ) {
                                                         return (
                                                             <div
-                                                                className="w-12 ml-0"
+                                                                className="w-12"
                                                                 key={cell.id}
                                                             >
                                                                 {cell.renderCell()}
                                                             </div>
                                                         );
                                                     } else if (
-                                                        cell.columnId ===
-                                                        "department"
+                                                        cell?.column?.parent
+                                                            ?.id === "hours"
                                                     ) {
                                                         return (
                                                             <div
-                                                                className="w-44 mr-0.5"
+                                                                className="w-14 "
                                                                 key={cell.id}
                                                             >
                                                                 {cell.renderCell()}
@@ -512,7 +437,7 @@ const TimesheetTable = ({
                                                     } else {
                                                         return (
                                                             <div
-                                                                className="w-14 mx-0.5"
+                                                                className="w-44 "
                                                                 key={cell.id}
                                                             >
                                                                 {cell.renderCell()}

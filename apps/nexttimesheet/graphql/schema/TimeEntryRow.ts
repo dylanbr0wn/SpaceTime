@@ -14,9 +14,7 @@ builder.prismaObject("TimeEntryRow", {
             resolve: (timeEntryRow) => timeEntryRow.updatedAt,
         }),
         timeEntries: t.relation("timeEntries"),
-        department: t.relation("department", { nullable: true }),
-        project: t.relation("project", { nullable: true }),
-        workType: t.relation("workType", { nullable: true }),
+        rowOptions: t.relation("entryRowOptions"),
     }),
 });
 
@@ -58,42 +56,12 @@ builder.mutationFields((t) => ({
     createTimeEntryRow: t.prismaField({
         type: "TimeEntryRow",
         args: {
-            departmentId: t.arg.string(),
-            projectId: t.arg.string(),
-            workTypeId: t.arg.string(),
             timesheetId: t.arg.string({ required: true }),
         },
         resolve: async (query, root, args, ctx, info) => {
             return await prisma.timeEntryRow.create({
                 data: {
-                    departmentId: args.departmentId ?? undefined,
-
-                    projectId: args.projectId ?? undefined,
-
-                    workTypeId: args.workTypeId ?? undefined,
-
                     timesheetId: args.timesheetId,
-                },
-            });
-        },
-    }),
-    updateTimeEntryRow: t.prismaField({
-        type: "TimeEntryRow",
-        args: {
-            id: t.arg.string({ required: true }),
-            departmentId: t.arg.string(),
-            projectId: t.arg.string(),
-            workTypeId: t.arg.string(),
-        },
-        resolve: async (query, root, args, ctx, info) => {
-            return await prisma.timeEntryRow.update({
-                where: {
-                    id: args.id,
-                },
-                data: {
-                    departmentId: args.departmentId ?? undefined,
-                    projectId: args.projectId ?? undefined,
-                    workTypeId: args.workTypeId ?? undefined,
                 },
             });
         },

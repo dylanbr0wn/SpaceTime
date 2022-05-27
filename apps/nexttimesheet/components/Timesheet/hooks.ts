@@ -1,23 +1,19 @@
 import { DateTime } from "luxon";
 import * as React from "react";
 
-import { IsChanged, TimeEntryRowsQuery } from "../../lib/apollo";
+import {
+    IsChanged,
+    TimeEntryRowsQuery,
+    TimesheetQuery,
+} from "../../lib/apollo";
 
 import { TimeEntryRow } from "./types";
 
 const defaultRow = {
     id: "-1",
-    project: {
-        id: "-1",
-    },
-    workType: {
-        id: "-1",
-    },
-    department: {
-        id: "-1",
-    },
     createdAt: DateTime.now().toISO(),
     updatedAt: DateTime.now().toISO(),
+    rowOptions: [],
 };
 
 export const useTimesheetDates = (
@@ -67,6 +63,22 @@ export const useTimesheetDates = (
     return { timesheetDates, startDate: start, periodLength };
 };
 
+export const useTimesheetColumns = (
+    timesheet: TimesheetQuery["timesheetFromDate"] | undefined
+) => {
+    const [columns, setColumns] = React.useState<
+        { id: string; name: string }[]
+    >([]);
+
+    React.useEffect(() => {
+        if (timesheet) {
+            setColumns(timesheet.timesheetFields.map((field) => field.field));
+        }
+    }, [timesheet]);
+
+    return { columns };
+};
+
 export const useTimesheet = (
     data: TimeEntryRowsQuery | undefined,
     timesheetDates: DateTime[],
@@ -80,16 +92,14 @@ export const useTimesheet = (
             const timeEntryRows = data.timeEntryRows.map((row) => {
                 return {
                     id: row.id ?? defaultRow.id,
-                    project: row.project ?? defaultRow.project,
-                    workType: row.workType ?? defaultRow.workType,
-                    department: row.department ?? defaultRow.department,
                     createdAt: row.createdAt ?? defaultRow.createdAt,
                     updatedAt: row.updatedAt ?? defaultRow.updatedAt,
+                    rowOptions: row.rowOptions ?? [],
                 };
             });
             setTimesheet(timeEntryRows);
         }
     }, [data, userId, timesheetDates]);
 
-    return { timesheet, memoTimesheet };
+    return { memoTimesheet };
 };

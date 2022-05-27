@@ -1,4 +1,3 @@
-import { CountryCodeResolver } from "graphql-scalars";
 import { DateTime } from "luxon";
 import * as React from "react";
 
@@ -70,14 +69,7 @@ const TimesheetDateInput = ({
             const dateTime = DateTime.fromJSDate(date, {
                 zone: "utc",
             }).startOf("day");
-            console.log("will disable");
-            console.log(
-                Math.abs(
-                    dateTime.diff(startDate ?? DateTime.now(), "days").days
-                ) %
-                    (periodLength ?? 14) !==
-                    0
-            );
+
             return !!(
                 Math.abs(
                     dateTime.diff(startDate ?? DateTime.now(), "days").days

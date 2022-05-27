@@ -1,45 +1,39 @@
+import { FieldType } from "@prisma/client";
+
 import prisma from "../../prisma";
 import { builder } from "../builder";
 
-builder.prismaObject("WorkType", {
-    findUnique: (workType) => ({ id: workType.id }),
+builder.prismaObject("Field", {
+    findUnique: (field) => ({ id: field.id }),
     fields: (t) => ({
         id: t.exposeID("id"),
+        name: t.exposeString("name"),
         createdAt: t.field({
             type: "Date",
-            resolve: (workType) => workType.createdAt,
+            resolve: (department) => department.createdAt,
         }),
+        tenant: t.relation("tenant"),
         updatedAt: t.field({
             type: "Date",
-            resolve: (workType) => workType.updatedAt,
+            resolve: (department) => department.updatedAt,
         }),
-        name: t.field({
-            type: "String",
-            resolve: (workType) => workType.name,
-        }),
-        description: t.field({
-            type: "String",
-            nullable: true,
-            resolve: (workType) => workType.description,
-        }),
+        fieldOptions: t.relation("fieldOptions"),
         isActive: t.exposeBoolean("isActive"),
-        tenant: t.relation("tenant"),
-        code: t.exposeString("code"),
-        isSystem: t.exposeBoolean("isSystem"),
-        isDefault: t.exposeBoolean("isDefault"),
-        isBillable: t.exposeBoolean("isBillable"),
-        multiplier: t.exposeFloat("multiplier"),
+        fieldType: t.field({
+            type: FieldType,
+            resolve: (field) => field.fieldType,
+        }),
     }),
 });
 
 builder.queryFields((t) => ({
-    workTypes: t.prismaField({
-        type: ["WorkType"],
+    fields: t.prismaField({
+        type: ["Field"],
         args: {
             tenantId: t.arg.string({ required: true }),
         },
         resolve: async (query, root, args, ctx, info) => {
-            return await prisma.workType.findMany({
+            return await prisma.field.findMany({
                 ...query,
                 where: {
                     tenant: {
@@ -49,13 +43,13 @@ builder.queryFields((t) => ({
             });
         },
     }),
-    workType: t.prismaField({
-        type: "WorkType",
+    field: t.prismaField({
+        type: "Field",
         args: {
             id: t.arg.string({ required: true }),
         },
         resolve: async (query, root, args, ctx, info) => {
-            return await prisma.workType.findUnique({
+            return await prisma.field.findUnique({
                 ...query,
                 rejectOnNotFound: true,
                 where: {

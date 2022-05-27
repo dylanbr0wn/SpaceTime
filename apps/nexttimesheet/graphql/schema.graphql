@@ -3,18 +3,6 @@ A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `dat
 """
 scalar Date
 
-type Department {
-  createdAt: Date!
-  description: String
-  id: ID!
-  isActive: Boolean!
-  name: String!
-  projects: [Project!]!
-  tenant: Tenant!
-  updatedAt: Date!
-  users: [User!]!
-}
-
 type EntryComment {
   createdAt: Date!
   id: ID!
@@ -23,9 +11,41 @@ type EntryComment {
   user: User!
 }
 
+type EntryRowOption {
+  createdAt: Date!
+  entryRow: TimeEntryRow!
+  fieldOption: FieldOption!
+  id: ID!
+  updatedAt: Date!
+}
+
 enum EventType {
   Comment
   StatusChange
+}
+
+type Field {
+  createdAt: Date!
+  fieldOptions: [FieldOption!]!
+  fieldType: FieldType!
+  id: ID!
+  isActive: Boolean!
+  name: String!
+  tenant: Tenant!
+  updatedAt: Date!
+}
+
+type FieldOption {
+  createdAt: Date!
+  id: ID!
+  isActive: Boolean!
+  name: String!
+  updatedAt: Date!
+}
+
+enum FieldType {
+  Checkbox
+  Select
 }
 
 type Mutation {
@@ -34,19 +54,19 @@ type Mutation {
   createStatusEvent(message: String, status: Status!, timesheetId: String!, type: EventType!, userId: String!): StatusEvent!
   createTenant(description: String, isActive: Boolean!, logo: String, name: String!, periodLength: Int!, startDate: Date!): Tenant!
   createTimeEntry(date: Date!, hours: Float!, index: Int!, timeEntryRowId: String!): TimeEntry!
-  createTimeEntryRow(departmentId: String, projectId: String, timesheetId: String!, workTypeId: String): TimeEntryRow!
-  createUser(authId: String!, avatar: String, code: String, departmentId: String, email: String!, isActive: Boolean, isAdmin: Boolean, isManager: Boolean, isPaymentManager: Boolean, isSetup: Boolean, managerId: String, name: String!, tenantId: String): User!
+  createTimeEntryRow(timesheetId: String!): TimeEntryRow!
+  createUser(authId: String!, avatar: String, code: String, email: String!, isActive: Boolean, isAdmin: Boolean, isManager: Boolean, isPaymentManager: Boolean, isSetup: Boolean, managerId: String, name: String!, tenantId: String): User!
   createUserBasic(authId: String!, avatar: String, email: String!, name: String!, tenantId: String!): User!
   deleteEntryComment(id: String!): EntryComment!
   deleteTenant(id: String!): Tenant!
   deleteTimeEntry(id: String!): TimeEntry!
   deleteTimeEntryRow(id: String!): TimeEntryRow!
   updateEntryComment(id: String!, text: String!): EntryComment!
+  updateEntryRowOption(fieldId: String!, fieldOptionId: String!, rowId: String!): EntryRowOption!
   updateTenant(description: String, id: String!, isActive: Boolean, logo: String, name: String, periodLength: Int): Tenant!
   updateTimeEntry(hours: Float!, id: String!): TimeEntry!
-  updateTimeEntryRow(departmentId: String, id: String!, projectId: String, workTypeId: String): TimeEntryRow!
   updateTimesheet(id: String!, isChanged: Boolean!): Timesheet!
-  updateUser(authId: String, avatar: String, code: String, departmentId: String, email: String, id: String!, isActive: Boolean, isAdmin: Boolean, isManager: Boolean, isPaymentManager: Boolean, isSetup: Boolean, managerId: String, name: String, tenantId: String): User!
+  updateUser(authId: String, avatar: String, code: String, email: String, id: String!, isActive: Boolean, isAdmin: Boolean, isManager: Boolean, isPaymentManager: Boolean, isSetup: Boolean, managerId: String, name: String, tenantId: String): User!
 }
 
 type OneTimeToken {
@@ -64,27 +84,16 @@ type Period {
   startDate: Date!
 }
 
-type Project {
-  code: String!
-  createdAt: Date!
-  department: Department!
-  description: String
-  id: ID!
-  isActive: Boolean!
-  name: String!
-  tenant: Tenant!
-  updatedAt: Date!
-}
-
 type Query {
-  departments(tenantId: String!): [Department!]!
   entryComment(id: String!): EntryComment!
   entryComments(entryId: String!): [EntryComment!]!
+  entryRowOption(fieldId: String!, rowId: String!): EntryRowOption!
+  feildOptions(rowFieldId: String!): [FieldOption!]!
+  field(id: String!): Field!
+  fields(tenantId: String!): [Field!]!
   managers(tenantId: String!): [User!]!
   oneTimeToken(id: String!): OneTimeToken!
   oneTimeTokens(tenantId: String!): [OneTimeToken!]!
-  project(id: String!): Project!
-  projects(tenantId: String!): [Project!]!
   statusEvents(timesheetId: String!): [StatusEvent!]!
   tenant(id: String!): Tenant!
   timeEntry(index: Int!, timeEntryRowId: String!): TimeEntry!
@@ -96,8 +105,6 @@ type Query {
   userFromAuthId(authId: String!): User!
   userFromToken(token: String!): User!
   users(tenantId: String!): [User!]!
-  workType(id: String!): WorkType!
-  workTypes(tenantId: String!): [WorkType!]!
 }
 
 enum Status {
@@ -142,12 +149,10 @@ type TimeEntry {
 
 type TimeEntryRow {
   createdAt: Date!
-  department: Department
   id: ID!
-  project: Project
+  rowOptions: [EntryRowOption!]!
   timeEntries: [TimeEntry!]!
   updatedAt: Date!
-  workType: WorkType
 }
 
 type Timesheet {
@@ -157,8 +162,17 @@ type Timesheet {
   period: Period!
   status: Status!
   timeEntryRows: [TimeEntryRow!]!
+  timesheetFields: [TimesheetField!]!
   updatedAt: Date!
   user: User!
+}
+
+type TimesheetField {
+  createdAt: Date!
+  field: Field!
+  id: ID!
+  timesheet: Timesheet!
+  updatedAt: Date!
 }
 
 type User {
@@ -166,7 +180,6 @@ type User {
   avatar: String
   code: String
   createdAt: Date!
-  department: Department
   email: String
   id: ID!
   isActive: Boolean!
@@ -178,20 +191,5 @@ type User {
   manager: User
   name: String
   tenant: Tenant
-  updatedAt: Date!
-}
-
-type WorkType {
-  code: String!
-  createdAt: Date!
-  description: String
-  id: ID!
-  isActive: Boolean!
-  isBillable: Boolean!
-  isDefault: Boolean!
-  isSystem: Boolean!
-  multiplier: Float!
-  name: String!
-  tenant: Tenant!
   updatedAt: Date!
 }

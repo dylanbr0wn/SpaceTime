@@ -1,8 +1,8 @@
 import prisma from "../../prisma";
 import { builder } from "../builder";
 
-builder.prismaObject("Department", {
-    findUnique: (department) => ({ id: department.id }),
+builder.prismaObject("FieldOption", {
+    findUnique: (field) => ({ id: field.id }),
     fields: (t) => ({
         id: t.exposeID("id"),
         name: t.exposeString("name"),
@@ -10,34 +10,25 @@ builder.prismaObject("Department", {
             type: "Date",
             resolve: (department) => department.createdAt,
         }),
-        tenant: t.relation("tenant"),
         updatedAt: t.field({
             type: "Date",
             resolve: (department) => department.updatedAt,
         }),
-        users: t.relation("users"),
-        description: t.string({
-            nullable: true,
-            resolve: (department) => department.description,
-        }),
-        projects: t.relation("projects"),
         isActive: t.exposeBoolean("isActive"),
     }),
 });
 
 builder.queryFields((t) => ({
-    departments: t.prismaField({
-        type: ["Department"],
+    feildOptions: t.prismaField({
+        type: ["FieldOption"],
         args: {
-            tenantId: t.arg.string({ required: true }),
+            rowFieldId: t.arg.string({ required: true }),
         },
         resolve: async (query, root, args, ctx, info) => {
-            return await prisma.department.findMany({
+            return await prisma.fieldOption.findMany({
                 ...query,
                 where: {
-                    tenant: {
-                        id: args.tenantId,
-                    },
+                    rowFieldId: args.rowFieldId,
                 },
             });
         },

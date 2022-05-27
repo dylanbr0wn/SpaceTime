@@ -55,14 +55,7 @@ const TimesheetEntryInput = ({
     const [disableEntryInput, setDisableEntryInput] = React.useState(true);
 
     React.useEffect(() => {
-        if (
-            !row?.project?.id ||
-            row?.project?.id === "-1" ||
-            !row?.workType?.id ||
-            row?.workType?.id === "-1" ||
-            !row?.department?.id ||
-            row?.department?.id === "-1"
-        ) {
+        if ((row?.rowOptions?.length ?? 0) < 3) {
             setDisableEntryInput(true);
         } else {
             setDisableEntryInput(false);

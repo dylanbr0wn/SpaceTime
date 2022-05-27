@@ -25,6 +25,7 @@ builder.prismaObject("Timesheet", {
             type: Status,
             resolve: (timesheet) => timesheet.status,
         }),
+        timesheetFields: t.relation("timesheetFields"),
     }),
 });
 

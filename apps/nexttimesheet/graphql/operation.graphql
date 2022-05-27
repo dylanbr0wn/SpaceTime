@@ -16,9 +16,6 @@ query UserFromAuthId($authId: String!) {
         avatar
         code
         createdAt
-        department {
-          id
-        }
         email
         id
         isActive
@@ -52,50 +49,15 @@ query Timesheet($date: Date!, $userId: String!) {
             startDate
             endDate
         }
-    }
-}
-
-query Departments($tenantId: String!) {
-    departments(tenantId: $tenantId) {
-        id
-        name
-        createdAt
-        updatedAt
-        isActive
-        description
-    }
-}
-
-query Projects($tenantId: String!) {
-    projects(tenantId: $tenantId ) {
-        id
-        name
-        createdAt
-        updatedAt
-        isActive
-        description
-        code
-        department {
-            id
+        timesheetFields {
+            field {
+                id
+                name
+            }
         }
     }
 }
 
-query WorkTypes($tenantId: String!) {
-    workTypes(tenantId: $tenantId) {
-        id
-        name
-        createdAt
-        updatedAt
-        isActive
-        description
-        code
-        isSystem
-        isDefault
-        multiplier
-        isBillable
-    }
-}
 query TimeEntry($index: Int! $timeEntryRowId: String!) {
     timeEntry(index: $index, timeEntryRowId: $timeEntryRowId) {
         id
@@ -151,32 +113,22 @@ mutation DeleteTimeEntry($id: String!) {
         createdAt
     }
 }
-mutation UpdateTimeEntryRow(
-    $updateTimeEntryRowId: String!
-    $departmentId: String
-    $projectId: String
-    $workTypeId: String
-) {
-    updateTimeEntryRow(
-        id: $updateTimeEntryRowId
-        departmentId: $departmentId
-        projectId: $projectId
-        workTypeId: $workTypeId
-    ) {
-        id
-        createdAt
-        updatedAt
-        workType {
-            id
-        }
-        project {
-            id
-        }
-        department {
-            id
-        }
-    }
-}
+# mutation UpdateTimeEntryRow(
+#     $id: String!
+# ) {
+#     updateTimeEntryRow(
+#         id: $id
+#     ) {
+#         id
+#         createdAt
+#         updatedAt
+#         fields {
+#             field {
+#                 id
+#             }
+#         }
+#     }
+# }
 
 query TimeEntries($id: String!) {
     timeEntryRow(id: $id) {
@@ -191,38 +143,26 @@ query TimeEntryRow($id: String!) {
         id
         createdAt
         updatedAt
-        workType {
-            id
-        }
-        project {
-            id
-        }
-        department {
-            id
+        rowOptions {
+            fieldOption {
+                id
+            }
         }
         
     }
 }
 
 query TimeEntryRows($timesheetId: String!) {
-    timeEntryRows(timesheetId: $timesheetId) {
+  timeEntryRows(timesheetId: $timesheetId) {
+    rowOptions {
+      fieldOption {
         id
-        createdAt
-        updatedAt
-        workType {
-            id
-        }
-        project {
-            id
-        }
-        department {
-            id
-        }
-        timeEntries {
-            id
-           
-        }
+      }
     }
+    id
+    createdAt
+    updatedAt
+  }
 }
 
 mutation CreateTimeEntryRow($timesheetId: String!) {
@@ -230,18 +170,10 @@ mutation CreateTimeEntryRow($timesheetId: String!) {
         id
         createdAt
         updatedAt
-        workType {
-            id
-        }
-        project {
-            id
-        }
-        department {
-            id
-        }
-        timeEntries {
-            id
-           
+        rowOptions {
+            fieldOption {
+                id
+            }
         }
     }
 }
@@ -309,8 +241,8 @@ mutation CreateOneTimeToken($userId: String!, $tenantId: String!) {
     }
 }
 
-mutation CreateUser($email: String!, $name: String!, $tenantId: String, $authId: String!, $code: String, $avatar: String, $isActive: Boolean, $isAdmin: Boolean, $isPaymentManager: Boolean, $isManager: Boolean, $departmentId: String, $managerId: String, ) {
-    createUser(email: $email, name: $name, tenantId: $tenantId, authId: $authId, code: $code, avatar: $avatar, isActive: $isActive, isAdmin: $isAdmin, isPaymentManager: $isPaymentManager, isManager: $isManager, departmentId: $departmentId, managerId: $managerId) {
+mutation CreateUser($email: String!, $name: String!, $tenantId: String, $authId: String!, $code: String, $avatar: String, $isActive: Boolean, $isAdmin: Boolean, $isPaymentManager: Boolean, $isManager: Boolean, $managerId: String, ) {
+    createUser(email: $email, name: $name, tenantId: $tenantId, authId: $authId, code: $code, avatar: $avatar, isActive: $isActive, isAdmin: $isAdmin, isPaymentManager: $isPaymentManager, isManager: $isManager, managerId: $managerId) {
         id
         email
         authId
@@ -325,9 +257,6 @@ mutation CreateUser($email: String!, $name: String!, $tenantId: String, $authId:
         avatar
         createdAt
         updatedAt
-        department {
-            id
-        }
         manager {
             id
         }
@@ -339,8 +268,8 @@ mutation CreateUser($email: String!, $name: String!, $tenantId: String, $authId:
     }
 }
 
-mutation UpdateUser($id: String!, $authId: String, $avatar: String,$tenantId: String, $code: String, $departmentId: String, $email: String, $isActive: Boolean, $isAdmin: Boolean, $isManager: Boolean, $isPaymentManager: Boolean, $isSetup: Boolean, $managerId: String, $name: String) {
-  updateUser(id: $id, authId: $authId,tenantId: $tenantId, avatar: $avatar, code: $code, departmentId: $departmentId, email: $email, isActive: $isActive, isAdmin: $isAdmin, isManager: $isManager, isPaymentManager: $isPaymentManager, isSetup: $isSetup, managerId: $managerId, name: $name) {
+mutation UpdateUser($id: String!, $authId: String, $avatar: String,$tenantId: String, $code: String,  $email: String, $isActive: Boolean, $isAdmin: Boolean, $isManager: Boolean, $isPaymentManager: Boolean, $isSetup: Boolean, $managerId: String, $name: String) {
+  updateUser(id: $id, authId: $authId,tenantId: $tenantId, avatar: $avatar, code: $code, email: $email, isActive: $isActive, isAdmin: $isAdmin, isManager: $isManager, isPaymentManager: $isPaymentManager, isSetup: $isSetup, managerId: $managerId, name: $name) {
     updatedAt
     tenant {
       id
@@ -359,9 +288,6 @@ mutation UpdateUser($id: String!, $authId: String, $avatar: String,$tenantId: St
     isActive
     id
     email
-    department {
-      id
-    }
     createdAt
     code
     avatar
@@ -406,10 +332,6 @@ query Users($tenantId: String!) {
     avatar
     createdAt
     updatedAt
-    department {
-      id
-      name
-    }
     managees {
       id
       email
@@ -489,4 +411,52 @@ mutation CreateTenant($name: String!, $description: String!, $logo: String!, $is
         updatedAt
         createdAt
     }
+}
+
+query Field($id: String!) {
+  field(id: $id) {
+    createdAt
+    updatedAt
+    name
+    isActive
+    id
+    fieldType
+    fieldOptions {
+      id
+      name
+      isActive
+      updatedAt
+      createdAt
+    }
+  }
+}
+
+query EntryRowOption($fieldId: String!, $rowId: String!) {
+  entryRowOption(fieldId: $fieldId, rowId: $rowId) {
+    createdAt
+    fieldOption {
+      createdAt
+      id
+      isActive
+      name
+      updatedAt
+    }
+    id
+    updatedAt
+  }
+}
+
+mutation UpdateEntryRowOption($fieldId: String!, $fieldOptionId: String!, $rowId: String!) {
+  updateEntryRowOption(fieldId: $fieldId, fieldOptionId: $fieldOptionId, rowId: $rowId) {
+    createdAt
+    fieldOption {
+      createdAt
+      id
+      isActive
+      name
+      updatedAt
+    }
+    id
+    updatedAt
+  }
 }
