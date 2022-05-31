@@ -1,5 +1,5 @@
 import type { AppProps } from "next/app";
-import { SessionProvider, useSession } from "next-auth/react";
+import { SessionProvider } from "next-auth/react";
 import * as React from "react";
 import { Toaster } from "react-hot-toast";
 
@@ -16,10 +16,10 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
         <SessionProvider session={session}>
             <ApolloProvider client={apolloClient}>
                 {Component.auth ? (
-                    <Auth>
-                        <Component {...pageProps} />
-                    </Auth>
+                    // <Auth>
+                    <Component {...pageProps} />
                 ) : (
+                    // </Auth>
                     <Component {...pageProps} />
                 )}
 
@@ -29,21 +29,23 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
     );
 }
 
-const Auth = ({ children }) => {
-    // if `{ required: true }` is supplied, `status` can only be "loading" or "authenticated"
-    const { status, data } = useSession({ required: true });
+// const Auth = ({ children }: { children: React.ReactNode }) => {
+//     // if `{ required: true }` is supplied, `status` can only be "loading" or "authenticated"
+//     const { status, data } = useSession({ required: true });
 
-    if (status === "loading") {
-        return <div>Loading...</div>;
-    }
+//     if (status === "loading") {
+//         return <div>Loading...</div>;
+//     }
 
-    return React.Children.map(children, (child) => {
-        // Checking isValidElement is the safe way and avoids a typescript
-        // error too.
-        if (React.isValidElement(child)) {
-            return React.cloneElement(child, { user: data.user });
-        }
-        return child;
-    });
-};
+//     return (
+//         React.Children.map(children, (child) => {
+//             // Checking isValidElement is the safe way and avoids a typescript
+//             // error too.
+//             if (React.isValidElement(child)) {
+//                 return React.cloneElement(child, { user: data.user });
+//             }
+//             return child;
+//         }) ?? null
+//     );
+// };
 export default MyApp;

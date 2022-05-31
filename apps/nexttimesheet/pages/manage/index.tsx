@@ -55,6 +55,7 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
     return {
         props: {
             userData: userData?.userFromAuthId,
+            user,
         },
     };
 };
@@ -148,7 +149,5 @@ const Manage: NextPage<{
         </DashBoard>
     );
 };
-
-Manage.auth = true;
 
 export default Manage;

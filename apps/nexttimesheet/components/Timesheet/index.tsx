@@ -4,11 +4,8 @@ import { DateTime } from "luxon";
 import { Session } from "next-auth";
 import * as React from "react";
 
-import { useQuery } from "@apollo/client";
-
 import {
     Status as TimesheetStatus,
-    TimesheetDocument,
     UserFromAuthIdQuery,
 } from "../../lib/apollo";
 import ApprovalTree from "../ApprovalTree";
@@ -18,20 +15,6 @@ import TimesheetDateInput from "./DateInput";
 import { useTimesheetColumns, useTimesheetDates } from "./hooks";
 import Status from "./Status";
 import TimesheetTable from "./Table";
-
-/**
- * @name useTimesheet
- * @function
- * @category Time Entry
- * @description TimeEntry custom hook. This is a custom hook. It is for organizational purposes.
- * Information on custom hooks here https://reactjs.org/docs/hooks-custom.html
- * @param {Object} settings Time sheet settings.
- * @param {Object} userTimeEntry User time sheet information.
- * @param {Function} loadTimeSheet Function to load timesheet.
- * @param {Function} loadUserWorkCodes Function to load user work codes.
- * @param {Function} loadTimeEntryTemplates Function to load user time entry templates.
- * @param {Object} currentUser Currently logged in user information.
- */
 
 /**
  * @name Timesheet
@@ -54,29 +37,15 @@ const Timesheet = ({
         DateTime.now().startOf("day").toUTC().startOf("day").toISO()
     );
 
-    const { data: timesheetData, loading: timesheetLoading } = useQuery(
-        TimesheetDocument,
-        {
-            variables: {
-                userId: String(user?.id),
-                date: timesheetQueryDate,
-            },
-        }
-    );
+    const {
+        timesheetDates,
+        startDate,
+        periodLength,
+        timesheetFromDate,
+        timesheetLoading,
+    } = useTimesheetDates(timesheetQueryDate, String(user?.id));
 
-    const { timesheetDates, startDate, periodLength } = useTimesheetDates(
-        timesheetData?.timesheetFromDate?.period?.endDate,
-        timesheetData?.timesheetFromDate?.period?.startDate,
-        timesheetData?.timesheetFromDate?.isChanged,
-        // getorCreateTimesheetMutation,
-        String(user?.id)
-    );
-
-    const { columns } = useTimesheetColumns(timesheetData?.timesheetFromDate);
-
-    React.useEffect(() => {
-        console.log(timesheetData?.timesheetFromDate);
-    }, [timesheetData]);
+    const { columns } = useTimesheetColumns(timesheetFromDate);
 
     // Updates the timesheet start date by subtracting or adding 14 days
 
@@ -124,23 +93,19 @@ const Timesheet = ({
                             Open drawer
                         </label> */}
                         <Status
-                            timesheetChanged={
-                                !!timesheetData?.timesheetFromDate?.isChanged
-                            }
+                            timesheetChanged={!!timesheetFromDate?.isChanged}
                             status={
-                                timesheetData?.timesheetFromDate?.status ??
+                                timesheetFromDate?.status ??
                                 TimesheetStatus.Unsubmitted
                             }
-                            timesheetId={
-                                timesheetData?.timesheetFromDate?.id ?? "-1"
-                            }
+                            timesheetId={timesheetFromDate?.id ?? "-1"}
                             user={user}
                         />
                     </div>
                 </div>
-                {!timesheetLoading && timesheetData?.timesheetFromDate ? (
+                {!timesheetLoading && timesheetFromDate ? (
                     <TimesheetTable
-                        timesheetId={timesheetData?.timesheetFromDate?.id}
+                        timesheetId={timesheetFromDate?.id}
                         timesheetDates={timesheetDates}
                         user={user}
                         timesheetColumns={columns}
@@ -152,7 +117,7 @@ const Timesheet = ({
                 )}
                 <ApprovalTree
                     user={user}
-                    timesheetId={timesheetData?.timesheetFromDate?.id ?? "-1"}
+                    timesheetId={timesheetFromDate?.id ?? "-1"}
                 />
             </div>
         </>

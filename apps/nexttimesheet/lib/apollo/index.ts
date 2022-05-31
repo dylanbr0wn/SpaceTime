@@ -55,7 +55,7 @@ function createApolloClient(headers: IncomingHttpHeaders | null = null) {
             new BatchHttpLink({
                 uri: "http://localhost:3000/api/graphql",
                 batchMax: 10,
-                batchInterval: 20,
+                batchInterval: 10,
                 fetchOptions: {
                     mode: "cors",
                 },

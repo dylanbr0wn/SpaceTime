@@ -1,9 +1,12 @@
 import { DateTime } from "luxon";
 import * as React from "react";
 
+import { useQuery } from "@apollo/client";
+
 import {
     IsChanged,
     TimeEntryRowsQuery,
+    TimesheetDocument,
     TimesheetQuery,
 } from "../../lib/apollo";
 
@@ -17,11 +20,7 @@ const defaultRow = {
 };
 
 export const useTimesheetDates = (
-    // timesheetData: TimesheetQuery | null | undefined,
-    endDate: Date | string | undefined,
-    startDate: Date | string | undefined,
-    isChanged: boolean | undefined,
-    // getorCreateTimesheetMutation: GetorCreateTimesheetMutationFn,
+    timesheetQueryDate: string,
     userId: string
 ) => {
     const [timesheetDates, setTimesheetDates] = React.useState<DateTime[]>([]);
@@ -29,12 +28,28 @@ export const useTimesheetDates = (
     const [periodLength, setPeriodLength] = React.useState<number>();
     // const [timesheetId, setTimesheetId] = React.useState();
 
-    React.useEffect(() => {
-        IsChanged(isChanged);
-    }, [isChanged]);
+    const { data: timesheetData, loading: timesheetLoading } = useQuery(
+        TimesheetDocument,
+        {
+            variables: {
+                userId: String(userId),
+                date: timesheetQueryDate,
+            },
+        }
+    );
 
     React.useEffect(() => {
-        if (startDate && endDate) {
+        IsChanged(timesheetData?.timesheetFromDate?.isChanged);
+    }, [timesheetData?.timesheetFromDate?.isChanged]);
+
+    React.useEffect(() => {
+        if (
+            timesheetData?.timesheetFromDate?.period?.startDate &&
+            timesheetData?.timesheetFromDate?.period?.endDate
+        ) {
+            const endDate = timesheetData?.timesheetFromDate?.period?.endDate;
+            const startDate =
+                timesheetData?.timesheetFromDate?.period?.startDate;
             const dates: DateTime[] = [];
             let end: DateTime, start: DateTime;
             if (typeof endDate === "string") {
@@ -58,9 +73,15 @@ export const useTimesheetDates = (
 
             setTimesheetDates(dates);
         }
-    }, [startDate, endDate, userId]);
+    }, [timesheetData?.timesheetFromDate?.period, userId]);
 
-    return { timesheetDates, startDate: start, periodLength };
+    return {
+        timesheetDates,
+        startDate: start,
+        periodLength,
+        timesheetFromDate: timesheetData?.timesheetFromDate,
+        timesheetLoading,
+    };
 };
 
 export const useTimesheetColumns = (

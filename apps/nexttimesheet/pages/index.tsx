@@ -7,7 +7,6 @@ import DashBoard from "../components/Dashboard";
 import EmployeeTimesheet from "../components/EmployeeTimesheet";
 import {
     initializeApollo,
-    User,
     UserFromAuthIdDocument,
     UserFromAuthIdQuery,
     UserFromAuthIdQueryVariables,
@@ -15,7 +14,6 @@ import {
 
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
     const session = await getSession(ctx);
-    console.log(session);
     if (!session) {
         return {
             redirect: {
@@ -27,7 +25,7 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
     const user = session?.user;
     const client = initializeApollo({ headers: ctx?.req?.headers });
 
-    const { data: userData, errors } = await client.query<
+    const { data: userData } = await client.query<
         UserFromAuthIdQuery,
         UserFromAuthIdQueryVariables
     >({
@@ -37,7 +35,6 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
         },
         errorPolicy: "all",
     });
-    console.log(errors);
     if (!userData?.userFromAuthId) {
         return {
             redirect: {
@@ -50,6 +47,7 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
     return {
         props: {
             userData: userData?.userFromAuthId,
+            user,
         },
     };
 };
@@ -142,7 +140,5 @@ const Home: NextPage<{
         </div>
     );
 };
-
-Home.auth = true;
 
 export default Home;
