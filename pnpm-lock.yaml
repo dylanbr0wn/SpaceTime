@@ -95,6 +95,8 @@ importers:
       graphql-tag: ^2.12.6
       isomorphic-unfetch: ^3.1.0
       lodash: ^4.17.21
+      lodash.isempty: ^4.4.0
+      lodash.xor: ^4.5.0
       luxon: ^2.3.2
       micro: ^9.3.4
       micro-cors: ^0.1.1
@@ -136,6 +138,8 @@ importers:
       graphql-scalars: 1.17.0_graphql@16.5.0
       isomorphic-unfetch: 3.1.0
       lodash: 4.17.21
+      lodash.isempty: 4.4.0
+      lodash.xor: 4.5.0
       luxon: 2.4.0
       micro: 9.3.4
       micro-cors: 0.1.1
@@ -5940,6 +5944,10 @@ packages:
     resolution: {integrity: sha512-Bz5mupy2SVbPHURB98VAcw+aHh4vRV5IPNhILUCsOzRmsTmSQ17jIuqopAentWoehktxGd9e/hbIXq980/1QJg==}
     dev: true
 
+  /lodash.isempty/4.4.0:
+    resolution: {integrity: sha512-oKMuF3xEeqDltrGMfDxAPGIVMSSRv8tbRSODbrs4KGsRRLEhrW8N8Rd4DRgB2+621hY8A8XwwrTVhXWpxFvMzg==}
+    dev: false
+
   /lodash.isinteger/4.0.4:
     resolution: {integrity: sha512-DBwtEWN2caHQ9/imiNeEA5ys1JoRtRfY3d7V9wkqtbycnAmTvRRmbHKDV4a0EYc678/dia0jrte4tjYwVBaZUA==}
     dev: true
@@ -5974,6 +5982,10 @@ packages:
 
   /lodash.sortby/4.7.0:
     resolution: {integrity: sha512-HDWXG8isMntAyRF5vZ7xKuEvOhT4AhlRt/3czTSjvGUxjYCBVRQY48ViDHyfYz9VIoBkW4TMGQNapx+l3RUwdA==}
+    dev: false
+
+  /lodash.xor/4.5.0:
+    resolution: {integrity: sha512-sVN2zimthq7aZ5sPGXnSz32rZPuqcparVW50chJQe+mzTYV+IsxSsl/2gnkWWE2Of7K3myBQBqtLKOUEHJKRsQ==}
     dev: false
 
   /lodash/4.17.21:

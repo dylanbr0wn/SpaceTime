@@ -18,6 +18,7 @@ import { onError } from "@apollo/client/link/error";
 export * from "./graphql";
 
 export const IsChanged = makeVar(false);
+export const usedRows = makeVar<{ [key: string]: string[] }>({});
 
 export const APOLLO_STATE_PROP_NAME = "__APOLLO_STATE__";
 

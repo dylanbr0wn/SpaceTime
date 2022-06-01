@@ -1,7 +1,13 @@
 import cuid from "cuid";
+import _ from "lodash";
 import React, { useEffect, useState } from "react";
 
-import { Reference, useMutation, useQuery } from "@apollo/client";
+import {
+    Reference,
+    useMutation,
+    useQuery,
+    useReactiveVar,
+} from "@apollo/client";
 // import Tooltip from "../../Tooltip";
 import { Listbox, Transition } from "@headlessui/react";
 import { CheckIcon, SelectorIcon } from "@heroicons/react/solid";
@@ -12,6 +18,7 @@ import {
     FieldOption,
     IsChanged,
     UpdateEntryRowOptionDocument,
+    usedRows as usedRowsVar,
 } from "../../../lib/apollo";
 import ErrorBoundary from "../../common/ErrorBoundary";
 import { TimeEntryRow } from "../types";
@@ -55,17 +62,34 @@ const TimesheetDepartmentInput = ({
         },
     });
 
+    const usedRows = useReactiveVar(usedRowsVar);
+
     const [updateEntryRowOption] = useMutation(UpdateEntryRowOptionDocument);
 
     // When changed, dispatch api call and redux action.
-    const onChange = async (field: FieldOption) => {
-        setField(field);
+    const onChange = async (_field: FieldOption) => {
+        const thisRow = (usedRows[row?.id ?? "-1"] ?? []).filter(
+            (f) => f !== field?.id
+        );
+        const newRow = [...thisRow, _field.id];
+        console.log(usedRows);
+
+        if (Object.values(usedRows).some((r) => _.isEmpty(_.xor(r, newRow)))) {
+            return;
+        }
+
+        usedRowsVar({
+            ...usedRows,
+            [row?.id ?? "-1"]: newRow,
+        });
+
+        setField(_field);
 
         await updateEntryRowOption({
             variables: {
                 fieldId,
                 rowId: row?.id ?? "-1",
-                fieldOptionId: field.id,
+                fieldOptionId: _field.id,
             },
             optimisticResponse: {
                 updateEntryRowOption: {
@@ -75,11 +99,11 @@ const TimesheetDepartmentInput = ({
                     updatedAt: row?.updatedAt ?? new Date(),
                     fieldOption: {
                         __typename: "FieldOption",
-                        id: field.id,
-                        name: field.name,
-                        isActive: field.isActive,
-                        createdAt: field.createdAt,
-                        updatedAt: field.updatedAt,
+                        id: _field.id,
+                        name: _field.name,
+                        isActive: _field.isActive,
+                        createdAt: _field.createdAt,
+                        updatedAt: _field.updatedAt,
                     },
                 },
             },

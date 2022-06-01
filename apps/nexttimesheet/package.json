@@ -39,6 +39,8 @@
         "graphql-scalars": "^1.17.0",
         "isomorphic-unfetch": "^3.1.0",
         "lodash": "^4.17.21",
+        "lodash.isempty": "^4.4.0",
+        "lodash.xor": "^4.5.0",
         "luxon": "^2.3.2",
         "micro": "^9.3.4",
         "micro-cors": "^0.1.1",
