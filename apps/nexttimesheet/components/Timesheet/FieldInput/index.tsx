@@ -1,7 +1,7 @@
 import cuid from "cuid";
 import React, { useEffect, useState } from "react";
 
-import { useMutation, useQuery } from "@apollo/client";
+import { Reference, useMutation, useQuery } from "@apollo/client";
 // import Tooltip from "../../Tooltip";
 import { Listbox, Transition } from "@headlessui/react";
 import { CheckIcon, SelectorIcon } from "@heroicons/react/solid";
@@ -41,11 +41,12 @@ const TimesheetDepartmentInput = ({
 }) => {
     const [field, setField] = useState<FieldOption | null>(null);
 
-    const { data: optionData, loading } = useQuery(EntryRowOptionDocument, {
+    const { data: optionData } = useQuery(EntryRowOptionDocument, {
         variables: {
             fieldId,
             rowId: row?.id ?? "-1",
         },
+        skip: row?.rowOptions?.length === 0, // Skip if no options
     });
 
     const { data: fieldData } = useQuery(FieldDocument, {
@@ -58,7 +59,6 @@ const TimesheetDepartmentInput = ({
 
     // When changed, dispatch api call and redux action.
     const onChange = async (field: FieldOption) => {
-        // setDepartment(department);
         setField(field);
 
         await updateEntryRowOption({
@@ -90,12 +90,36 @@ const TimesheetDepartmentInput = ({
                         id: row?.id ?? "-1",
                     }),
                     fields: {
-                        rowOptions(existingRowOptions = []) {
-                            const newRowOptions = [
-                                ...existingRowOptions,
-                                data?.updateEntryRowOption,
-                            ];
-                            return newRowOptions;
+                        rowOptions(
+                            existingRowRefs: Reference[] = [],
+                            { readField }
+                        ) {
+                            if (!data?.updateEntryRowOption)
+                                return existingRowRefs;
+                            // need to create a new ref
+                            const newOptionRef = cache.writeQuery({
+                                query: EntryRowOptionDocument,
+                                id: cache.identify({
+                                    // without this we get the root query back
+                                    __typename: "EntryRowOption",
+                                    id: data.updateEntryRowOption.id,
+                                }),
+                                variables: {
+                                    fieldId,
+                                    rowId: row?.id ?? "-1",
+                                },
+                                data: {
+                                    // use the data from the mutation
+                                    entryRowOption: data?.updateEntryRowOption,
+                                },
+                            });
+                            // if ref exists, replace it
+                            const newRowOptions = existingRowRefs.filter(
+                                (option) =>
+                                    readField("id", option) !==
+                                    data?.updateEntryRowOption.id
+                            );
+                            return [...newRowOptions, newOptionRef];
                         },
                     },
                 });
@@ -117,7 +141,7 @@ const TimesheetDepartmentInput = ({
     return (
         <>
             <ErrorBoundary>
-                {fieldData?.field && !loading && (
+                {fieldData?.field && (
                     <Listbox
                         aria-label={`${fieldName} Input`}
                         value={field}

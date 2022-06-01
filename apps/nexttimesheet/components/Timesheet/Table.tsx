@@ -71,8 +71,8 @@ const TimesheetTable = ({
         CreateTimeEntryRowDocument
     );
 
-    const createTimeEntryRow = () => {
-        createTimeEntryRowMutation({
+    const createTimeEntryRow = async () => {
+        await createTimeEntryRowMutation({
             variables: {
                 timesheetId: timesheetId ?? "-1",
             },

@@ -13,4 +13,7 @@
     },
     "editor.defaultFormatter": "dbaeumer.vscode-eslint",
     "graphql-config.load.filePath": "./apps/nexttimesheet/.graphqlrc.yml",
+    "[typescriptreact]": {
+        "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+    },
 }

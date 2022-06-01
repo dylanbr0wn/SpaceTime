@@ -137,44 +137,36 @@ query TimeEntries($id: String!) {
        }
     }
 }
+fragment TimeEntryRow on TimeEntryRow {
+    id
+    createdAt
+    updatedAt
+    rowOptions {
+      id
+      fieldOption {
+        id
+      }
+    }
+}
 
 query TimeEntryRow($id: String!) {
     timeEntryRow(id: $id) {
-        id
-        createdAt
-        updatedAt
-        rowOptions {
-            fieldOption {
-                id
-            }
-        }
+        ...TimeEntryRow
         
     }
 }
 
 query TimeEntryRows($timesheetId: String!) {
   timeEntryRows(timesheetId: $timesheetId) {
-    rowOptions {
-      fieldOption {
-        id
-      }
-    }
-    id
-    createdAt
-    updatedAt
+    ...TimeEntryRow
   }
 }
 
+
+
 mutation CreateTimeEntryRow($timesheetId: String!) {
     createTimeEntryRow(timesheetId: $timesheetId) {
-        id
-        createdAt
-        updatedAt
-        rowOptions {
-            fieldOption {
-                id
-            }
-        }
+        ...TimeEntryRow
     }
 }
 

@@ -81,9 +81,9 @@ builder.mutationFields((t) => ({
 
             await Promise.all(
                 entries.map(async (entry) => {
-                    return await Promise.all(
+                    return Promise.all(
                         entry.entryComments.map(async (entryComment) => {
-                            await prisma.entryComment.delete({
+                            prisma.entryComment.delete({
                                 where: {
                                     id: entryComment.id,
                                 },
@@ -92,10 +92,16 @@ builder.mutationFields((t) => ({
                     );
                 })
             );
-
-            await prisma.timeEntry.deleteMany({
-                where: { timeEntryRowId: args.id },
-            });
+            await Promise.all([
+                prisma.entryRowOption.deleteMany({
+                    where: {
+                        timeEntryRowId: args.id,
+                    },
+                }),
+                prisma.timeEntry.deleteMany({
+                    where: { timeEntryRowId: args.id },
+                }),
+            ]);
             return await prisma.timeEntryRow.delete({
                 where: {
                     id: args.id,

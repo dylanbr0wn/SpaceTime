@@ -15,37 +15,11 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
     return (
         <SessionProvider session={session}>
             <ApolloProvider client={apolloClient}>
-                {Component.auth ? (
-                    // <Auth>
-                    <Component {...pageProps} />
-                ) : (
-                    // </Auth>
-                    <Component {...pageProps} />
-                )}
-
+                <Component {...pageProps} />
                 <Toaster />
             </ApolloProvider>
         </SessionProvider>
     );
 }
 
-// const Auth = ({ children }: { children: React.ReactNode }) => {
-//     // if `{ required: true }` is supplied, `status` can only be "loading" or "authenticated"
-//     const { status, data } = useSession({ required: true });
-
-//     if (status === "loading") {
-//         return <div>Loading...</div>;
-//     }
-
-//     return (
-//         React.Children.map(children, (child) => {
-//             // Checking isValidElement is the safe way and avoids a typescript
-//             // error too.
-//             if (React.isValidElement(child)) {
-//                 return React.cloneElement(child, { user: data.user });
-//             }
-//             return child;
-//         }) ?? null
-//     );
-// };
 export default MyApp;

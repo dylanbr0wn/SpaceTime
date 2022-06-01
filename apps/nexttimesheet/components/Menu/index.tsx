@@ -16,6 +16,7 @@ import Transition from "../common/CustTransition";
 import ErrorBoundary from "../common/ErrorBoundary";
 
 import NavMenuButton from "./NavMenuButton";
+import NavButton from "./NavLinkButton";
 
 /**
  * @name Sidebar
@@ -55,28 +56,7 @@ const TimesheetMenu = ({ user }: { user: Session["user"] }) => {
                                     >
                                         <ul className="bg-base-300 menu rounded-box shadow-lg shadow-black/30 text-base w-64 p-2 space-y-1">
                                             {menu.map((item, index) => (
-                                                <Menu.Item
-                                                    key={index}
-                                                    as={"li"}
-                                                >
-                                                    <Link
-                                                        href={item.href}
-                                                        title={item.title}
-                                                    >
-                                                        <a className="">
-                                                            {item.icon}
-                                                            <div>
-                                                                <p className="text-sm font-medium">
-                                                                    {item.title}
-                                                                </p>
-                                                                <p className="text-sm text-base-content group-hover:text-white transition-colors">
-                                                                    Some
-                                                                    Description
-                                                                </p>
-                                                            </div>
-                                                        </a>
-                                                    </Link>
-                                                </Menu.Item>
+                                                <NavButton key={index} {...item} />
                                             ))}
                                         </ul>
                                     </Menu.Items>

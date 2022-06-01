@@ -4,9 +4,11 @@ import { useQuery } from "@apollo/client";
 
 import { TimeEntryDocument, TimeEntryQuery } from "../../../lib/apollo";
 
-export const useTimeEntry = (rowId: string | undefined, index: number) => {
-    // const [isEditing, setIsEditing] = React.useState(false); // Is the input field active?
-    // const [isSaving, setIsSaving] = React.useState(false); // Keep track of saving state
+export const useTimeEntry = (
+    rowId: string | undefined,
+    index: number,
+    rowOptionslength: number
+) => {
     const [needsToSave, setNeedsToSave] = React.useState(false);
     const [timeEntry, setTimeEntry] = React.useState<
         TimeEntryQuery["timeEntry"]
@@ -24,17 +26,12 @@ export const useTimeEntry = (rowId: string | undefined, index: number) => {
             timeEntryRowId: rowId ?? "-1",
             index,
         },
+        skip: rowOptionslength < 3, // skip if there are no fields... cant have a time entry without fields
     });
-
-    // React.useEffect(() => {
-    //     setIsSaving(false);
-    // }, [timeEntry]);
 
     React.useEffect(() => {
         if (timeEntryData?.timeEntry) {
             setTimeEntry(timeEntryData?.timeEntry);
-
-            // }
         } else {
             setTimeEntry({
                 id: "-1",

@@ -62,8 +62,12 @@ const TimesheetDeleteEntryInput = ({
                         timeEntries(_existingTimeEntries, { DELETE }) {
                             return DELETE;
                         },
+                        rowOptions(_existingRowOptions, { DELETE }) {
+                            return DELETE;
+                        },
                     },
                 });
+
                 cache.evict({
                     id: cache.identify({
                         __typename: "TimeEntryRow",

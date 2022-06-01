@@ -64,7 +64,8 @@ const TimesheetEntryInput = ({
 
     const { timeEntry, setTimeEntry, needsToSave } = useTimeEntry(
         row?.id,
-        index
+        index,
+        row?.rowOptions?.length ?? 0
     );
 
     const onHourChange = (e: React.ChangeEvent<HTMLInputElement>) => {
