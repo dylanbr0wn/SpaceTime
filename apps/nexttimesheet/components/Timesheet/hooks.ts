@@ -8,6 +8,8 @@ import {
     TimeEntryRowsQuery,
     TimesheetDocument,
     TimesheetQuery,
+    usedRows as usedRowsVar,
+    usedRowsType,
 } from "../../lib/apollo";
 
 import { TimeEntryRow } from "./types";
@@ -108,9 +110,15 @@ export const useTimesheet = (
 ) => {
     const [timesheet, setTimesheet] = React.useState<TimeEntryRow[]>([]);
     const memoTimesheet = React.useMemo(() => timesheet, [timesheet]);
+
     React.useEffect(() => {
         if (data) {
+            const newUsedRows: usedRowsType = {};
             const timeEntryRows = data.timeEntryRows.map((row) => {
+                newUsedRows[row.id] = row.rowOptions.map(
+                    (option) => option.fieldOption.id
+                );
+                usedRowsVar(newUsedRows);
                 return {
                     id: row.id ?? defaultRow.id,
                     createdAt: row.createdAt ?? defaultRow.createdAt,

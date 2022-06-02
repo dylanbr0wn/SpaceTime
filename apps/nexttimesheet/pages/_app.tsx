@@ -8,6 +8,7 @@ import { ApolloProvider } from "@apollo/client";
 import { useApollo } from "../lib/apollo";
 
 import "../styles/globals.css";
+import "animate.css";
 
 function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
     const apolloClient = useApollo(pageProps);

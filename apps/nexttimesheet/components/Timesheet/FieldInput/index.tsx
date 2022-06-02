@@ -1,6 +1,7 @@
 import cuid from "cuid";
 import _ from "lodash";
 import React, { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
 import {
     Reference,
@@ -11,17 +12,22 @@ import {
 // import Tooltip from "../../Tooltip";
 import { Listbox, Transition } from "@headlessui/react";
 import { CheckIcon, SelectorIcon } from "@heroicons/react/solid";
+import { animated, useSpring } from "@react-spring/web";
 
 import {
     EntryRowOptionDocument,
-    FieldDocument,
     FieldOption,
     IsChanged,
+    shaker as shakerVar,
     UpdateEntryRowOptionDocument,
     usedRows as usedRowsVar,
 } from "../../../lib/apollo";
 import ErrorBoundary from "../../common/ErrorBoundary";
 import { TimeEntryRow } from "../types";
+
+import { useFieldOptions } from "./hooks";
+
+const notify = (error: string) => toast.error(error);
 
 /**
  * @name TimesheetDepartmentInput
@@ -47,6 +53,7 @@ const TimesheetDepartmentInput = ({
     fieldName: string;
 }) => {
     const [field, setField] = useState<FieldOption | null>(null);
+    const [shake, setShake] = React.useState(false);
 
     const { data: optionData } = useQuery(EntryRowOptionDocument, {
         variables: {
@@ -56,11 +63,19 @@ const TimesheetDepartmentInput = ({
         skip: row?.rowOptions?.length === 0, // Skip if no options
     });
 
-    const { data: fieldData } = useQuery(FieldDocument, {
-        variables: {
-            id: fieldId,
-        },
-    });
+    const { fieldInfo } = useFieldOptions(
+        fieldId,
+        row,
+        optionData?.entryRowOption.id
+    );
+
+    // const { data: fieldData } = useQuery(FieldDocument, {
+    //     variables: {
+    //         id: fieldId,
+    //     },
+    // });
+
+    const shaker = useReactiveVar(shakerVar);
 
     const usedRows = useReactiveVar(usedRowsVar);
 
@@ -68,13 +83,21 @@ const TimesheetDepartmentInput = ({
 
     // When changed, dispatch api call and redux action.
     const onChange = async (_field: FieldOption) => {
+        setShake(false);
+        if (_field.id === field?.id) return;
         const thisRow = (usedRows[row?.id ?? "-1"] ?? []).filter(
             (f) => f !== field?.id
         );
         const newRow = [...thisRow, _field.id];
-        console.log(usedRows);
 
-        if (Object.values(usedRows).some((r) => _.isEmpty(_.xor(r, newRow)))) {
+        const result = Object.keys(usedRows).find((r) =>
+            _.isEmpty(_.xor(usedRows[r], newRow))
+        );
+
+        if (result) {
+            notify("You cannot select the same option twice.");
+            shakerVar([result, _field.id]);
+            // setShake(true);
             return;
         }
 
@@ -152,20 +175,65 @@ const TimesheetDepartmentInput = ({
         IsChanged(true);
     };
 
+    // React.useEffect(() => {
+    //     if (!shake) {
+    //         return;
+    //     }
+    //     setShake(true);
+    //     const timeoutId = window.setTimeout(() => {
+    //         setShake(false);
+    //     }, 300);
+    //     return () => {
+    //         window.clearTimeout(timeoutId);
+    //     };
+    // }, [shake]);
+
+    React.useEffect(() => {
+        const animateOnOff = async () => {
+            for (let i = 0; i < 2; i++) {
+                setShake(true);
+                await new Promise((resolve) => setTimeout(resolve, 150));
+                setShake(false);
+                await new Promise((resolve) => setTimeout(resolve, 150));
+            }
+        };
+        if (!shaker) {
+            return;
+        }
+        if (shaker[0] === row?.id && shaker[1] === field?.id) {
+            animateOnOff();
+            const timeoutId = window.setTimeout(() => {
+                shakerVar(["", ""]);
+            }, 150);
+            return () => {
+                window.clearTimeout(timeoutId);
+            };
+        }
+    }, [shaker, fieldId, row?.id, field?.id]);
+
+    const styles = useSpring({
+        x: shaker[0] === row?.id && shaker[1] === field?.id ? -5 : 0,
+        config: {
+            tension: 400,
+            friction: 3,
+            mass: 0.5,
+        },
+    });
+
     // If the initialValue is changed external, sync it up with our state
     useEffect(() => {
-        if (optionData?.entryRowOption && fieldData?.field) {
-            const field = fieldData?.field.fieldOptions.find(
+        if (optionData?.entryRowOption && fieldInfo) {
+            const field = fieldInfo.fieldOptions.find(
                 (dep) => dep.id === optionData.entryRowOption.fieldOption.id
             );
             setField((field as FieldOption) ?? null);
         }
-    }, [optionData, fieldData]);
+    }, [optionData, fieldInfo]);
 
     return (
         <>
             <ErrorBoundary>
-                {fieldData?.field && (
+                {fieldInfo && (
                     <Listbox
                         aria-label={`${fieldName} Input`}
                         value={field}
@@ -174,9 +242,15 @@ const TimesheetDepartmentInput = ({
                         disabled={false}
                     >
                         {({ open }) => (
-                            <div className="w-full relative">
+                            <animated.div
+                                style={styles}
+                                className={`w-full relative`}
+                            >
                                 <Listbox.Button
                                     className={`relative text-sm outline outline-offset-2 w-full text-base-content h-10 py-2 pl-3 pr-10 border border-base-content/20 text-left rounded-lg
+                                    transition-colors duration-150 ease-in-out ${
+                                        shake && "bg-error"
+                                    }
                                      focus:outline-none focus-visible:ring-2 bg-base-300
                                    ${
                                        open
@@ -206,7 +280,7 @@ const TimesheetDepartmentInput = ({
                                     leaveTo="opacity-0"
                                 >
                                     <Listbox.Options className="absolute z-10 w-full p-1 mt-1.5 overflow-auto text-base bg-base-300 border border-base-content/20 rounded-lg shadow-xl shadow-black/40 max-h-60 focus:outline-none sm:text-sm">
-                                        {fieldData?.field.fieldOptions.map(
+                                        {fieldInfo.fieldOptions.map(
                                             (department) => {
                                                 return (
                                                     <Listbox.Option
@@ -253,7 +327,7 @@ const TimesheetDepartmentInput = ({
                                         )}
                                     </Listbox.Options>
                                 </Transition>
-                            </div>
+                            </animated.div>
                         )}
                     </Listbox>
                 )}

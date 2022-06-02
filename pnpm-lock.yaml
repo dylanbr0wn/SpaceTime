@@ -79,6 +79,7 @@ importers:
       '@types/react-dom': ^18.0.3
       '@types/validator': ^13.7.2
       '@typescript-eslint/eslint-plugin': ^5.23.0
+      animate.css: ^4.1.1
       apollo-server-micro: ^3.6.7
       apollo-upload-client: ^17.0.0
       autoprefixer: ^10.4.7
@@ -126,6 +127,7 @@ importers:
       '@prisma/client': 3.14.0_prisma@3.14.0
       '@react-spring/web': 9.4.5_ef5jwxihqo6n7gxfmzogljlgcm
       '@tanstack/react-table': 8.0.0-alpha.64_ef5jwxihqo6n7gxfmzogljlgcm
+      animate.css: 4.1.1
       apollo-server-micro: 3.8.1_graphql@16.5.0+micro@9.3.4
       apollo-upload-client: 17.0.0_kleteqqizhfedhnyxagq3n3wfu
       cuid: 2.1.8
@@ -3119,6 +3121,10 @@ packages:
       json-schema-traverse: 0.4.1
       uri-js: 4.4.1
     dev: true
+
+  /animate.css/4.1.1:
+    resolution: {integrity: sha512-+mRmCTv6SbCmtYJCN4faJMNFVNN5EuCTTprDTAo7YzIGji2KADmakjVA3+8mVDkZ2Bf09vayB35lSQIex2+QaQ==}
+    dev: false
 
   /ansi-escapes/3.2.0:
     resolution: {integrity: sha512-cBhpre4ma+U0T1oM5fXg7Dy1Jw7zzwv7lt/GoCpr+hDQJoYnKVPLL4dCvSEFMmQurOQvSrwT7SL/DAlhBI97RQ==}

@@ -17,8 +17,11 @@ import { BatchHttpLink } from "@apollo/client/link/batch-http";
 import { onError } from "@apollo/client/link/error";
 export * from "./graphql";
 
+export type usedRowsType = { [key: string]: string[] };
+
 export const IsChanged = makeVar(false);
-export const usedRows = makeVar<{ [key: string]: string[] }>({});
+export const usedRows = makeVar<usedRowsType>({});
+export const shaker = makeVar<[string, string]>(["", ""]);
 
 export const APOLLO_STATE_PROP_NAME = "__APOLLO_STATE__";
 

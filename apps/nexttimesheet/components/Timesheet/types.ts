@@ -3,6 +3,7 @@ export interface TimeEntryRow {
     createdAt: string | Date;
     updatedAt: string | Date;
     rowOptions: {
+        id: string;
         fieldOption: {
             id: string;
         };
