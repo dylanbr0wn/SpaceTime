@@ -103,7 +103,7 @@ const Timesheet = ({
                         />
                     </div>
                 </div>
-                {!timesheetLoading && timesheetFromDate ? (
+                {!timesheetLoading ? (
                     <TimesheetTable
                         timesheetId={timesheetFromDate?.id}
                         timesheetDates={timesheetDates}

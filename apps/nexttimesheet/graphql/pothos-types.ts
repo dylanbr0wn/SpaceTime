@@ -1,19 +1,4 @@
-import type {
-    EntryComment,
-    EntryRowOption,
-    Field,
-    FieldOption,
-    OneTimeToken,
-    Period,
-    Prisma,
-    StatusEvent,
-    Tenant,
-    TimeEntry,
-    TimeEntryRow,
-    Timesheet,
-    TimesheetField,
-    User,
-} from "@prisma/client";
+import type { Prisma, User, TimeEntry, TimeEntryRow, Period, EntryComment, Timesheet, Tenant, OneTimeToken, StatusEvent, EntryRowOption, TimesheetField, TenantActiveField, Field, FieldOption } from "@prisma/client";
 export default interface PrismaTypes {
     User: {
         Name: "User";
@@ -21,28 +6,9 @@ export default interface PrismaTypes {
         Include: Prisma.UserInclude;
         Select: Prisma.UserSelect;
         Where: Prisma.UserWhereUniqueInput;
-        Fields:
-            | "manager"
-            | "managees"
-            | "entryComments"
-            | "timesheets"
-            | "tenant"
-            | "oneTimeToken"
-            | "statusEvents";
-        RelationName:
-            | "manager"
-            | "managees"
-            | "entryComments"
-            | "timesheets"
-            | "tenant"
-            | "oneTimeToken"
-            | "statusEvents";
-        ListRelations:
-            | "managees"
-            | "entryComments"
-            | "timesheets"
-            | "oneTimeToken"
-            | "statusEvents";
+        Fields: "manager" | "managees" | "entryComments" | "timesheets" | "tenant" | "oneTimeToken" | "statusEvents";
+        RelationName: "manager" | "managees" | "entryComments" | "timesheets" | "tenant" | "oneTimeToken" | "statusEvents";
+        ListRelations: "managees" | "entryComments" | "timesheets" | "oneTimeToken" | "statusEvents";
         Relations: {
             manager: {
                 Shape: User | null;
@@ -164,18 +130,8 @@ export default interface PrismaTypes {
         Include: Prisma.TimesheetInclude;
         Select: Prisma.TimesheetSelect;
         Where: Prisma.TimesheetWhereUniqueInput;
-        Fields:
-            | "user"
-            | "period"
-            | "timeEntryRows"
-            | "statusEvents"
-            | "timesheetFields";
-        RelationName:
-            | "user"
-            | "period"
-            | "timeEntryRows"
-            | "statusEvents"
-            | "timesheetFields";
+        Fields: "user" | "period" | "timeEntryRows" | "statusEvents" | "timesheetFields";
+        RelationName: "user" | "period" | "timeEntryRows" | "statusEvents" | "timesheetFields";
         ListRelations: "timeEntryRows" | "statusEvents" | "timesheetFields";
         Relations: {
             user: {
@@ -206,9 +162,9 @@ export default interface PrismaTypes {
         Include: Prisma.TenantInclude;
         Select: Prisma.TenantSelect;
         Where: Prisma.TenantWhereUniqueInput;
-        Fields: "periods" | "users" | "fields" | "oneTimeToken";
-        RelationName: "periods" | "users" | "fields" | "oneTimeToken";
-        ListRelations: "periods" | "users" | "fields" | "oneTimeToken";
+        Fields: "periods" | "users" | "fields" | "oneTimeToken" | "tenantActivefields";
+        RelationName: "periods" | "users" | "fields" | "oneTimeToken" | "tenantActivefields";
+        ListRelations: "periods" | "users" | "fields" | "oneTimeToken" | "tenantActivefields";
         Relations: {
             periods: {
                 Shape: Period[];
@@ -225,6 +181,10 @@ export default interface PrismaTypes {
             oneTimeToken: {
                 Shape: OneTimeToken[];
                 Types: PrismaTypes["OneTimeToken"];
+            };
+            tenantActivefields: {
+                Shape: TenantActiveField[];
+                Types: PrismaTypes["TenantActiveField"];
             };
         };
     };
@@ -312,23 +272,35 @@ export default interface PrismaTypes {
             };
         };
     };
+    TenantActiveField: {
+        Name: "TenantActiveField";
+        Shape: TenantActiveField;
+        Include: Prisma.TenantActiveFieldInclude;
+        Select: Prisma.TenantActiveFieldSelect;
+        Where: Prisma.TenantActiveFieldWhereUniqueInput;
+        Fields: "tenant" | "field";
+        RelationName: "tenant" | "field";
+        ListRelations: never;
+        Relations: {
+            tenant: {
+                Shape: Tenant;
+                Types: PrismaTypes["Tenant"];
+            };
+            field: {
+                Shape: Field;
+                Types: PrismaTypes["Field"];
+            };
+        };
+    };
     Field: {
         Name: "Field";
         Shape: Field;
         Include: Prisma.FieldInclude;
         Select: Prisma.FieldSelect;
         Where: Prisma.FieldWhereUniqueInput;
-        Fields:
-            | "tenant"
-            | "fieldOptions"
-            | "timesheetFields"
-            | "entryRowOptions";
-        RelationName:
-            | "tenant"
-            | "fieldOptions"
-            | "timesheetFields"
-            | "entryRowOptions";
-        ListRelations: "fieldOptions" | "timesheetFields" | "entryRowOptions";
+        Fields: "tenant" | "fieldOptions" | "timesheetFields" | "entryRowOptions" | "tenantActiveFields";
+        RelationName: "tenant" | "fieldOptions" | "timesheetFields" | "entryRowOptions" | "tenantActiveFields";
+        ListRelations: "fieldOptions" | "timesheetFields" | "entryRowOptions" | "tenantActiveFields";
         Relations: {
             tenant: {
                 Shape: Tenant;
@@ -345,6 +317,10 @@ export default interface PrismaTypes {
             entryRowOptions: {
                 Shape: EntryRowOption[];
                 Types: PrismaTypes["EntryRowOption"];
+            };
+            tenantActiveFields: {
+                Shape: TenantActiveField[];
+                Types: PrismaTypes["TenantActiveField"];
             };
         };
     };

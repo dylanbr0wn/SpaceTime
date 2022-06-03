@@ -15,8 +15,8 @@ import Avatar from "../common/Avatar";
 import Transition from "../common/CustTransition";
 import ErrorBoundary from "../common/ErrorBoundary";
 
-import NavMenuButton from "./NavMenuButton";
 import NavButton from "./NavLinkButton";
+import NavMenuButton from "./NavMenuButton";
 
 /**
  * @name Sidebar
@@ -56,7 +56,10 @@ const TimesheetMenu = ({ user }: { user: Session["user"] }) => {
                                     >
                                         <ul className="bg-base-300 menu rounded-box shadow-lg shadow-black/30 text-base w-64 p-2 space-y-1">
                                             {menu.map((item, index) => (
-                                                <NavButton key={index} {...item} />
+                                                <NavButton
+                                                    key={index}
+                                                    {...item}
+                                                />
                                             ))}
                                         </ul>
                                     </Menu.Items>

@@ -101,9 +101,6 @@ const TimesheetEntryInput = ({
                     },
                 },
                 update: (cache, { data: TimeEntryData }) => {
-                    // cache.modify({
-                    //     id: cache.identify({
-                    // })
                     cache.updateQuery<TimeEntryQuery, TimeEntryQueryVariables>(
                         {
                             query: TimeEntryDocument,
@@ -240,10 +237,7 @@ const TimesheetEntryInput = ({
                             },
                         },
                     });
-                    /**
-                     * This invalidates the cache for this query
-                     * https://danreynolds.ca/tech/2020/05/04/Apollo-3-Client-Cache/
-                     */
+
                     cache.evict({
                         id: cache.identify({
                             __typename: "TimeEntry",
@@ -264,15 +258,9 @@ const TimesheetEntryInput = ({
 
     const [isOpen, setIsOpen] = React.useState(false);
 
-    function closeModal() {
+    const closeModal = () => {
         setIsOpen(false);
-        // if (comment !== initialValue.Comment) {
-        //     updateHourEntry(row.index, {
-        //         ...work,
-        //         Comment: comment,
-        //     });
-        // }
-    }
+    };
 
     const clickHandler = (event: React.MouseEvent) => {
         event.stopPropagation();

@@ -16,6 +16,7 @@ import "./FieldType";
 import "./FieldOptions";
 import "./EntryRowOption";
 import "./TimesheetField";
+import "./TenantActiveField";
 
 import { builder } from "../builder";
 builder.queryType({});

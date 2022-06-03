@@ -11,8 +11,8 @@ import {
 } from "@apollo/client";
 // import Tooltip from "../../Tooltip";
 import { Listbox, Transition } from "@headlessui/react";
-import { CheckIcon, SelectorIcon } from "@heroicons/react/solid";
-import { animated, useSpring } from "@react-spring/web";
+import { SelectorIcon } from "@heroicons/react/solid";
+import { animated } from "@react-spring/web";
 
 import {
     EntryRowOptionDocument,
@@ -25,7 +25,8 @@ import {
 import ErrorBoundary from "../../common/ErrorBoundary";
 import { TimeEntryRow } from "../types";
 
-import { useFieldOptions } from "./hooks";
+import FieldInputOption from "./FieldOption";
+import { useFieldOptions, useShaker } from "./hooks";
 
 const notify = (error: string) => toast.error(error);
 
@@ -44,6 +45,7 @@ const TimesheetDepartmentInput = ({
     timesheetId,
     tenantId,
     fieldName,
+    maxOptions,
 }: {
     row: TimeEntryRow | undefined;
     fieldId: string;
@@ -51,9 +53,9 @@ const TimesheetDepartmentInput = ({
     timesheetId: string;
     tenantId: string;
     fieldName: string;
+    maxOptions: number;
 }) => {
     const [field, setField] = useState<FieldOption | null>(null);
-    const [shake, setShake] = React.useState(false);
 
     const { data: optionData } = useQuery(EntryRowOptionDocument, {
         variables: {
@@ -69,15 +71,9 @@ const TimesheetDepartmentInput = ({
         optionData?.entryRowOption.id
     );
 
-    // const { data: fieldData } = useQuery(FieldDocument, {
-    //     variables: {
-    //         id: fieldId,
-    //     },
-    // });
-
-    const shaker = useReactiveVar(shakerVar);
-
     const usedRows = useReactiveVar(usedRowsVar);
+
+    const { setShake, shake, styles } = useShaker(row, field);
 
     const [updateEntryRowOption] = useMutation(UpdateEntryRowOptionDocument);
 
@@ -90,8 +86,11 @@ const TimesheetDepartmentInput = ({
         );
         const newRow = [...thisRow, _field.id];
 
-        const result = Object.keys(usedRows).find((r) =>
-            _.isEmpty(_.xor(usedRows[r], newRow))
+        const result = Object.keys(usedRows).find(
+            (r) =>
+                _.isEmpty(_.xor(usedRows[r], newRow)) &&
+                r !== row?.id &&
+                usedRows[r].length === maxOptions
         );
 
         if (result) {
@@ -175,51 +174,6 @@ const TimesheetDepartmentInput = ({
         IsChanged(true);
     };
 
-    // React.useEffect(() => {
-    //     if (!shake) {
-    //         return;
-    //     }
-    //     setShake(true);
-    //     const timeoutId = window.setTimeout(() => {
-    //         setShake(false);
-    //     }, 300);
-    //     return () => {
-    //         window.clearTimeout(timeoutId);
-    //     };
-    // }, [shake]);
-
-    React.useEffect(() => {
-        const animateOnOff = async () => {
-            for (let i = 0; i < 2; i++) {
-                setShake(true);
-                await new Promise((resolve) => setTimeout(resolve, 150));
-                setShake(false);
-                await new Promise((resolve) => setTimeout(resolve, 150));
-            }
-        };
-        if (!shaker) {
-            return;
-        }
-        if (shaker[0] === row?.id && shaker[1] === field?.id) {
-            animateOnOff();
-            const timeoutId = window.setTimeout(() => {
-                shakerVar(["", ""]);
-            }, 150);
-            return () => {
-                window.clearTimeout(timeoutId);
-            };
-        }
-    }, [shaker, fieldId, row?.id, field?.id]);
-
-    const styles = useSpring({
-        x: shaker[0] === row?.id && shaker[1] === field?.id ? -5 : 0,
-        config: {
-            tension: 400,
-            friction: 3,
-            mass: 0.5,
-        },
-    });
-
     // If the initialValue is changed external, sync it up with our state
     useEffect(() => {
         if (optionData?.entryRowOption && fieldInfo) {
@@ -281,49 +235,12 @@ const TimesheetDepartmentInput = ({
                                 >
                                     <Listbox.Options className="absolute z-10 w-full p-1 mt-1.5 overflow-auto text-base bg-base-300 border border-base-content/20 rounded-lg shadow-xl shadow-black/40 max-h-60 focus:outline-none sm:text-sm">
                                         {fieldInfo.fieldOptions.map(
-                                            (department) => {
-                                                return (
-                                                    <Listbox.Option
-                                                        className={({
-                                                            active,
-                                                        }) =>
-                                                            `cursor-pointer rounded-lg select-none relative py-2 pl-10 pr-4 ${
-                                                                active
-                                                                    ? "text-white bg-primary"
-                                                                    : "text-primary"
-                                                            }`
-                                                        }
-                                                        value={department}
-                                                        key={department.id}
-                                                    >
-                                                        {({ selected }) => (
-                                                            <>
-                                                                <span
-                                                                    className={`block truncate ${
-                                                                        selected
-                                                                            ? "font-medium"
-                                                                            : "font-normal"
-                                                                    }`}
-                                                                >
-                                                                    {
-                                                                        department.name
-                                                                    }
-                                                                </span>
-                                                                {selected ? (
-                                                                    <span
-                                                                        className={`absolute inset-y-0 left-0 flex items-center pl-3`}
-                                                                    >
-                                                                        <CheckIcon
-                                                                            className="w-5 h-5"
-                                                                            aria-hidden="true"
-                                                                        />
-                                                                    </span>
-                                                                ) : null}
-                                                            </>
-                                                        )}
-                                                    </Listbox.Option>
-                                                );
-                                            }
+                                            (option) => (
+                                                <FieldInputOption
+                                                    key={option.id}
+                                                    option={option}
+                                                />
+                                            )
                                         )}
                                     </Listbox.Options>
                                 </Transition>
@@ -331,10 +248,6 @@ const TimesheetDepartmentInput = ({
                         )}
                     </Listbox>
                 )}
-
-                {/* {!loading && */}
-
-                {/* } */}
             </ErrorBoundary>
         </>
     );

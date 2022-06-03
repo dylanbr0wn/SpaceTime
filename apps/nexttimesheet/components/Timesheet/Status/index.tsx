@@ -50,7 +50,6 @@ const StatusBlock = ({
 
     React.useEffect(() => {
         if (!timesheetChanged && isChanged && currentTimesheet) {
-            console.log("update");
             updateTimesheetChangedMutation({
                 variables: {
                     timesheetId: currentTimesheet,

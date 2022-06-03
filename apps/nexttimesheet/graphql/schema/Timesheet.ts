@@ -55,6 +55,27 @@ builder.queryFields((t) => ({
             }),
         },
         resolve: async (query, root, args, ctx, info) => {
+            const user = await prisma.user.findUnique({
+                where: {
+                    id: args.userId,
+                },
+                include: {
+                    tenant: {
+                        select: {
+                            id: true,
+                            startDate: true,
+                            periodLength: true,
+                            tenantActivefields: {
+                                select: {
+                                    fieldId: true,
+                                },
+                            },
+                        },
+                    },
+                },
+            });
+            if (!user) throw new Error("Cant find user!");
+            if (!user.tenant) throw new Error("Cant find tenant!");
             let period = await prisma.period.findFirst({
                 where: {
                     startDate: {
@@ -63,19 +84,7 @@ builder.queryFields((t) => ({
                     endDate: {
                         gt: args.date,
                     },
-                },
-            });
-            const user = await prisma.user.findUnique({
-                where: {
-                    id: args.userId,
-                },
-                include: {
-                    tenant: {
-                        select: {
-                            startDate: true,
-                            periodLength: true,
-                        },
-                    },
+                    tenantId: user.tenant.id,
                 },
             });
 
@@ -127,6 +136,13 @@ builder.queryFields((t) => ({
                 create: {
                     userId: args.userId,
                     periodId: period.id,
+                    timesheetFields: {
+                        create: user?.tenant?.tenantActivefields?.map(
+                            (field) => ({
+                                fieldId: field.fieldId,
+                            })
+                        ),
+                    },
                 },
             });
         },

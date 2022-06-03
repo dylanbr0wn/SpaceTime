@@ -45,29 +45,27 @@ export const useTimesheetDates = (
     }, [timesheetData?.timesheetFromDate?.isChanged]);
 
     React.useEffect(() => {
-        if (
-            timesheetData?.timesheetFromDate?.period?.startDate &&
-            timesheetData?.timesheetFromDate?.period?.endDate
-        ) {
+        // console.log("here");
+        if (timesheetData?.timesheetFromDate?.period) {
             const endDate = timesheetData?.timesheetFromDate?.period?.endDate;
             const startDate =
                 timesheetData?.timesheetFromDate?.period?.startDate;
             const dates: DateTime[] = [];
-            let end: DateTime, start: DateTime;
+            let end: DateTime, _start: DateTime;
             if (typeof endDate === "string") {
                 end = DateTime.fromISO(endDate, { zone: "utc" });
             } else {
                 end = DateTime.fromJSDate(endDate, { zone: "utc" });
             }
             if (typeof startDate === "string") {
-                start = DateTime.fromISO(startDate, { zone: "utc" });
+                _start = DateTime.fromISO(startDate, { zone: "utc" });
             } else {
-                start = DateTime.fromJSDate(startDate, { zone: "utc" });
+                _start = DateTime.fromJSDate(startDate, { zone: "utc" });
             }
 
-            setPeriodLength(end.diff(start, "days").days);
-            setStartDate(start);
-            let current = start;
+            setPeriodLength(end.diff(_start, "days").days);
+            setStartDate(_start);
+            let current = _start;
             while (current < end) {
                 dates.push(current);
                 current = current.plus({ days: 1 });

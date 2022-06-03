@@ -139,16 +139,6 @@ const Comments = ({
                     <PaperAirplaneIcon className="h-6 w-6 text-teal-300" />
                 </button>
             </div>
-
-            {/* <div className="mt-4 flex justify-end">
-                <button
-                    type="button"
-                    className="justify-center px-4 py-2 text-sm font-medium text-red-500 bg-slate-800 rounded-md hover:bg-slate-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-sky-500"
-                    onClick={closeModal}
-                >
-                    Close
-                </button>
-            </div> */}
         </>
     );
 };

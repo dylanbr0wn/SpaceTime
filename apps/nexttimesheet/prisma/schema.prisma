@@ -152,6 +152,7 @@ model Tenant {
   logo         String?        @db.Text
   fields       Field[]
   oneTimeToken OneTimeToken[]
+  tenantActivefields TenantActiveField[]
 }
 
 model OneTimeToken {
@@ -218,6 +219,18 @@ model TimesheetField {
   @@index([timesheetId, fieldId])
 }
 
+model TenantActiveField {
+  id          String    @id @default(cuid())
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  tenant      Tenant    @relation(fields: [tenantId], references: [id])
+  tenantId    String
+  field       Field     @relation(fields: [fieldId], references: [id])
+  fieldId     String
+
+  @@index([tenantId, fieldId])
+}
+
 model Field {
   id              String           @id @default(cuid())
   createdAt       DateTime         @default(now())
@@ -236,6 +249,7 @@ model Field {
   fieldOptions    FieldOption[]
   timesheetFields TimesheetField[]
   entryRowOptions EntryRowOption[]
+  tenantActiveFields TenantActiveField[]
 
   @@index([tenantId])
 }
