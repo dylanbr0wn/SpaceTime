@@ -3,7 +3,7 @@ import * as React from "react";
 import { UserAddIcon } from "@heroicons/react/outline";
 import { PlusIcon } from "@heroicons/react/solid";
 
-import { User } from "../../../lib/apollo";
+import { UserFromAuthIdQuery } from "../../../lib/apollo";
 import Modal from "../../common/Modal";
 
 // import Form from "./Form";
@@ -16,7 +16,11 @@ import Modal from "../../common/Modal";
  * @description Form for editting a employee object and associated work codes.
  */
 
-const EmployeeForm = ({ currentUser }: { currentUser: Partial<User> }) => {
+const EmployeeForm = ({
+    currentUser,
+}: {
+    currentUser: UserFromAuthIdQuery["userFromAuthId"] | undefined;
+}) => {
     const [openForm, setOpenForm] = React.useState(false);
 
     return (

@@ -9,13 +9,13 @@ import CustTransition from "../../common/CustTransition";
 
 const DatePicker = ({ selected, onChange, filterDate }) => {
     return (
-        <Popover className="relative w-full z-50">
+        <Popover className="relative w-full z-20">
             {({ open, close }) => (
                 <>
                     <Popover.Button
                         className={`
                
-                btn bg-base-300 border-base-300 text-sm`}
+                btn text-sm`}
                     >
                         {selected && (
                             <span>

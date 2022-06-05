@@ -1,7 +1,8 @@
 import { GetServerSidePropsContext, NextPage } from "next";
-import { Session } from "next-auth";
-import { getSession } from "next-auth/react";
+import { getSession, useSession } from "next-auth/react";
+import * as React from "react";
 
+import { useQuery } from "@apollo/client";
 import { Tab } from "@headlessui/react";
 import {
     ChartSquareBarIcon,
@@ -13,13 +14,7 @@ import EmployeeForm from "../../components/admin/EmployeeForm";
 import TokenList from "../../components/admin/TokenList";
 import UsersList from "../../components/admin/UsersList";
 import DashBoard from "../../components/Dashboard";
-import {
-    initializeApollo,
-    User,
-    UserFromAuthIdDocument,
-    UserFromAuthIdQuery,
-    UserFromAuthIdQueryVariables,
-} from "../../lib/apollo";
+import { UserFromAuthIdDocument } from "../../lib/apollo";
 
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
     const session = await getSession(ctx);
@@ -31,40 +26,44 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
             },
         };
     }
-    const user = session?.user;
-    const client = initializeApollo({ headers: ctx?.req?.headers });
+    // const user = session?.user;
+    // const client = initializeApollo({ headers: ctx?.req?.headers });
 
-    const { data: userData } = await client.query<
-        UserFromAuthIdQuery,
-        UserFromAuthIdQueryVariables
-    >({
-        query: UserFromAuthIdDocument,
-        variables: {
-            authId: String(user?.sub),
-        },
-    });
-    if (!userData?.userFromAuthId) {
-        return {
-            redirect: {
-                destination: "/auth/register",
-                permanent: false,
-            },
-        };
-    }
+    // const { data: userData } = await client.query<
+    //     UserFromAuthIdQuery,
+    //     UserFromAuthIdQueryVariables
+    // >({
+    //     query: UserFromAuthIdDocument,
+    //     variables: {
+    //         authId: String(user?.sub),
+    //     },
+    // });
+    // if (!userData?.userFromAuthId) {
+    //     return {
+    //         redirect: {
+    //             destination: "/auth/register",
+    //             permanent: false,
+    //         },
+    //     };
+    // }
 
     return {
         props: {
-            userData: userData?.userFromAuthId,
-            user,
+            session,
         },
     };
 };
 
-const Manage: NextPage<{
-    userData: Partial<User>;
-    user: Session["user"];
-}> = ({ userData, user }) => {
-    if (typeof window === "undefined") return null;
+const Manage: NextPage = () => {
+    const session = useSession();
+
+    const { data: userData } = useQuery(UserFromAuthIdDocument, {
+        variables: {
+            authId: String(session?.data?.user?.sub),
+        },
+        skip: !session?.data?.user?.sub,
+    });
+
     return (
         <DashBoard>
             <div
@@ -73,7 +72,7 @@ const Manage: NextPage<{
             >
                 <div className="flex max-w-screen-xl mx-auto space-x-12">
                     <div className="w-72 card bg-base-200 flex flex-col p-3 ">
-                        <EmployeeForm currentUser={userData} />
+                        <EmployeeForm currentUser={userData?.userFromAuthId} />
                     </div>
                     <div className="card w-72  bg-base-200 p-3">
                         <div className="flex  content-middle">
@@ -134,13 +133,17 @@ const Manage: NextPage<{
                         <Tab.Panels>
                             <Tab.Panel>
                                 <div className="w-full px-3">
-                                    <UsersList user={userData} />
+                                    <UsersList
+                                        user={userData?.userFromAuthId}
+                                    />
                                 </div>
                             </Tab.Panel>
                         </Tab.Panels>
                         <Tab.Panel>
                             <div className=" px-3 w-full">
-                                <TokenList currentUser={userData} />
+                                <TokenList
+                                    currentUser={userData?.userFromAuthId}
+                                />
                             </div>
                         </Tab.Panel>
                     </Tab.Group>

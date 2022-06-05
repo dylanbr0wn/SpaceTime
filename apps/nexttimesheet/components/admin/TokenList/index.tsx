@@ -12,7 +12,11 @@ import {
     useTableInstance,
 } from "@tanstack/react-table";
 
-import { OneTimeToken, OneTimeTokensDocument, User } from "../../../lib/apollo";
+import {
+    OneTimeToken,
+    OneTimeTokensDocument,
+    UserFromAuthIdQuery,
+} from "../../../lib/apollo";
 import Avatar from "../../common/Avatar";
 import CopyField from "../../common/CopyField";
 import Loading from "../../common/Loading";
@@ -23,11 +27,16 @@ const table =
         Partial<Pick<OneTimeToken, "tenant" | "id" | "user" | "createdAt">>
     >();
 
-const TokenList = ({ currentUser }: { currentUser: Partial<User> }) => {
+const TokenList = ({
+    currentUser,
+}: {
+    currentUser: UserFromAuthIdQuery["userFromAuthId"] | undefined;
+}) => {
     const { data, error, loading } = useQuery(OneTimeTokensDocument, {
         variables: {
-            tenantId: currentUser.tenant?.id ?? "-1",
+            tenantId: currentUser?.tenant?.id ?? "-1",
         },
+        skip: !currentUser?.tenant?.id,
     });
 
     const [pagination, setPagination] = React.useState<PaginationState>({

@@ -27,7 +27,7 @@ const Avatar = ({
                     <div
                         className={`${bg} text-neutral-content rounded-full w-8 h-8`}
                     >
-                        <span className="text-sm text-white">
+                        <span className="text-sm text-base-content">
                             {name?.charAt(0)}
                         </span>
                     </div>

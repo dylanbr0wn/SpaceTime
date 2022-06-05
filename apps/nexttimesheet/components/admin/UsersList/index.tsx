@@ -11,7 +11,7 @@ import {
     useTableInstance,
 } from "@tanstack/react-table";
 
-import { User, UsersDocument } from "../../../lib/apollo";
+import { User, UserFromAuthIdQuery, UsersDocument } from "../../../lib/apollo";
 import Avatar from "../../common/Avatar";
 import ErrorBoundary from "../../common/ErrorBoundary";
 import Loading from "../../common/Loading";
@@ -19,7 +19,11 @@ import DefaultTable from "../../common/Table";
 
 const table = createTable().setRowType<Partial<User>>();
 
-const UsersList = ({ user }: { user: Partial<User> }) => {
+const UsersList = ({
+    user,
+}: {
+    user: UserFromAuthIdQuery["userFromAuthId"] | undefined;
+}) => {
     const {
         data: usersData,
         loading,
@@ -28,6 +32,7 @@ const UsersList = ({ user }: { user: Partial<User> }) => {
         variables: {
             tenantId: user?.tenant?.id ?? "-1",
         },
+        skip: !user?.tenant?.id,
     });
     const [pagination, setPagination] = React.useState<PaginationState>({
         pageIndex: 0,

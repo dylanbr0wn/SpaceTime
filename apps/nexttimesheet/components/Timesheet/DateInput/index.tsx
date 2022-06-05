@@ -82,15 +82,15 @@ const TimesheetDateInput = ({
                 <div className="w-full text-center mb-3 font-semibold text-lg">
                     Period
                 </div>
-                <div className="flex justify-center ">
+                <div className="flex justify-center text-base-content">
                     <button
                         onClick={lastPeriod}
-                        className="mr-2 btn btn-square bg-base-300 border-base-300"
+                        className="mr-2 btn btn-square"
                         title="Go to last period"
                     >
                         <ChevronLeftIcon className="w-6 h-6 m-auto " />
                     </button>
-                    <div className="z-50">
+                    <div className="">
                         <DatePicker
                             onChange={onChange}
                             selected={startDate?.toJSDate()}
@@ -99,7 +99,7 @@ const TimesheetDateInput = ({
                     </div>
                     <button
                         onClick={nextPeriod}
-                        className="ml-2 btn btn-square bg-base-300 border-base-300"
+                        className="ml-2 btn btn-square "
                         title="Go to next period"
                     >
                         <ChevronRightIcon className="w-6 h-6 m-auto" />
