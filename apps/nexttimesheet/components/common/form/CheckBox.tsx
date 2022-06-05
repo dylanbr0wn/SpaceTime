@@ -12,7 +12,7 @@ const CheckBox = ({
     type: string;
     label: string;
 }) => {
-    const [field, meta, helpers] = useField(props);
+    const [field] = useField(props);
 
     return (
         <ErrorBoundary>

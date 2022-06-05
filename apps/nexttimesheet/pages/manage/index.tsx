@@ -66,7 +66,7 @@ const Manage: NextPage<{
 }> = ({ userData, user }) => {
     if (typeof window === "undefined") return null;
     return (
-        <DashBoard user={user}>
+        <DashBoard>
             <div
                 className="h-full w-full flex flex-col"
                 style={{ margin: 0, padding: 0 }}

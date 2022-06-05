@@ -54,16 +54,16 @@ const UsersList = ({ user }: { user: Partial<User> }) => {
                     <div className="text-left mr-3 font-bold ">User</div>
                 ),
             }),
-            table.createDataColumn((row) => row.department, {
-                id: "created",
-                cell: (info) => (
-                    <div className=" py-2 ">{info.value?.name}</div>
-                ),
+            // table.createDataColumn((row) => row.department, {
+            //     id: "created",
+            //     cell: (info) => (
+            //         <div className=" py-2 ">{info.value?.name}</div>
+            //     ),
 
-                header: () => (
-                    <div className="text-left mr-3 font-bold ">Department</div>
-                ),
-            }),
+            //     header: () => (
+            //         <div className="text-left mr-3 font-bold ">Department</div>
+            //     ),
+            // }),
             table.createDataColumn(
                 (row) => ({
                     active: row.isActive,

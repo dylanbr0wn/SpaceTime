@@ -4,7 +4,7 @@ import * as React from "react";
 import { Listbox, Transition } from "@headlessui/react";
 import { CheckIcon, SelectorIcon } from "@heroicons/react/solid";
 
-import { DepartmentsQuery, ManagersQuery } from "../../../lib/apollo";
+import { ManagersQuery } from "../../../lib/apollo";
 import ErrorBoundary from "../ErrorBoundary";
 
 const SelectInput = ({
@@ -13,7 +13,7 @@ const SelectInput = ({
     placeholder,
     ...props
 }: {
-    elements: DepartmentsQuery["departments"] | ManagersQuery["managers"];
+    elements: ManagersQuery["managers"];
     validate: (value: any) => string | void | Promise<string | void>;
     label: string;
     name: string;

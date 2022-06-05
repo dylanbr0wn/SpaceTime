@@ -1,4 +1,4 @@
-import Holidays from "date-holidays";
+// import Holidays from "date-holidays";
 import { DateTime } from "luxon";
 
 // import { fieldOption, Rows } from "./Rows";
@@ -270,20 +270,20 @@ import { DateTime } from "luxon";
 //     return errors;
 // };
 
-const hd = new Holidays();
+// const hd = new Holidays();
 
-hd.init("CA", "BC", {
-    timezone: "GMT", // all times in GMT
-    types: ["public", "bank", "school"], // all types of holidays
-});
-hd.setHoliday("easter 1", { name: "Easter Monday", type: "public" }); // Add easter monday
+// hd.init("CA", "BC", {
+//     timezone: "GMT", // all times in GMT
+//     types: ["public", "bank", "school"], // all types of holidays
+// });
+// hd.setHoliday("easter 1", { name: "Easter Monday", type: "public" }); // Add easter monday
 
 // // Add any other holidays here
 
 export const getDayFeatures = (day: DateTime) => {
     const dateType = {
         isWeekEnd: day.weekday === 6 || day.weekday === 7,
-        isHoliday: hd.isHoliday(day.toISO()),
+        isHoliday: false,
         isToday: day.hasSame(DateTime.local(), "day"),
     };
 

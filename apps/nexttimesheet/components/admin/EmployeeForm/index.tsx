@@ -6,7 +6,7 @@ import { PlusIcon } from "@heroicons/react/solid";
 import { User } from "../../../lib/apollo";
 import Modal from "../../common/Modal";
 
-import Form from "./Form";
+// import Form from "./Form";
 
 /**
  * @name EmployeeForm
@@ -46,7 +46,7 @@ const EmployeeForm = ({ currentUser }: { currentUser: Partial<User> }) => {
                 show={openForm}
                 onHide={() => setOpenForm(false)}
             >
-                <Form currentUser={currentUser} />
+                {/* <Form currentUser={currentUser} /> */}
             </Modal>
         </div>
     );
