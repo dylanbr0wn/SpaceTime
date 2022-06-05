@@ -134,8 +134,135 @@ builder.queryFields((t) => ({
                 },
                 update: {},
                 create: {
-                    userId: args.userId,
-                    periodId: period.id,
+                    user: {
+                        connect: {
+                            id: args.userId,
+                        },
+                    },
+                    period: {
+                        connect: {
+                            id: period.id,
+                        },
+                    },
+                    timesheetFields: {
+                        create: user?.tenant?.tenantActivefields?.map(
+                            (field) => ({
+                                fieldId: field.fieldId,
+                            })
+                        ),
+                    },
+                },
+            });
+        },
+    }),
+    timesheetFromAuthId: t.prismaField({
+        type: "Timesheet",
+        args: {
+            authId: t.arg.string({ required: true }),
+            date: t.arg({
+                type: "Date",
+                required: true,
+            }),
+        },
+        resolve: async (query, root, args, ctx, info) => {
+            let [user, period] = await Promise.all([
+                prisma.user.findUnique({
+                    where: {
+                        authId: args.authId,
+                    },
+                    include: {
+                        tenant: {
+                            select: {
+                                id: true,
+                                startDate: true,
+                                periodLength: true,
+                                tenantActivefields: {
+                                    select: {
+                                        fieldId: true,
+                                    },
+                                },
+                            },
+                        },
+                    },
+                }),
+                prisma.period.findFirst({
+                    where: {
+                        startDate: {
+                            lte: args.date,
+                        },
+                        endDate: {
+                            gt: args.date,
+                        },
+                        tenant: {
+                            users: {
+                                some: {
+                                    authId: args.authId,
+                                },
+                            },
+                        },
+                    },
+                }),
+            ]);
+
+            if (!user) throw new Error("Cant find user!");
+            if (!user.tenant) throw new Error("Cant find tenant!");
+
+            if (!period && user?.tenant && user?.tenantId) {
+                // got prefs, find the period params
+                const timesheetDate = DateTime.fromJSDate(args.date);
+                const { startDate, periodLength } = user.tenant;
+                let interval = Interval.after(startDate, {
+                    days: periodLength,
+                });
+                while (!interval.contains(timesheetDate)) {
+                    interval = interval.mapEndpoints((endpoints) =>
+                        endpoints.plus({ days: periodLength })
+                    );
+                    if (
+                        interval.start.year >
+                        timesheetDate.plus({
+                            years: 5,
+                        }).year
+                    ) {
+                        throw new Error("Cant find date interval");
+                    }
+                }
+                // now have period interval, create period
+
+                period = await prisma.period.create({
+                    data: {
+                        startDate: interval.start.toJSDate(),
+                        endDate: interval.end.toJSDate(),
+                        tenant: {
+                            connect: {
+                                id: user?.tenantId,
+                            },
+                        },
+                    },
+                });
+            }
+            if (!period) throw new Error("Could not find or create period");
+            // now have period, find or create timesheet
+
+            return await prisma.timesheet.upsert({
+                where: {
+                    userAuthId_periodId: {
+                        userAuthId: args.authId,
+                        periodId: period.id,
+                    },
+                },
+                update: {},
+                create: {
+                    user: {
+                        connect: {
+                            authId: args.authId,
+                        },
+                    },
+                    period: {
+                        connect: {
+                            id: period.id,
+                        },
+                    },
                     timesheetFields: {
                         create: user?.tenant?.tenantActivefields?.map(
                             (field) => ({

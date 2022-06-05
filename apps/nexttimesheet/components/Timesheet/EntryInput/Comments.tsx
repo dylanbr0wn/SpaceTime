@@ -1,15 +1,12 @@
 import cuid from "cuid";
 import { DateTime } from "luxon";
+import { useSession } from "next-auth/react";
 import * as React from "react";
 
 import { gql, useMutation } from "@apollo/client";
 import { PaperAirplaneIcon } from "@heroicons/react/outline";
 
-import {
-    CreateEntryCommentDocument,
-    EntryComment,
-    UserFromAuthIdQuery,
-} from "../../../lib/apollo";
+import { CreateEntryCommentDocument, EntryComment } from "../../../lib/apollo";
 import Avatar from "../../common/Avatar";
 
 import Comment from "./Comment";
@@ -17,16 +14,18 @@ import Comment from "./Comment";
 const Comments = ({
     closeModal,
     comments,
-    user,
     timeEntryId,
     timeEntryRowId,
+    userId,
 }: {
     closeModal: () => void;
     comments: Pick<EntryComment, "id">[];
-    user: UserFromAuthIdQuery["userFromAuthId"];
     timeEntryId: string;
     timeEntryRowId: string;
+    userId: string;
 }) => {
+    const { data: sessionData } = useSession();
+
     const [comment, setComment] = React.useState("");
 
     const onCommentChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -42,7 +41,7 @@ const Comments = ({
             variables: {
                 entryId: timeEntryId,
                 text: comment,
-                userId: user?.id ?? "-1",
+                userId: userId ?? "-1",
             },
             optimisticResponse: {
                 createEntryComment: {
@@ -53,8 +52,8 @@ const Comments = ({
                     updatedAt: DateTime.now().toISO(),
                     user: {
                         __typename: "User",
-                        id: user?.id ?? "-1",
-                        name: user?.name,
+                        id: userId ?? "-1",
+                        name: sessionData?.user?.name,
                         avatar: "",
                     },
                 },
@@ -102,7 +101,7 @@ const Comments = ({
                             <div key={i}>
                                 <Comment
                                     comment={comment}
-                                    userId={user?.id ?? "-1"}
+                                    userId={userId ?? "-1"}
                                 />
                             </div>
                         ))}
@@ -116,7 +115,10 @@ const Comments = ({
 
             <div className="mt-4 flex space-x-2 justify-center">
                 <div className="my-auto">
-                    <Avatar image={user?.avatar} name={user?.name} />
+                    <Avatar
+                        image={sessionData?.user?.image}
+                        name={sessionData?.user?.name}
+                    />
                 </div>
 
                 <input

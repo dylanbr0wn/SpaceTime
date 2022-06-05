@@ -5,8 +5,8 @@ import { useQuery } from "@apollo/client";
 
 import {
     IsChanged,
-    TimeEntryRowsQuery,
-    TimesheetDocument,
+    TimeEntryRowsDocument,
+    TimesheetFromAuthDocument,
     TimesheetQuery,
     usedRows as usedRowsVar,
     usedRowsType,
@@ -23,7 +23,7 @@ const defaultRow = {
 
 export const useTimesheetDates = (
     timesheetQueryDate: string,
-    userId: string
+    authId: string | undefined
 ) => {
     const [timesheetDates, setTimesheetDates] = React.useState<DateTime[]>([]);
     const [start, setStartDate] = React.useState<DateTime>();
@@ -31,25 +31,26 @@ export const useTimesheetDates = (
     // const [timesheetId, setTimesheetId] = React.useState();
 
     const { data: timesheetData, loading: timesheetLoading } = useQuery(
-        TimesheetDocument,
+        TimesheetFromAuthDocument,
         {
             variables: {
-                userId: String(userId),
+                authId: String(authId),
                 date: timesheetQueryDate,
             },
+            skip: !authId,
         }
     );
 
     React.useEffect(() => {
-        IsChanged(timesheetData?.timesheetFromDate?.isChanged);
-    }, [timesheetData?.timesheetFromDate?.isChanged]);
+        IsChanged(timesheetData?.timesheetFromAuthId?.isChanged);
+    }, [timesheetData?.timesheetFromAuthId?.isChanged]);
 
     React.useEffect(() => {
         // console.log("here");
-        if (timesheetData?.timesheetFromDate?.period) {
-            const endDate = timesheetData?.timesheetFromDate?.period?.endDate;
+        if (timesheetData?.timesheetFromAuthId?.period) {
+            const endDate = timesheetData?.timesheetFromAuthId?.period?.endDate;
             const startDate =
-                timesheetData?.timesheetFromDate?.period?.startDate;
+                timesheetData?.timesheetFromAuthId?.period?.startDate;
             const dates: DateTime[] = [];
             let end: DateTime, _start: DateTime;
             if (typeof endDate === "string") {
@@ -73,13 +74,13 @@ export const useTimesheetDates = (
 
             setTimesheetDates(dates);
         }
-    }, [timesheetData?.timesheetFromDate?.period, userId]);
+    }, [timesheetData?.timesheetFromAuthId?.period]);
 
     return {
         timesheetDates,
         startDate: start,
         periodLength,
-        timesheetFromDate: timesheetData?.timesheetFromDate,
+        timesheetFromDate: timesheetData?.timesheetFromAuthId,
         timesheetLoading,
     };
 };
@@ -101,16 +102,25 @@ export const useTimesheetColumns = (
 };
 
 export const useTimesheet = (
-    data: TimeEntryRowsQuery | undefined,
-    timesheetDates: DateTime[],
-
-    userId: string
+    timesheetId: string | undefined,
+    timesheetDates: DateTime[]
 ) => {
+    const {
+        data,
+        loading: rowsLoading,
+        // error,
+    } = useQuery(TimeEntryRowsDocument, {
+        variables: {
+            timesheetId: timesheetId ?? "-1",
+        },
+        skip: !timesheetId,
+    });
+
     const [timesheet, setTimesheet] = React.useState<TimeEntryRow[]>([]);
     const memoTimesheet = React.useMemo(() => timesheet, [timesheet]);
 
     React.useEffect(() => {
-        if (data) {
+        if (data?.timeEntryRows && !rowsLoading) {
             const newUsedRows: usedRowsType = {};
             const timeEntryRows = data.timeEntryRows.map((row) => {
                 newUsedRows[row.id] = row.rowOptions.map(
@@ -126,7 +136,7 @@ export const useTimesheet = (
             });
             setTimesheet(timeEntryRows);
         }
-    }, [data, userId, timesheetDates]);
+    }, [data, timesheetDates, rowsLoading]);
 
-    return { memoTimesheet };
+    return { memoTimesheet, rowsLoading };
 };

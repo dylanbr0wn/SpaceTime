@@ -124,7 +124,8 @@ model Timesheet {
   id              String           @id @default(cuid())
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
-  user            User             @relation(fields: [userId], references: [id])
+  user            User             @relation(fields: [userId, userAuthId ], references: [id, authId])
+  userAuthId      String
   userId          String
   period          Period           @relation(fields: [periodId], references: [id])
   periodId        String
@@ -135,7 +136,8 @@ model Timesheet {
   timesheetFields TimesheetField[]
 
   @@unique([userId, periodId])
-  @@index([userId, periodId])
+  @@index([userId, periodId, userAuthId])
+  @@unique([userAuthId, periodId])
 }
 
 model Tenant {

@@ -26,13 +26,6 @@ const TimesheetDeleteEntryInput = ({
 
     const { hasHours } = useRowHasHours(rowId);
 
-    // React.useEffect(() => {
-    //     setShowDeleteConfirmModal(false);
-    //     return () => {
-    //         setShowDeleteConfirmModal(false);
-    //     };
-    // }, [rowId]);
-
     const [deleteTimeEntryRowMutation] = useMutation(
         DeleteTimeEntryRowDocument
     );
@@ -51,7 +44,6 @@ const TimesheetDeleteEntryInput = ({
                     id: rowId ?? "-1",
                 },
             },
-            // refetchQueries: [GetTimeEntryRowsDocument],
             update: (cache) => {
                 cache.modify({
                     id: cache.identify({

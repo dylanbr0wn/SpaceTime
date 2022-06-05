@@ -1,13 +1,10 @@
 /* eslint-disable react/jsx-key */
 /* eslint react/prop-types: 0 */
 import { DateTime } from "luxon";
-import { Session } from "next-auth";
+import { useSession } from "next-auth/react";
 import * as React from "react";
 
-import {
-    Status as TimesheetStatus,
-    UserFromAuthIdQuery,
-} from "../../lib/apollo";
+import { Status as TimesheetStatus } from "../../lib/apollo";
 import ApprovalTree from "../ApprovalTree";
 import Loading from "../common/Loading";
 
@@ -23,15 +20,11 @@ import TimesheetTable from "./Table";
  * @description Root timesheet screen componenet.
  * @param {Object} props Props. See propTypes for details.
  */
-const Timesheet = ({
-    user,
-    authUser,
-}: {
-    user: UserFromAuthIdQuery["userFromAuthId"];
-    authUser: Session["user"];
-}) => {
+const Timesheet = () => {
     // const [type, setType] = React.useState("user");
     // const { userId } = useParams();
+
+    const { data: sessionData } = useSession();
 
     const [timesheetQueryDate, setTimesheetQueryDate] = React.useState<string>(
         DateTime.now().startOf("day").toUTC().startOf("day").toISO()
@@ -43,7 +36,7 @@ const Timesheet = ({
         periodLength,
         timesheetFromDate,
         timesheetLoading,
-    } = useTimesheetDates(timesheetQueryDate, String(user?.id));
+    } = useTimesheetDates(timesheetQueryDate, sessionData?.user?.sub);
 
     const { columns } = useTimesheetColumns(timesheetFromDate);
 
@@ -82,7 +75,6 @@ const Timesheet = ({
                             // }
                             periodLength={periodLength}
                             startDate={startDate}
-                            userId={String(user?.id)}
                         />
                     </div>
                     <div className="w-full flex justify-end">
@@ -99,7 +91,7 @@ const Timesheet = ({
                                 TimesheetStatus.Unsubmitted
                             }
                             timesheetId={timesheetFromDate?.id ?? "-1"}
-                            user={user}
+                            userId={timesheetFromDate?.user?.id ?? "-1"}
                         />
                     </div>
                 </div>
@@ -107,7 +99,8 @@ const Timesheet = ({
                     <TimesheetTable
                         timesheetId={timesheetFromDate?.id}
                         timesheetDates={timesheetDates}
-                        user={user}
+                        userId={timesheetFromDate?.user?.id ?? "-1"}
+                        tenantId={timesheetFromDate?.user?.tenant?.id ?? "-1"}
                         timesheetColumns={columns}
                     />
                 ) : (
@@ -116,8 +109,8 @@ const Timesheet = ({
                     </div>
                 )}
                 <ApprovalTree
-                    user={user}
                     timesheetId={timesheetFromDate?.id ?? "-1"}
+                    userId={timesheetFromDate?.user.id}
                 />
             </div>
         </>

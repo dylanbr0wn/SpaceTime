@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Session } from "next-auth";
+import { useSession } from "next-auth/react";
 import * as React from "react";
 
 import { FeedbackFish } from "@feedback-fish/react";
@@ -25,8 +25,9 @@ import NavMenuButton from "./NavMenuButton";
  * @param {Object} props Props. See propTypes for details.
  * @description Sidebar navigation menu.
  */
-const TimesheetMenu = ({ user }: { user: Session["user"] }) => {
+const TimesheetMenu = () => {
     // const { userMetadata, user } = useProfile();
+    const { data: sessionData } = useSession();
 
     const [menu] = React.useState([
         {
@@ -71,7 +72,7 @@ const TimesheetMenu = ({ user }: { user: Session["user"] }) => {
                     <div className="flex-grow"></div>
                     <FeedbackFish
                         projectId="98bcbfde97c737"
-                        userId={user?.email ?? ""}
+                        userId={sessionData?.user?.email ?? ""}
                     >
                         <button
                             title="feedback"
@@ -91,14 +92,14 @@ const TimesheetMenu = ({ user }: { user: Session["user"] }) => {
                                     <Menu.Button className=" inline-flex justify-end h-full w-full  font-medium text-base-content btn btn-ghost  ">
                                         <div className="h-full mr-3 flex flex-col text-right">
                                             <div className="my-auto">
-                                                {user?.name}
+                                                {sessionData?.user?.name}
                                             </div>
                                         </div>
 
                                         <div className="">
                                             <Avatar
-                                                name={user?.name}
-                                                image={user?.image}
+                                                name={sessionData?.user?.name}
+                                                image={sessionData?.user?.image}
                                             />
                                         </div>
                                     </Menu.Button>

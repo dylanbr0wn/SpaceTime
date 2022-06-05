@@ -58,6 +58,31 @@ query Timesheet($date: Date!, $userId: String!) {
     }
 }
 
+query TimesheetFromAuth($date: Date!, $authId: String!) {
+    timesheetFromAuthId(date:$date, authId: $authId ) {
+        id
+        status
+        isChanged
+        user{
+            id
+            tenant {
+                id
+            }
+        }
+        period {
+            id
+            startDate
+            endDate
+        }
+        timesheetFields {
+            field {
+                id
+                name
+            }
+        }
+    }
+}
+
 query TimeEntry($index: Int! $timeEntryRowId: String!) {
     timeEntry(index: $index, timeEntryRowId: $timeEntryRowId) {
         id

@@ -16,19 +16,16 @@ import DatePicker from "./DatePicker";
  */
 const TimesheetDateInput = ({
     startDate,
-    userId,
     periodLength,
     timesheetQueryDate,
     setTimesheetQueryDate,
 }: {
     startDate: DateTime | undefined;
-    userId: string | undefined;
     periodLength: number | undefined;
     timesheetQueryDate: string;
     setTimesheetQueryDate: (date: string) => void;
 }) => {
     const onChange = (date: Date) => {
-        if (!userId) return;
         setTimesheetQueryDate(
             DateTime.fromJSDate(date)
                 .startOf("day")
@@ -39,10 +36,9 @@ const TimesheetDateInput = ({
     };
 
     const nextPeriod = () => {
-        if (!userId) return;
         if (!startDate) return;
         setTimesheetQueryDate(
-            startDate
+            DateTime.fromISO(timesheetQueryDate, { zone: "utc" })
                 .plus({ days: periodLength })
                 .startOf("day")
                 .toUTC()
@@ -52,10 +48,9 @@ const TimesheetDateInput = ({
     };
 
     const lastPeriod = () => {
-        if (!userId) return;
         if (!startDate) return;
         setTimesheetQueryDate(
-            startDate
+            DateTime.fromISO(timesheetQueryDate, { zone: "utc" })
                 .minus({ days: periodLength })
                 .startOf("day")
                 .toUTC()

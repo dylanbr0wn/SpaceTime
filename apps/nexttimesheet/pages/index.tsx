@@ -1,17 +1,10 @@
 import type { GetServerSidePropsContext, NextPage } from "next";
-import { Session } from "next-auth";
 import { getSession } from "next-auth/react";
 import * as React from "react";
 
 import DashBoard from "../components/Dashboard";
-import EmployeeTimesheet from "../components/EmployeeTimesheet";
 import Footer from "../components/Footer";
-import {
-    initializeApollo,
-    UserFromAuthIdDocument,
-    UserFromAuthIdQuery,
-    UserFromAuthIdQueryVariables,
-} from "../lib/apollo";
+import Timesheet from "../components/Timesheet";
 
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
     const session = await getSession(ctx);
@@ -23,47 +16,23 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
             },
         };
     }
-    const user = session?.user;
-    const client = initializeApollo({ headers: ctx?.req?.headers });
-
-    const { data: userData } = await client.query<
-        UserFromAuthIdQuery,
-        UserFromAuthIdQueryVariables
-    >({
-        query: UserFromAuthIdDocument,
-        variables: {
-            authId: String(user?.sub),
-        },
-        errorPolicy: "all",
-    });
-    if (!userData?.userFromAuthId) {
-        return {
-            redirect: {
-                destination: "/auth/register",
-                permanent: false,
-            },
-        };
-    }
 
     return {
         props: {
-            userData: userData?.userFromAuthId,
-            user,
+            // userData: userData?.userFromAuthId,
+            session,
         },
     };
 };
 
-const Home: NextPage<{
-    userData: UserFromAuthIdQuery["userFromAuthId"];
-    user: Session["user"];
-}> = ({ userData, user }) => {
+const Home: NextPage = () => {
     return (
         <div className="drawer drawer-end">
             <input id="my-drawer-4" type="checkbox" className="drawer-toggle" />
             <div className="drawer-content">
-                <DashBoard user={user}>
+                <DashBoard>
                     <div className="h-full w-full m-0 p-0">
-                        <EmployeeTimesheet userData={userData} user={user} />
+                        <Timesheet />
                     </div>
                 </DashBoard>
                 <Footer />

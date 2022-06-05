@@ -1,5 +1,6 @@
 import cuid from "cuid";
 import { DateTime } from "luxon";
+import { useSession } from "next-auth/react";
 import * as React from "react";
 
 import { useMutation, useReactiveVar } from "@apollo/client";
@@ -12,7 +13,6 @@ import {
     Status,
     StatusEventsDocument,
     UpdateTimesheetChangedDocument,
-    UserFromAuthIdQuery,
 } from "../../../lib/apollo";
 import ErrorBoundary from "../../common/ErrorBoundary";
 import CustModal from "../../common/Modal";
@@ -26,20 +26,22 @@ import CustModal from "../../common/Modal";
  */
 const StatusBlock = ({
     status,
-    user,
     timesheetId,
     timesheetChanged,
+    userId,
 }: {
     status: Status;
-    user: UserFromAuthIdQuery["userFromAuthId"];
     timesheetId: string;
     timesheetChanged: boolean;
+    userId: string;
 }) => {
     const [showModal, setShowModal] = React.useState(false);
     const [nextStatus] = React.useState<Status>(Status.Submitted);
     const [currentTimesheet, setCurrentTimesheet] = React.useState<
         string | undefined
     >();
+
+    const { data: sessionData } = useSession();
     // const [hasChanged, setHasChanged] = React.useState(false);
 
     const isChanged = useReactiveVar(isChangedVar);
@@ -84,7 +86,7 @@ const StatusBlock = ({
             variables: {
                 status: nextStatus,
                 message: comment,
-                userId: String(user.id),
+                userId: String(userId),
                 type: EventType.StatusChange,
                 timesheetId,
             },
@@ -97,8 +99,8 @@ const StatusBlock = ({
                     type: EventType.StatusChange,
                     user: {
                         __typename: "User",
-                        name: user.name,
-                        avatar: user.avatar,
+                        name: sessionData?.user?.name,
+                        avatar: sessionData?.user?.image,
                     },
                     status: nextStatus,
                 },

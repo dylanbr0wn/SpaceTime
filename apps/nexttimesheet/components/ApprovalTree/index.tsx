@@ -1,4 +1,5 @@
 import { DateTime } from "luxon";
+import { useSession } from "next-auth/react";
 import * as React from "react";
 
 import { useQuery } from "@apollo/client";
@@ -9,7 +10,15 @@ import Avatar from "../common/Avatar";
 import StatusTitle from "./StatusTitle";
 import TimeSince from "./TimeSince";
 
-const ApprovalTree = ({ user, timesheetId }) => {
+const ApprovalTree = ({
+    timesheetId,
+    userId,
+}: {
+    timesheetId: string;
+    userId: string | undefined;
+}) => {
+    const { data: sessionData } = useSession();
+
     const { data } = useQuery(StatusEventsDocument, {
         variables: {
             timesheetId,
@@ -28,7 +37,7 @@ const ApprovalTree = ({ user, timesheetId }) => {
                                 name={event.user.name}
                             />
                             <div className="font-semibold">
-                                {user.name}
+                                {sessionData?.user?.name}
                                 <span className="ml-3 font-normal text-base-content/30 hover:underline no-underline ">
                                     <TimeSince
                                         date={

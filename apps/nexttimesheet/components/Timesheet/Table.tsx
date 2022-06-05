@@ -2,7 +2,7 @@ import cuid from "cuid";
 import { DateTime } from "luxon";
 import * as React from "react";
 
-import { useMutation, useQuery } from "@apollo/client";
+import { useMutation } from "@apollo/client";
 import { PlusIcon } from "@heroicons/react/outline";
 import {
     createTable,
@@ -15,7 +15,6 @@ import {
     TimeEntryRowsDocument,
     TimeEntryRowsQuery,
     TimeEntryRowsQueryVariables,
-    UserFromAuthIdQuery,
 } from "../../lib/apollo";
 import { getDayFeatures } from "../../lib/utils";
 import ErrorBoundary from "../common/ErrorBoundary";
@@ -40,33 +39,20 @@ export type MyTableGenerics = typeof table.generics;
 const TimesheetTable = ({
     timesheetId,
     timesheetDates,
-    user,
     timesheetColumns,
+    userId,
+    tenantId,
 }: {
     timesheetDates: DateTime[];
     timesheetId: string | undefined;
-    user: UserFromAuthIdQuery["userFromAuthId"];
     timesheetColumns: { id: string; name: string }[];
+    userId: string;
+    tenantId: string;
 }) => {
     // const [pinRows, setPinRows] = React.useState([]);
     // const [otherRows, setOtherRows] = React.useState([]);
 
-    const {
-        data,
-        // loading: rowsLoading,
-        // error,
-    } = useQuery(TimeEntryRowsDocument, {
-        variables: {
-            timesheetId: timesheetId ?? "-1",
-        },
-        skip: !timesheetId,
-    });
-
-    const { memoTimesheet } = useTimesheet(
-        data,
-        timesheetDates,
-        String(user?.id)
-    );
+    const { memoTimesheet } = useTimesheet(timesheetId, timesheetDates);
 
     const [createTimeEntryRowMutation] = useMutation(
         CreateTimeEntryRowDocument
@@ -131,8 +117,8 @@ const TimesheetTable = ({
                                 row={row.original}
                                 fieldId={id}
                                 fieldName={name}
-                                userId={String(user?.id)}
-                                tenantId={String(user?.tenant?.id)}
+                                userId={String(userId)}
+                                tenantId={tenantId}
                                 timesheetId={timesheetId ?? "-1"}
                                 maxOptions={timesheetColumns.length}
                             />
@@ -174,7 +160,7 @@ const TimesheetTable = ({
                                 index={i}
                                 row={row.original}
                                 date={date}
-                                user={user}
+                                userId={userId}
                             />
                         ),
                     });
@@ -190,7 +176,7 @@ const TimesheetTable = ({
                 ),
             }),
         ],
-        [user, timesheetDates, timesheetId, timesheetColumns]
+        [timesheetColumns, timesheetDates, userId, tenantId, timesheetId]
     );
 
     // For this example, we're using pagination to illustrate how to stop
@@ -219,71 +205,65 @@ const TimesheetTable = ({
     return (
         <>
             <ErrorBoundary>
-                {data?.timeEntryRows && (
-                    <div className=" my-2 max-w-screen-2xl mx-auto flex flex-col space-y-2">
-                        <div className="flex flex-col flex-shrink">
-                            {instance.getHeaderGroups().map((headerGroup) => (
-                                <div
-                                    className="flex space-x-0.5 flex-shrink"
-                                    key={headerGroup.id}
-                                >
-                                    {headerGroup.headers.map((column) => {
-                                        if (
-                                            column?.column?.parent?.id ===
-                                            "hours"
-                                        ) {
-                                            return (
-                                                <div
-                                                    className="text-base-content py-2 text-center text-lg w-14"
-                                                    key={column.id}
-                                                >
-                                                    {column.isPlaceholder ? null : (
-                                                        <div>
-                                                            {column.renderHeader()}
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            );
-                                        } else if (
-                                            column.column.id === "deleter"
-                                        ) {
-                                            return (
-                                                <span key={column.id}>
-                                                    {null}
-                                                </span>
-                                            );
-                                        } else if (
-                                            column.column.id ===
-                                            "workdescription"
-                                        ) {
-                                            return (
-                                                <div
-                                                    key={column.id}
-                                                    className="flex"
-                                                >
-                                                    <div className="w-44" />
-                                                    <div className="w-44" />
-                                                    <div className="w-44" />
-                                                </div>
-                                            );
-                                        } else {
-                                            return (
-                                                <div
-                                                    className="text-base-content py-2 text-center text-lg w-44"
-                                                    key={column.id}
-                                                >
-                                                    {column.isPlaceholder ? null : (
-                                                        <div>
-                                                            {column.renderHeader()}
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            );
-                                        }
-                                    })}
-                                </div>
-                            ))}
-                        </div>
+                <div className=" my-2 max-w-screen-2xl mx-auto flex flex-col space-y-2">
+                    <div className="flex flex-col flex-shrink">
+                        {instance.getHeaderGroups().map((headerGroup) => (
+                            <div
+                                className="flex space-x-0.5 flex-shrink"
+                                key={headerGroup.id}
+                            >
+                                {headerGroup.headers.map((column) => {
+                                    if (
+                                        column?.column?.parent?.id === "hours"
+                                    ) {
+                                        return (
+                                            <div
+                                                className="text-base-content py-2 text-center text-lg w-14"
+                                                key={column.id}
+                                            >
+                                                {column.isPlaceholder ? null : (
+                                                    <div>
+                                                        {column.renderHeader()}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        );
+                                    } else if (column.column.id === "deleter") {
+                                        return (
+                                            <span key={column.id}>{null}</span>
+                                        );
+                                    } else if (
+                                        column.column.id === "workdescription"
+                                    ) {
+                                        return (
+                                            <div
+                                                key={column.id}
+                                                className="flex"
+                                            >
+                                                <div className="w-44" />
+                                                <div className="w-44" />
+                                                <div className="w-44" />
+                                            </div>
+                                        );
+                                    } else {
+                                        return (
+                                            <div
+                                                className="text-base-content py-2 text-center text-lg w-44"
+                                                key={column.id}
+                                            >
+                                                {column.isPlaceholder ? null : (
+                                                    <div>
+                                                        {column.renderHeader()}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        );
+                                    }
+                                })}
+                            </div>
+                        ))}
+                    </div>
+                    {memoTimesheet && (
                         <>
                             {instance.getRowModel().rows.length > 0 ? (
                                 <div className=" space-y-2">
@@ -348,22 +328,23 @@ const TimesheetTable = ({
                                 </div>
                             )}
                         </>
-                        <div>
-                            <div className="text-center mt-4">
-                                <button
-                                    className=" flex btn btn-outline btn-accent p-2 mx-auto group "
-                                    onClick={createTimeEntryRow}
-                                >
-                                    <PlusIcon className="h-6 w-6 mr-2" />
+                    )}
 
-                                    <div className="text-sm font-bold my-auto">
-                                        New Row
-                                    </div>
-                                </button>
-                            </div>
+                    <div>
+                        <div className="text-center mt-4">
+                            <button
+                                className=" flex btn btn-outline btn-accent p-2 mx-auto group "
+                                onClick={createTimeEntryRow}
+                            >
+                                <PlusIcon className="h-6 w-6 mr-2" />
+
+                                <div className="text-sm font-bold my-auto">
+                                    New Row
+                                </div>
+                            </button>
                         </div>
                     </div>
-                )}
+                </div>
             </ErrorBoundary>
         </>
     );

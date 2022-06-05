@@ -100,6 +100,7 @@ type Query {
   timeEntryRow(id: String!): TimeEntryRow!
   timeEntryRows(timesheetId: String!): [TimeEntryRow!]!
   timesheet(id: String!): Timesheet!
+  timesheetFromAuthId(authId: String!, date: Date!): Timesheet!
   timesheetFromDate(date: Date!, userId: String!): Timesheet!
   user(id: String!): User!
   userFromAuthId(authId: String!): User!
@@ -125,6 +126,7 @@ type StatusEvent {
 }
 
 type Tenant {
+  activeField: [TenantActiveField!]!
   createdAt: Date!
   description: String
   id: ID!
@@ -135,6 +137,14 @@ type Tenant {
   startDate: Date!
   updatedAt: Date!
   users: [User!]!
+}
+
+type TenantActiveField {
+  createdAt: Date!
+  field: Field!
+  id: ID!
+  tenant: Tenant!
+  updatedAt: Date!
 }
 
 type TimeEntry {

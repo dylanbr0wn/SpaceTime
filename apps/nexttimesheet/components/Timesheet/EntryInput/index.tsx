@@ -15,7 +15,6 @@ import {
     TimeEntryQuery,
     TimeEntryQueryVariables,
     UpdateTimeEntryhoursDocument,
-    UserFromAuthIdQuery,
 } from "../../../lib/apollo";
 import ErrorBoundary from "../../common/ErrorBoundary";
 import CustModal from "../../common/Modal";
@@ -34,15 +33,15 @@ import { useTimeEntry } from "./hooks";
 const TimesheetEntryInput = ({
     row,
     date,
-    user,
     timesheetId,
     index,
+    userId,
 }: {
     row: TimeEntryRow | undefined;
     date: DateTime;
-    user: UserFromAuthIdQuery["userFromAuthId"];
     timesheetId: string;
     index: number;
+    userId: string;
 }) => {
     // We need to keep and update the state of the cell normally
 
@@ -302,8 +301,8 @@ const TimesheetEntryInput = ({
                     <Comments
                         timeEntryRowId={row?.id ?? "-1"}
                         timeEntryId={timeEntry?.id ?? "-1"}
-                        user={user}
                         closeModal={closeModal}
+                        userId={userId}
                         // onCommentChange={onCommentChange}
                         comments={timeEntry?.entryComments ?? []}
                     />
