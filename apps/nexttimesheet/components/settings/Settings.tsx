@@ -4,11 +4,12 @@ import { useSession } from "next-auth/react";
 import * as React from "react";
 import validator from "validator";
 
-import { useQuery } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 
 import {
     FieldsDocument,
     TenantDocument,
+    UpdateTenantDocument,
     UserFromAuthIdDocument,
 } from "../../lib/apollo";
 import MultiSelectInput from "../common/form/MultiSelectInput";
@@ -16,6 +17,10 @@ import Section from "../common/form/Section";
 import SelectInput from "../common/form/SelectInput";
 import TextInput from "../common/form/TextInput";
 import Loading from "../common/Loading";
+import MultiSelectList from "../common/form/MultiSelectList";
+import toast from "react-hot-toast";
+
+const notify = (error: string) => toast.error(error);
 
 type tenantInfo = {
     name: string;
@@ -25,6 +30,7 @@ type tenantInfo = {
         id: string;
         name: string;
     };
+    fields: string[];
 };
 
 const weeekdays = [
@@ -90,15 +96,12 @@ const Settings = () => {
         },
     });
 
+    const [UpdateTenant] = useMutation(UpdateTenantDocument);
+
     return (
         <div className="w-full h-full flex flex-col">
             {!tenantLoading && !userLoading ? (
-                <div className="w-1/2">
-                    Tenant Settings
-                    <div>Name: {tenantData?.tenant?.name}</div>
-                    <div>Description: {tenantData?.tenant?.description}</div>
-                    <div>Logo: {tenantData?.tenant?.logo}</div>
-                    <div>PeriodLength: {tenantData?.tenant?.periodLength}</div>
+                <div className="">
                     <Formik
                         validateOnBlur
                         initialValues={{
@@ -121,6 +124,10 @@ const Settings = () => {
                                                   new Date()
                                           ).weekday - 1
                                       ] ?? weeekdays[0],
+                            fields:
+                                tenantData?.tenant?.tenantActivefields.map(
+                                    (activeField) => activeField.field.id
+                                ) ?? [],
                         }}
                         onSubmit={async (
                             values: tenantInfo,
@@ -129,19 +136,37 @@ const Settings = () => {
                                 setStatus,
                             }: FormikHelpers<tenantInfo>
                         ) => {
-                            console.log(values);
-                            // let date = DateTime.now();
-                            // while (
-                            //     date.weekday !== parseInt(values.startDate.id)
-                            // ) {
-                            //     date = date.minus({ days: 1 });
-                            // }
-                            // const startDate = date
-                            //     .startOf("day")
-                            //     .toUTC()
-                            //     .startOf("day")
-                            //     .toISO();
+                            let date = DateTime.now();
+                            while (
+                                date.weekday !== parseInt(values.startDate.id)
+                            ) {
+                                date = date.minus({ days: 1 });
+                            }
+                            const startDate = date
+                                .startOf("day")
+                                .toUTC()
+                                .startOf("day")
+                                .toISO();
 
+                            const { data, errors } = await UpdateTenant({
+                                variables: {
+                                    name: values.name,
+                                    description: values.description,
+                                    periodLength: values.periodLength,
+                                    startDate,
+                                    isActive: true,
+                                    logo: "",
+                                    updateTenantId:
+                                        tenantData?.tenant?.id ?? "-1",
+                                    tenantActiveFields: values.fields,
+                                },
+                                refetchQueries: [TenantDocument],
+                            });
+
+                            if (errors) {
+                                setStatus(errors[0].message);
+                                notify(errors[0].message);
+                            }
                             // const { data: tenantData } = await createTenant({
                             //     variables: {
                             //         name: values.name,
@@ -171,75 +196,102 @@ const Settings = () => {
                             //     router.push("/");
                             // }
 
-                            // setStatus("complete");
-                            // setSubmitting(false);
+                            setStatus("complete");
+                            setSubmitting(false);
                         }}
                     >
                         {({ isValid, dirty, isSubmitting, status }) => (
                             <Form className="p-3 flex flex-col space-y-2">
-                                <Section title="Tenant Details">
-                                    <div className="flex flex-col w-full">
-                                        <TextInput
-                                            label="Team Name"
-                                            name="name"
-                                            id="name"
-                                            placeholder="Sith Lords"
-                                            validate={validateName}
-                                        />
-                                    </div>
-                                </Section>
-                                <Section>
-                                    <div className="flex flex-col w-full">
-                                        <TextInput
-                                            validate={() => undefined}
-                                            label="Description"
-                                            name="decription"
-                                            id="description"
-                                            placeholder="Roger roger!"
-                                        />
-                                    </div>
-                                </Section>
-                                <Section title="Configuration">
-                                    <div className="flex flex-col">
-                                        <TextInput
-                                            validate={validatePeriodLength}
-                                            label="Period Length"
-                                            name="periodLength"
-                                            id="periodLength"
-                                            placeholder="14"
-                                        />
-                                    </div>
-                                    <div className="flex flex-col w-48">
-                                        <SelectInput
-                                            validate={validateStartDate}
-                                            placeholder="Sunday"
-                                            name="startDate"
-                                            label="Start Day"
-                                            elements={weeekdays}
-                                        />
-                                    </div>
-                                </Section>
-                                <Section>
-                                    <div className="flex flex-col">
-                                        <MultiSelectInput
+                                <div className="flex">
+                                    <div className="w-full px-3">
+                                        <Section title="Tenant Details">
+                                            <div className="flex flex-col w-full">
+                                                <TextInput
+                                                    label="Team Name"
+                                                    name="name"
+                                                    id="name"
+                                                    placeholder="Sith Lords"
+                                                    validate={validateName}
+                                                />
+                                            </div>
+                                        </Section>
+                                        <Section>
+                                            <div className="flex flex-col w-full">
+                                                <TextInput
+                                                    validate={() => undefined}
+                                                    label="Description"
+                                                    name="decription"
+                                                    id="description"
+                                                    placeholder="Roger roger!"
+                                                />
+                                            </div>
+                                        </Section>
+                                        <Section title="Configuration">
+                                            <div className="flex flex-col">
+                                                <TextInput
+                                                    validate={
+                                                        validatePeriodLength
+                                                    }
+                                                    label="Period Length"
+                                                    name="periodLength"
+                                                    id="periodLength"
+                                                    placeholder="14"
+                                                />
+                                            </div>
+                                            <div className="flex flex-col w-48">
+                                                <SelectInput
+                                                    validate={validateStartDate}
+                                                    placeholder="Sunday"
+                                                    name="startDate"
+                                                    label="Start Day"
+                                                    elements={weeekdays}
+                                                />
+                                            </div>
+                                        </Section>
+                                        <Section>
+                                            <div className="flex flex-col">
+                                                {/* <MultiSelectInput
                                             validate={() => undefined}
                                             label="Column Fields"
                                             name="columnFields"
                                             elements={fieldsData?.fields ?? []}
                                             placeholder=""
-                                        />
+                                        /> */}
+                                            </div>
+                                        </Section>
+                                        <div className="flex my-3">
+                                            <button
+                                                disabled={
+                                                    !isValid ||
+                                                    !dirty ||
+                                                    isSubmitting
+                                                }
+                                                className="btn btn-primary"
+                                                type="submit"
+                                            >
+                                                Submit
+                                            </button>
+                                        </div>
                                     </div>
-                                </Section>
-                                <div className="flex my-3">
-                                    <button
-                                        disabled={
-                                            !isValid || !dirty || isSubmitting
-                                        }
-                                        className="btn btn-primary"
-                                        type="submit"
-                                    >
-                                        Submit
-                                    </button>
+                                    <div className="w-full px-3">
+                                        <Section title="Default Fields">
+                                            <div className="flex flex-col w-full space-y-2 py-2 overflow-y-scroll">
+                                                Default columns for your
+                                                timesheet. These are applied
+                                                when you first visit a new sheet
+                                                or on sheet reset.
+                                                <MultiSelectList
+                                                    validate={() => undefined}
+                                                    name="fields"
+                                                    label="Timesheet Fields"
+                                                    placeholder="Select Fields"
+                                                    elements={
+                                                        fieldsData?.fields ?? []
+                                                    }
+                                                />
+                                            </div>
+                                        </Section>
+                                    </div>
                                 </div>
                             </Form>
                         )}

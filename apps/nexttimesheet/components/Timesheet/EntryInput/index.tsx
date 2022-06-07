@@ -286,7 +286,7 @@ const TimesheetEntryInput = ({
                         onChange={onHourChange}
                         onBlur={onBlur}
                         // onFocus={() => setIsEditing(true)}
-                        className={`w-full h-full input input-bordered input-sm bg-base-300 px-2 text-sm ${
+                        className={`w-full h-full input input-bordered input-sm bg-base-300 px-1.5 2xl:px-2 text-xs 2xl:text-sm ${
                             false || disableEntryInput ? "input-disabled" : ""
                         } ${
                             (timeEntry?.entryComments?.length ?? 0) > 0

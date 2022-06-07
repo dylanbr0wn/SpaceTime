@@ -44,7 +44,7 @@ const Timesheet = () => {
 
     return (
         <>
-            <div className="w-full flex flex-col">
+            <div className="w-full flex flex-col p-1">
                 <div className="w-full flex max-w-screen-xl mx-auto">
                     <div className="w-full flex flex-col">
                         <div className="my-auto">

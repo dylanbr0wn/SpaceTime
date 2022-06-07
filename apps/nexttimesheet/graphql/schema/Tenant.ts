@@ -64,9 +64,11 @@ builder.mutationFields((t) => ({
             }),
             periodLength: t.arg.int({ required: true }),
             logo: t.arg.string(),
+
         },
         resolve: async (query, root, args, ctx, info) => {
             return await prisma.tenant.create({
+                ...query,
                 data: {
                     ...args,
                 },
@@ -82,8 +84,25 @@ builder.mutationFields((t) => ({
             isActive: t.arg.boolean(),
             periodLength: t.arg.int(),
             logo: t.arg.string(),
+            startDate: t.arg({
+                type: "Date",
+                required: true,
+            }),
+            tenantActiveFields: t.arg.stringList(),
         },
         resolve: async (query, root, args, ctx, info) => {
+            await prisma.tenantActiveField.deleteMany({
+                where: {
+                    tenantId: args.id,
+                }
+            })
+            await prisma.tenantActiveField.createMany({
+                data: args?.tenantActiveFields?.map(id => ({
+
+                    tenantId: args.id,
+                    fieldId: id,
+                })) ?? []
+            })
             return await prisma.tenant.update({
                 ...query,
                 where: {
@@ -96,6 +115,15 @@ builder.mutationFields((t) => ({
                         args.isActive === null ? undefined : args.isActive,
                     periodLength: args.periodLength ?? undefined,
                     logo: args.logo,
+                    // tenantActivefields: {
+                    //     createMany: {
+                    //         data: args.tenantActiveFields?.map(fieldId => ({
+
+                    //             fieldId
+
+                    //         })) ?? [],
+                    //     }
+                    // }
                 },
             });
         },

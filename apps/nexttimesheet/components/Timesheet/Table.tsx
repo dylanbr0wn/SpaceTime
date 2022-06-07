@@ -205,11 +205,11 @@ const TimesheetTable = ({
     return (
         <>
             <ErrorBoundary>
-                <div className=" my-2 max-w-screen-2xl mx-auto flex flex-col space-y-2">
+                <div className=" my-2 w-full mx-auto flex flex-col space-y-2">
                     <div className="flex flex-col flex-shrink">
                         {instance.getHeaderGroups().map((headerGroup) => (
                             <div
-                                className="flex space-x-0.5 flex-shrink"
+                                className="flex space-x-0.5 "
                                 key={headerGroup.id}
                             >
                                 {headerGroup.headers.map((column) => {
@@ -218,7 +218,7 @@ const TimesheetTable = ({
                                     ) {
                                         return (
                                             <div
-                                                className="text-base-content py-2 text-center text-lg w-14"
+                                                className="text-base-content py-2 text-center text-base 2xl:text-lg w-14"
                                                 key={column.id}
                                             >
                                                 {column.isPlaceholder ? null : (
@@ -230,7 +230,12 @@ const TimesheetTable = ({
                                         );
                                     } else if (column.column.id === "deleter") {
                                         return (
-                                            <span key={column.id}>{null}</span>
+                                            <span
+                                                className="w-12"
+                                                key={column.id}
+                                            >
+                                                {null}
+                                            </span>
                                         );
                                     } else if (
                                         column.column.id === "workdescription"
@@ -248,7 +253,7 @@ const TimesheetTable = ({
                                     } else {
                                         return (
                                             <div
-                                                className="text-base-content py-2 text-center text-lg w-44"
+                                                className="text-base-content py-2 text-center text-base 2xl:text-lg w-44"
                                                 key={column.id}
                                             >
                                                 {column.isPlaceholder ? null : (

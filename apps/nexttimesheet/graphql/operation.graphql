@@ -9,20 +9,50 @@ query Tenant($tenantId: String!) {
         periodLength
         startDate
         tenantActivefields {
-        createdAt
-        field {
-            createdAt
-            fieldType
-            id
-            isActive
-            name
-            updatedAt
-        }
-        id
-        updatedAt
+          createdAt
+          field {
+              description
+              createdAt
+              fieldType
+              id
+              isActive
+              name
+              updatedAt
+          }
+          id
+          updatedAt
         }
         updatedAt
     }
+}
+
+mutation UpdateTenant($updateTenantId: String!, $tenantActiveFields: [String!], $periodLength: Int, $name: String, $logo: String, $isActive: Boolean, $description: String, $startDate: Date!) {
+  updateTenant(id: $updateTenantId, tenantActiveFields: $tenantActiveFields, periodLength: $periodLength, name: $name, logo: $logo, isActive: $isActive, description: $description, startDate: $startDate) {
+    createdAt
+    description
+    id
+    isActive
+    logo
+    name
+    periodLength
+    startDate
+    tenantActivefields {
+      createdAt
+      field {
+          description
+          createdAt
+          fieldType
+          id
+          isActive
+          name
+          updatedAt
+      }
+      id
+      updatedAt
+    }
+    updatedAt
+  
+  }
 }
 
 query UserFromAuthId($authId: String!) {
@@ -76,6 +106,7 @@ query Timesheet($date: Date!, $userId: String!) {
 query Fields($tenantId: String!) {
   fields(tenantId: $tenantId) {
     createdAt
+    description
     id
     isActive
     name
@@ -463,6 +494,7 @@ query Field($id: String!) {
     isActive
     id
     fieldType
+    description
     fieldOptions {
       id
       name

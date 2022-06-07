@@ -201,7 +201,7 @@ const TimesheetDepartmentInput = ({
                                 className={`w-full relative`}
                             >
                                 <Listbox.Button
-                                    className={`relative text-sm outline outline-offset-2 w-full text-base-content h-10 py-2 pl-3 pr-10 border border-base-content/20 text-left rounded-lg
+                                    className={`relative text-xs 2xl:text-sm outline outline-offset-2 w-full text-base-content h-10 py-2 pl-3 pr-10 border border-base-content/20 text-left rounded-lg
                                     transition-colors duration-150 ease-in-out ${
                                         shake && "bg-error"
                                     }

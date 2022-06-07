@@ -27,7 +27,7 @@ const DashBoard = ({ children }: { children: React.ReactNode }) => {
                     type="checkbox"
                     className="drawer-toggle"
                 />
-                <div className="drawer-content flex flex-col">
+                <div className="drawer-content flex flex-col overflow-x-hidden overflow-y-scroll">
                     <Menu />
                     <div className="w-full mx-auto h-full">{children}</div>
                     <Footer />

@@ -15,6 +15,12 @@ builder.prismaObject("FieldOption", {
             resolve: (department) => department.updatedAt,
         }),
         isActive: t.exposeBoolean("isActive"),
+        description: t.field({
+            type: "String",
+            nullable: true,
+            resolve: (field) => field.description,
+
+        }),
     }),
 });
 

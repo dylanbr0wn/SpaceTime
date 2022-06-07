@@ -17,6 +17,12 @@ builder.prismaObject("Field", {
             type: "Date",
             resolve: (department) => department.updatedAt,
         }),
+        description: t.field({
+            type: "String",
+            nullable: true,
+            resolve: (field) => field.description,
+
+        }),
         fieldOptions: t.relation("fieldOptions"),
         isActive: t.exposeBoolean("isActive"),
         fieldType: t.field({
