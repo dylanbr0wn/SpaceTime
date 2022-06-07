@@ -126,7 +126,6 @@ type StatusEvent {
 }
 
 type Tenant {
-  activeField: [TenantActiveField!]!
   createdAt: Date!
   description: String
   id: ID!
@@ -135,6 +134,7 @@ type Tenant {
   name: String!
   periodLength: Int!
   startDate: Date!
+  tenantActivefields: [TenantActiveField!]!
   updatedAt: Date!
   users: [User!]!
 }

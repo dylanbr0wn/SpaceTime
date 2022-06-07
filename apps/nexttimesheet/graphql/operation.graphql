@@ -1,12 +1,27 @@
 query Tenant($tenantId: String!) {
     tenant(id: $tenantId) {
+        createdAt
+        description
         id
         isActive
+        logo
         name
-        description
-        createdAt
-        updatedAt
+        periodLength
         startDate
+        tenantActivefields {
+        createdAt
+        field {
+            createdAt
+            fieldType
+            id
+            isActive
+            name
+            updatedAt
+        }
+        id
+        updatedAt
+        }
+        updatedAt
     }
 }
 
@@ -56,6 +71,16 @@ query Timesheet($date: Date!, $userId: String!) {
             }
         }
     }
+}
+
+query Fields($tenantId: String!) {
+  fields(tenantId: $tenantId) {
+    createdAt
+    id
+    isActive
+    name
+    updatedAt
+  }
 }
 
 query TimesheetFromAuth($date: Date!, $authId: String!) {

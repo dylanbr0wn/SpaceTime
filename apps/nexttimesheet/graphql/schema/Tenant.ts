@@ -29,7 +29,7 @@ builder.prismaObject("Tenant", {
             nullable: true,
             resolve: (tenant) => tenant.logo,
         }),
-        activeField: t.relation("tenantActivefields"),
+        tenantActivefields: t.relation("tenantActivefields"),
     }),
 });
 

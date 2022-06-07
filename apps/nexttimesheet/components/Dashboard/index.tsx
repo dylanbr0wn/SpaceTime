@@ -29,9 +29,7 @@ const DashBoard = ({ children }: { children: React.ReactNode }) => {
                 />
                 <div className="drawer-content flex flex-col">
                     <Menu />
-                    <div className="w-full max-w-screen-2xl mx-auto pt-4 ">
-                        {children}
-                    </div>
+                    <div className="w-full mx-auto h-full">{children}</div>
                     <Footer />
                 </div>
                 <div className="drawer-side">

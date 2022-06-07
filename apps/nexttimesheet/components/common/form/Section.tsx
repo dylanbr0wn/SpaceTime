@@ -2,7 +2,7 @@ const Section = ({ children, title = "" }) => {
     return (
         <div className=" divide-y divide-base-content/20">
             {title && (
-                <div className="mx-1 text-medium text-secondary font-light py-1 ">
+                <div className="mx-1 text-lg text-base-content font-semibold py-1 ">
                     {title}
                 </div>
             )}
