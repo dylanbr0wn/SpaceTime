@@ -36,11 +36,161 @@ const TimesheetEntryInput = ({
 }) => {
     // We need to keep and update the state of the cell normally
 
+    const utils = trpc.useContext()
+
     const updateTimeEntryhoursMutation = trpc.useMutation(
-        ["timeEntry.update"]
+        ["timeEntry.update"], {
+        // When mutate is called:
+        onMutate: async newEntry => {
+
+            const newTimeEntry = {
+                ...newEntry,
+                id: "",
+                createdAt: new Date(),
+                updatedAt: new Date(),
+                entryComments: []
+            }
+
+            await utils.cancelQuery(['timeEntry.read', {
+                timeEntryRowId: row?.id ?? "",
+                index: index,
+            }])
+            // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
+            // await utils.cancelQueries(['todos', newTodo.id])
+
+            // Snapshot the previous value
+            const previousTodo = utils.getQueryData(['timeEntry.read', {
+                timeEntryRowId: row?.id ?? "",
+                index: index,
+            }])
+
+            // Optimistically update to the new value
+            utils.setQueryData(['timeEntry.read', {
+                timeEntryRowId: row?.id ?? "",
+                index: index,
+            }], { ...previousTodo!, hours: newEntry.hours, id: newEntry.id })
+
+            // Return a context with the previous and new todo
+            return { previousTodo, newTimeEntry }
+        },
+        // If the mutation fails, use the context we returned above
+        onError: (err, newEntry, context) => {
+
+            if (!context?.previousTodo) utils.refetchQueries(['timeEntry.read'])
+            else {
+                utils.setQueryData(
+                    ['timeEntry.read', {
+                        timeEntryRowId: row?.id ?? "",
+                        index: index,
+                    }],
+                    context.previousTodo
+                )
+            }
+        },
+        // Always refetch after error or success:
+        onSettled: newTodo => {
+            utils.invalidateQueries(['timeEntry.read'])
+        },
+    }
     );
-    const createTimeEntryMutation = trpc.useMutation(["timeEntry.create"]);
-    const deleteTimeEntryMutation = trpc.useMutation(["timeEntry.delete"]);
+    const createTimeEntryMutation = trpc.useMutation(["timeEntry.create"], {
+        // When mutate is called:
+        onMutate: async newEntry => {
+
+            const newTimeEntry = {
+                ...newEntry,
+                id: "",
+                createdAt: new Date(),
+                updatedAt: new Date(),
+                entryComments: []
+            }
+
+            await utils.cancelQuery(['timeEntry.read', {
+                timeEntryRowId: row?.id ?? "",
+                index: index,
+            }])
+            // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
+            // await utils.cancelQueries(['todos', newTodo.id])
+
+            // Snapshot the previous value
+            const previousTodo = utils.getQueryData(['timeEntry.read', {
+                timeEntryRowId: row?.id ?? "",
+                index: index,
+            }])
+
+            // Optimistically update to the new value
+            utils.setQueryData(['timeEntry.read', {
+                timeEntryRowId: row?.id ?? "",
+                index: index,
+            }], newTimeEntry)
+
+            // Return a context with the previous and new todo
+            return { previousTodo, newTimeEntry }
+        },
+        // If the mutation fails, use the context we returned above
+        onError: (err, newEntry, context) => {
+
+            if (!context?.previousTodo) utils.refetchQueries(['timeEntry.read'])
+            else {
+                utils.setQueryData(
+                    ['timeEntry.read', {
+                        timeEntryRowId: row?.id ?? "",
+                        index: index,
+                    }],
+                    context.previousTodo
+                )
+            }
+
+
+        },
+        // Always refetch after error or success:
+        onSettled: newTodo => {
+            utils.invalidateQueries(['timeEntry.read'])
+        },
+    });
+    const deleteTimeEntryMutation = trpc.useMutation(["timeEntry.delete"], {
+        onMutate: async newEntry => {
+            await utils.cancelQuery(['timeEntry.read', {
+                timeEntryRowId: row?.id ?? "",
+                index: index,
+            }])
+            // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
+            // await utils.cancelQueries(['todos', newTodo.id])
+
+            // Snapshot the previous value
+            const previousTodo = utils.getQueryData(['timeEntry.read', {
+                timeEntryRowId: row?.id ?? "",
+                index: index,
+            }])
+
+            // Optimistically update to the new value
+            utils.setQueryData(['timeEntry.read', {
+                timeEntryRowId: row?.id ?? "",
+                index: index,
+            }], null)
+
+            // Return a context with the previous and new todo
+            return { previousTodo, newTimeEntry: null }
+        },
+        // If the mutation fails, use the context we returned above
+        onError: (err, newEntry, context) => {
+            console.log("here", err)
+            if (!context?.previousTodo) utils.refetchQueries(['timeEntry.read'])
+            else {
+                utils.setQueryData(
+                    ['timeEntry.read', {
+                        timeEntryRowId: row?.id ?? "",
+                        index: index,
+                    }],
+                    context.previousTodo
+                )
+            }
+
+
+        },
+    }
+
+    );
 
     const [disableEntryInput, setDisableEntryInput] = React.useState(true);
 
@@ -77,24 +227,24 @@ const TimesheetEntryInput = ({
         if (timeEntry?.id === "-1" && (timeEntry?.hours ?? 0) > 0) {
             createTimeEntryMutation.mutate({
 
-                    date: date.toISO(),
-                    index,
-                    hours: timeEntry?.hours ?? 0,
-                    timeEntryRowId: row?.id ?? "-1",
-                });
+                date: date.toJSDate(),
+                index,
+                hours: timeEntry?.hours ?? 0,
+                timeEntryRowId: row?.id ?? "-1",
+            });
             setIsChanged(true);
         } else if (timeEntry?.id !== "-1" && (timeEntry?.hours ?? 0) > 0) {
             if (needsToSave) {
                 updateTimeEntryhoursMutation.mutate({
-                        id: timeEntry?.id ?? "-1",
-                        hours: timeEntry?.hours ?? 0,
-                    });
+                    id: timeEntry?.id ?? "-1",
+                    hours: timeEntry?.hours ?? 0,
+                });
             }
             setIsChanged(true);
         } else if (timeEntry?.id !== "-1" && timeEntry?.hours === 0) {
             deleteTimeEntryMutation.mutate({
-                    id: timeEntry?.id ?? "-1",
-                });
+                id: timeEntry?.id ?? "-1",
+            });
             setIsChanged(true);
         } else {
             // setIsSaving(false);
@@ -129,19 +279,17 @@ const TimesheetEntryInput = ({
                             !timeEntry?.hours
                                 ? ""
                                 : timeEntry.hours === 0
-                                ? ""
-                                : timeEntry.hours
+                                    ? ""
+                                    : timeEntry.hours
                         }
                         onChange={onHourChange}
                         onBlur={onBlur}
                         // onFocus={() => setIsEditing(true)}
-                        className={`w-full h-full input input-bordered input-sm bg-base-300 px-1.5 2xl:px-2 text-xs 2xl:text-sm ${
-                            false || disableEntryInput ? "input-disabled" : ""
-                        } ${
-                            (timeEntry?.entryComments?.length ?? 0) > 0
+                        className={`w-full h-full input input-bordered input-sm bg-base-300 px-1.5 2xl:px-2 text-xs 2xl:text-sm ${false || disableEntryInput ? "input-disabled" : ""
+                            } ${(timeEntry?.entryComments?.length ?? 0) > 0
                                 ? "input-accent"
                                 : ""
-                        }`}
+                            }`}
                         disabled={false || disableEntryInput}
                         step="0.01"
                     />

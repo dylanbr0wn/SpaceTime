@@ -1,7 +1,7 @@
 import cuid from "cuid";
 import _ from "lodash";
 import React, { useEffect, useState } from "react";
-import toast from "react-hot-toast";
+import toast, { ErrorIcon } from "react-hot-toast";
 
 // import {
 //     Reference,
@@ -21,8 +21,18 @@ import { useFieldOptions, useShaker } from "./hooks";
 import { FieldOption, TimeEntryRow } from "../../../utils/types/zod";
 import { trpc } from "../../../utils/trpc";
 import { useStore } from "../../../utils/store";
+import { flushSync } from "react-dom";
 
-const notify = (error: string) => toast.error(error);
+const notify = (error: string) => toast.custom((t) => (
+    <div
+        className={`bg-base-300 text-base-content px-6 py-4 shadow-md rounded-full flex ${t.visible ? 'animate-enter' : 'animate-leave'
+            }`}
+    >
+        <div className="pr-3"><ErrorIcon /></div><div>{error}</div>
+    </div>
+
+));
+
 
 /**
  * @name TimesheetDepartmentInput
@@ -55,9 +65,11 @@ const TimesheetDepartmentInput = ({
 }) => {
     const [field, setField] = useState<FieldOption | null>(null);
 
-    const { data: optionData } = trpc.useQuery(["entryRowOption.read", { fieldId,
-            rowId: row?.id ?? "-1",}], {
-       
+    const { data: optionData } = trpc.useQuery(["entryRowOption.read", {
+        fieldId,
+        rowId: row?.id ?? "-1",
+    }], {
+
         enabled: row?.entryRowOptions.length !== 0, // Skip if no options
     });
 
@@ -67,7 +79,7 @@ const TimesheetDepartmentInput = ({
         optionData?.fieldOption.id
     );
 
-    const {usedRows, setUsedRows, setIsChanged} = useStore((state) => ({
+    const { usedRows, setUsedRows, setIsChanged } = useStore((state) => ({
         usedRows: state.usedRows,
         setUsedRows: state.setUsedRows,
         setIsChanged: state.setIsChanged,
@@ -75,7 +87,58 @@ const TimesheetDepartmentInput = ({
 
     const { setShake, shake, styles, setShaker } = useShaker(row, field);
 
-    const updateEntryRowOption = trpc.useMutation(["entryRowOption.update"]);
+    const utils = trpc.useContext()
+
+    const updateEntryRowOption = trpc.useMutation(["entryRowOption.update"], {
+        onMutate: async newRowOption => {
+
+
+
+            await utils.cancelQuery(['entryRowOption.read', {
+                rowId: row?.id ?? "-1",
+                fieldId: fieldId,
+            }])
+            // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
+            // await utils.cancelQueries(['todos', newTodo.id])
+
+            // Snapshot the previous value
+            const previousRowOption = utils.getQueryData(['entryRowOption.read', {
+                rowId: row?.id ?? "-1",
+                fieldId: fieldId,
+            }])
+
+            const newTimeEntryRow = { ...previousRowOption!, ...newRowOption, fieldOption: { ...field!, description: "" } }
+
+            // Optimistically update to the new value
+            utils.setQueryData(['entryRowOption.read', {
+                rowId: row?.id ?? "-1",
+                fieldId: fieldId,
+            }], newTimeEntryRow)
+
+            // Return a context with the previous and new todo
+            return { previousRowOption, newTimeEntryRow }
+        },
+        // If the mutation fails, use the context we returned above
+        onError: (err, newEntry, context) => {
+            console.log("here", err)
+            if (!context?.previousRowOption) utils.refetchQueries(['entryRowOption.read'])
+            else {
+                utils.setQueryData(
+                    ['entryRowOption.read', {
+                        rowId: row?.id ?? "-1",
+                        fieldId: fieldId,
+                    }],
+                    context.previousRowOption
+                )
+            }
+
+
+        },
+        // Always refetch after error or success:
+        onSettled: newTodo => {
+            utils.invalidateQueries(['entryRowOption.read'])
+        },
+    });
 
     // When changed, dispatch api call and redux action.
     const onChange = async (_field: FieldOption) => {
@@ -104,16 +167,18 @@ const TimesheetDepartmentInput = ({
             ...usedRows,
             [row?.id ?? "-1"]: newRow,
         });
+        flushSync(() => {
+            setField(_field);
+        })
 
-        setField(_field);
 
         await updateEntryRowOption.mutateAsync({
 
-                fieldId,
-                rowId: row?.id ?? "-1",
-                fieldOptionId: _field.id,
-            
-            });
+            fieldId,
+            rowId: row?.id ?? "-1",
+            fieldOptionId: _field.id,
+
+        });
         setIsChanged(true);
     };
 
@@ -145,15 +210,13 @@ const TimesheetDepartmentInput = ({
                             >
                                 <Listbox.Button
                                     className={`relative text-xs 2xl:text-sm outline outline-offset-2 w-full text-base-content h-10 py-2 pl-3 pr-10 border border-base-content/20 text-left rounded-lg
-                                    transition-colors duration-150 ease-in-out ${
-                                        shake && "bg-error"
-                                    }
+                                    transition-colors duration-150 ease-in-out ${shake && "bg-error"
+                                        }
                                      focus:outline-none focus-visible:ring-2 bg-base-300
-                                   ${
-                                       open
-                                           ? "outline-base-content/20"
-                                           : "outline-transparent "
-                                   } sm:text-sm cursor-pointer `}
+                                   ${open
+                                            ? "outline-base-content/20"
+                                            : "outline-transparent "
+                                        } sm:text-sm cursor-pointer `}
                                 >
                                     {field?.name ?? (
                                         <span

@@ -29,17 +29,11 @@ export const useTimesheetDates = (
 
     const { data: timesheetData, isLoading: timesheetLoading } = trpc.useQuery(
         ["timesheet.readFromAuth", {
-
-
             authId: String(authId),
             date: timesheetQueryDate,
-
-
         }],
         {
-
-
-
+            refetchOnWindowFocus: false,
             enabled: !!authId,
         }
     );
@@ -121,6 +115,7 @@ export const useTimesheet = (
         // error,
     } = trpc.useQuery(["timeEntryRow.readAll", { timesheetId: timesheetId ?? "-1", }], {
         enabled: !!timesheetId,
+        refetchOnWindowFocus: false,
     });
 
     const [timesheet, setTimesheet] = React.useState<(TimeEntryRow & {

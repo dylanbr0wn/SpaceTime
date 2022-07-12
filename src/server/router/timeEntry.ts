@@ -52,7 +52,7 @@ export const timeEntryRouter = createRouter()
             timeEntryRowId: z.string(),
             index: z.number(),
             hours: z.number(),
-            date: z.string(),
+            date: z.date(),
         }),
         async resolve({ input, ctx }) {
             return await ctx.prisma.timeEntry.create({

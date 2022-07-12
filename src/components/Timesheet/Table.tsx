@@ -50,7 +50,7 @@ const TimesheetTable = ({
     const createTimeEntryRow = async () => {
         await mutation.mutate({
 
-                timesheetId: timesheetId ?? "-1",
+            timesheetId: timesheetId ?? "-1",
         }
         );
     }
@@ -61,74 +61,74 @@ const TimesheetTable = ({
         }[]
     }>[]>(
         () => [{
-                header: () => null,
-                id: "workdescription",
-                columns: timesheetColumns.map(({ id, name }) =>
-                    ({
-                        header: name,
-                        id: name.toLowerCase(),
-                        cell: ({ row }) => (
-                            <TimesheetDepartmentInput
-                                row={row.original}
-                                fieldId={id}
-                                fieldName={name}
-                                userId={String(userId)}
-                                tenantId={tenantId}
-                                timesheetId={timesheetId ?? "-1"}
-                                maxOptions={timesheetColumns.length}
-                            />
-                        ),
-                    })
+            header: () => null,
+            id: "workdescription",
+            columns: timesheetColumns.map(({ id, name }) =>
+            ({
+                header: name,
+                id: name.toLowerCase(),
+                cell: ({ row }) => (
+                    <TimesheetDepartmentInput
+                        row={row.original}
+                        fieldId={id}
+                        fieldName={name}
+                        userId={String(userId)}
+                        tenantId={tenantId}
+                        timesheetId={timesheetId ?? "-1"}
+                        maxOptions={timesheetColumns.length}
+                    />
                 ),
-            },{
-                header: "Hours",
-                id: "hours",
-                columns: timesheetDates.map((date, i) => {
-                    const dayFeatures = getDayFeatures(date);
-                    return {
-                        // eslint-disable-next-line react/display-name
-                        header: () => {
-                            return (
-                                <div
-                                    data-tip={dayFeatures.hoverText}
-                                    className={`w-full tooltip box-border `}
-                                >
-                                    <div className={`${dayFeatures.style}`}>
-                                        <div className="text-center">
-                                            {date.toFormat("ccc")}
-                                        </div>
-                                        <div
-                                            className="text-center"
-                                            style={{ fontWeight: 400 }}
-                                        >
-                                            {date.toFormat("L/d")}
-                                        </div>
+            })
+            ),
+        }, {
+            header: "Hours",
+            id: "hours",
+            columns: timesheetDates.map((date, i) => {
+                const dayFeatures = getDayFeatures(date);
+                return {
+                    // eslint-disable-next-line react/display-name
+                    header: () => {
+                        return (
+                            <div
+                                data-tip={dayFeatures.hoverText}
+                                className={`w-full tooltip box-border `}
+                            >
+                                <div className={`${dayFeatures.style}`}>
+                                    <div className="text-center">
+                                        {date.toFormat("ccc")}
+                                    </div>
+                                    <div
+                                        className="text-center"
+                                        style={{ fontWeight: 400 }}
+                                    >
+                                        {date.toFormat("L/d")}
                                     </div>
                                 </div>
-                            );
-                        },
-                        id: `timeEntryCol${i}`,
-                        cell: ({  row, column }) => (
-                            <TimesheetEntryInput
-                                timesheetId={timesheetId ?? "-1"}
-                                index={i}
-                                row={row.original}
-                                date={date}
-                                userId={userId}
-                            />
-                        ),
-                    };
-                }),
-            },
-            {
-                // specifies delete row button column.
-                header: () => null, // No header
-                id: "deleter",
-                // eslint-disable-next-line react/display-name, react/prop-types
-                cell: ({ row }) => (
-                    <TimesheetDeleteEntryInput rowId={row.original?.id} />
-                ),
-            },
+                            </div>
+                        );
+                    },
+                    id: `timeEntryCol${i}`,
+                    cell: ({ row, column }) => (
+                        <TimesheetEntryInput
+                            timesheetId={timesheetId ?? "-1"}
+                            index={i}
+                            row={row.original}
+                            date={date}
+                            userId={userId}
+                        />
+                    ),
+                };
+            }),
+        },
+        {
+            // specifies delete row button column.
+            header: () => null, // No header
+            id: "deleter",
+            // eslint-disable-next-line react/display-name, react/prop-types
+            cell: ({ row }) => (
+                <TimesheetDeleteEntryInput rowId={row.original?.id} />
+            ),
+        },
         ],
         [timesheetColumns, timesheetDates, userId, tenantId, timesheetId]
     );
@@ -177,9 +177,9 @@ const TimesheetTable = ({
                                                 {header.isPlaceholder ? null : (
                                                     <div>
                                                         {flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
+                                                            header.column.columnDef.header,
+                                                            header.getContext()
+                                                        )}
                                                     </div>
                                                 )}
                                             </div>
@@ -214,10 +214,10 @@ const TimesheetTable = ({
                                             >
                                                 {header.isPlaceholder ? null : (
                                                     <div>
-                                                       {flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
+                                                        {flexRender(
+                                                            header.column.columnDef.header,
+                                                            header.getContext()
+                                                        )}
                                                     </div>
                                                 )}
                                             </div>
@@ -252,9 +252,9 @@ const TimesheetTable = ({
                                                                     }
                                                                 >
                                                                     {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
+                                                                        cell.column.columnDef.cell,
+                                                                        cell.getContext()
+                                                                    )}
                                                                 </div>
                                                             );
                                                         } else if (
@@ -269,9 +269,9 @@ const TimesheetTable = ({
                                                                     }
                                                                 >
                                                                     {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
+                                                                        cell.column.columnDef.cell,
+                                                                        cell.getContext()
+                                                                    )}
                                                                 </div>
                                                             );
                                                         } else {
@@ -282,10 +282,10 @@ const TimesheetTable = ({
                                                                         cell.id
                                                                     }
                                                                 >
-                                                                   {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
+                                                                    {flexRender(
+                                                                        cell.column.columnDef.cell,
+                                                                        cell.getContext()
+                                                                    )}
                                                                 </div>
                                                             );
                                                         }
