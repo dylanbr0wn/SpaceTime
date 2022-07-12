@@ -1,0 +1,265 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["referentialIntegrity"]
+}
+
+datasource db {
+  provider             = "mysql"
+  url                  = env("DATABASE_URL")
+  referentialIntegrity = "prisma"
+}
+
+// model Profile {
+//   id        String  @id @default(cuid())
+//   firstName String
+//   lastName  String
+//   avatar    String?
+//   bio       String? @db.Text
+//   user      User    @relation(fields: [userId], references: [id])
+//   userId    String  @unique
+
+//   @@index([userId])
+// }
+
+model User {
+  id               String         @id @default(cuid())
+  email            String
+  authId           String?        @unique
+  code             String?
+  isAdmin          Boolean        @default(false)
+  isActive         Boolean        @default(true)
+  isManager        Boolean        @default(false)
+  isPaymentManager Boolean        @default(false)
+  name             String?
+  avatar           String?
+  managerId        String?
+  manager          User?          @relation("management", fields: [managerId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  managees         User[]         @relation("management")
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  entryComments    EntryComment[]
+  timesheets       Timesheet[]
+  tenant           Tenant?        @relation(fields: [tenantId], references: [id])
+  tenantId         String?
+  isSetup          Boolean        @default(false)
+  oneTimeToken     OneTimeToken[]
+  statusEvents     StatusEvent[]
+
+  @@unique([id, authId])
+  @@index([managerId, tenantId])
+}
+
+model TimeEntry {
+  id             String         @id @default(cuid())
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  date           DateTime
+  hours          Float
+  index          Int
+  timeEntryRow   TimeEntryRow   @relation(fields: [timeEntryRowId], references: [id])
+  timeEntryRowId String
+  entryComments  EntryComment[]
+
+  @@unique([date, timeEntryRowId])
+  @@unique([index, timeEntryRowId])
+  @@index([timeEntryRowId])
+}
+
+model TimeEntryRow {
+  id              String           @id @default(cuid())
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  entryRowOptions EntryRowOption[]
+  timesheet       Timesheet        @relation(fields: [timesheetId], references: [id])
+  timesheetId     String
+  timeEntries     TimeEntry[]
+
+  @@index([timesheetId])
+}
+
+model Period {
+  id         String      @id @default(cuid())
+  createdAt  DateTime    @default(now())
+  startDate  DateTime
+  endDate    DateTime
+  timesheets Timesheet[]
+  tenant     Tenant      @relation(fields: [tenantId], references: [id])
+  tenantId   String
+
+
+  @@index([tenantId])
+}
+
+model EntryComment {
+  id          String    @id @default(cuid())
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  text        String    @db.Text
+  user        User      @relation(fields: [userId], references: [id])
+  userId      String
+  timeEntry   TimeEntry @relation(fields: [timeEntryId], references: [id])
+  timeEntryId String
+
+  @@index([userId, timeEntryId])
+}
+
+enum Status {
+  Unsubmitted
+  Submitted
+  ManagerApproved
+  PaymentApproved
+  Rejected
+}
+
+model Timesheet {
+  id              String           @id @default(cuid())
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  user            User             @relation(fields: [userId, userAuthId ], references: [id, authId])
+  userAuthId      String
+  userId          String
+  period          Period           @relation(fields: [periodId], references: [id])
+  periodId        String
+  status          Status           @default(Unsubmitted)
+  isChanged       Boolean          @default(false)
+  timeEntryRows   TimeEntryRow[]
+  statusEvents    StatusEvent[]
+  timesheetFields TimesheetField[]
+
+  @@unique([userId, periodId])
+  @@index([userId, periodId, userAuthId])
+  @@unique([userAuthId, periodId])
+}
+
+model Tenant {
+  id           String         @id @default(cuid())
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  startDate    DateTime
+  periodLength Int
+  isActive     Boolean        @default(true)
+  periods      Period[]
+  users        User[]
+  name         String         @db.Text
+  description  String?        @db.Text
+  logo         String?        @db.Text
+  fields       Field[]
+  oneTimeToken OneTimeToken[]
+  tenantActivefields TenantActiveField[]
+}
+
+model OneTimeToken {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id])
+  tenantId  String
+
+  @@index([userId, tenantId])
+}
+
+enum EventType {
+  Comment
+  StatusChange
+}
+
+model StatusEvent {
+  id          String    @id @default(cuid())
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  type        EventType @default(Comment)
+  status      Status    @default(Unsubmitted)
+  timesheet   Timesheet @relation(fields: [timesheetId], references: [id])
+  timesheetId String
+  user        User      @relation(fields: [userId], references: [id])
+  userId      String
+  message     String?   @db.Text
+
+  @@index([timesheetId, userId])
+}
+
+model EntryRowOption {
+  id             String       @id @default(cuid())
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  fieldOption    FieldOption  @relation(fields: [fieldOptionId], references: [id])
+  fieldOptionId  String
+  timeEntryRow   TimeEntryRow @relation(fields: [timeEntryRowId], references: [id])
+  timeEntryRowId String
+  field          Field        @relation(fields: [fieldId], references: [id])
+  fieldId        String
+
+  @@unique([fieldId, timeEntryRowId])
+  @@index([fieldOptionId, timeEntryRowId, fieldId])
+}
+
+enum FieldType {
+  Checkbox
+  Select
+}
+
+model TimesheetField {
+  id          String    @id @default(cuid())
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  timesheet   Timesheet @relation(fields: [timesheetId], references: [id])
+  timesheetId String
+  field       Field     @relation(fields: [fieldId], references: [id])
+  fieldId     String
+
+  @@index([timesheetId, fieldId])
+}
+
+model TenantActiveField {
+  id          String    @id @default(cuid())
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  tenant      Tenant    @relation(fields: [tenantId], references: [id])
+  tenantId    String
+  field       Field     @relation(fields: [fieldId], references: [id])
+  fieldId     String
+
+  @@index([tenantId, fieldId])
+}
+
+model Field {
+  id              String           @id @default(cuid())
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  name            String
+  tenant          Tenant           @relation(fields: [tenantId], references: [id])
+  tenantId        String
+  fieldType       FieldType        @default(Checkbox)
+  isActive        Boolean          @default(true)
+  isRequired      Boolean          @default(false)
+  isBillable      Boolean          @default(false)
+  isDefault       Boolean          @default(false)
+  mulitiplier     Float            @default(1.0)
+  isSystem        Boolean          @default(false)
+  description     String?          @db.Text
+  fieldOptions    FieldOption[]
+  timesheetFields TimesheetField[]
+  entryRowOptions EntryRowOption[]
+  tenantActiveFields TenantActiveField[]
+
+  @@index([tenantId])
+}
+
+model FieldOption {
+  id             String           @id @default(cuid())
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  rowField       Field            @relation(fields: [rowFieldId], references: [id])
+  rowFieldId     String
+  name           String
+  code           String
+  isActive       Boolean          @default(true)
+  isDefault      Boolean          @default(false)
+  description    String?          @db.Text
+  entryRowOption EntryRowOption[]
+}

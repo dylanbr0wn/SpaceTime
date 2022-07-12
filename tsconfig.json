@@ -1,31 +1,31 @@
-// tsconfig.json
 {
     "compilerOptions": {
-        "declaration": true,
-        "noImplicitAny": false,
-        "removeComments": true,
-        "noLib": false,
-        "emitDecoratorMetadata": true,
-        "experimentalDecorators": true,
-        "target": "es6",
-        "sourceMap": true,
-        "module": "commonjs",
-        "jsx": "preserve",
+        "target": "es5",
+        "lib": [
+            "dom",
+            "dom.iterable",
+            "esnext"
+        ],
+        "allowJs": true,
+        "skipLibCheck": true,
         "strict": true,
+        "forceConsistentCasingInFileNames": true,
+        "noEmit": true,
+        "esModuleInterop": true,
+        "module": "esnext",
         "moduleResolution": "node",
         "resolveJsonModule": true,
-        "allowSyntheticDefaultImports": true,
-        "esModuleInterop": true,
-        "lib": ["dom", "dom.iterable", "esnext", "webworker"],
-        "skipLibCheck": true,
-        "forceConsistentCasingInFileNames": true,
-        "isolatedModules": true
+        "isolatedModules": true,
+        "jsx": "preserve",
+        "incremental": true,
+        "noUncheckedIndexedAccess": true
     },
-    "exclude": ["node_modules", "**/*/lib", "**/*/dist"],
-    "references": [
-        // if you tsconfig is something different
-        { "path": "./apps/timesheet2-app" },
-        { "path": "./apps/timesheetnext" },
-        { "path": "./libs/types" }
+    "include": [
+        "next-env.d.ts",
+        "**/*.ts",
+        "**/*.tsx"
+    ],
+    "exclude": [
+        "node_modules"
     ]
 }
