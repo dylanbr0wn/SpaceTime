@@ -1,10 +1,15 @@
+import { ColumnDef, getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import { DateTime } from "luxon";
 import * as React from "react";
+import { getDayFeatures } from "../../../lib/utils";
 import { useStore } from "../../utils/store";
 
 import { trpc } from "../../utils/trpc";
 import { TimeEntryRow } from "../../utils/types/zod";
 
+import DeleteEntryInput from "./DeleteEntryInput";
+import EntryInput from "./EntryInput";
+import FieldInput from "./FieldInput";
 
 const defaultRow = {
 	id: "-1",
@@ -21,7 +26,6 @@ export const useTimesheetDates = (
 	const [start, setStartDate] = React.useState<DateTime>();
 	const [periodLength, setPeriodLength] = React.useState<number>();
 	// const [timesheetId, setTimesheetId] = React.useState();
-
 
 	const { setIsChanged } = useStore(state => ({
 		setIsChanged: state.setIsChanged,
@@ -48,17 +52,15 @@ export const useTimesheetDates = (
 			const startDate =
 				timesheetData?.period?.startDate;
 			const dates: DateTime[] = [];
-			let end: DateTime, _start: DateTime;
-
-			end = DateTime.fromJSDate(endDate, { zone: "utc" });
-
-			_start = DateTime.fromJSDate(startDate, { zone: "utc" });
+			const _end = DateTime.fromJSDate(endDate, { zone: "utc" });
+			const _start = DateTime.fromJSDate(startDate, { zone: "utc" });
 
 
-			setPeriodLength(end.diff(_start, "days").days);
+
+			setPeriodLength(_end.diff(_start, "days").days);
 			setStartDate(_start);
 			let current = _start;
-			while (current < end) {
+			while (current < _end) {
 				dates.push(current);
 				current = current.plus({ days: 1 });
 			}
@@ -99,7 +101,7 @@ export const useTimesheetColumns = (
 	return { columns };
 };
 
-export const useTimesheet = (
+export const useRows = (
 	timesheetId: string | undefined,
 	timesheetDates: DateTime[]
 ) => {
@@ -130,5 +132,6 @@ export const useTimesheet = (
 		}
 	}, [data, timesheetDates, rowsLoading]);
 
-	return { memoTimesheet: data, rowsLoading };
+	return { rows: data, rowsLoading };
 };
+

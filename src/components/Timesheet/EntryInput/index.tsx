@@ -9,6 +9,7 @@ import CustModal from "../../common/Modal";
 
 import Comments from "./Comments";
 import { useTimeEntry } from "./hooks";
+import { useForm } from "react-hook-form";
 
 /**
  * @name HourEntryInput
@@ -36,222 +37,23 @@ const TimesheetEntryInput = ({
 }) => {
     // We need to keep and update the state of the cell normally
 
-    const utils = trpc.useContext()
-
-    const updateTimeEntryhoursMutation = trpc.useMutation(
-        ["timeEntry.update"], {
-        // When mutate is called:
-        onMutate: async newEntry => {
-
-            const newTimeEntry = {
-                ...newEntry,
-                id: "",
-                createdAt: new Date(),
-                updatedAt: new Date(),
-                entryComments: []
-            }
-
-            await utils.cancelQuery(['timeEntry.read', {
-                timeEntryRowId: row?.id ?? "",
-                index: index,
-            }])
-            // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
-            // await utils.cancelQueries(['todos', newTodo.id])
-
-            // Snapshot the previous value
-            const previousTodo = utils.getQueryData(['timeEntry.read', {
-                timeEntryRowId: row?.id ?? "",
-                index: index,
-            }])
-
-            // Optimistically update to the new value
-            utils.setQueryData(['timeEntry.read', {
-                timeEntryRowId: row?.id ?? "",
-                index: index,
-            }], { ...previousTodo!, hours: newEntry.hours, id: newEntry.id })
-
-            // Return a context with the previous and new todo
-            return { previousTodo, newTimeEntry }
-        },
-        // If the mutation fails, use the context we returned above
-        onError: (err, newEntry, context) => {
-
-            if (!context?.previousTodo) utils.refetchQueries(['timeEntry.read'])
-            else {
-                utils.setQueryData(
-                    ['timeEntry.read', {
-                        timeEntryRowId: row?.id ?? "",
-                        index: index,
-                    }],
-                    context.previousTodo
-                )
-            }
-        },
-        // Always refetch after error or success:
-        onSettled: newTodo => {
-            utils.invalidateQueries(['timeEntry.read'])
-        },
-    }
-    );
-    const createTimeEntryMutation = trpc.useMutation(["timeEntry.create"], {
-        // When mutate is called:
-        onMutate: async newEntry => {
-
-            const newTimeEntry = {
-                ...newEntry,
-                id: "",
-                createdAt: new Date(),
-                updatedAt: new Date(),
-                entryComments: []
-            }
-
-            await utils.cancelQuery(['timeEntry.read', {
-                timeEntryRowId: row?.id ?? "",
-                index: index,
-            }])
-            // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
-            // await utils.cancelQueries(['todos', newTodo.id])
-
-            // Snapshot the previous value
-            const previousTodo = utils.getQueryData(['timeEntry.read', {
-                timeEntryRowId: row?.id ?? "",
-                index: index,
-            }])
-
-            // Optimistically update to the new value
-            utils.setQueryData(['timeEntry.read', {
-                timeEntryRowId: row?.id ?? "",
-                index: index,
-            }], newTimeEntry)
-
-            // Return a context with the previous and new todo
-            return { previousTodo, newTimeEntry }
-        },
-        // If the mutation fails, use the context we returned above
-        onError: (err, newEntry, context) => {
-
-            if (!context?.previousTodo) utils.refetchQueries(['timeEntry.read'])
-            else {
-                utils.setQueryData(
-                    ['timeEntry.read', {
-                        timeEntryRowId: row?.id ?? "",
-                        index: index,
-                    }],
-                    context.previousTodo
-                )
-            }
 
 
-        },
-        // Always refetch after error or success:
-        onSettled: newTodo => {
-            utils.invalidateQueries(['timeEntry.read'])
-        },
-    });
-    const deleteTimeEntryMutation = trpc.useMutation(["timeEntry.delete"], {
-        onMutate: async newEntry => {
-            await utils.cancelQuery(['timeEntry.read', {
-                timeEntryRowId: row?.id ?? "",
-                index: index,
-            }])
-            // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
-            // await utils.cancelQueries(['todos', newTodo.id])
+    const usedRow = useStore(React.useCallback(state => state.getRow(row?.id), [row?.id]))
+    const setIsChanged = useStore(state => state.setIsChanged)
 
-            // Snapshot the previous value
-            const previousTodo = utils.getQueryData(['timeEntry.read', {
-                timeEntryRowId: row?.id ?? "",
-                index: index,
-            }])
-
-            // Optimistically update to the new value
-            utils.setQueryData(['timeEntry.read', {
-                timeEntryRowId: row?.id ?? "",
-                index: index,
-            }], null)
-
-            // Return a context with the previous and new todo
-            return { previousTodo, newTimeEntry: null }
-        },
-        // If the mutation fails, use the context we returned above
-        onError: (err, newEntry, context) => {
-            console.log("here", err)
-            if (!context?.previousTodo) utils.refetchQueries(['timeEntry.read'])
-            else {
-                utils.setQueryData(
-                    ['timeEntry.read', {
-                        timeEntryRowId: row?.id ?? "",
-                        index: index,
-                    }],
-                    context.previousTodo
-                )
-            }
+    const disableEntryInput = (usedRow?.length ?? 0) < 3
 
 
-        },
-    }
-
-    );
-
-    const [disableEntryInput, setDisableEntryInput] = React.useState(true);
-
-    React.useEffect(() => {
-        console.log(row?.entryRowOptions)
-        if ((row?.entryRowOptions?.length ?? 0) < 3) {
-            setDisableEntryInput(true);
-        } else {
-            setDisableEntryInput(false);
-        }
-    }, [row]);
-
-    const { timeEntry, setTimeEntry, needsToSave } = useTimeEntry(
+    const { timeEntry, isDirty, register, hours, reset, create, deleteMutate, update } = useTimeEntry(
         row?.id,
         index,
-        row?.entryRowOptions?.length ?? 0
+        usedRow?.length ?? 0,
     );
 
-    const onHourChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        let hours = parseFloat(e.target.value);
-        if (isNaN(hours)) hours = 0;
-        if (hours > 24 || hours < 0) return;
-        setTimeEntry({
-            ...timeEntry!,
-            hours: hours,
-        });
-    };
 
-    const { setIsChanged } = useStore(state => ({
-        setIsChanged: state.setIsChanged,
-    }))
 
     // We'll only update the external data when the input is blurred
-    const onBlur = () => {
-        if (timeEntry?.id === "-1" && (timeEntry?.hours ?? 0) > 0) {
-            createTimeEntryMutation.mutate({
-
-                date: date.toJSDate(),
-                index,
-                hours: timeEntry?.hours ?? 0,
-                timeEntryRowId: row?.id ?? "-1",
-            });
-            setIsChanged(true);
-        } else if (timeEntry?.id !== "-1" && (timeEntry?.hours ?? 0) > 0) {
-            if (needsToSave) {
-                updateTimeEntryhoursMutation.mutate({
-                    id: timeEntry?.id ?? "-1",
-                    hours: timeEntry?.hours ?? 0,
-                });
-            }
-            setIsChanged(true);
-        } else if (timeEntry?.id !== "-1" && timeEntry?.hours === 0) {
-            deleteTimeEntryMutation.mutate({
-                id: timeEntry?.id ?? "-1",
-            });
-            setIsChanged(true);
-        } else {
-            // setIsSaving(false);
-        }
-        // setIsEditing(false);
-    };
 
     // when comment change detected, will wait 0.75s to update. If updated before end of 0.75s, timer will restart.
 
@@ -276,22 +78,51 @@ const TimesheetEntryInput = ({
                         aria-label="timesheetEntryInput"
                         type="number"
                         onClick={clickHandler}
-                        value={
-                            !timeEntry?.hours
-                                ? ""
-                                : timeEntry.hours === 0
-                                    ? ""
-                                    : timeEntry.hours
-                        }
-                        onChange={onHourChange}
-                        onBlur={onBlur}
+                        {...register("hours", {
+                            required: true,
+                            min: 0,
+                            valueAsNumber: true,
+                            disabled: false || disableEntryInput,
+
+                            onBlur: () => {
+
+                                if (!timeEntry?.id && (hours ?? 0) > 0) {
+                                    create({
+
+                                        date: date.toJSDate(),
+                                        index,
+                                        hours: hours ?? 0,
+                                        timeEntryRowId: row?.id ?? "-1",
+                                    });
+                                    setIsChanged(true);
+                                } else if (timeEntry?.id && hours) {
+                                    if (isDirty) {
+                                        update({
+                                            id: timeEntry?.id ?? "-1",
+                                            hours: hours ?? 0,
+                                        });
+                                    }
+                                    reset({ hours: `${hours}` })
+                                    setIsChanged(true);
+                                } else if (timeEntry?.id && (isNaN(hours) || hours === 0)) {
+                                    deleteMutate({
+                                        id: timeEntry?.id ?? "-1",
+                                    });
+                                    setIsChanged(true);
+                                } else {
+                                    reset({ hours: '' })
+                                    // setIsSaving(false);
+                                }
+
+                                // setIsEditing(false);
+                            }
+                        })}
                         // onFocus={() => setIsEditing(true)}
                         className={`w-full h-full input input-bordered input-sm bg-base-300 px-1.5 2xl:px-2 text-xs 2xl:text-sm ${false || disableEntryInput ? "input-disabled" : ""
                             } ${(timeEntry?.entryComments?.length ?? 0) > 0
                                 ? "input-accent"
                                 : ""
                             }`}
-                        disabled={false || disableEntryInput}
                         step="0.01"
                     />
                 </div>

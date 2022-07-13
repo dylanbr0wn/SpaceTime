@@ -5,7 +5,7 @@ import * as React from "react";
 import { PlusIcon } from "@heroicons/react/outline";
 import {
     ColumnDef,
-    createTable, flexRender, getCoreRowModel, useReactTable,
+    flexRender, getCoreRowModel, useReactTable,
 } from "@tanstack/react-table";
 import { getDayFeatures } from "../../../lib/utils";
 import ErrorBoundary from "../common/ErrorBoundary";
@@ -13,11 +13,20 @@ import ErrorBoundary from "../common/ErrorBoundary";
 import TimesheetDeleteEntryInput from "./DeleteEntryInput";
 import TimesheetEntryInput from "./EntryInput";
 import TimesheetDepartmentInput from "./FieldInput";
-import { useTimesheet } from "./hooks";
+import { useRows } from "./hooks";
 import { TimeEntryRow } from "../../utils/types/zod";
 import { trpc } from "../../utils/trpc";
 import cuid from "cuid";
 // import { TimeEntryRow } from "./types";
+
+interface ITimesheetTableProps {
+    timesheetDates: DateTime[];
+    timesheetId: string | undefined;
+    timesheetColumns: { id: string; name: string }[];
+    userId: string;
+    tenantId: string;
+}
+
 
 /**
  * @name TimesheetTable
@@ -32,17 +41,11 @@ const TimesheetTable = ({
     timesheetColumns,
     userId,
     tenantId,
-}: {
-    timesheetDates: DateTime[];
-    timesheetId: string | undefined;
-    timesheetColumns: { id: string; name: string }[];
-    userId: string;
-    tenantId: string;
-}) => {
+}: ITimesheetTableProps) => {
     // const [pinRows, setPinRows] = React.useState([]);
     // const [otherRows, setOtherRows] = React.useState([]);
 
-    const { memoTimesheet } = useTimesheet(timesheetId, timesheetDates);
+    const { rows } = useRows(timesheetId, timesheetDates);
 
     const utils = trpc.useContext()
 
@@ -93,12 +96,10 @@ const TimesheetTable = ({
     }
     );
 
-    const createTimeEntryRow = async () => {
-        await mutation.mutate({
-
+    const createTimeEntryRow = () => {
+        mutation.mutate({
             timesheetId: timesheetId ?? "-1",
-        }
-        );
+        });
     }
 
     const columns = React.useMemo<ColumnDef<TimeEntryRow & {
@@ -182,9 +183,9 @@ const TimesheetTable = ({
     // For this example, we're using pagination to illustrate how to stop
     // the current page from resetting when our data changes
     // Otherwise, nothing is different here.
-    const instance = useReactTable(
+    const table = useReactTable(
         {
-            data: memoTimesheet!,
+            data: rows!,
             columns,
             getCoreRowModel: getCoreRowModel(),
 
@@ -206,7 +207,7 @@ const TimesheetTable = ({
             <ErrorBoundary>
                 <div className=" my-2 w-full mx-auto flex flex-col space-y-2">
                     <div className="flex flex-col flex-shrink">
-                        {instance.getHeaderGroups().map((headerGroup) => (
+                        {table.getHeaderGroups().map((headerGroup) => (
                             <div
                                 className="flex space-x-0.5 "
                                 key={headerGroup.id}
@@ -273,11 +274,11 @@ const TimesheetTable = ({
                             </div>
                         ))}
                     </div>
-                    {memoTimesheet && (
+                    {rows && (
                         <>
-                            {instance.getRowModel().rows.length > 0 ? (
+                            {table.getRowModel().rows.length > 0 ? (
                                 <div className=" space-y-2">
-                                    {instance.getRowModel().rows.map((row) => {
+                                    {table.getRowModel().rows.map((row) => {
                                         return (
                                             <div
                                                 className="rounded-md flex space-x-0.5"
