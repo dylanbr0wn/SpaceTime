@@ -38,6 +38,7 @@ specifiers:
   react-day-picker: ^8.0.7
   react-dom: ^18.1.0
   react-error-boundary: ^3.1.4
+  react-hook-form: ^7.33.1
   react-hot-toast: ^2.2.0
   react-icons: ^4.3.1
   react-query: ^3.39.1
@@ -76,6 +77,7 @@ dependencies:
   react-day-picker: 8.0.7_oze23jex6qdqdkoprorukhh55a
   react-dom: 18.2.0_react@18.2.0
   react-error-boundary: 3.1.4_react@18.2.0
+  react-hook-form: 7.33.1_react@18.2.0
   react-hot-toast: 2.2.0_biqbaboplfbrettd7655fr4n2y
   react-icons: 4.4.0_react@18.2.0
   react-query: 3.39.1_biqbaboplfbrettd7655fr4n2y
@@ -2654,6 +2656,15 @@ packages:
 
   /react-fast-compare/2.0.4:
     resolution: {integrity: sha512-suNP+J1VU1MWFKcyt7RtjiSWUjvidmQSlqu+eHslq+342xCbGTYmC0mEhPCOHxlW0CywylOC1u2DFAT+bv4dBw==}
+    dev: false
+
+  /react-hook-form/7.33.1_react@18.2.0:
+    resolution: {integrity: sha512-ydTfTxEJdvgjCZBj5DDXRc58oTEfnFupEwwTAQ9FSKzykEJkX+3CiAkGtAMiZG7IPWHuzgT6AOBfogiKhUvKgg==}
+    engines: {node: '>=12.22.0'}
+    peerDependencies:
+      react: ^16.8.0 || ^17 || ^18
+    dependencies:
+      react: 18.2.0
     dev: false
 
   /react-hot-toast/2.2.0_biqbaboplfbrettd7655fr4n2y:

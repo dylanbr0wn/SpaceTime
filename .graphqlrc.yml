@@ -1,0 +1,16 @@
+overwrite: true
+errorsOnly: true
+schema: ./graphql/build-schema.js
+documents: ./graphql/operation.graphql
+generates:
+    ./graphql/schema.graphql:
+        plugins:
+        - schema-ast
+    ./lib/apollo/graphql.ts:
+        plugins:
+            - "typescript"
+            - "typescript-operations"
+            - "typed-document-node"
+    ./graphql.schema.json:
+        plugins:
+            - "introspection"
