@@ -91,29 +91,34 @@ const TimesheetDepartmentInput = ({
 
     const updateEntryRowOption = trpc.useMutation(["entryRowOption.update"], {
         onMutate: async newRowOption => {
-
-
-
             await utils.cancelQuery(['entryRowOption.read', {
                 rowId: row?.id ?? "-1",
                 fieldId: fieldId,
             }])
-            // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
-            // await utils.cancelQueries(['todos', newTodo.id])
 
-            // Snapshot the previous value
             const previousRowOption = utils.getQueryData(['entryRowOption.read', {
                 rowId: row?.id ?? "-1",
                 fieldId: fieldId,
             }])
-
             const newTimeEntryRow = { ...previousRowOption!, ...newRowOption, fieldOption: { ...field!, description: "" } }
 
-            // Optimistically update to the new value
             utils.setQueryData(['entryRowOption.read', {
                 rowId: row?.id ?? "-1",
                 fieldId: fieldId,
             }], newTimeEntryRow)
+
+            await utils.cancelQuery(['timeEntryRow.readAll', {
+                timesheetId: row?.timesheetId ?? "-1",
+            }])
+
+            const previousRows = utils.getQueryData(['timeEntryRow.readAll', {
+                timesheetId: row?.timesheetId ?? "-1",
+            }])
+            const newRows = previousRows?.map(r => r.id === row?.id ? ({ ...r, entryRowOptions: r.entryRowOptions.map(option => option.id === fieldId ? newTimeEntryRow : option) }) : r)
+
+            utils.setQueryData(['timeEntryRow.readAll', {
+                timesheetId: row?.timesheetId ?? "-1",
+            }], newRows!)
 
             // Return a context with the previous and new todo
             return { previousRowOption, newTimeEntryRow }
@@ -137,6 +142,7 @@ const TimesheetDepartmentInput = ({
         // Always refetch after error or success:
         onSettled: newTodo => {
             utils.invalidateQueries(['entryRowOption.read'])
+            utils.invalidateQueries(['timeEntryRow.readAll'])
         },
     });
 

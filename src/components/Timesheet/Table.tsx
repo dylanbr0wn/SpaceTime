@@ -16,6 +16,7 @@ import TimesheetDepartmentInput from "./FieldInput";
 import { useTimesheet } from "./hooks";
 import { TimeEntryRow } from "../../utils/types/zod";
 import { trpc } from "../../utils/trpc";
+import cuid from "cuid";
 // import { TimeEntryRow } from "./types";
 
 /**
@@ -43,8 +44,53 @@ const TimesheetTable = ({
 
     const { memoTimesheet } = useTimesheet(timesheetId, timesheetDates);
 
+    const utils = trpc.useContext()
+
     const mutation = trpc.useMutation(
-        ["timeEntryRow.create"]
+        ["timeEntryRow.create"], {
+        onMutate: async newRow => {
+
+            const newFakeRow = { ...newRow, id: cuid(), createdAt: new Date(), updatedAt: new Date(), entryRowOptions: [] }
+
+            await utils.cancelQuery(['timeEntryRow.readAll', {
+                timesheetId: timesheetId ?? "-1",
+            }])
+            // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
+            // await utils.cancelQueries(['todos', newTodo.id])
+
+            // Snapshot the previous value
+            const previousTodo = utils.getQueryData(['timeEntryRow.readAll', {
+                timesheetId: timesheetId ?? "-1",
+            }])
+
+            // Optimistically update to the new value
+            utils.setQueryData(['timeEntryRow.readAll', {
+                timesheetId: timesheetId ?? "-1",
+            }], [...previousTodo!, newFakeRow])
+
+            // Return a context with the previous and new todo
+            return { previousTodo, newFakeRow }
+        },
+        // If the mutation fails, use the context we returned above
+        onError: (err, newEntry, context) => {
+
+            if (!context?.previousTodo) utils.refetchQueries(['timeEntryRow.readAll'])
+            else {
+                utils.setQueryData(
+                    ['timeEntryRow.readAll', {
+                        timesheetId: timesheetId ?? "-1",
+                    }],
+                    context.previousTodo
+                )
+            }
+
+
+        },
+        // Always refetch after error or success:
+        onSettled: newTodo => {
+            utils.invalidateQueries(['timeEntry.read'])
+        },
+    }
     );
 
     const createTimeEntryRow = async () => {
@@ -138,7 +184,7 @@ const TimesheetTable = ({
     // Otherwise, nothing is different here.
     const instance = useReactTable(
         {
-            data: memoTimesheet,
+            data: memoTimesheet!,
             columns,
             getCoreRowModel: getCoreRowModel(),
 
