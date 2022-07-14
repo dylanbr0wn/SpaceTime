@@ -1,4 +1,8 @@
-import { ColumnDef, getCoreRowModel, useReactTable } from "@tanstack/react-table";
+import {
+	ColumnDef,
+	getCoreRowModel,
+	useReactTable,
+} from "@tanstack/react-table";
 import { DateTime } from "luxon";
 import * as React from "react";
 import { getDayFeatures } from "../../../lib/utils";
@@ -27,15 +31,16 @@ export const useTimesheetDates = (
 	const [periodLength, setPeriodLength] = React.useState<number>();
 	// const [timesheetId, setTimesheetId] = React.useState();
 
-	const { setIsChanged } = useStore(state => ({
-		setIsChanged: state.setIsChanged,
-	}))
+	const setIsChanged = useStore((state) => state.setIsChanged);
 
 	const { data: timesheetData, isLoading: timesheetLoading } = trpc.useQuery(
-		["timesheet.readFromAuth", {
-			authId: String(authId),
-			date: timesheetQueryDate,
-		}],
+		[
+			"timesheet.readFromAuth",
+			{
+				authId: String(authId),
+				date: timesheetQueryDate,
+			},
+		],
 		{
 			refetchOnWindowFocus: false,
 			enabled: !!authId,
@@ -49,13 +54,10 @@ export const useTimesheetDates = (
 	React.useEffect(() => {
 		if (timesheetData?.period) {
 			const endDate = timesheetData?.period?.endDate;
-			const startDate =
-				timesheetData?.period?.startDate;
+			const startDate = timesheetData?.period?.startDate;
 			const dates: DateTime[] = [];
 			const _end = DateTime.fromJSDate(endDate, { zone: "utc" });
 			const _start = DateTime.fromJSDate(startDate, { zone: "utc" });
-
-
 
 			setPeriodLength(_end.diff(_start, "days").days);
 			setStartDate(_start);
@@ -79,18 +81,20 @@ export const useTimesheetDates = (
 };
 
 export const useTimesheetColumns = (
-	timesheet: {
-		timesheetFields: {
-			field: {
-				id: string,
-				name: string
-			}
-		}[]
-	} | undefined
+	timesheet:
+		| {
+				timesheetFields: {
+					field: {
+						id: string;
+						name: string;
+					};
+				}[];
+		  }
+		| undefined
 ) => {
-	const [columns, setColumns] = React.useState<
-		{ id: string; name: string }[]
-	>([]);
+	const [columns, setColumns] = React.useState<{ id: string; name: string }[]>(
+		[]
+	);
 
 	React.useEffect(() => {
 		if (timesheet) {
@@ -105,33 +109,42 @@ export const useRows = (
 	timesheetId: string | undefined,
 	timesheetDates: DateTime[]
 ) => {
+	const { setUsedRows, usedRows } = useStore((state) => ({
+		setUsedRows: state.setUsedRows,
+		usedRows: state.usedRows,
+	}));
+
 	const {
 		data,
 		isLoading: rowsLoading,
 		// error,
-	} = trpc.useQuery(["timeEntryRow.readAll", { timesheetId: timesheetId ?? "-1", }], {
-		enabled: !!timesheetId,
-		refetchOnWindowFocus: false,
-	});
-
-	const { setUsedRows } = useStore(state => ({
-
-		setUsedRows: state.setUsedRows,
-	}))
-
-	React.useEffect(() => {
-		if (data && !rowsLoading) {
-			const newUsedRows: { [key: string]: string[] } = {};
-			data.forEach((row) => {
-				newUsedRows[row.id] = row.entryRowOptions.map(
-					(option) => option.fieldOption.id
-				);
+	} = trpc.useQuery(
+		["timeEntryRow.readAll", { timesheetId: timesheetId ?? "-1" }],
+		{
+			onError(err) {
+				console.error(err);
+			},
+			onSuccess(data) {
+				if (!data) return;
+				if (Object.values(usedRows).length !== 0) return;
+				const newUsedRows: { [key: string]: string[] } = {};
+				data.forEach((row) => {
+					newUsedRows[row.id] = row.entryRowOptions.map(
+						(option) => option.fieldOption.id
+					);
+				});
+				console.log("at the source", newUsedRows);
 				setUsedRows(newUsedRows);
-
-			});
+			},
+			enabled: !!timesheetId,
+			refetchOnWindowFocus: false,
 		}
-	}, [data, timesheetDates, rowsLoading]);
+	);
+
+	// React.useEffect(() => {
+	// 	if (data && !rowsLoading) {
+	// 	}
+	// }, [data, timesheetDates, rowsLoading]);
 
 	return { rows: data, rowsLoading };
 };
-

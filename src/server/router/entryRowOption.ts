@@ -11,7 +11,7 @@ export const entryRowOptionRouter = createRouter()
             })
             .required(),
         async resolve({ input, ctx }) {
-            return await ctx.prisma.entryRowOption.findUniqueOrThrow({
+            return await ctx.prisma.entryRowOption.findUnique({
                 where: {
                     fieldId_timeEntryRowId: {
                         timeEntryRowId: input.rowId,
