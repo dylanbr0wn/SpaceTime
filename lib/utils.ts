@@ -1,7 +1,7 @@
 // import Holidays from "date-holidays";
 import { DateTime } from "luxon";
-
-// import { fieldOption, Rows } from "./Rows";
+import _ from "lodash";
+import { fieldOption, Rows } from "./Rows";
 
 // const invalidRowCheck = (timesheet, errors, departments, projects) => {
 //     let invalidRow = false;
@@ -300,20 +300,29 @@ export const getDayFeatures = (day: DateTime) => {
 	return { style, hoverText, dateType };
 };
 
-// const A: fieldOption[] = [{ a: "1" }, { a: "2" }, { a: "3" }];
-// const C: fieldOption[] = [{ c: "1" }, { c: "2" }, { c: "3" }];
-// const B: fieldOption[] = [{ b: "1" }, { b: "2" }, { b: "3" }, { b: "4" }];
+const A: fieldOption[] = [{ a: "1" }, { a: "2" }, { a: "3" }];
+const C: fieldOption[] = [{ c: "1" }, { c: "2" }, { c: "3" }];
+const B: fieldOption[] = [{ b: "1" }, { b: "2" }, { b: "3" }, { b: "4" }];
 
-// const z: fieldOption[][] = [A, B, C];
+const z: fieldOption[][] = [A, B, C];
 
-// const usedRows: fieldOption[][] = [
-//     [{ a: "1" }, { b: "3" }, { c: "2" }],
-//     [{ a: "1" }, { b: "3" }, { c: "1" }],
-// ];
+const usedRows: fieldOption[][] = [
+	[{ a: "1" }, { b: "3" }, { c: "2" }],
+	[{ a: "1" }, { b: "3" }, { c: "1" }],
+];
 
-// const t = Rows(z)
-//     .filter(usedRows)
-//     .withMatches([{ a: "1" }, { b: "3" }])
-//     .getOptions("c");
+const t = Rows(z)
+	.bind((rows) =>
+		rows.filter(
+			(xrow) =>
+				!usedRows.some((used) => _.isEmpty(_.xorWith(xrow, used, _.isEqual)))
+		)
+	)
+	.bind((rows) =>
+		rows.filter((row) =>
+			_.every([{ a: "1" }, { b: "3" }], (val) => _.some(row, val))
+		)
+	)
+	.getOptions("c");
 
-// console.log(t);
+console.log(t);
