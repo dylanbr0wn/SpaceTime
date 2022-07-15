@@ -11,24 +11,24 @@ import { ErrorBoundary as EB } from "react-error-boundary";
  */
 
 const ErrorFallback = ({ error, hasError }: any) => {
-    return (
-        <div className="text-center">
-            <h2>Something went wrong</h2>
-            <details style={{ whiteSpace: "pre-wrap" }}>
-                {hasError && error.toString()}
-                <br />
-                {error.componentStack}
-            </details>
-        </div>
-    );
+	return (
+		<div className="text-center">
+			<h2>Something went wrong</h2>
+			<details style={{ whiteSpace: "pre-wrap" }}>
+				{hasError && error.toString()}
+				<br />
+				{error.componentStack}
+			</details>
+		</div>
+	);
 };
 
 const ErrorBoundary = ({ children }: any) => {
-    return (
-        <>
-            <EB FallbackComponent={ErrorFallback}>{children}</EB>
-        </>
-    );
+	return (
+		<>
+			<EB FallbackComponent={ErrorFallback}>{children}</EB>
+		</>
+	);
 };
 
 export default ErrorBoundary;

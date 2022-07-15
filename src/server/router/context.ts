@@ -4,14 +4,14 @@ import * as trpcNext from "@trpc/server/adapters/next";
 import { prisma } from "../db/client";
 
 export const createContext = ({
-  req,
-  res,
+	req,
+	res,
 }: trpcNext.CreateNextContextOptions) => {
-  return {
-    req,
-    res,
-    prisma,
-  };
+	return {
+		req,
+		res,
+		prisma,
+	};
 };
 
 type Context = trpc.inferAsyncReturnType<typeof createContext>;

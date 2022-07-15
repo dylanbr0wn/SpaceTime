@@ -15,18 +15,18 @@ import { timeEntryRowRouter } from "./timeEntryRow";
 import { timesheetRouter } from "./timesheet";
 
 export const appRouter = createRouter()
-  .transformer(superjson)
-  .merge("entryComment.", entryCommentRouter)
-  .merge("user.", userRouter)
-  .merge("entryRowOption.", entryRowOptionRouter)
-  .merge("tenant.", tenantRouter)
-  .merge("timeEntry.", timeEntryRouter)
-  .merge("field.", fieldRouter)
-  .merge("fieldOptions.", fieldOptionRouter)
-  .merge("oneTimeToken.", oneTimeTokenRouter)
-  .merge("statusEvents.", statusEventRouter)
-  .merge("timeEntryRow.", timeEntryRowRouter)
-  .merge("timesheet.", timesheetRouter);
+	.transformer(superjson)
+	.merge("entryComment.", entryCommentRouter)
+	.merge("user.", userRouter)
+	.merge("entryRowOption.", entryRowOptionRouter)
+	.merge("tenant.", tenantRouter)
+	.merge("timeEntry.", timeEntryRouter)
+	.merge("field.", fieldRouter)
+	.merge("fieldOptions.", fieldOptionRouter)
+	.merge("oneTimeToken.", oneTimeTokenRouter)
+	.merge("statusEvents.", statusEventRouter)
+	.merge("timeEntryRow.", timeEntryRowRouter)
+	.merge("timesheet.", timesheetRouter);
 
 // export type definition of API
 export type AppRouter = typeof appRouter;

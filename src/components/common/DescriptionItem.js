@@ -9,21 +9,21 @@ import PropTypes from "prop-types";
  * @description Simple description
  */
 const DescriptionItem = ({ header, info }) => (
-    <>
-        <div style={{ margin: "10px 0" }}>
-            <div className="text-muted" style={{ fontSize: "0.8rem" }}>
-                {header}
-            </div>
-            <div style={{ fontSize: "1.2rem", fontWeight: 500 }}>{info}</div>
-        </div>
-    </>
+	<>
+		<div style={{ margin: "10px 0" }}>
+			<div className="text-muted" style={{ fontSize: "0.8rem" }}>
+				{header}
+			</div>
+			<div style={{ fontSize: "1.2rem", fontWeight: 500 }}>{info}</div>
+		</div>
+	</>
 );
 
 DescriptionItem.propTypes = {
-    header: PropTypes.string.isRequired,
-    // String with header text
-    info: PropTypes.string,
-    // String with info text
+	header: PropTypes.string.isRequired,
+	// String with header text
+	info: PropTypes.string,
+	// String with info text
 };
 
 export default DescriptionItem;

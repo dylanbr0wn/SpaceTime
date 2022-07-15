@@ -19,81 +19,79 @@ import SavingIcon from "../common/SavingIcon";
  * @description Time sheet cut off date selection tool. Provides a date selection input.
  */
 const ToolsCutOffDate = ({ settings, saveSettingsDispatch }) => {
-    const [cutOffDate, setCutOffDate] = useState(
-        moment.utc(settings.CutOffDate)
-    );
-    const [focused, setFocused] = useState(false);
-    const [savingDate, setSavingDate] = useState(false);
-    const [errors, setErrors] = useState({});
+	const [cutOffDate, setCutOffDate] = useState(moment.utc(settings.CutOffDate));
+	const [focused, setFocused] = useState(false);
+	const [savingDate, setSavingDate] = useState(false);
+	const [errors, setErrors] = useState({});
 
-    useEffect(() => {
-        setCutOffDate(moment.utc(settings.CutOffDate));
-    }, [settings]);
+	useEffect(() => {
+		setCutOffDate(moment.utc(settings.CutOffDate));
+	}, [settings]);
 
-    //Handles dispatching redux action and api call with saveSettings when the date is changed.
-    const handleDateChange = async date => {
-        setErrors({});
-        setSavingDate(true);
-        const result = await saveSettingsDispatch({
-            ...settings,
-            CutOffDate: date.toDate(),
-        });
-        if (result.success) {
-            setSavingDate(false);
-        } else {
-            toast.warn("Error: " + result.data);
-            setErrors({ date: "Couldnt save settings." });
-            setSavingDate(false);
-        }
-    };
+	//Handles dispatching redux action and api call with saveSettings when the date is changed.
+	const handleDateChange = async (date) => {
+		setErrors({});
+		setSavingDate(true);
+		const result = await saveSettingsDispatch({
+			...settings,
+			CutOffDate: date.toDate(),
+		});
+		if (result.success) {
+			setSavingDate(false);
+		} else {
+			toast.warn("Error: " + result.data);
+			setErrors({ date: "Couldnt save settings." });
+			setSavingDate(false);
+		}
+	};
 
-    return (
-        <>
-            <Row>
-                <Col>
-                    <div className="h5">Cut Off Date </div>
-                </Col>
-            </Row>
-            <Row>
-                <Col>
-                    <SingleDatePicker
-                        date={cutOffDate} // momentPropTypes.momentObj or null
-                        onDateChange={handleDateChange} // PropTypes.func.isRequired
-                        focused={focused} // PropTypes.bool
-                        onFocusChange={({ focused }) => setFocused(focused)} // PropTypes.func.isRequired
-                        id="your_unique_id" // PropTypes.string.isRequired,
-                        showDefaultInputIcon
-                        hideKeyboardShortcutsPanel
-                        numberOfMonths={1}
-                        isOutsideRange={() => false}
-                    />
-                    <SavingIcon
-                        saving={savingDate}
-                        error={Object.keys(errors).length !== 0}
-                        errorMessage={errors.date}
-                    />
-                </Col>
-            </Row>
-        </>
-    );
+	return (
+		<>
+			<Row>
+				<Col>
+					<div className="h5">Cut Off Date </div>
+				</Col>
+			</Row>
+			<Row>
+				<Col>
+					<SingleDatePicker
+						date={cutOffDate} // momentPropTypes.momentObj or null
+						onDateChange={handleDateChange} // PropTypes.func.isRequired
+						focused={focused} // PropTypes.bool
+						onFocusChange={({ focused }) => setFocused(focused)} // PropTypes.func.isRequired
+						id="your_unique_id" // PropTypes.string.isRequired,
+						showDefaultInputIcon
+						hideKeyboardShortcutsPanel
+						numberOfMonths={1}
+						isOutsideRange={() => false}
+					/>
+					<SavingIcon
+						saving={savingDate}
+						error={Object.keys(errors).length !== 0}
+						errorMessage={errors.date}
+					/>
+				</Col>
+			</Row>
+		</>
+	);
 };
 
 ToolsCutOffDate.propTypes = {
-    settings: PropTypes.object.isRequired,
-    // Object with current setting information
-    saveSettingsDispatch: PropTypes.func.isRequired,
-    // Dispatch function for saving settings information
+	settings: PropTypes.object.isRequired,
+	// Object with current setting information
+	saveSettingsDispatch: PropTypes.func.isRequired,
+	// Dispatch function for saving settings information
 };
 
-const mapStateToProps = state => {
-    return {
-        loading: state.apiCallsInProgress > 0,
-        settings: state.settings,
-    };
+const mapStateToProps = (state) => {
+	return {
+		loading: state.apiCallsInProgress > 0,
+		settings: state.settings,
+	};
 };
 
 const mapDispatchToProps = {
-    saveSettingsDispatch,
+	saveSettingsDispatch,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ToolsCutOffDate);

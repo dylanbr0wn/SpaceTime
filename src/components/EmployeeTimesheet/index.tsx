@@ -12,11 +12,11 @@ import Timesheet from "../Timesheet";
  * @param {Object} props Props. See propTypes for details.
  */
 const EmployeeTimesheet = () => {
-    return (
-        <div className="w-full">
-            <Timesheet />
-        </div>
-    );
+	return (
+		<div className="w-full">
+			<Timesheet />
+		</div>
+	);
 };
 
 export default EmployeeTimesheet;

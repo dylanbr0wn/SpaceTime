@@ -281,26 +281,23 @@ import { DateTime } from "luxon";
 // // Add any other holidays here
 
 export const getDayFeatures = (day: DateTime) => {
-    const dateType = {
-        isWeekEnd: day.weekday === 6 || day.weekday === 7,
-        isHoliday: false,
-        isToday: day.hasSame(DateTime.local(), "day"),
-    };
+	const dateType = {
+		isWeekEnd: day.weekday === 6 || day.weekday === 7,
+		isHoliday: false,
+		isToday: day.hasSame(DateTime.local(), "day"),
+	};
 
-    const hoverText = `${day.toFormat("yyyy/LL/dd")} ${dateType.isHoliday
-        ? `()`
-        : dateType.isWeekEnd
-            ? "(Weekend)"
-            : ""
-        }${dateType.isToday ? `- Today` : ""}`;
+	const hoverText = `${day.toFormat("yyyy/LL/dd")} ${
+		dateType.isHoliday ? `()` : dateType.isWeekEnd ? "(Weekend)" : ""
+	}${dateType.isToday ? `- Today` : ""}`;
 
-    const style = dateType.isToday
-        ? "text-warning"
-        : dateType.isHoliday || dateType.isWeekEnd
-            ? "text-base-content opacity-50"
-            : "text-primary";
+	const style = dateType.isToday
+		? "text-warning"
+		: dateType.isHoliday || dateType.isWeekEnd
+		? "text-base-content opacity-50"
+		: "text-primary";
 
-    return { style, hoverText, dateType };
+	return { style, hoverText, dateType };
 };
 
 // const A: fieldOption[] = [{ a: "1" }, { a: "2" }, { a: "3" }];

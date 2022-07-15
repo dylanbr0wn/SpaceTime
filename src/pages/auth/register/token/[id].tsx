@@ -24,9 +24,9 @@
 // };
 
 const Token = () =>
-    // { session }: { session: Session }
-    {
-        // return <ConfirmTenant userData={session} />;
-        return <div />;
-    };
+	// { session }: { session: Session }
+	{
+		// return <ConfirmTenant userData={session} />;
+		return <div />;
+	};
 export default Token;
