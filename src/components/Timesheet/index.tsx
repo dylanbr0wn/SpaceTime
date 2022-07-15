@@ -45,7 +45,7 @@ const Timesheet = () => {
 
 	return (
 		<>
-			<div className="w-full flex flex-col p-1">
+			<div className="w-full flex flex-col p-1 mt-3">
 				<div className="w-full flex max-w-screen-xl mx-auto">
 					<div className="w-full flex flex-col">
 						<div className="my-auto">
@@ -95,6 +95,7 @@ const Timesheet = () => {
 				</div>
 				{!timesheetLoading ? (
 					<TimesheetTable
+						timesheetLoading={timesheetLoading}
 						timesheetId={timesheetFromDate?.id}
 						timesheetDates={timesheetDates}
 						userId={timesheetFromDate?.user?.id ?? "-1"}
