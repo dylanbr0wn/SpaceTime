@@ -67,11 +67,12 @@ const FieldInput = ({
 
 	const { fieldInfo } = useFieldOptions(fieldId);
 
-	const { usedRows, setUsedRows, setIsChanged } = useStore(
+	const { usedRows, setUsedRows, setIsChanged, isChanged } = useStore(
 		(state) => ({
 			usedRows: state.usedRows,
 			setUsedRows: state.setUsedRows,
 			setIsChanged: state.setIsChanged,
+			isChanged: state.IsChanged,
 		}),
 		shallow
 	);
@@ -171,50 +172,43 @@ const FieldInput = ({
 				);
 			}
 		},
-		// Always refetch after error or success:
-		// onSettled: (newTodo) => {
-		// 	utils.invalidateQueries([
-		// 		"timeEntryRow.read",
-		// 		{
-		// 			id: rowId ?? "-1",
-		// 		},
-		// 	]);
-		// 	utils.invalidateQueries([
-		// 		"timeEntryRow.readAll",
-		// 		{
-		// 			timesheetId: timesheetId ?? "-1",
-		// 		},
-		// 	]);
-		// },
 	});
 
-	const onChange = async (_field: FieldOption) => {
+	const updateTimesheet = trpc.useMutation(["timesheet.update"]).mutate;
+
+	const onChange = (_field: FieldOption) => {
+		/**
+		 * TODO: This is a hack to get the field option to work.
+		 * Need to figure out how to make sure user is not entering a value
+		 * that could cause a collision.
+		 *
+		 * To check we construct a row with the new option and see if it exists
+		 * in the existing rows. If it does, we don't allow the user to enter the
+		 * value and we shake the field.
+		 *
+		 */
+
 		setShake(false);
 		if (_field.id === field?.id) return;
 		if (!rowId) return;
-		const thisRow = usedRows[rowId]?.filter((f) => f !== field?.id) ?? [];
-		const newRow = [...thisRow, _field.id];
+		const thisRow = usedRows[rowId]?.filter((f) => f !== field?.id) ?? []; // Get row and remove the current field
+		const newRow = [...thisRow, _field.id]; // Add the new field
 
 		const result = Object.keys(usedRows).find(
 			(r) =>
 				_.isEmpty(_.xor(usedRows[r], newRow)) &&
 				r !== rowId &&
 				usedRows[r]?.length === maxOptions
-		);
+		); // Check if the new row is a duplicate
 
 		if (result) {
 			notify("You cannot select the same option twice.");
-			setShaker([result, _field.id]);
-			// setShake(true);
+			setShaker([result, _field.id]); // Shake the field
 			return;
 		}
-		console.log("old");
-		console.log("new", {
-			...usedRows,
-			[rowId ?? "-1"]: newRow,
-		});
 
 		flushSync(() => {
+			// Flush the state update so we know its available in the mutation onMutate
 			setUsedRows({
 				...usedRows,
 				[rowId ?? "-1"]: newRow,
@@ -224,12 +218,22 @@ const FieldInput = ({
 
 		// console.log(usedRows);
 
-		await updateEntryRowOption.mutateAsync({
+		updateEntryRowOption.mutate({
+			//mutate the row
 			fieldId,
 			rowId: rowId ?? "-1",
 			fieldOptionId: _field.id,
 		});
-		setIsChanged(true);
+
+		// set timesheet to be changed if it is not already
+		if (!isChanged) {
+			updateTimesheet({
+				id: timesheetId ?? "-1",
+				isChanged: true,
+			});
+
+			setIsChanged(true);
+		}
 	};
 
 	const { option } = useOption(fieldId, rowId);

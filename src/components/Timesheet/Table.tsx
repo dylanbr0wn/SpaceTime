@@ -174,6 +174,7 @@ const TimesheetTable = ({
 						id: `timeEntryCol${i}`,
 						cell: ({ row, column }) => (
 							<TimesheetEntryInput
+								timesheetId={timesheetId ?? "-1"}
 								index={i}
 								rowId={row.original.id}
 								date={date}

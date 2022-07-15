@@ -7,7 +7,7 @@ import "../styles/globals.css";
 import { withTRPC } from "@trpc/next";
 import { AppRouter } from "../server/router";
 import superjson from "superjson";
-import { httpBatchLink } from "@trpc/client/links/httpBatchLink";
+// import { httpBatchLink } from "@trpc/client/links/httpBatchLink";
 // import { httpLink } from "@trpc/client/links/httpLink";
 // import { splitLink } from "@trpc/client/links/splitLink";
 const getBaseUrl = () => {

@@ -87,16 +87,28 @@ const DeleteEntryInput = ({
 		},
 	});
 
+	const updateTimesheet = trpc.useMutation(["timesheet.update"]).mutate;
+
 	// Will delete a row. Dispatches deleteTimeEntryRow api call and redux action.
 	// Delete button sub component
 
-	const setIsChanged = useStore((state) => state.setIsChanged);
+	const { setIsChanged, isChanged } = useStore((state) => ({
+		setIsChanged: state.setIsChanged,
+		isChanged: state.IsChanged,
+	}));
 
-	const deleteRow = async () => {
+	const deleteRow = () => {
 		deleteTimeEntryRowMutation.mutate({
 			id: rowId ?? "-1",
 		});
-		setIsChanged(true);
+		if (!isChanged) {
+			updateTimesheet({
+				id: timesheetId ?? "-1",
+				isChanged: true,
+			});
+
+			setIsChanged(true);
+		}
 
 		setShowDeleteConfirmModal(false);
 	};

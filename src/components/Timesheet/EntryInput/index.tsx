@@ -15,6 +15,7 @@ interface IEntryInputProps {
 	date: DateTime;
 	index: number;
 	userId: string;
+	timesheetId: string;
 }
 
 /**
@@ -24,13 +25,24 @@ interface IEntryInputProps {
  * @description Hour entry input. Provides a input field which takes a number.
  * @param {Object} props Props. See propTypes for details.
  */
-const EntryInput = ({ rowId, date, index, userId }: IEntryInputProps) => {
+const EntryInput = ({
+	rowId,
+	date,
+	index,
+	userId,
+	timesheetId,
+}: IEntryInputProps) => {
 	const usedRow = useStore(
 		React.useCallback((state) => state.getRow(rowId), [rowId])
 	);
+
+	const isChanged = useStore((state) => state.IsChanged);
+
 	const setIsChanged = useStore((state) => state.setIsChanged);
 
 	const disableEntryInput = (usedRow?.length ?? 0) < 3;
+
+	const updateTimesheet = trpc.useMutation(["timesheet.update"]).mutate;
 
 	const {
 		timeEntry,
@@ -77,7 +89,6 @@ const EntryInput = ({ rowId, date, index, userId }: IEntryInputProps) => {
 
 							onBlur: () => {
 								const hours = Number(getValues("hours"));
-								console.log(timeEntry);
 
 								if (!timeEntry?.id && (hours ?? 0) > 0) {
 									create({
@@ -86,7 +97,14 @@ const EntryInput = ({ rowId, date, index, userId }: IEntryInputProps) => {
 										hours: hours ?? 0,
 										timeEntryRowId: rowId ?? "-1",
 									});
-									setIsChanged(true);
+									if (!isChanged) {
+										updateTimesheet({
+											id: timesheetId ?? "-1",
+											isChanged: true,
+										});
+
+										setIsChanged(true);
+									}
 								} else if (timeEntry?.id && hours) {
 									if (isDirty) {
 										update({
@@ -95,12 +113,26 @@ const EntryInput = ({ rowId, date, index, userId }: IEntryInputProps) => {
 										});
 									}
 									reset({ hours: `${hours}` });
-									setIsChanged(true);
+									if (!isChanged) {
+										updateTimesheet({
+											id: timesheetId ?? "-1",
+											isChanged: true,
+										});
+
+										setIsChanged(true);
+									}
 								} else if (timeEntry?.id && (isNaN(hours) || hours === 0)) {
 									deleteMutate({
 										id: timeEntry?.id ?? "-1",
 									});
-									setIsChanged(true);
+									if (!isChanged) {
+										updateTimesheet({
+											id: timesheetId ?? "-1",
+											isChanged: true,
+										});
+
+										setIsChanged(true);
+									}
 								} else {
 									reset({ hours: "" });
 									// setIsSaving(false);
