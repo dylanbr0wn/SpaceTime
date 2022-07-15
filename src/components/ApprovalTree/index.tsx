@@ -8,6 +8,12 @@ import Avatar from "../common/Avatar";
 import StatusTitle from "./StatusTitle";
 import TimeSince from "./TimeSince";
 
+/**
+ *
+ * TODO: Want to change the look and refactor this a little bit
+ *
+ */
+
 const ApprovalTree = ({
 	timesheetId,
 	userId,

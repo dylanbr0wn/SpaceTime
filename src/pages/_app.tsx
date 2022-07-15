@@ -50,27 +50,6 @@ export default withTRPC<AppRouter>({
 					},
 				},
 			},
-			// links: [
-			// 	// 	// splitLink({
-			// 	// 	// 	condition(op) {
-			// 	// 	// 		// check for context property `skipBatch`
-			// 	// 	// 		return op.context.skipBatch === true;
-			// 	// 	// 	},
-			// 	// 	// 	// when condition is true, use normal request
-			// 	// 	// 	true: httpLink({
-			// 	// 	// 		url,
-			// 	// 	// 	}),
-			// 	// 	// 	// when condition is false, use batching
-			// 	// 	// 	false: httpBatchLink({
-			// 	// 	// 		url,
-			// 	// 	// 		maxBatchSize: 10, // a reasonable size
-			// 	// 	// 	}),
-			// 	// 	// }),
-			// 	httpBatchLink({
-			// 		url,
-			// 		maxBatchSize: 5, // a reasonable size
-			// 	}),
-			// ],
 		};
 	},
 	/**
