@@ -1,14 +1,10 @@
-import cuid from "cuid";
-import { DateTime } from "luxon";
-import { useSession } from "next-auth/react";
 import * as React from "react";
 
 import { ExclamationIcon } from "@heroicons/react/solid";
 
 import ErrorBoundary from "../../common/ErrorBoundary";
 import CustModal from "../../common/Modal";
-import { EventType, Status, zStatus } from "../../../utils/types/zod";
-import { z, ZodEnum } from "zod";
+import { EventType, Status, StatusType } from "../../../utils/types/zod";
 import { trpc } from "../../../utils/trpc";
 import { useStore } from "../../../utils/store";
 
@@ -25,43 +21,43 @@ const StatusBlock = ({
 	timesheetChanged,
 	userId,
 }: {
-	status: z.infer<typeof zStatus>;
+	status: StatusType;
 	timesheetId: string;
 	timesheetChanged: boolean;
 	userId: string;
 }) => {
 	const [showModal, setShowModal] = React.useState(false);
-	const [currentTimesheet, setCurrentTimesheet] = React.useState<
-		string | undefined
-	>();
+	// const [currentTimesheet, setCurrentTimesheet] = React.useState<
+	// 	string | undefined
+	// >();
 
-	const setIsChanged = useStore((state) => state.setIsChanged);
-
-	const { data: sessionData } = useSession();
+	const { setIsChanged, isChanged } = useStore((state) => ({
+		setIsChanged: state.setIsChanged,
+		isChanged: state.IsChanged,
+	}));
 	// const [hasChanged, setHasChanged] = React.useState(false);
-
-	const isChanged = true;
 
 	const mutation = trpc.useMutation("timesheet.update");
 
 	React.useEffect(() => {
-		if (!timesheetChanged && isChanged && currentTimesheet) {
-			mutation.mutate({
-				id: currentTimesheet,
-				isChanged: isChanged,
-			});
-		}
-	}, [isChanged, timesheetChanged, currentTimesheet, mutation]);
+		console.log(timesheetChanged, isChanged, timesheetId);
+		// if (!timesheetChanged && isChanged && currentTimesheet) {
+		// 	mutation.mutate({
+		// 		id: currentTimesheet,
+		// 		isChanged: isChanged,
+		// 	});
+		// }
+	}, [isChanged, timesheetChanged, timesheetId]);
 
-	React.useEffect(() => {
-		if (
-			timesheetId !== "-1" &&
-			timesheetId &&
-			currentTimesheet !== timesheetId
-		) {
-			setCurrentTimesheet(timesheetId);
-		}
-	}, [timesheetId, currentTimesheet]);
+	// React.useEffect(() => {
+	// 	if (
+	// 		timesheetId !== "-1" &&
+	// 		timesheetId &&
+	// 		currentTimesheet !== timesheetId
+	// 	) {
+	// 		setCurrentTimesheet(timesheetId);
+	// 	}
+	// }, [timesheetId, currentTimesheet]);
 
 	const [comment, setComment] = React.useState("");
 
@@ -75,51 +71,6 @@ const StatusBlock = ({
 			userId: String(userId),
 			type: EventType.StatusChange,
 			timesheetId,
-
-			// optimisticResponse: {
-			//     createStatusEvent: {
-			//         __typename: "StatusEvent",
-			//         id: cuid(),
-			//         createdAt: DateTime.now().toISO(),
-			//         message: comment,
-			//         type: EventType.StatusChange,
-			//         user: {
-			//             __typename: "User",
-			//             name: sessionData?.user?.name,
-			//             avatar: sessionData?.user?.image,
-			//         },
-			//         status: Status.Submitted,
-			//     },
-			// },
-			// update: (cache, { data }) => {
-			//     cache.updateQuery(
-			//         {
-			//             query: StatusEventsDocument,
-			//             variables: {
-			//                 timesheetId,
-			//             },
-			//         },
-			//         (newData) => {
-			//             if (!data?.createStatusEvent) return newData;
-			//             return {
-			//                 statusEvents: [
-			//                     ...(newData?.statusEvents ?? []),
-			//                     data?.createStatusEvent,
-			//                 ],
-			//             };
-			//         }
-			//     );
-			//     cache.modify({
-			//         id: cache.identify({
-			//             __typename: "Timesheet",
-			//             id: timesheetId,
-			//         }),
-			//         fields: {
-			//             isChanged: () => false,
-			//             status: () => Status.Submitted,
-			//         },
-			//     });
-			// },
 		});
 		setComment("");
 		setShowModal(false);
