@@ -35,25 +35,6 @@ const TimesheetMenu = () => {
 						>
 							Open drawer
 						</label>
-						{/* <Menu as={"div"} className={"relative"}>
-                        {({ open }) => (
-                            <>
-                                <NavMenuButton open={open} />
-                                <Transition open={open}>
-                                    <Menu.Items static className="">
-                                        <ul className="bg-base-300 menu rounded-box shadow-lg shadow-black/30 text-base w-64 p-2 space-y-1">
-                                            {menu.map((item, index) => (
-                                                <NavButton
-                                                    key={index}
-                                                    {...item}
-                                                />
-                                            ))}
-                                        </ul>
-                                    </Menu.Items>
-                                </Transition>
-                            </>
-                        )}
-                    </Menu> */}
 					</div>
 					<div className="flex-none gap-2">
 						<FeedbackFish

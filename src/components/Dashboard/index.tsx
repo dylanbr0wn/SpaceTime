@@ -20,33 +20,11 @@ const DashBoard = ({ children }: { children: React.ReactNode }) => {
 		},
 	]);
 	return (
-		<div data-theme="dark">
-			<div className="drawer drawer-mobile">
-				<input id="my-drawer-2" type="checkbox" className="drawer-toggle" />
-				<div className="drawer-content flex flex-col overflow-x-hidden overflow-y-scroll">
-					<Menu />
-					<div className="w-full mx-auto h-full">{children}</div>
-					{/* <Footer /> */}
-				</div>
-				<div className="drawer-side">
-					<label htmlFor="my-drawer-2" className="drawer-overlay"></label>
-					<ul className="menu p-4 overflow-y-auto w-80 bg-base-300 text-base-content">
-						<li>ProtoTime</li>
-						{menu.map((item, index) => (
-							<li key={index}>
-								<MenuLink href={item.href}>
-									{item.icon}
-									<div>
-										<p className="text-sm font-medium">{item.title}</p>
-										<p className="text-sm text-base-content transition-colors">
-											Some Description
-										</p>
-									</div>
-								</MenuLink>
-							</li>
-						))}
-					</ul>
-				</div>
+		<div data-theme="mytheme">
+			<Menu />
+			<div className="flex flex-col overflow-x-hidden overflow-y-scroll relative">
+				<div className="w-full mx-auto h-full">{children}</div>
+				{/* <Footer /> */}
 			</div>
 		</div>
 	);
