@@ -7,6 +7,7 @@ import CustModal from "../../common/Modal";
 import { EventType, Status, StatusType } from "../../../utils/types/zod";
 import { trpc } from "../../../utils/trpc";
 import { useStore } from "../../../utils/store";
+import { useSession } from "next-auth/react";
 
 /**
  * @name ApprovalStatus
@@ -27,41 +28,94 @@ const StatusBlock = ({
 	userId: string;
 }) => {
 	const [showModal, setShowModal] = React.useState(false);
-	// const [currentTimesheet, setCurrentTimesheet] = React.useState<
-	// 	string | undefined
-	// >();
 
 	const { setIsChanged, isChanged } = useStore((state) => ({
 		setIsChanged: state.setIsChanged,
 		isChanged: state.IsChanged,
 	}));
-	// const [hasChanged, setHasChanged] = React.useState(false);
 
-	const mutation = trpc.useMutation("timesheet.update");
-
-	React.useEffect(() => {
-		console.log(timesheetChanged, isChanged, timesheetId);
-		// if (!timesheetChanged && isChanged && currentTimesheet) {
-		// 	mutation.mutate({
-		// 		id: currentTimesheet,
-		// 		isChanged: isChanged,
-		// 	});
-		// }
-	}, [isChanged, timesheetChanged, timesheetId]);
-
-	// React.useEffect(() => {
-	// 	if (
-	// 		timesheetId !== "-1" &&
-	// 		timesheetId &&
-	// 		currentTimesheet !== timesheetId
-	// 	) {
-	// 		setCurrentTimesheet(timesheetId);
-	// 	}
-	// }, [timesheetId, currentTimesheet]);
+	const { data: sessionData } = useSession();
 
 	const [comment, setComment] = React.useState("");
 
-	const createStatusEventMutation = trpc.useMutation("statusEvents.create");
+	const utils = trpc.useContext();
+
+	const createStatusEventMutation = trpc.useMutation("statusEvents.create", {
+		onMutate: async (data) => {
+			const newStatusEvent = {
+				...data,
+				id: "",
+				createdAt: new Date(),
+				updatedAt: new Date(),
+				user: {
+					name: sessionData?.user?.name ?? "",
+					avatar: sessionData?.user?.image ?? "",
+				},
+			};
+
+			await utils.cancelQuery([
+				"statusEvents.readAll",
+				{
+					timesheetId,
+				},
+			]);
+			// Cancel any outgoing refetches (so they don't overwrite our optimistic update)
+			// await utils.cancelQueries(['todos', newTodo.id])
+
+			// Snapshot the previous value
+			const previousEvents = utils.getQueryData([
+				"statusEvents.readAll",
+				{
+					timesheetId,
+				},
+			]);
+
+			// Optimistically update to the new value
+			utils.setQueryData(
+				[
+					"statusEvents.readAll",
+					{
+						timesheetId,
+					},
+				],
+				[...previousEvents!, { ...newStatusEvent }]
+			);
+
+			// Return a context with the previous and new todo
+			return { previousEvents, newStatusEvent };
+		},
+		// If the mutation fails, use the context we returned above
+		onError: (err, newEntry, context) => {
+			console.error(err);
+			if (!context?.previousEvents)
+				utils.refetchQueries([
+					"statusEvents.readAll",
+					{
+						timesheetId,
+					},
+				]);
+			else {
+				utils.setQueryData(
+					[
+						"statusEvents.readAll",
+						{
+							timesheetId,
+						},
+					],
+					context.previousEvents
+				);
+			}
+		},
+		// // Always refetch after error or success:
+		// onSettled: () => {
+		// 	utils.invalidateQueries([
+		// 		"statusEvents.readAll",
+		// 		{
+		// 			timesheetId,
+		// 		},
+		// 	]);
+		// },
+	});
 
 	const submit = () => {
 		setIsChanged(false);
