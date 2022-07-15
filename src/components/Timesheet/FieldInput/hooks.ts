@@ -10,7 +10,7 @@ import {
 } from "../../../utils/types/zod";
 import shallow from "zustand/shallow";
 
-export const useFieldOptions = (fieldId: string) => {
+export const useFieldOptions = (fieldId: string, timesheetLoading: boolean) => {
 	const { data } = trpc.useQuery(
 		[
 			"field.read",
@@ -19,14 +19,10 @@ export const useFieldOptions = (fieldId: string) => {
 			},
 		],
 		{
+			enabled: !timesheetLoading,
 			refetchOnWindowFocus: false,
 		}
 	);
-
-	React.useEffect(() => {
-		console.log("useFieldOptions", data);
-		console.log(fieldId);
-	}, [data, fieldId]);
 
 	return { fieldInfo: data };
 };

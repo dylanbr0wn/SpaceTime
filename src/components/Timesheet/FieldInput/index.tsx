@@ -46,6 +46,7 @@ interface FieldInputProps {
 	tenantId: string;
 	fieldName: string;
 	maxOptions: number;
+	timesheetLoading: boolean;
 }
 
 /**
@@ -62,10 +63,11 @@ const FieldInput = ({
 	timesheetId,
 	fieldName,
 	maxOptions,
+	timesheetLoading,
 }: FieldInputProps) => {
 	const [field, setField] = React.useState<FieldOption | null>(null);
 
-	const { fieldInfo } = useFieldOptions(fieldId);
+	const { fieldInfo } = useFieldOptions(fieldId, timesheetLoading);
 
 	const { usedRows, setUsedRows, setIsChanged, isChanged } = useStore(
 		(state) => ({

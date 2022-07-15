@@ -26,6 +26,7 @@ interface ITimesheetTableProps {
 	timesheetColumns: { id: string; name: string }[];
 	userId: string;
 	tenantId: string;
+	timesheetLoading: boolean;
 }
 
 /**
@@ -37,6 +38,7 @@ interface ITimesheetTableProps {
  */
 const TimesheetTable = ({
 	timesheetId,
+	timesheetLoading,
 	timesheetDates,
 	timesheetColumns,
 	userId,
@@ -138,6 +140,7 @@ const TimesheetTable = ({
 					id: name.toLowerCase(),
 					cell: ({ row }) => (
 						<FieldInput
+							timesheetLoading={timesheetLoading}
 							rowId={row.original.id}
 							fieldId={id}
 							fieldName={name}
@@ -225,7 +228,7 @@ const TimesheetTable = ({
 	return (
 		<>
 			<ErrorBoundary>
-				<div className=" my-2 w-full mx-auto flex flex-col space-y-2">
+				<div className=" my-2 max-w-7xl mx-auto flex flex-col space-y-2">
 					<div className="flex flex-col flex-shrink">
 						{table.getHeaderGroups().map((headerGroup) => (
 							<div className="flex space-x-0.5 " key={headerGroup.id}>

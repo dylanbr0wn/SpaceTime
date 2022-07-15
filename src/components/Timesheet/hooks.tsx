@@ -33,7 +33,7 @@ export const useTimesheetDates = (
 
 	const setIsChanged = useStore((state) => state.setIsChanged);
 
-	const { data: timesheetData, isLoading: timesheetLoading } = trpc.useQuery(
+	const { data: timesheetData, isFetching: timesheetLoading } = trpc.useQuery(
 		[
 			"timesheet.readFromAuth",
 			{
@@ -51,6 +51,7 @@ export const useTimesheetDates = (
 		setIsChanged(!!timesheetData?.isChanged);
 	}, [timesheetData?.isChanged]);
 
+	// Could probably simplify this sucker
 	React.useEffect(() => {
 		if (timesheetData?.period) {
 			const endDate = timesheetData?.period?.endDate;
@@ -133,7 +134,6 @@ export const useRows = (
 						(option) => option.fieldOption.id
 					);
 				});
-				console.log("at the source", newUsedRows);
 				setUsedRows(newUsedRows);
 			},
 			enabled: !!timesheetId,
