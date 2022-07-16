@@ -39,6 +39,7 @@ const UsersList = ({
 			},
 		],
 		{
+			refetchOnWindowFocus: false,
 			enabled: !!user?.tenant?.id,
 		}
 	);

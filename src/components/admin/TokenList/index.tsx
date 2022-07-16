@@ -32,6 +32,7 @@ const TokenList = ({
 			},
 		],
 		{
+			refetchOnWindowFocus: false,
 			enabled: !!currentUser?.tenant?.id,
 		}
 	);
