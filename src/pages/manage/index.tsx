@@ -2,7 +2,6 @@ import { GetServerSidePropsContext, NextPage } from "next";
 import { getSession, useSession } from "next-auth/react";
 import * as React from "react";
 
-import { Tab } from "@headlessui/react";
 import {
 	ChartSquareBarIcon,
 	KeyIcon,
@@ -15,6 +14,9 @@ import UsersList from "../../components/admin/UsersList";
 import DashBoard from "../../components/Dashboard";
 import Settings from "../../components/settings/Settings";
 import { trpc } from "../../utils/trpc";
+import ManageMenu from "../../components/manage/menu";
+import { useStore } from "../../utils/store";
+import { useTransition, a } from "@react-spring/web";
 
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
 	const session = await getSession(ctx);
@@ -69,57 +71,39 @@ const Manage: NextPage = () => {
 		}
 	);
 
+	const { currentActive } = useStore((state) => ({
+		currentActive: state.currentMenuActive,
+	}));
+
+	const [visible, setVisible] = React.useState<string[]>([currentActive]);
+
+	const transitions = useTransition(currentActive, {
+		keys: (item) => item,
+		from: { opacity: 0 },
+		enter: { opacity: 1 },
+		leave: { opacity: 0 },
+		initial: { opacity: 1 },
+		onChange: () => {
+			setVisible((old) => [currentActive, ...old]);
+		},
+		onRest: () => {
+			setVisible((old) => old.filter((item) => item === currentActive));
+		},
+	});
+
 	return (
 		<DashBoard>
-			<div className="h-full w-full flex" style={{ margin: 0, padding: 0 }}>
-				<div className="flex flex-col p-3 w-full h-full">
-					<Tab.Group>
-						<div className="flex justify-center">
-							<Tab.List className="tabs tabs-boxed flex-shrink">
-								<Tab
-									className={({ selected }) =>
-										`appearance-none tab tab-lg ${selected && "tab-active"}`
-									}
-								>
-									<div className="flex  content-middle ">
-										<UsersIcon className="w-5 h-5 m-auto" />
-										<div className=" w-full my-auto">Dashboard</div>
-									</div>
-								</Tab>
-								<Tab
-									className={({ selected }) =>
-										`appearance-none tab tab-lg ${selected && "tab-active "}`
-									}
-								>
-									<div className="flex  content-middle">
-										<KeyIcon className="w-5 h-5 m-auto" />
-										<div className=" w-full my-auto">Timesheet</div>
-									</div>
-								</Tab>
-								<Tab
-									className={({ selected }) =>
-										`appearance-none tab tab-lg ${selected && "tab-active"}`
-									}
-								>
-									<div className="flex  content-middle ">
-										<UsersIcon className="w-5 h-5 m-auto" />
-										<div className=" w-full my-auto">Users</div>
-									</div>
-								</Tab>
-								<Tab
-									className={({ selected }) =>
-										`appearance-none tab tab-lg ${selected && "tab-active "}`
-									}
-								>
-									<div className="flex  content-middle">
-										<KeyIcon className="w-5 h-5 m-auto" />
-										<div className=" w-full my-auto">Tokens</div>
-									</div>
-								</Tab>
-							</Tab.List>
-						</div>
-						<Tab.Panels>
-							<Tab.Panel>
+			<ManageMenu />
+			<div className="h-full max-w-5xl mx-auto flex " style={{ padding: 0 }}>
+				<div className="flex flex-col p-3 w-full h-full relative">
+					{transitions((style, item) => (
+						<>
+							<a.div
+								className={`${
+									visible.includes("dashboard") ? "block" : "hidden"
+								} absolute w-full`}
+								style={style}
+							>
 								<div className="flex max-w-screen-2xl mx-auto space-x-12 py-2">
 									<div className="w-72 card bg-base-200 flex flex-col p-3 ">
 										<EmployeeForm currentUser={userData} />
@@ -145,22 +129,40 @@ const Manage: NextPage = () => {
 										</div>
 									</div>
 								</div>
-							</Tab.Panel>
-							<Tab.Panel>
+							</a.div>
+
+							<a.div
+								className={`${
+									visible.includes("timesheet") ? "block" : "hidden"
+								} absolute w-full`}
+								style={style}
+							>
 								<Settings />
-							</Tab.Panel>
-							<Tab.Panel>
+							</a.div>
+
+							<a.div
+								className={`${
+									visible.includes("users") ? "block" : "hidden"
+								} absolute w-full`}
+								style={style}
+							>
 								<div className="w-full px-3">
 									<UsersList user={userData} />
 								</div>
-							</Tab.Panel>
-						</Tab.Panels>
-						<Tab.Panel>
-							<div className=" px-3 w-full">
-								<TokenList currentUser={userData} />
-							</div>
-						</Tab.Panel>
-					</Tab.Group>
+							</a.div>
+
+							<a.div
+								className={`${
+									visible.includes("tokens") ? "block" : "hidden"
+								} block absolute w-full`}
+								style={style}
+							>
+								<div className="w-full px-3">
+									<TokenList currentUser={userData} />
+								</div>
+							</a.div>
+						</>
+					))}
 				</div>
 			</div>
 		</DashBoard>

@@ -1,6 +1,6 @@
-import create from "zustand";
+import create, { StateCreator } from "zustand";
 
-interface IState {
+interface ITimesheetSlice {
 	usedRows: { [key: string]: string[] };
 	IsChanged: boolean;
 	shaker: [string, string];
@@ -10,7 +10,7 @@ interface IState {
 	getRow: (rowId: string | undefined) => string[] | undefined;
 }
 
-export const useStore = create<IState>((set, get) => ({
+const timesheetSlice: StateCreator<ITimesheetSlice> = (set, get) => ({
 	usedRows: {},
 	IsChanged: false,
 	shaker: ["", ""],
@@ -22,4 +22,25 @@ export const useStore = create<IState>((set, get) => ({
 		if (!rowId) return [];
 		return get().usedRows[rowId];
 	},
+});
+
+interface IManageSlice {
+	currentMenuHover: string;
+	setCurrentMenuHover: (currentMenuHover: string) => void;
+	currentMenuActive: string;
+	setCurrentMenuActive: (currentMenuHover: string) => void;
+}
+
+const manageSlice: StateCreator<IManageSlice> = (set, get) => ({
+	currentMenuActive: "dashboard",
+	setCurrentMenuActive: (currentMenuActive: string) =>
+		set(() => ({ currentMenuActive })),
+	currentMenuHover: "",
+	setCurrentMenuHover: (currentMenuHover: string) =>
+		set(() => ({ currentMenuHover })),
+});
+
+export const useStore = create<ITimesheetSlice & IManageSlice>((...a) => ({
+	...timesheetSlice(...a),
+	...manageSlice(...a),
 }));

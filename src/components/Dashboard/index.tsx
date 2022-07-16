@@ -20,11 +20,11 @@ const DashBoard = ({ children }: { children: React.ReactNode }) => {
 		},
 	]);
 	return (
-		<div data-theme="mytheme">
+		<div className="h-screen w-screen relative" data-theme="mytheme">
 			<Menu />
-			<div className="flex flex-col overflow-x-hidden overflow-y-scroll relative">
-				<div className="w-full mx-auto h-full">{children}</div>
-				{/* <Footer /> */}
+			<div className="pt-16 h-full w-screen">
+				{/* <div className="w-full mx-auto h-full relative"></div> */}
+				{children}
 			</div>
 		</div>
 	);

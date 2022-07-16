@@ -24,7 +24,7 @@ const TimesheetMenu = () => {
 	return (
 		<ErrorBoundary>
 			<div
-				className="sticky top-0 z-30 flex h-16 w-full justify-center bg-opacity-90 backdrop-blur transition-all duration-100 
+				className="fixed top-0 z-30 flex h-16 w-full justify-center bg-opacity-90 backdrop-blur transition-all duration-100 
  bg-base-200 text-base-content"
 			>
 				<div className="navbar ">
