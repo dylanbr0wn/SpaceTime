@@ -87,7 +87,7 @@ const TimesheetDateInput = ({
 					<div className="">
 						<DatePicker
 							onChange={onChange}
-							selected={startDate?.toJSDate()}
+							selected={startDate}
 							filterDate={filterDate}
 						/>
 					</div>

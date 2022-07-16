@@ -7,7 +7,13 @@ import { CalendarIcon } from "@heroicons/react/outline";
 
 import CustTransition from "../../common/CustTransition";
 
-const DatePicker = ({ selected, onChange, filterDate }) => {
+interface IDatePickerProps {
+	selected?: DateTime;
+	onChange: (date: Date) => void;
+	filterDate: (date: Date) => boolean;
+}
+
+const DatePicker = ({ selected, onChange, filterDate }: IDatePickerProps) => {
 	return (
 		<Popover className="relative w-full z-20">
 			{({ open, close }) => (
@@ -17,11 +23,7 @@ const DatePicker = ({ selected, onChange, filterDate }) => {
                
                 btn text-sm`}
 					>
-						{selected && (
-							<span>
-								{DateTime.fromJSDate(selected).toFormat("dd/LLL/yyyy")}
-							</span>
-						)}
+						{selected && <span>{selected.toFormat("dd/LLL/yyyy")}</span>}
 
 						<CalendarIcon className="h-6 w-6 ml-3" />
 					</Popover.Button>
@@ -33,9 +35,11 @@ const DatePicker = ({ selected, onChange, filterDate }) => {
 							<div className="bg-base-200 rounded-lg shadow-lg shadow-black/30 p-2 h-full w-full z-50">
 								<DayPicker
 									mode="single"
-									selected={selected}
+									selected={selected
+										?.plus({ hours: DateTime.local().hour })
+										.toJSDate()}
 									onSelect={(date) => {
-										onChange(date);
+										onChange(date ?? new Date());
 										close();
 									}}
 									disabled={filterDate}
@@ -44,6 +48,7 @@ const DatePicker = ({ selected, onChange, filterDate }) => {
 										cell: "w-8 h-8 m-1",
 										day_hidden: "hidden",
 										vhidden: "hidden",
+										day_selected: "btn-accent",
 										day_disabled: "btn-disabled",
 										day: "w-8 h-8 btn btn-square btn-primary btn-sm",
 										head: "text-primary font-medium text-center text-xs pb-2",

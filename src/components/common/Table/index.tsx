@@ -1,12 +1,7 @@
-import { TableGenerics, TableInstance } from "@tanstack/react-table";
-
+import { Table, flexRender } from "@tanstack/react-table";
 import Sorting from "./Sorting";
 
-const DefaultTable = <T extends TableGenerics>({
-	instance,
-}: {
-	instance: TableInstance<T>;
-}) => {
+const DefaultTable = <T extends {}>({ instance }: { instance: Table<T> }) => {
 	return (
 		<>
 			<table className="table table-zebra w-full flex flex-col h-96">
@@ -20,7 +15,12 @@ const DefaultTable = <T extends TableGenerics>({
 										onClick={header.column.getToggleSortingHandler()}
 									>
 										<div>
-											{header.isPlaceholder ? null : header.renderHeader()}
+											{header.isPlaceholder
+												? null
+												: flexRender(
+														header.column.columnDef.header,
+														header.getContext()
+												  )}
 										</div>
 										<Sorting isSorted={header.column.getIsSorted() as string} />
 									</div>
@@ -34,7 +34,7 @@ const DefaultTable = <T extends TableGenerics>({
 						<tr className=" flex hover " key={row.id}>
 							{row.getVisibleCells().map((cell) => (
 								<td className="py-2 px-4 w-full" key={cell.id}>
-									{cell.renderCell()}
+									{flexRender(cell.column.columnDef.cell, cell.getContext())}
 								</td>
 							))}
 						</tr>

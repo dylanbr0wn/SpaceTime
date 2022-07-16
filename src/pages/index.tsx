@@ -5,25 +5,6 @@ import * as React from "react";
 import DashBoard from "../components/Dashboard";
 import Timesheet from "../components/Timesheet";
 
-export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
-	const session = await getSession(ctx);
-	if (!session) {
-		return {
-			redirect: {
-				destination: "/api/auth/signin",
-				permanent: false,
-			},
-		};
-	}
-
-	return {
-		props: {
-			// userData: userData?.userFromAuthId,
-			session,
-		},
-	};
-};
-
 const Home: NextPage = () => {
 	return (
 		<DashBoard>

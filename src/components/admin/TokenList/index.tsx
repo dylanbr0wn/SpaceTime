@@ -1,73 +1,79 @@
 import { DateTime } from "luxon";
 import * as React from "react";
 
-import { useQuery } from "@apollo/client";
 import {
+	ColumnDef,
 	createTable,
-	getCoreRowModelSync,
+	getCoreRowModel,
 	getPaginationRowModel,
-	getSortedRowModelSync,
+	getSortedRowModel,
 	PaginationState,
 	SortingState,
-	useTableInstance,
+	useReactTable,
 } from "@tanstack/react-table";
 
 import Avatar from "../../common/Avatar";
 import CopyField from "../../common/CopyField";
 import Loading from "../../common/Loading";
 import DefaultTable from "../../common/Table";
-
-const table =
-	createTable().setRowType<
-		Partial<Pick<OneTimeToken, "tenant" | "id" | "user" | "createdAt">>
-	>();
+import { OneTimeToken, Tenant, User } from "../../../utils/types/zod";
+import { trpc } from "../../../utils/trpc";
 
 const TokenList = ({
 	currentUser,
 }: {
-	currentUser: UserFromAuthIdQuery["userFromAuthId"] | undefined;
+	currentUser: (User & { tenant: Tenant | null }) | undefined;
 }) => {
-	const { data, error, loading } = useQuery(OneTimeTokensDocument, {
-		variables: {
-			tenantId: currentUser?.tenant?.id ?? "-1",
-		},
-		skip: !currentUser?.tenant?.id,
-	});
+	const { data, error, isFetching } = trpc.useQuery(
+		[
+			"oneTimeToken.readAll",
+			{
+				tenantId: currentUser?.tenant?.id ?? "-1",
+			},
+		],
+		{
+			enabled: !!currentUser?.tenant?.id,
+		}
+	);
 
 	const [pagination, setPagination] = React.useState<PaginationState>({
 		pageIndex: 0,
 		pageSize: 5,
-		pageCount: data?.oneTimeTokens.length ?? 0 / 5,
 	});
 
 	const [sorting, setSorting] = React.useState<SortingState>([]);
 
-	const columns = React.useMemo(
+	const columns = React.useMemo<
+		ColumnDef<
+			OneTimeToken & {
+				user: { id: string; name: string | null; avatar: string | null };
+			}
+		>[]
+	>(
 		() => [
-			table.createDataColumn("user", {
-				cell: (info) => (
+			{
+				accessorKey: "user",
+				cell: ({ row }) => (
 					<div className="flex  justify-start py-2">
-						<Avatar image={info?.value?.avatar} name={info?.value?.name} />
-						<div className="ml-3 my-auto ">{info?.value?.name}</div>
+						<Avatar
+							image={row.original.user.avatar}
+							name={row.original.user.name}
+						/>
+						<div className="ml-3 my-auto ">{row.original.user.name}</div>
 					</div>
 				),
 				header: () => <div className="text-left mr-3 font-bold ">User</div>,
-			}),
-			table.createDataColumn((row) => row.id, {
+			},
+			{
 				id: "id",
-				cell: (info) => <CopyField value={info.value} />,
+				cell: (info) => <CopyField value={info.getValue()} />,
 
 				header: () => <div className="text-left mr-3 font-bold ">Token</div>,
-			}),
-			table.createDataColumn((row) => row.createdAt, {
+			},
+			{
 				id: "created",
 				cell: (info) => {
-					let date: DateTime;
-					if (typeof info.value === "string") {
-						date = DateTime.fromISO(info.value);
-					} else {
-						date = DateTime.fromJSDate(info?.value ?? new Date());
-					}
+					let date = DateTime.fromJSDate(info.getValue() ?? new Date());
 
 					return <div className=" py-2 ">{date.toFormat("dd/LL/yyyy")}</div>;
 				},
@@ -75,13 +81,51 @@ const TokenList = ({
 				header: () => (
 					<div className="text-left mr-3 font-bold ">Date Issued</div>
 				),
-			}),
+			},
 		],
 		[]
 	);
 
-	const instance = useTableInstance(table, {
-		data: (data?.oneTimeTokens as OneTimeToken[]) ?? [],
+	// const columns = React.useMemo(
+	// 	() => [
+	// 		table.createDataColumn("user", {
+	// 			cell: (info) => (
+	// 				<div className="flex  justify-start py-2">
+	// 					<Avatar image={info?.value?.avatar} name={info?.value?.name} />
+	// 					<div className="ml-3 my-auto ">{info?.value?.name}</div>
+	// 				</div>
+	// 			),
+	// 			header: () => <div className="text-left mr-3 font-bold ">User</div>,
+	// 		}),
+	// 		table.createDataColumn((row) => row.id, {
+	// 			id: "id",
+	// 			cell: (info) => <CopyField value={info.value} />,
+
+	// 			header: () => <div className="text-left mr-3 font-bold ">Token</div>,
+	// 		}),
+	// 		table.createDataColumn((row) => row.createdAt, {
+	// 			id: "created",
+	// 			cell: (info) => {
+	// 				let date: DateTime;
+	// 				if (typeof info.value === "string") {
+	// 					date = DateTime.fromISO(info.value);
+	// 				} else {
+	// 					date = DateTime.fromJSDate(info?.value ?? new Date());
+	// 				}
+
+	// 				return <div className=" py-2 ">{date.toFormat("dd/LL/yyyy")}</div>;
+	// 			},
+
+	// 			header: () => (
+	// 				<div className="text-left mr-3 font-bold ">Date Issued</div>
+	// 			),
+	// 		}),
+	// 	],
+	// 	[]
+	// );
+
+	const instance = useReactTable({
+		data: data ?? [],
 		columns,
 		state: {
 			sorting,
@@ -89,8 +133,8 @@ const TokenList = ({
 		},
 		onPaginationChange: setPagination,
 		onSortingChange: setSorting,
-		getCoreRowModel: getCoreRowModelSync(),
-		getSortedRowModel: getSortedRowModelSync(),
+		getCoreRowModel: getCoreRowModel(),
+		getSortedRowModel: getSortedRowModel(),
 		getPaginationRowModel: getPaginationRowModel(),
 	});
 
@@ -101,7 +145,7 @@ const TokenList = ({
                 <div className=" text-xl w-full my-auto">Tokens</div>
             </div> */}
 			<div className="">
-				{loading ? (
+				{isFetching ? (
 					<div className="mt-5">
 						<Loading />
 					</div>

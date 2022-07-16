@@ -2,7 +2,6 @@ import { GetServerSidePropsContext, NextPage } from "next";
 import { getSession, useSession } from "next-auth/react";
 import * as React from "react";
 
-import { useQuery } from "@apollo/client";
 import { Tab } from "@headlessui/react";
 import {
 	ChartSquareBarIcon,
@@ -15,7 +14,7 @@ import TokenList from "../../components/admin/TokenList";
 import UsersList from "../../components/admin/UsersList";
 import DashBoard from "../../components/Dashboard";
 import Settings from "../../components/settings/Settings";
-import { UserFromAuthIdDocument } from "../../../lib/apollo";
+import { trpc } from "../../utils/trpc";
 
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
 	const session = await getSession(ctx);
@@ -58,12 +57,17 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
 const Manage: NextPage = () => {
 	const session = useSession();
 
-	const { data: userData } = useQuery(UserFromAuthIdDocument, {
-		variables: {
-			authId: String(session?.data?.user?.sub),
-		},
-		skip: !session?.data?.user?.sub,
-	});
+	const { data: userData } = trpc.useQuery(
+		[
+			"user.readFromAuth",
+			{
+				authId: String(session?.data?.user?.sub),
+			},
+		],
+		{
+			enabled: !!session?.data?.user?.sub,
+		}
+	);
 
 	return (
 		<DashBoard>
@@ -118,7 +122,7 @@ const Manage: NextPage = () => {
 							<Tab.Panel>
 								<div className="flex max-w-screen-2xl mx-auto space-x-12 py-2">
 									<div className="w-72 card bg-base-200 flex flex-col p-3 ">
-										<EmployeeForm currentUser={userData?.userFromAuthId} />
+										<EmployeeForm currentUser={userData} />
 									</div>
 									<div className="card w-72  bg-base-200 p-3">
 										<div className="flex  content-middle">
@@ -147,13 +151,13 @@ const Manage: NextPage = () => {
 							</Tab.Panel>
 							<Tab.Panel>
 								<div className="w-full px-3">
-									<UsersList user={userData?.userFromAuthId} />
+									<UsersList user={userData} />
 								</div>
 							</Tab.Panel>
 						</Tab.Panels>
 						<Tab.Panel>
 							<div className=" px-3 w-full">
-								<TokenList currentUser={userData?.userFromAuthId} />
+								<TokenList currentUser={userData} />
 							</div>
 						</Tab.Panel>
 					</Tab.Group>

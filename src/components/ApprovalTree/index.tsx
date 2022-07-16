@@ -1,3 +1,4 @@
+import { ChatIcon } from "@heroicons/react/outline";
 import { DateTime } from "luxon";
 import { useSession } from "next-auth/react";
 import * as React from "react";
@@ -7,12 +8,6 @@ import Avatar from "../common/Avatar";
 
 import StatusTitle from "./StatusTitle";
 import TimeSince from "./TimeSince";
-
-/**
- *
- * TODO: Want to change the look and refactor this a little bit
- *
- */
 
 const ApprovalTree = ({
 	timesheetId,
@@ -37,7 +32,7 @@ const ApprovalTree = ({
 	);
 
 	return (
-		<div className="max-w-3xl mx-auto w-full mt-24 flex flex-col mb-10">
+		<div className="max-w-3xl mx-auto w-full mt-12 flex flex-col mb-10">
 			{data?.map((event, i) => {
 				return (
 					<div key={event.id} className="w-full">
@@ -56,16 +51,21 @@ const ApprovalTree = ({
 								</span>
 							</div>
 						</div>
-						<div className="card w-full bg-base-300 shadow-xl">
-							<div className="card-body">
-								<h2 className="card-title">
+						<div className="card w-full my-1 bg-base-300 shadow-xl">
+							<div className="card-body p-3 ml-4">
+								<h2 className="card-title ">
 									<StatusTitle
 										name={event.user.name}
 										status={event.status}
 										type={event.type}
 									/>
 								</h2>
-								<p>{event.message}</p>
+								{!!event.message && (
+									<div className="flex space-x-2 mt-1 text-base-content/60">
+										<ChatIcon className="h-5 w-5 my-auto " />
+										<p>{event.message}</p>
+									</div>
+								)}
 							</div>
 						</div>
 						{i + 1 !== data?.length && (

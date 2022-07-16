@@ -4,14 +4,6 @@ import { useSession } from "next-auth/react";
 import * as React from "react";
 import validator from "validator";
 
-import { useMutation, useQuery } from "@apollo/client";
-
-import {
-	FieldsDocument,
-	TenantDocument,
-	UpdateTenantDocument,
-	UserFromAuthIdDocument,
-} from "../../../lib/apollo";
 import MultiSelectInput from "../common/form/MultiSelectInput";
 import Section from "../common/form/Section";
 import SelectInput from "../common/form/SelectInput";
@@ -19,6 +11,7 @@ import TextInput from "../common/form/TextInput";
 import Loading from "../common/Loading";
 import MultiSelectList from "../common/form/MultiSelectList";
 import toast from "react-hot-toast";
+import { trpc } from "../../utils/trpc";
 
 const notify = (error: string) => toast.error(error);
 
@@ -70,33 +63,43 @@ const validateStartDate = (startDate: { id: string; name: string }) => {
 const Settings = () => {
 	const session = useSession();
 
-	const { data: userData, loading: userLoading } = useQuery(
-		UserFromAuthIdDocument,
-		{
-			variables: {
+	const { data: userData, isFetching: userLoading } = trpc.useQuery(
+		[
+			"user.readFromAuth",
+			{
 				authId: String(session?.data?.user?.sub),
 			},
-			skip: !session?.data?.user?.sub,
-		}
-	);
-
-	const { data: tenantData, loading: tenantLoading } = useQuery(
-		TenantDocument,
+		],
 		{
-			variables: {
-				tenantId: String(userData?.userFromAuthId?.tenant?.id),
-			},
-			skip: !userData?.userFromAuthId?.tenant?.id,
+			enabled: !!session?.data?.user?.sub,
 		}
 	);
 
-	const { data: fieldsData } = useQuery(FieldsDocument, {
-		variables: {
-			tenantId: String(userData?.userFromAuthId?.tenant?.id),
-		},
-	});
+	const { data: tenantData, isFetching: tenantLoading } = trpc.useQuery(
+		[
+			"tenant.read",
+			{
+				id: String(userData?.tenant?.id),
+			},
+		],
+		{
+			enabled: !!userData?.tenant?.id,
+		}
+	);
 
-	const [UpdateTenant] = useMutation(UpdateTenantDocument);
+	const { data: fieldsData } = trpc.useQuery(
+		[
+			"field.readAll",
+			{
+				tenantId: String(userData?.tenant?.id),
+			},
+		],
+		{
+			enabled: !!userData?.tenant?.id,
+		}
+	);
+
+	const update = trpc.useMutation(["tenant.update"]).mutateAsync;
 
 	return (
 		<div className="w-full h-full flex flex-col">
@@ -105,22 +108,16 @@ const Settings = () => {
 					<Formik
 						validateOnBlur
 						initialValues={{
-							name: tenantData?.tenant?.name ?? "",
-							description: tenantData?.tenant?.description ?? "",
-							periodLength: tenantData?.tenant?.periodLength ?? 14,
+							name: tenantData?.name ?? "",
+							description: tenantData?.description ?? "",
+							periodLength: tenantData?.periodLength ?? 14,
 							startDate:
-								typeof tenantData?.tenant?.startDate === "string"
-									? weeekdays[
-											DateTime.fromISO(tenantData?.tenant?.startDate ?? "")
-												.weekday - 1
-									  ]
-									: weeekdays[
-											DateTime.fromJSDate(
-												tenantData?.tenant?.startDate ?? new Date()
-											).weekday - 1
-									  ] ?? weeekdays[0],
+								weeekdays[
+									DateTime.fromJSDate(tenantData?.startDate ?? new Date())
+										.weekday - 1
+								]!,
 							fields:
-								tenantData?.tenant?.tenantActivefields.map(
+								tenantData?.tenantActivefields.map(
 									(activeField) => activeField.field.id
 								) ?? [],
 						}}
@@ -136,26 +133,19 @@ const Settings = () => {
 								.startOf("day")
 								.toUTC()
 								.startOf("day")
-								.toISO();
+								.toJSDate();
 
-							const { data, errors } = await UpdateTenant({
-								variables: {
-									name: values.name,
-									description: values.description,
-									periodLength: values.periodLength,
-									startDate,
-									isActive: true,
-									logo: "",
-									updateTenantId: tenantData?.tenant?.id ?? "-1",
-									tenantActiveFields: values.fields,
-								},
-								refetchQueries: [TenantDocument],
+							await update({
+								name: values.name,
+								description: values.description,
+								periodLength: values.periodLength,
+								startDate,
+								isActive: true,
+								logo: "",
+								id: tenantData?.id ?? "-1",
+								tenantActiveFields: values.fields,
 							});
 
-							if (errors) {
-								setStatus(errors[0].message);
-								notify(errors[0].message);
-							}
 							// const { data: tenantData } = await createTenant({
 							//     variables: {
 							//         name: values.name,
@@ -266,7 +256,7 @@ const Settings = () => {
 													name="fields"
 													label="Timesheet Fields"
 													placeholder="Select Fields"
-													elements={fieldsData?.fields ?? []}
+													elements={fieldsData ?? []}
 												/>
 											</div>
 										</Section>

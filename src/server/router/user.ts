@@ -86,6 +86,9 @@ export const userRouter = createRouter()
 				where: {
 					authId: input?.authId,
 				},
+				include: {
+					tenant: true,
+				},
 			});
 		},
 	})

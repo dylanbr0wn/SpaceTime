@@ -4,6 +4,7 @@ import { UserAddIcon } from "@heroicons/react/outline";
 import { PlusIcon } from "@heroicons/react/solid";
 
 import Modal from "../../common/Modal";
+import { User } from "../../../utils/types/zod";
 
 // import Form from "./Form";
 
@@ -15,11 +16,7 @@ import Modal from "../../common/Modal";
  * @description Form for editting a employee object and associated work codes.
  */
 
-const EmployeeForm = ({
-	currentUser,
-}: {
-	currentUser: UserFromAuthIdQuery["userFromAuthId"] | undefined;
-}) => {
+const EmployeeForm = ({ currentUser }: { currentUser: User | undefined }) => {
 	const [openForm, setOpenForm] = React.useState(false);
 
 	return (

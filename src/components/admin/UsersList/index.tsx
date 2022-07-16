@@ -1,103 +1,94 @@
 import * as React from "react";
 
-import { useQuery } from "@apollo/client";
 import {
+	ColumnDef,
 	createTable,
-	getCoreRowModelSync,
+	getCoreRowModel,
 	getPaginationRowModel,
-	getSortedRowModelSync,
+	getSortedRowModel,
 	PaginationState,
 	SortingState,
-	useTableInstance,
+	useReactTable,
 } from "@tanstack/react-table";
 
-import {
-	User,
-	UserFromAuthIdQuery,
-	UsersDocument,
-} from "../../../../lib/apollo";
 import Avatar from "../../common/Avatar";
 import ErrorBoundary from "../../common/ErrorBoundary";
 import Loading from "../../common/Loading";
 import DefaultTable from "../../common/Table";
-
-const table = createTable().setRowType<Partial<User>>();
+import { Tenant, User } from "../../../utils/types/zod";
+import { trpc } from "../../../utils/trpc";
 
 const UsersList = ({
 	user,
 }: {
-	user: UserFromAuthIdQuery["userFromAuthId"] | undefined;
+	user:
+		| (User & {
+				tenant: Tenant | null;
+		  })
+		| undefined;
 }) => {
 	const {
 		data: usersData,
-		loading,
+		isFetching,
 		error,
-	} = useQuery(UsersDocument, {
-		variables: {
-			tenantId: user?.tenant?.id ?? "-1",
-		},
-		skip: !user?.tenant?.id,
-	});
+	} = trpc.useQuery(
+		[
+			"user.readAll",
+			{
+				tenantId: user?.tenant?.id ?? "-1",
+			},
+		],
+		{
+			enabled: !!user?.tenant?.id,
+		}
+	);
 	const [pagination, setPagination] = React.useState<PaginationState>({
 		pageIndex: 0,
 		pageSize: 5,
-		pageCount: usersData?.users.length ?? 0 / 5,
 	});
 
 	const [sorting, setSorting] = React.useState<SortingState>([]);
 
 	// Columns specifier for react tables
-	const columns = React.useMemo(
+	const columns = React.useMemo<ColumnDef<User>[]>(
 		() => [
-			table.createDataColumn("name", {
+			{
+				id: "user",
 				cell: (info) => (
 					<div className="flex  justify-start py-2">
-						<Avatar image={info?.row?.original?.avatar} name={info?.value} />
-						<div className="ml-3 my-auto ">{info?.value}</div>
+						<Avatar
+							image={info?.row?.original?.avatar}
+							name={info.row.original.name}
+						/>
+						<div className="ml-3 my-auto ">{info.row.original.name}</div>
 					</div>
 				),
 				header: () => <div className="text-left mr-3 font-bold ">User</div>,
-			}),
-			// table.createDataColumn((row) => row.department, {
-			//     id: "created",
-			//     cell: (info) => (
-			//         <div className=" py-2 ">{info.value?.name}</div>
-			//     ),
-
-			//     header: () => (
-			//         <div className="text-left mr-3 font-bold ">Department</div>
-			//     ),
-			// }),
-			table.createDataColumn(
-				(row) => ({
-					active: row.isActive,
-					setup: row.isSetup,
-				}),
-				{
-					id: "status",
-					cell: (info) => (
-						<div className=" py-2 ">
-							{info.value.setup ? (
-								info.value.active ? (
-									<div className="badge badge-success">Active</div>
-								) : (
-									<div className="badge badge-error">Inactive</div>
-								)
+			},
+			{
+				id: "status",
+				cell: (info) => (
+					<div className=" py-2 ">
+						{info.row.original.isSetup ? (
+							info.row.original.isActive ? (
+								<div className="badge badge-success">Active</div>
 							) : (
-								<div className="badge badge-warning">Pending Signup</div>
-							)}
-						</div>
-					),
+								<div className="badge badge-error">Inactive</div>
+							)
+						) : (
+							<div className="badge badge-warning">Pending Signup</div>
+						)}
+					</div>
+				),
 
-					header: () => <div className="text-left mr-3 font-bold ">Status</div>,
-				}
-			),
+				header: () => <div className="text-left mr-3 font-bold ">Status</div>,
+			},
 		],
 		[]
 	);
 
-	const instance = useTableInstance(table, {
-		data: (usersData?.users as User[]) ?? [],
+	const instance = useReactTable({
+		data: usersData ?? [],
 		columns,
 		state: {
 			sorting,
@@ -105,8 +96,8 @@ const UsersList = ({
 		},
 		onPaginationChange: setPagination,
 		onSortingChange: setSorting,
-		getCoreRowModel: getCoreRowModelSync(),
-		getSortedRowModel: getSortedRowModelSync(),
+		getCoreRowModel: getCoreRowModel(),
+		getSortedRowModel: getSortedRowModel(),
 		getPaginationRowModel: getPaginationRowModel(),
 	});
 	// Handles submit for employee modal. Dispatches redux action and api call with saveEmployee. Creates toast on completion.
@@ -122,7 +113,7 @@ const UsersList = ({
                         <div className=" text-xl w-full my-auto">Users</div>
                     </div> */}
 					<div className="">
-						{loading ? (
+						{isFetching ? (
 							<div className="mt-5">
 								<Loading />
 							</div>

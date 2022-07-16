@@ -9,7 +9,6 @@ export const oneTimeTokenRouter = createRouter()
 				id: z.string(),
 			})
 			.required(),
-		output: zOneTimeToken,
 		async resolve({ input, ctx }) {
 			return await ctx.prisma.oneTimeToken.findUniqueOrThrow({
 				where: {
@@ -24,7 +23,6 @@ export const oneTimeTokenRouter = createRouter()
 				tenantId: z.string(),
 			})
 			.required(),
-		output: z.array(zOneTimeToken),
 		async resolve({ input, ctx }) {
 			return await ctx.prisma.oneTimeToken.findMany({
 				where: {
@@ -49,7 +47,6 @@ export const oneTimeTokenRouter = createRouter()
 			userId: z.string(),
 			tenantId: z.string(),
 		}),
-		output: zOneTimeToken,
 		async resolve({ input, ctx }) {
 			return await ctx.prisma.oneTimeToken.create({
 				data: {
