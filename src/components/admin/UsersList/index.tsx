@@ -15,34 +15,18 @@ import Avatar from "../../common/Avatar";
 import ErrorBoundary from "../../common/ErrorBoundary";
 import Loading from "../../common/Loading";
 import DefaultTable from "../../common/Table";
-import { Tenant, User } from "../../../utils/types/zod";
-import { trpc } from "../../../utils/trpc";
+import { User } from "../../../utils/types/zod";
+import { UsersIcon } from "@heroicons/react/outline";
 
 const UsersList = ({
-	user,
+	users,
+	usersError,
+	usersLoading,
 }: {
-	user:
-		| (User & {
-				tenant: Tenant | null;
-		  })
-		| undefined;
+	users: User[] | undefined;
+	usersLoading: boolean;
+	usersError: any;
 }) => {
-	const {
-		data: usersData,
-		isFetching,
-		error,
-	} = trpc.useQuery(
-		[
-			"user.readAll",
-			{
-				tenantId: user?.tenant?.id ?? "-1",
-			},
-		],
-		{
-			refetchOnWindowFocus: false,
-			enabled: !!user?.tenant?.id,
-		}
-	);
 	const [pagination, setPagination] = React.useState<PaginationState>({
 		pageIndex: 0,
 		pageSize: 5,
@@ -89,7 +73,7 @@ const UsersList = ({
 	);
 
 	const instance = useReactTable({
-		data: usersData ?? [],
+		data: users ?? [],
 		columns,
 		state: {
 			sorting,
@@ -108,17 +92,17 @@ const UsersList = ({
 	return (
 		<>
 			<ErrorBoundary>
-				<div className="mx-auto max-w-screen-xl mt-2">
-					{/* <div className="flex  content-middle text-accent my-3">
-                        <UsersIcon className="w-7 h-7 mx-2 my-1  " />
-                        <div className=" text-xl w-full my-auto">Users</div>
-                    </div> */}
-					<div className="">
-						{isFetching ? (
+				<div className="mx-auto max-w-screen-xl h-full py-4">
+					<div className="h-full flex flex-col">
+						<div className="flex  content-middle my-3">
+							<UsersIcon className="w-8 h-8 mx-2 my-1  " />
+							<div className=" text-2xl w-full font-bold my-auto">Users</div>
+						</div>
+						{usersLoading ? (
 							<div className="mt-5">
 								<Loading />
 							</div>
-						) : error ? (
+						) : usersError ? (
 							<div>
 								Oops, these really arnt the droids you are looking for 🫤
 							</div>

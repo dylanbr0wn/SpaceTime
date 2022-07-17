@@ -6,7 +6,7 @@ import { PlusIcon } from "@heroicons/react/solid";
 import Modal from "../../common/Modal";
 import { User } from "../../../utils/types/zod";
 
-// import Form from "./Form";
+import Form from "./Form";
 
 /**
  * @name EmployeeForm
@@ -43,7 +43,7 @@ const EmployeeForm = ({ currentUser }: { currentUser: User | undefined }) => {
 				show={openForm}
 				onHide={() => setOpenForm(false)}
 			>
-				{/* <Form currentUser={currentUser} /> */}
+				<Form currentUser={currentUser} />
 			</Modal>
 		</div>
 	);

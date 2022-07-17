@@ -12,6 +12,17 @@ import Loading from "../common/Loading";
 import MultiSelectList from "../common/form/MultiSelectList";
 import toast from "react-hot-toast";
 import { trpc } from "../../utils/trpc";
+import {
+	Field,
+	Tenant,
+	TenantActiveFields,
+	User,
+	zUser,
+} from "../../utils/types/zod";
+import { useForm } from "react-hook-form";
+
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 
 const notify = (error: string) => toast.error(error);
 
@@ -60,64 +71,89 @@ const validateStartDate = (startDate: { id: string; name: string }) => {
 	return undefined;
 };
 
-const Settings = () => {
-	const session = useSession();
+interface ISettingsProps {
+	tenant:
+		| (Tenant & {
+				tenantActivefields: (TenantActiveFields & {
+					field: Field;
+				})[];
+		  })
+		| undefined;
+	tenantLoading: boolean;
+	fields: Field[] | undefined;
+}
 
-	const { data: userData, isFetching: userLoading } = trpc.useQuery(
-		[
-			"user.readFromAuth",
-			{
-				authId: String(session?.data?.user?.sub),
-			},
-		],
-		{
-			enabled: !!session?.data?.user?.sub,
-		}
-	);
+const Settings = ({ tenantLoading, tenant, fields }: ISettingsProps) => {
+	const {
+		control,
+		handleSubmit,
+		formState: { isValid, isDirty, isSubmitting },
+	} = useForm({
+		resolver: zodResolver(
+			z.object({
+				name: z.string({
+					required_error: "A name is required!",
+					invalid_type_error: "Please only use regular characters!",
+				}),
+				periodLength: z.number({
+					invalid_type_error: "Please enter a valid number!",
+					required_error: "A period length is required!",
+				}),
+				startDate: z.number({ required_error: "A start date is required!" }),
+			})
+		),
+		defaultValues: {
+			name: tenant?.name ?? "",
+			description: tenant?.description ?? "",
+			periodLength: tenant?.periodLength ?? 14,
+			startDate:
+				weeekdays[
+					DateTime.fromJSDate(tenant?.startDate ?? new Date()).weekday - 1
+				]!,
+			fields:
+				tenant?.tenantActivefields.map((activeField) => activeField.field.id) ??
+				[],
+		},
+	});
 
-	const { data: tenantData, isFetching: tenantLoading } = trpc.useQuery(
-		[
-			"tenant.read",
-			{
-				id: String(userData?.tenant?.id),
-			},
-		],
-		{
-			enabled: !!userData?.tenant?.id,
+	const onClick = handleSubmit(async (values) => {
+		let date = DateTime.now();
+		while (date.weekday !== parseInt(values.startDate.id)) {
+			date = date.minus({ days: 1 });
 		}
-	);
+		const startDate = date.startOf("day").toUTC().startOf("day").toJSDate();
 
-	const { data: fieldsData } = trpc.useQuery(
-		[
-			"field.readAll",
-			{
-				tenantId: String(userData?.tenant?.id),
-			},
-		],
-		{
-			enabled: !!userData?.tenant?.id,
-		}
-	);
+		await update({
+			name: values.name,
+			description: values.description,
+			periodLength: values.periodLength,
+			startDate,
+			isActive: true,
+			logo: "",
+			id: tenant?.id ?? "-1",
+			tenantActiveFields: values.fields,
+		});
+	});
 
 	const update = trpc.useMutation(["tenant.update"]).mutateAsync;
 
 	return (
 		<div className="w-full h-full flex flex-col">
-			{!tenantLoading && !userLoading ? (
+			{!tenantLoading ? (
 				<div className="">
-					<Formik
+					{/* <Formik
 						validateOnBlur
 						initialValues={{
-							name: tenantData?.name ?? "",
-							description: tenantData?.description ?? "",
-							periodLength: tenantData?.periodLength ?? 14,
+							name: tenant?.name ?? "",
+							description: tenant?.description ?? "",
+							periodLength: tenant?.periodLength ?? 14,
 							startDate:
 								weeekdays[
-									DateTime.fromJSDate(tenantData?.startDate ?? new Date())
-										.weekday - 1
+									DateTime.fromJSDate(tenant?.startDate ?? new Date()).weekday -
+										1
 								]!,
 							fields:
-								tenantData?.tenantActivefields.map(
+								tenant?.tenantActivefields.map(
 									(activeField) => activeField.field.id
 								) ?? [],
 						}}
@@ -125,146 +161,96 @@ const Settings = () => {
 							values: tenantInfo,
 							{ setSubmitting, setStatus }: FormikHelpers<tenantInfo>
 						) => {
-							let date = DateTime.now();
-							while (date.weekday !== parseInt(values.startDate.id)) {
-								date = date.minus({ days: 1 });
-							}
-							const startDate = date
-								.startOf("day")
-								.toUTC()
-								.startOf("day")
-								.toJSDate();
 
-							await update({
-								name: values.name,
-								description: values.description,
-								periodLength: values.periodLength,
-								startDate,
-								isActive: true,
-								logo: "",
-								id: tenantData?.id ?? "-1",
-								tenantActiveFields: values.fields,
-							});
-
-							// const { data: tenantData } = await createTenant({
-							//     variables: {
-							//         name: values.name,
-							//         description: values.description,
-							//         periodLength: values.periodLength,
-							//         startDate,
-							//         isActive: true,
-							//         logo: "",
-							//     },
-							// });
-							// console.log("tenant created");
-
-							// console.log(user);
-
-							// const { data: updatedUser } = await updateUser({
-							//     variables: {
-							//         id: String(user?.id),
-							//         tenantId: String(
-							//             tenantData?.createTenant.id
-							//         ),
-							//     },
-							// });
-
-							// console.log("user updated");
-
-							// if (updatedUser?.updateUser?.tenant?.id) {
-							//     router.push("/");
-							// }
+						
 
 							setStatus("complete");
 							setSubmitting(false);
 						}}
-					>
-						{({ isValid, dirty, isSubmitting, status }) => (
-							<Form className="p-3 flex flex-col space-y-2">
-								<div className="flex">
-									<div className="w-full px-3">
-										<Section title="Tenant Details">
-											<div className="flex flex-col w-full">
-												<TextInput
-													label="Team Name"
-													name="name"
-													id="name"
-													placeholder="Sith Lords"
-													validate={validateName}
-												/>
-											</div>
-										</Section>
-										<Section>
-											<div className="flex flex-col w-full">
-												<TextInput
-													validate={() => undefined}
-													label="Description"
-													name="decription"
-													id="description"
-													placeholder="Roger roger!"
-												/>
-											</div>
-										</Section>
-										<Section title="Configuration">
-											<div className="flex flex-col">
-												<TextInput
-													validate={validatePeriodLength}
-													label="Period Length"
-													name="periodLength"
-													id="periodLength"
-													placeholder="14"
-												/>
-											</div>
-											<div className="flex flex-col w-48">
-												<SelectInput
-													validate={validateStartDate}
-													placeholder="Sunday"
-													name="startDate"
-													label="Start Day"
-													elements={weeekdays}
-												/>
-											</div>
-										</Section>
-										<Section>
-											<div className="flex flex-col">
-												{/* <MultiSelectInput
+					> */}
+					{/* {({ isValid, dirty, isSubmitting, status }) => (
+							<Form className="p-3 flex flex-col space-y-2"> */}
+					<div className="flex">
+						<div className="w-full px-3">
+							<Section title="Tenant Details">
+								<div className="flex flex-col w-full">
+									<TextInput
+										label="Team Name"
+										name="name"
+										placeholder="Sith Lords"
+										control={control}
+									/>
+								</div>
+							</Section>
+							<Section>
+								<div className="flex flex-col w-full">
+									<TextInput
+										control={control}
+										label="Description"
+										name="description"
+										placeholder="Roger roger!"
+									/>
+								</div>
+							</Section>
+							<Section title="Configuration">
+								<div className="flex flex-col">
+									<TextInput
+										control={control}
+										label="Period Length"
+										name="periodLength"
+										placeholder="14"
+									/>
+								</div>
+								<div className="flex flex-col w-48">
+									<SelectInput
+										control={control}
+										placeholder="Sunday"
+										name="startDate"
+										label="Start Day"
+										elements={weeekdays}
+									/>
+								</div>
+							</Section>
+							<Section>
+								<div className="flex flex-col">
+									{/* <MultiSelectInput
                                             validate={() => undefined}
                                             label="Column Fields"
                                             name="columnFields"
                                             elements={fieldsData?.fields ?? []}
                                             placeholder=""
                                         /> */}
-											</div>
-										</Section>
-										<div className="flex my-3">
-											<button
-												disabled={!isValid || !dirty || isSubmitting}
-												className="btn btn-primary"
-												type="submit"
-											>
-												Submit
-											</button>
-										</div>
-									</div>
-									<div className="w-full px-3">
-										<Section title="Default Fields">
-											<div className="flex flex-col w-full space-y-2 py-2 overflow-y-scroll">
-												Default columns for your timesheet. These are applied
-												when you first visit a new sheet or on sheet reset.
-												<MultiSelectList
-													validate={() => undefined}
-													name="fields"
-													label="Timesheet Fields"
-													placeholder="Select Fields"
-													elements={fieldsData ?? []}
-												/>
-											</div>
-										</Section>
-									</div>
 								</div>
-							</Form>
+							</Section>
+							<div className="flex my-3">
+								<button
+									disabled={!isValid || !isDirty || isSubmitting}
+									className="btn btn-primary"
+									onClick={onClick}
+								>
+									Submit
+								</button>
+							</div>
+						</div>
+						<div className="w-full px-3">
+							<Section title="Default Fields">
+								<div className="flex flex-col w-full space-y-2 py-2 overflow-y-scroll">
+									Default columns for your timesheet. These are applied when you
+									first visit a new sheet or on sheet reset.
+									<MultiSelectList
+										control={control}
+										name="fields"
+										label="Timesheet Fields"
+										placeholder="Select Fields"
+										elements={fields ?? []}
+									/>
+								</div>
+							</Section>
+						</div>
+					</div>
+					{/* </Form>
 						)}
-					</Formik>
+					</Formik> */}
 				</div>
 			) : (
 				<Loading />

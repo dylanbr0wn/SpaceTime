@@ -4,6 +4,7 @@ specifiers:
   '@feedback-fish/react': ^1.2.1
   '@headlessui/react': ^1.6.4
   '@heroicons/react': ^1.0.6
+  '@hookform/resolvers': ^2.9.6
   '@prisma/client': ^4.0.0
   '@react-spring/web': ^9.4.5
   '@tailwindcss/forms': ^0.5.1
@@ -58,6 +59,7 @@ dependencies:
   '@feedback-fish/react': 1.2.1_react@18.2.0
   '@headlessui/react': 1.6.6_biqbaboplfbrettd7655fr4n2y
   '@heroicons/react': 1.0.6_react@18.2.0
+  '@hookform/resolvers': 2.9.6_react-hook-form@7.33.1
   '@prisma/client': 4.0.0_prisma@4.0.0
   '@react-spring/web': 9.4.5_biqbaboplfbrettd7655fr4n2y
   '@tanstack/react-table': 8.2.2_biqbaboplfbrettd7655fr4n2y
@@ -344,6 +346,14 @@ packages:
       react: '>= 16'
     dependencies:
       react: 18.2.0
+    dev: false
+
+  /@hookform/resolvers/2.9.6_react-hook-form@7.33.1:
+    resolution: {integrity: sha512-f4VxF8w9rdX0WsDCk3FW1dGPj/Sj8+1Ulcgtm5ymgWEpbA/fjY+NUDh+L9hftmxDgP8+EJFtF+qFK4gPEXVrVQ==}
+    peerDependencies:
+      react-hook-form: ^7.0.0
+    dependencies:
+      react-hook-form: 7.33.1_react@18.2.0
     dev: false
 
   /@humanwhocodes/config-array/0.9.5:

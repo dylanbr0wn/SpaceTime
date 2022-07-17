@@ -3,6 +3,8 @@ import { useSpring, a, config, useTransition } from "@react-spring/web";
 import * as React from "react";
 import { useStore } from "../../utils/store";
 import { useRouter } from "next/router";
+import { trpc } from "../../utils/trpc";
+import { useSession } from "next-auth/react";
 
 export const useAnimate = () => {
 	const {
@@ -73,5 +75,92 @@ export const useAnimate = () => {
 		ref,
 		scaleApi,
 		yApi,
+	};
+};
+
+export const useManageData = () => {
+	const session = useSession();
+
+	const { data: userData } = trpc.useQuery(
+		[
+			"user.readFromAuth",
+			{
+				authId: String(session?.data?.user?.sub),
+			},
+		],
+		{
+			refetchOnWindowFocus: false,
+			enabled: !!session?.data?.user?.sub,
+		}
+	);
+
+	const {
+		data: usersData,
+		isFetching: usersLoading,
+		error: usersError,
+	} = trpc.useQuery(
+		[
+			"user.readAll",
+			{
+				tenantId: userData?.tenant?.id ?? "-1",
+			},
+		],
+		{
+			refetchOnWindowFocus: false,
+			enabled: !!userData?.tenant?.id,
+		}
+	);
+
+	const { data, error, isFetching } = trpc.useQuery(
+		[
+			"oneTimeToken.readAll",
+			{
+				tenantId: userData?.tenant?.id ?? "-1",
+			},
+		],
+		{
+			refetchOnWindowFocus: false,
+			enabled: !!userData?.tenant?.id,
+		}
+	);
+
+	const { data: tenantData, isFetching: tenantLoading } = trpc.useQuery(
+		[
+			"tenant.read",
+			{
+				id: String(userData?.tenant?.id),
+			},
+		],
+		{
+			refetchOnWindowFocus: false,
+			enabled: !!userData?.tenant?.id,
+		}
+	);
+
+	const { data: fieldsData } = trpc.useQuery(
+		[
+			"field.readAll",
+			{
+				tenantId: String(userData?.tenant?.id),
+			},
+		],
+		{
+			refetchOnWindowFocus: false,
+			enabled: !!userData?.tenant?.id,
+		}
+	);
+
+	return {
+		user: userData,
+		session,
+		users: usersData,
+		usersLoading,
+		usersError,
+		tokens: data,
+		tokensError: error,
+		tokensLoading: isFetching,
+		tenant: tenantData,
+		tenantLoading,
+		fields: fieldsData,
 	};
 };
