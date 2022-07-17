@@ -26,8 +26,8 @@ const MenuItem = ({
 			<div
 				className={` my-auto ml-2 text-md transition-opacity whitespace-nowrap pointer-events-none duration-500 ${
 					currentActive === name
-						? "opacity-100 text-base-content"
-						: "group-hover:opacity-50 opacity-0 text-primary"
+						? "opacity-100 text-primary"
+						: "group-hover:opacity-50 opacity-0  text-base-content"
 				}`}
 			>
 				{displayName}

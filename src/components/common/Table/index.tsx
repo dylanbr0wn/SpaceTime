@@ -29,7 +29,7 @@ const DefaultTable = <T extends {}>({ instance }: { instance: Table<T> }) => {
 						</tr>
 					))}
 				</thead>
-				<tbody className="flex flex-col h-full">
+				<tbody className="flex flex-col">
 					{instance.getRowModel().rows.map((row) => (
 						<tr className=" flex hover " key={row.id}>
 							{row.getVisibleCells().map((cell) => (
@@ -41,7 +41,7 @@ const DefaultTable = <T extends {}>({ instance }: { instance: Table<T> }) => {
 					))}
 				</tbody>
 			</table>
-			<div className="flex w-full">
+			<div className="flex w-full mt-auto">
 				<div className="btn-group content-end mt-2 mx-auto">
 					<button
 						className="btn"
